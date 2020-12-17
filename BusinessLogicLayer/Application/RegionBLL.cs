@@ -27,7 +27,6 @@ namespace BusinessLogicLayer.Application
             repository.Insert(module);
             return _unitOfWork.Save() > 0;
         }
-
         public bool UpdateRegion(Region module)
         {
             var item = repository.GetById(module.Id);
@@ -36,7 +35,6 @@ namespace BusinessLogicLayer.Application
             repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
-
         public bool DeleteRegion(int id)
         {
             var item = repository.GetById(id);
@@ -44,21 +42,19 @@ namespace BusinessLogicLayer.Application
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }
-
         public Region GetRegionById(int id)
         {
             return repository.GetById(id);
         }
-
         public List<Region> GetAllRegion()
         {
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
 
-        public bool CheckActionName(string ActionName)
+        public bool CheckRegionName(int Id, string RegionName)
         {
-
-            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.RegionName == ActionName.Trim()).FirstOrDefault();
+            int? DosageFormId = Id == 0 ? null : (int?)Id;
+            var model = _unitOfWork.GenericRepository<Region>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.RegionName == RegionName && x.Id != DosageFormId || (DosageFormId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;
@@ -68,16 +64,15 @@ namespace BusinessLogicLayer.Application
                 return true;
             }
         }
-
-        public MultiSelectList DropDownActionNameList(int[] SelectedValue)
+        public SelectList DropDownRegionList(int SelectedValue)
         {
             var selectList = GetAllRegion().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
-                Text = x.RegionName.Trim()
+                Text = x.RegionName.ToString()
             });
 
-            return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+            return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
     }
 }

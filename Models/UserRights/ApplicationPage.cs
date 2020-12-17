@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,7 @@ namespace Models.UserRights
     {
         [DisplayName("Application Module")]
         [Required(ErrorMessage = "Please select application module.")]
+        [BindRequired]
         public int ApplicationModuleId { get; set; }
         [ForeignKey("ApplicationModuleId")]
         public virtual ApplicationModule ApplicationModule { get; set; }
@@ -37,6 +39,7 @@ namespace Models.UserRights
         [NotMapped]
         [DisplayName("Application Actions")]
         [Required(ErrorMessage = "Please select application action.")]
+        [BindRequired]
         public int[] ApplicationActionsId { get; set; }
         [NotMapped]
         public MultiSelectList ApplicationActionsList { get; set; }

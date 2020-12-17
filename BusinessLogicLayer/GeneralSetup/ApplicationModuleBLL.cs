@@ -59,10 +59,10 @@ namespace BusinessLogicLayer.GeneralSetup
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
 
-        public bool CheckModuleName(int Id, string ModuleName)
+        public bool CheckApplicationModuleName(int Id, string ModuleName)
         {
-            int? ModuleId = Id == 0 ? null : (int?)Id;
-            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.ModuleName == ModuleName.Trim() && x.Id != ModuleId || (ModuleId == null && x.Id == null)).FirstOrDefault();
+            int? DosageFormId = Id == 0 ? null : (int?)Id;
+            var model = _unitOfWork.GenericRepository<ApplicationModule>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.ModuleName == ModuleName && x.Id != DosageFormId || (DosageFormId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;

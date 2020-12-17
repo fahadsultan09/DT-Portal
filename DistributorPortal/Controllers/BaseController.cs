@@ -39,9 +39,5 @@ namespace DistributorPortal.Controllers
             }
             base.OnActionExecuting(filterContext);
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
     }
 }

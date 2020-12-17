@@ -28,7 +28,7 @@ namespace Models.Application
         [RegularExpression(@"^[0-9-]*$", ErrorMessage = "Only number is allowed")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "The Password field is required.")]
+        //[Required(ErrorMessage = "The Password field is required.")]
         [StringLength(100)]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$", ErrorMessage = "Invalid password")]
         public string Password { get; set; }
@@ -37,24 +37,47 @@ namespace Models.Application
         [Required(ErrorMessage = "The Email field is required.")]
         [RegularExpression(@"^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$", ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
+        public string RegisteredAddress { get; set; }
+        [Required(ErrorMessage = "The Mobile Number field is required.")]
+        public string MobileNumber { get; set; }
 
         public bool IsDistributor { get; set; }
-        public int? DistributorId { get; set; }
 
-        [NotMapped]
-        [DisplayName("Confirm Password")]
-        [Required(ErrorMessage = "The Confirm Password field is required.")]
-        [Compare("Password", ErrorMessage = "Password doesn't match.")]
-        public string ConfirmPassword { get; set; }
+        public int? DistributorId { get; set; }
+        [ForeignKey("DistributorId")]
+        public virtual Distributor Distributor { get; set; }
+
+
+        [BindRequired]
+        [Required(ErrorMessage = "Select designation.")]
+        public int DesignationId { get; set; }
+        [ForeignKey("DesignationId")]
+        public virtual Designation Designation { get; set; }
+
+        //[NotMapped]
+        //[DisplayName("Confirm Password")]
+        //[Required(ErrorMessage = "The Confirm Password field is required.")]
+        //[Compare("Password", ErrorMessage = "Password doesn't match.")]
+        //public string ConfirmPassword { get; set; }
+
+        public int? CityId { get; set; }
+        [ForeignKey("CityId")]
+        public virtual City City { get; set; }
 
         [BindRequired]
         [DisplayName("Role")]
-        [Required(ErrorMessage = "Please select role.")]
+        [Required(ErrorMessage = "Select role.")]
         public int RoleId { get; set; }
         [ForeignKey("RoleId")]
         public virtual Role Role { get; set; }
         [NotMapped]
         public SelectList RoleList { get; set; }
+        [NotMapped]
+        public SelectList DistributorList { get; set; }
+        [NotMapped]
+        public SelectList DesignationList { get; set; }
+        [NotMapped]
+        public SelectList CityList { get; set; }
 
     }
 }
