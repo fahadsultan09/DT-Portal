@@ -28,7 +28,7 @@ namespace Models.Application
         [RegularExpression(@"^[0-9-]*$", ErrorMessage = "Only number is allowed")]
         public string UserName { get; set; }
 
-        //[Required(ErrorMessage = "The Password field is required.")]
+        [Required(ErrorMessage = "The Password field is required.")]
         [StringLength(100)]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$", ErrorMessage = "Invalid password")]
         public string Password { get; set; }
@@ -54,11 +54,11 @@ namespace Models.Application
         [ForeignKey("DesignationId")]
         public virtual Designation Designation { get; set; }
 
-        //[NotMapped]
-        //[DisplayName("Confirm Password")]
-        //[Required(ErrorMessage = "The Confirm Password field is required.")]
-        //[Compare("Password", ErrorMessage = "Password doesn't match.")]
-        //public string ConfirmPassword { get; set; }
+        [NotMapped]
+        [DisplayName("Confirm Password")]
+        [Required(ErrorMessage = "The Confirm Password field is required.")]
+        [Compare("Password", ErrorMessage = "Password doesn't match.")]
+        public string ConfirmPassword { get; set; }
 
         public int? CityId { get; set; }
         [ForeignKey("CityId")]
