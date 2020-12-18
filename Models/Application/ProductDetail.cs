@@ -13,14 +13,16 @@ namespace Models.Application
         public virtual ProductMaster ProductMaster { get; set; }
         public int Visibility { get; set; }
         public string PlantLocation { get; set; }
-        public int Company { get; set; }
+        public int CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
+        public virtual Company Company { get; set; }
         public string WTaxRate { get; set; }
         public int Factor { get; set; }
         public string ParentDistributor { get; set; }
         public string S_OrderType { get; set; }
         public string R_OrderType { get; set; }
         public string SaleOrganization { get; set; }
-        public string Distribution { get; set; }
+        public string DistributionChannel { get; set; }
         public string Division { get; set; }
         public string DispatchPlant { get; set; }
         public string S_StorageLocation { get; set; }

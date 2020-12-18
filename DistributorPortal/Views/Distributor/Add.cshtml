@@ -1,0 +1,216 @@
+﻿@model Distributor
+
+<!-- Main content -->
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">Distributor</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-controller="Distributor"
+                      asp-action="SaveEdit"
+                      id="frmDistributor"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="Complete"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      method="post">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox ">
+                                <input asp-for="Id" type="hidden" />
+                                <div class="ibox-content">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Registered Name<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="DistributorName" type="text" placeholder="Registered Name" class="form-control" />
+                                                        <span asp-validation-for="DistributorName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Distributor Code<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="DistributorCode" type="text" placeholder="Distributor Code" class="form-control" />
+                                                        <span asp-validation-for="DistributorCode" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Region<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        @Html.DropDownListFor(e => e.RegionId, Model.RegionList, "--Select option--", htmlAttributes: new { @class = "form-control", @id= "ddlRegion" })
+                                                        <span asp-validation-for="RegionId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">NTN<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="NTN" type="text" placeholder="NTN" class="form-control" />
+                                                        <span asp-validation-for="NTN" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Sub-Region<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        @Html.DropDownListFor(e => e.SubRegionId, Model.SubRegionList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "ddlSubRegion" })
+                                                        <span asp-validation-for="SubRegionId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">CNIC<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="CNIC" type="text" class="form-control" data-inputmask="'mask': '99999-9999999-9'" data-mask />
+                                                        <span asp-validation-for="CNIC" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">City<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        @Html.DropDownListFor(e => e.CityId, Model.CityList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "ddlCity" })
+                                                        <span asp-validation-for="CityId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Mobile Number<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="MobileNumber" type="text" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
+                                                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Customer Grp<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="CustomerGroup" type="text" placeholder="Customer Grp" class="form-control" />
+                                                        <span asp-validation-for="CustomerGroup" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Registered Address<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="DistributorAddress" type="text" placeholder="Registered Address" class="form-control" />
+                                                        <span asp-validation-for="DistributorAddress" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Email Address<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="EmailAddress" type="text" placeholder="Email Address" class="form-control" />
+                                                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <div class="col-lg-offset-2 col-lg-10">
+                                                        <div class="i-checks"><label>Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 ">
+                                            <button class="btn btn-sm btn-primary float-right" type="submit" onclick="Save();">
+                                                @(Model.Id > 0 ? "Update" : "Add")
+                                            </button>
+                                            <a data-ajax-update="#divform"
+                                               data-ajax="true"
+                                               data-ajax-method="GET"
+                                               asp-controller="Distributor" asp-action="List"
+                                               class="btn btn-sm btn-default float-right mr-3">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.card -->
+<script>
+
+    $(document).ready(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Money Euro
+        $('[data-mask]').inputmask()
+
+        $('body').on('change', '#ddlRegion', function () {
+            debugger;
+            var ddlRegion = $('#ddlRegion :selected');
+            var text = $(ddlRegion).text();
+            var value = $(ddlRegion).val();
+            var params = {
+                regionId: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
+            }
+            $("#ddlCity option").remove();
+            var ddlSubRegion = $("#ddlSubRegion");
+            bindDropDownList(ddlSubRegion, "/SubRegion/DropDownSubRegionList", params, "0");
+            $('#ddlSubRegion').change();
+        });
+
+
+        $('body').on('change', '#ddlSubRegion', function () {
+            debugger;
+            var ddlSubRegion = $('#ddlSubRegion :selected');
+            var text = $(ddlSubRegion).text();
+            var value = $(ddlSubRegion).val();
+            var params = {
+                SubRegionId: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
+            }
+
+            var ddlCity = $("#ddlCity");
+            bindDropDownList(ddlCity, "/City/DropDownCityList", params, "0");
+        });
+
+    });
+</script>

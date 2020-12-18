@@ -24,7 +24,6 @@ namespace BusinessLogicLayer.Application
             module.UserName.Trim();
             module.FirstName.Trim();
             module.LastName.Trim();
-            module.Email.Trim();
             module.DistributorId = module.IsDistributor ? module.DistributorId : null;
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
@@ -41,9 +40,8 @@ namespace BusinessLogicLayer.Application
             item.FirstName = module.FirstName.Trim();
             item.LastName = module.LastName.Trim();
             item.Email = module.Email.Trim();
-            item.DistributorId = item.IsDistributor ? module.DistributorId : null;
-            item.IsDistributor = item.IsDistributor;
-            item.Password = EncryptDecrypt.Encrypt(module.Password);
+            item.DistributorId = module.IsDistributor ? module.DistributorId : null;
+            item.IsDistributor = module.IsDistributor;
             item.RoleId = module.RoleId;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
@@ -61,6 +59,15 @@ namespace BusinessLogicLayer.Application
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }
+        public bool ResetPassword(int id, string password)
+        {
+            var item = repository.GetById(id);
+            item.Password = password;
+            item.UpdatedBy = id;
+            item.UpdatedDate = DateTime.Now;
+            repository.Update(item);
+            return _unitOfWork.Save() > 0;
+        }
 
         public User GetUserById(int id)
         {
@@ -72,10 +79,10 @@ namespace BusinessLogicLayer.Application
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
 
-        public bool CheckActionName(string ActionName)
+        public bool CheckUserName(int Id, string UserName)
         {
-
-            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.UserName == ActionName.Trim()).FirstOrDefault();
+            int? DistributorId = Id == 0 ? null : (int?)Id;
+            var model = _unitOfWork.GenericRepository<User>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.UserName == UserName && x.Id != DistributorId || (DistributorId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;

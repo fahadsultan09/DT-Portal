@@ -70,7 +70,7 @@ namespace BusinessLogicLayer.GeneralSetup
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
 
-        public bool CheckPageTitle(long Id, string PageTitle)
+        public bool CheckApplicationPageName(long Id, string PageTitle)
         {
             long? ApplicationPageId = Id == 0 ? null : (long?)Id;
             var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.PageTitle == PageTitle.Trim() && x.Id != ApplicationPageId || (ApplicationPageId == null && x.Id == null)).FirstOrDefault();

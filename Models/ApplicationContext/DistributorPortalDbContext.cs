@@ -40,5 +40,6 @@ namespace Models.ApplicationContext
         public DbSet<Region> Region { get; set; }
         public DbSet<SubRegion> SubRegion { get; set; }
         public DbSet<User> User { get; set; }
-    }
+        public DbSet<Designation> Designation { get; set; }
+            }
 }
