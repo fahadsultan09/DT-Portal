@@ -1,3 +1,331 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style type="text/css">
+    body {
+        min-height: 400px;
+        margin-bottom: 50px;
+        clear: both;
+    }
+</style>
+
+<div class="content-wrapper">
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Dashboard</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Dashboard</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Orders</span>
+                            <span class="info-box-number">
+                                24
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Payment Verified</span>
+                            <span class="info-box-number">4,110</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix hidden-md-up"></div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Product Sale</span>
+                            <span class="info-box-number">760</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Distributor</span>
+                            <span class="info-box-number">2,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Sales</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Month Wise Payment Status</h5>
+
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="chart">
+                                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="text-center">
+                                        <strong>Payment Status</strong>
+                                    </p>
+                                    <div class="progress-group">
+                                        Verified Payment
+                                        <span class="float-right"><b>160</b>/200</span>
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar bg-success" style="width: 80%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-group">
+                                        Un Verified Payment
+                                        <span class="float-right"><b>310</b>/400</span>
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar bg-danger" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Recent Orders</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Distributor</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>Call of Duty IV</td>
+                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>Samsung Smart TV</td>
+                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header border-transparent">
+                            <h3 class="card-title">Recent Payments</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Distributor</th>
+                                            <th>Payment Mode</th>
+                                            <th>Ammount</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>Call of Duty IV</td>
+                                            <td>250,000</td>
+                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>Samsung Smart TV</td>
+                                            <td>250,000</td>
+                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section scripts{ 
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            new Chart(document.getElementById("lineChart"), {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Sales ($)",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: "#adb5bd",
+                        data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917, 3327]
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            reverse: true,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.05)"
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                stepSize: 500
+                            },
+                            display: true,
+                            borderDash: [5, 5],
+                            gridLines: {
+                                color: "rgba(0,0,0,0)",
+                                fontColor: "#fff"
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+
+        $(function () {
+            var areaChartData = {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [
+                    {
+                        label: 'Complete',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [28, 48, 40, 19, 86, 27, 90, 43, 55, 80, 20, 13]
+                    },
+                    {
+                        label: 'Pending',
+                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                        borderColor: 'rgba(210, 214, 222, 1)',
+                        pointRadius: false,
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: [65, 59, 80, 81, 56, 55, 40, 19, 86, 27, 90, 58]
+                    },
+                ]
+            } 
+
+            var barChartCanvas = $('#barChart').get(0).getContext('2d')
+            var barChartData = jQuery.extend(true, {}, areaChartData)
+            var temp0 = areaChartData.datasets[0]
+            var temp1 = areaChartData.datasets[1]
+            barChartData.datasets[0] = temp1
+            barChartData.datasets[1] = temp0
+
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false
+            }
+
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            })
+        });
+    </script>
+}
