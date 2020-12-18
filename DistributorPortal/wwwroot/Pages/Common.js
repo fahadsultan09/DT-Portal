@@ -3,10 +3,6 @@ $(document).ready(function () {
 
     $('#Spinner').hide();
 
-    $("#example1").DataTable({
-        "responsive": true,
-        "autoWidth": false,
-    });
 });
 
 var Toast;

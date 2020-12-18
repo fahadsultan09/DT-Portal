@@ -63,9 +63,9 @@ namespace BusinessLogicLayer.Application
         {
             var item = repository.GetById(id);
             item.Password = password;
-            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedBy = id;
             item.UpdatedDate = DateTime.Now;
-            repository.Delete(item);
+            repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
 

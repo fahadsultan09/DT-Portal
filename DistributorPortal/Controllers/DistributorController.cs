@@ -10,6 +10,7 @@ using Models.Application;
 using Models.UserRights;
 using Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DistributorPortal.Controllers
@@ -32,6 +33,24 @@ namespace DistributorPortal.Controllers
 
         public IActionResult List()
         {
+            return PartialView("List", _DistributorBLL.GetAllDistributor());
+        }
+        [HttpGet]
+        public IActionResult Sync()
+        {
+            List<string> distributorCodes = _DistributorBLL.GetAllDistributor().Select(x => x.DistributorCode).ToList();
+            List<Distributor> distributorList = new List<Distributor>();
+            foreach (var item in distributorList)
+            {
+                if (distributorCodes.Contains(item.DistributorCode))
+                {
+                    _DistributorBLL.UpdateDistributor(item);
+                }
+                else
+                {
+                    _DistributorBLL.AddDistributor(item);
+                }
+            }
             return PartialView("List", _DistributorBLL.GetAllDistributor());
         }
 

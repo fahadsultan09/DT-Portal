@@ -42,13 +42,14 @@
                                   data-ajax-success="OnSuccess"
                                   data-ajax-complete="Complete"
                                   data-ajax="true"
-                                  id="kt_login_signin_form">
+                                  id="kt_login_signin_form"
+                                  autocomplete="off">
                                 <div class="text-center pb-8">
                                     <h2 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Sign In</h2>
                                 </div>
                                 <div class="form-group">
                                     <label class="font-size-h6 font-weight-bolder text-dark">User Id</label>
-                                    <input class="form-control form-control-solid h-auto py-7 px-6 rounded-lg" type="text" asp-for="UserName" max="6" autocomplete="off" />
+                                    <input class="form-control form-control-solid h-auto py-7 px-6 rounded-lg" type="text" asp-for="UserName" id="UserId" max="6" autocomplete="off" />
                                     <span asp-validation-for="UserName" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
@@ -60,7 +61,7 @@
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
                                 <div class="text-center pt-2">
-                                    <button type="submit" class="btn btn-dark font-weight-bolder font-size-h6 px-8 py-4 my-3">
+                                    <button type="submit" id="login" value="login" onclick="Submit();" class="btn btn-dark font-weight-bolder font-size-h6 px-8 py-4 my-3">
                                         <span id="Spinner" class="spinner-grow spinner-grow-sm"></span>
                                         Sign In
                                     </button>
@@ -69,19 +70,21 @@
                         </div>
                         <div class="modal fade" id="modal-default">
                             <div class="modal-dialog">
-                                <form asp-controller="User"
+                                <form asp-controller="Login"
                                       asp-action="ChangePassword"
                                       id="frmUser"
-                                      data-ajax-begin="Begin"
                                       data-ajax-success="OnSuccess"
                                       data-ajax-complete="Complete"
                                       data-ajax="true"
                                       data-ajax-method="POST"
-                                      method="post">
+                                      method="post" 
+                                      autocomplete="off">
+                                    <input type="hidden" asp-for="UserName" id="UserName" />
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <div class="text-center pb-8">
-                                                <h2 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Change Password</h2>
+                                            <div class="text-center">
+                                                <h4 class="font-weight-bolder text-dark font-size-h2">Change Password</h4>
+                                                <h6 class="">Change default password before proceeding</h6>
                                             </div>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -99,7 +102,7 @@
                                         </div>
                                         <div class="modal-footer justify-content-between">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                            <button type="submit" value="Submit" name="button" class="btn btn-primary">Save</button>
+                                            <button type="submit" id="ChangePassword" value="ChangePassword" name="button" class="btn btn-primary">Save</button>
                                         </div>
                                     </div>
                                 </form>
@@ -141,10 +144,16 @@
             var form = event.target.form; // storing the form
             $.validator.unobtrusive.parse(form);
             if ($(form).valid()) {
-                $(form).submit();
-            }
-            if ($('#Password').val() == $('#Password').val(ConfirmPassword)) {
-
+                if ($('#Password').val() == "Sami@123") {
+                    $('#UserName').val($('#UserId').val());
+                    $('#modal-default').modal('toggle');
+                    $('#modal-default').modal('show');
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                }
+                else {
+                    $(form).submit();
+                }
             }
         }
 

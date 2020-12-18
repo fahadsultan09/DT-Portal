@@ -68,7 +68,10 @@ namespace DistributorPortal.Controllers
                 {
                     string password = EncryptDecrypt.Encrypt(model.Password);
                     _UserBLL.ResetPassword(_UserBLL.GetAllUser().FirstOrDefault(x => x.UserName == model.UserName).Id, password);
-                    return Json(new { Result = true });
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Password changed Successfully.";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Home");
+                    return Json(new { data = jsonResponse });
                 }
                 else
                 {

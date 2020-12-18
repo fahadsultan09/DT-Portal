@@ -1,0 +1,81 @@
+﻿@model IEnumerable<ProductDetail>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Product List</h2>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body scrollmenu">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Product Name </th>
+                                <th>Pack Size </th>
+                                <th>Visibility </th>
+                                <th>Plant Location </th>
+                                <th>Company </th>
+                                <th>W.Tax Rate </th>
+                                <th>Factor</th>
+                                <th>Parent Distributor </th>
+                                <th>S.Order Type </th>
+                                <th>R.Order Type </th>
+                                <th>Sale Organization </th>
+                                <th>Distribution Channel </th>
+                                <th>Division </th>
+                                <th>Dispatch Plant </th>
+                                <th>S.Storage Location </th>
+                                <th>R.Storage Location </th>
+                                <th>Sales Item Category </th>
+                                <th>Return Item Category </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ProductMaster.PackCode</td>
+                                    <td>@item.ProductMaster.ProductName</td>
+                                    <td>@item.ProductMaster.PackSize</td>
+                                    <td>@item.Visibility</td>
+                                    <td><input type="text" asp-for="@item.PlantLocation" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.Company.CompanyName" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.WTaxRate" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.Factor" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.ParentDistributor" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.S_OrderType" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.R_OrderType" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.SaleOrganization" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.DistributionChannel" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.Division" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.DispatchPlant" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.S_StorageLocation" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.R_StorageLocation" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.SalesItemCategory" class="form-control" /></td>
+                                    <td><input type="text" asp-for="@item.ReturnItemCategory" class="form-control" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+              
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+<script>
+
+    $(document).ready(function () {
+
+
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+        });
+
+    });
+</script>

@@ -62,6 +62,14 @@
 <!-- /.row -->
 <script>
 
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+        });
+    });
+
     function Delete(e) {
         Swal.fire({
             title: "Are you sure you want to continue?",
