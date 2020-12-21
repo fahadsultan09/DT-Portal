@@ -45,6 +45,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\webfonts\fa-brands-400.svg" />
+    <None Include="wwwroot\webfonts\fa-brands-400.woff2" />
+    <None Include="wwwroot\webfonts\fa-regular-400.svg" />
+    <None Include="wwwroot\webfonts\fa-regular-400.woff2" />
+    <None Include="wwwroot\webfonts\fa-solid-900.svg" />
+    <None Include="wwwroot\webfonts\fa-solid-900.woff2" />
+    <None Include="wwwroot\webfonts\Simple-Line-Icons.svg" />
+    <None Include="wwwroot\webfonts\Simple-Line-Icons.woff2" />
+    <None Include="wwwroot\webfonts\Simple-Line-Iconsb26c.svg" />
+    <None Include="wwwroot\webfonts\Simple-Line-Iconsb26c.woff2" />
+    <None Include="wwwroot\webfonts\themify.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resource\NotificationMessage.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

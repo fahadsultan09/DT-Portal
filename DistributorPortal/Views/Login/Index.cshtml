@@ -9,23 +9,137 @@
     <meta charset="utf-8" />
     <meta name="description" content="Login page example" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/Login/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Login/fontawsom-all.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Login/style.css" />
+
     <link rel="stylesheet" href="~/lib/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <link href="~/lib/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.css" rel="stylesheet" />
+
     <link href="~/lib/plugins/toastr/toastr.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-    <script src="~/lib/plugins/jquery/jquery.js"></script>
+
     <!-- jquery unobtrusive -->
+    <script src="~/lib/plugins/jquery/jquery.js"></script>
     <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-    <link href="~/Login/login-29cd7.css?v=7.1.5" rel="stylesheet" />
-    <link href="~/Login/plugins.bundle9cd7.css?v=7.1.5" rel="stylesheet" />
-    <link href="~/Login/prismjs.bundle9cd7.css?v=7.1.5" rel="stylesheet" />
-    <link href="~/Login/style.bundle9cd7.css?v=7.1.5" rel="stylesheet" />
-    <link rel="shortcut icon" href="~/Images/favicon.png" />
 </head>
-<body id="kt_body" class="header-fixed header-mobile-fixed header-bottom-enabled subheader-enabled page-loading">
-    <div class="d-flex flex-column flex-root">
+<body>
+    <div class="container-fluid ">
+        <div class="container ">
+            <div class="row ">
+
+                <div class="col-sm-10 login-box">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5 box-de" style="background-color: #673AB7">
+                            <div class="small-logo">
+                                <img src="~/images/favicon.png" width="50" height="50" alt=""> SAMI Pharmaceuticals
+                            </div>
+                            <div class="ditk-inf sup-oi">
+                                <h2 class="w-100" style="font-family:cursive; font-weight:bold">Distributor Portal</h2>
+                                <p>Simply login to your account by clicking the login Button</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-md-7 log-det">
+
+                            <h2>Login</h2>
+                            <div class="row">
+                                <ul>
+                                    <li><i class="fab fa-google"></i></li>
+                                    <li><i class="fab fa-twitter"></i></li>
+                                    <li><i class="fab fa-linkedin-in"></i></li>
+                                </ul>
+                            </div>
+                            <div class="row">
+                                <p class="small-info">or use your User Id account</p>
+                            </div><div class="text-box-cont">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="User Id" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                    <input type="password" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="row">
+                                    <p class="forget-p">Forget Password ?</p>
+                                </div>
+                                <div class="input-group center mb-3">
+                                    <button class="btn btn-success btn-round">SIGN IN</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="container-fluid">
+            <div class="container">
+                <div class="col-xl-10 col-lg-11 login-container">
+                    <div class="row">
+                        <div class="col-lg-7 img-box">
+                            <img src="~/images/login-banner.png" alt="">
+                        </div>
+                        <div class="col-lg-5 no-padding">
+                            <form asp-controller="Login"
+                                  asp-action="ChangePassword"
+                                  id="frmUser"
+                                  data-ajax-success="OnSuccess"
+                                  data-ajax-complete="Complete"
+                                  data-ajax="true"
+                                  data-ajax-method="POST"
+                                  method="post"
+                                  autocomplete="off">
+                                <div class="login-box">
+                                    <div class="login-row row no-margin">
+                                        <img src="~/images/favicon.png" width="50px" height="50px" alt="">
+                                        <h4 style="font-family:cursive; font-weight:bold">&nbsp; Distributor Portal</h4>
+                                    </div>
+
+                                    <div class="login-row row no-margin">
+                                        <label for=""><i class="fas fa-user"></i> User Id</label>
+                                        <input type="text" asp-for="UserName" class="form-control form-control-sm">
+                                        <span asp-validation-for="UserName" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="login-row row no-margin">
+                                        <label for=""><i class="fas fa-unlock-alt"></i> Password</label>
+                                        <input type="password" asp-for="Password" class="form-control form-control-sm">
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="login-row row forrr no-margin">
+                                        <p> <input type="checkbox"> Remember Me</p>
+                                    </div>
+
+                                    <div class="login-row btnroo row no-margin">
+                                        <button class="btn btn-primary btn-sm"><span id="Spinner" class="spinner-grow spinner-grow-sm"></span> Sign In</button>
+                                    </div>
+                                    <div class="login-row donroo row no-margin">
+                                        <p>Dont have an Account ? <a href="">Contact Administrator</a></p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyc">
+            <p>Designed by <a href="https://www.smarteyeapps.com/">www.smarteyeapps.com</a></p>
+        </div>*@
+
+    <!--<div class="d-flex flex-column flex-root">
         <div class="login login-2 login-signin-on d-flex flex-column flex-lg-row flex-column-fluid bg-white" id="kt_login">
             <div class="login-aside order-2 order-lg-1 d-flex flex-row-auto position-relative overflow-hidden">
                 <div class="d-flex flex-column-fluid flex-column justify-content-between py-9 px-7 py-lg-13 px-lg-35">
@@ -77,7 +191,7 @@
                                       data-ajax-complete="Complete"
                                       data-ajax="true"
                                       data-ajax-method="POST"
-                                      method="post" 
+                                      method="post"
                                       autocomplete="off">
                                     <input type="hidden" asp-for="UserName" id="UserName" />
                                     <div class="modal-content">
@@ -105,11 +219,11 @@
                                             <button type="submit" id="ChangePassword" value="ChangePassword" name="button" class="btn btn-primary">Save</button>
                                         </div>
                                     </div>
-                                </form>
-                                <!-- /.modal-content -->
-                            </div>
-                            <!-- /.modal-dialog -->
-                        </div>
+                                </form>-->
+    <!-- /.modal-content -->
+    <!--</div>-->
+    <!-- /.modal-dialog -->
+    <!--</div>
 
                         <div class="login-form login-forgot pt-11">
                         </div>
@@ -127,36 +241,37 @@
                 <div class="content-img d-flex flex-row-fluid bgi-no-repeat bgi-position-y-bottom bgi-position-x-center" style="background-image: url(/Images/19241.jpg); background-size:contain"></div>
             </div>
         </div>
-    </div>
-    <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
-    <script src="~/lib/plugins/toastr/toastr.min.js"></script>
-    @*<script src="~/Login/plugins.bundle9cd7.js?v=7.1.5"></script>
-            <script src="~/Login/prismjs.bundle9cd7.js?v=7.1.5"></script>
-            <script src="~/Login/scripts.bundle9cd7.js?v=7.1.5"></script>
-        <script src="~/Login/login-general9cd7.js?v=7.1.5"></script>*@
-    <script src="~/Pages/Common.js"></script>
-
-    <script>
-
-        function Submit() {
-            debugger
-            var form = event.target.form; // storing the form
-            $.validator.unobtrusive.parse(form);
-            if ($(form).valid()) {
-                if ($('#Password').val() == "Sami@123") {
-                    $('#UserName').val($('#UserId').val());
-                    $('#modal-default').modal('toggle');
-                    $('#modal-default').modal('show');
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                }
-                else {
-                    $(form).submit();
+    </div>-->
+    @*<script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
+        <script src="~/lib/plugins/toastr/toastr.min.js"></script>
+        <script src="~/Pages/Common.js"></script>
+        <script>
+            function Submit() {
+                debugger
+                var form = event.target.form; // storing the form
+                $.validator.unobtrusive.parse(form);
+                if ($(form).valid()) {
+                    if ($('#Password').val() == "Sami@123") {
+                        $('#UserName').val($('#UserId').val());
+                        $('#modal-default').modal('toggle');
+                        $('#modal-default').modal('show');
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                    }
+                    else {
+                        $(form).submit();
+                    }
                 }
             }
-        }
 
-    </script>
+        </script>*@
+
+    <script src="~/Login/jquery-3.2.1.min.js"></script>
+    <script src="~/Login/popper.min.js"></script>
+    <script src="~/Login/bootstrap.min.js"></script>
+    <script src="~/Login/jquery-scrolltofixed-min.js"></script>
+    <script src="~/Login/script.js"></script>
+    <script src="~/Pages/Common.js"></script>
 </body>
 </html>
