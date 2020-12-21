@@ -1,20 +1,15 @@
 /* =======================================================================
-Template Name: Dil Hospital
-Author:  SmartEye Adminpanel
+Template Name: Youtubers
+Author:  SmartEye Technologies
 Author URI: www.smarteyeapps.com
 Version: 1.0
 coder name:Prabin Raja
-Description: This Template is created for web template
+Description: This Template is created for Youtubers
 ======================================================================= */
-/* ===================================== Import Less ================================== */
-@font-face {
-  font-family: 'mouse-300';
-  src: url("../Login/RobotoSlab-Regular.ttf") format("truetype"); }
-@font-face {
-    font-family: 'mouse-500';
-    src: url("../Login/RobotoSlab-Bold.ttf") format("truetype");
-}
-/* ===================================== Basic CSS ================================== */
+/* ===================================== Import Variables ================================== */
+@import url(https://fonts.googleapis.com/css?family=Montserrat:300,400,600,700);
+@import url(https://fonts.googleapis.com/css?family=Arimo:300,400,400italic,700,700italic);
+/* ===================================== Basic CSS ==================================== */
 * {
   margin: 0px;
   padding: 0px;
@@ -85,27 +80,37 @@ p {
   padding: 0px; }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "mouse-500", Arial, Helvetica, sans-serif; }
+  font-family: "Open Sans", sans-serif;
+  color: #545454; }
 
 strong {
-  font-family: "mouse-500", Arial, Helvetica, sans-serif; }
+  font-family: "Open Sans", sans-serif; }
 
 body {
-  background-color: #f7f7ff !important;
-  font-family: "mouse-300", Arial, Helvetica, sans-serif;
-  color: #6A6A6A; }
+  background-color: #f1f1f1ad !important;
+  font-family: "Open Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: #6A6A6A;
+  overflow-x: hidden; }
 
 .session-title {
   padding: 30px;
-  margin: 0px; }
+  margin: 0px;
+  margin-bottom: 20px; }
   .session-title h2 {
     width: 100%;
-    text-align: center; }
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600; }
   .session-title p {
     max-width: 850px;
     text-align: center;
     float: none;
-    margin: auto; }
+    margin: auto;
+    font-size: .83rem;
+    margin-top: 15px; }
   .session-title span {
     float: right;
     font-style: italic; }
@@ -113,26 +118,52 @@ body {
 .inner-title {
   padding: 20px;
   padding-left: 0px;
-  margin-bottom: 30px; }
+  margin: 0px;
+  margin-bottom: 10px;
+  padding-bottom: 0px;
+  border-bottom: 1px solid #ccccccc4;
+  display: block;
+  padding-right: 0px; }
   .inner-title h2 {
     width: 100%;
     text-align: center;
-    font-size: 2rem;
-    font-family: "slab", Arial, Helvetica, sans-serif; }
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid #863dd9;
+    padding-bottom: 10px;
+    margin-bottom: 0px;
+    width: 300px; }
   .inner-title p {
     width: 100%;
     text-align: center; }
+  .inner-title .btn {
+    float: right;
+    margin-top: -38px;
+    font-weight: 600;
+    font-size: .8rem; }
 
 .page-nav {
-  padding: 40px;
+  background-size: 100%;
+  padding: 68px;
   text-align: center;
-  padding-top: 160px; }
+  background-color: #eaeaea; }
   .page-nav ul {
     float: none;
     margin: auto; }
+  @media screen and (max-width: 992px) {
+    .page-nav {
+      background-size: auto; } }
+  @media screen and (max-width: 767px) {
+    .page-nav {
+      padding-top: 100px; } }
+  @media screen and (max-width: 356px) {
+    .page-nav {
+      padding-top: 200px; } }
   .page-nav h2 {
-    font-size: 36px;
+    font-size: 28px;
     width: 100%;
+    font-weight: 700;
     color: #444; }
     @media screen and (max-width: 600px) {
       .page-nav h2 {
@@ -141,40 +172,45 @@ body {
     float: left;
     margin-right: 10px;
     margin-top: 10px;
-    font-size: 16px; }
+    font-size: 16px;
+    font-size: .93rem;
+    font-weight: 600;
+    color: #444; }
     .page-nav ul li i {
       width: 30px;
       text-align: center;
       color: #444; }
     .page-nav ul li a {
-      color: #444; }
+      color: #444;
+      font-size: .93rem;
+      font-weight: 600; }
 
 .btn-success {
-  background-color: #00ab9f;
-  border-color: #00ab9f; }
+  background-color: #51be78;
+  border-color: #51be78; }
   .btn-success:hover {
-    background-color: #00ab9f !important;
-    border-color: #00ab9f !important; }
+    background-color: #51be78 !important;
+    border-color: #51be78 !important; }
   .btn-success:active {
-    background-color: #00ab9f !important;
-    border-color: #00ab9f !important; }
+    background-color: #51be78 !important;
+    border-color: #51be78 !important; }
   .btn-success:focus {
-    background-color: #00ab9f !important;
-    border-color: #00ab9f !important;
+    background-color: #51be78 !important;
+    border-color: #51be78 !important;
     box-shadow: none !important; }
 
-.btn-info {
-  background-color: #4f6dcd;
-  border-color: #4f6dcd; }
-  .btn-info:hover {
-    background-color: #4f6dcd !important;
-    border-color: #4f6dcd !important; }
-  .btn-info:active {
-    background-color: #4f6dcd !important;
-    border-color: #4f6dcd !important; }
-  .btn-info:focus {
-    background-color: #4f6dcd !important;
-    border-color: #4f6dcd !important;
+.btn-primary {
+  background-color: #7d60d6;
+  border-color: #7d60d6; }
+  .btn-primary:hover {
+    background-color: #7d60d6 !important;
+    border-color: #7d60d6 !important; }
+  .btn-primary:active {
+    background-color: #7d60d6 !important;
+    border-color: #7d60d6 !important; }
+  .btn-primary:focus {
+    background-color: #7d60d6 !important;
+    border-color: #7d60d6 !important;
     box-shadow: none !important; }
 
 .btn {
@@ -183,7 +219,7 @@ body {
 
 .form-control:focus {
   box-shadow: none !important;
-  border: 2px solid  #00a8df; }
+  border: 0px; }
 
 .btn-light {
   background-color: #FFF;
@@ -194,121 +230,94 @@ body {
 
 .form-control:focus {
   box-shadow: none;
-  border: 2px solid #0d7a40 !important; }
+  border: 0px; }
 
 .form-control {
-  background-color: #F8F8F8;
+  background-color: #ffffff;
   margin-bottom: 20px; }
   .form-control:focus {
     background-color: #FFF;
     border-color: #CCC; }
 
 .container {
-  max-width: 1100px; }
+  max-width: 1170px; }
   @media screen and (max-width: 575px) {
     .container {
-      padding: 20px 30px; } }
+      padding: 10px 15px; } }
 
-/* ===================================== Header CSS ================================== */
-.login-box {
-  background-color: #FFF;
-  float: none;
-  margin: auto;
-  box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
-  border-radius: 5px;
-  margin-top: 8%; }
-  @media screen and (max-width: 575px) {
-    .login-box {
-      margin-top: 0px; } }
-  @media screen and (max-width: 767px) {
-    .login-box {
-      margin-bottom: 60px; } }
-
-.log-det {
-  padding: 20px; }
-  .log-det .small-logo {
-    display: flex;
-    align-items: center; }
-    .log-det .small-logo i {
-      font-size: 32px;
-      margin-right: 10px; }
-  .log-det h2 {
-    margin-top: 20px;
-    width: 100%;
-    text-align: center; }
-  .log-det ul {
-    float: none;
-    margin: auto;
-    width: 200px; }
-    .log-det ul li {
-      float: left;
-      padding: 10px; }
-      .log-det ul li i {
-        padding: 10px;
-        border: 1px solid #CCC;
-        width: 40px;
-        height: 40px;
-        text-align: center;
-        border-radius: 50px; }
-  .log-det p {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-    margin-top: 10px; }
-  .log-det .small-info {
-    font-size: 14px; }
-  .log-det .text-box-cont {
-    max-width: 300px;
-    float: none;
-    margin: auto; }
-    .log-det .text-box-cont .input-group .input-group-prepend span {
-      background-color: #F8F8F8;
-      border-radius: 0px;
-      border-right: 0px; }
-    .log-det .text-box-cont .input-group .input-group-prepend i {
-      color: #777474; }
-    .log-det .text-box-cont .input-group input {
-      border-left: 0px;
-      border-radius: 0px; }
-    .log-det .text-box-cont .btn {
-      border-radius: 50px;
-      padding: 10px 30px;
-      margin: auto;
-      margin-bottom: 10px;
-      font-size: 13px; }
-
-.box-de {
-  background-color: rgba(0, 171, 159, 0.73);
-  display: flex; }
-  .box-de .ditk-inf {
-    margin: auto;
-    align-items: center;
-    text-align: center;
-    color: #FFF; }
-    .box-de .ditk-inf p {
-      margin-top: 15px; }
-    .box-de .ditk-inf .btn-outline-light {
-      border-radius: 50px;
+/* ===================================== Login Page Design CSS ==================================== */
+.form-login-body .top-menu {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+  background-color: #FFF; }
+  .form-login-body .top-menu .sup ul li {
+    float: right;
+    padding: 15px; }
+    .form-login-body .top-menu .sup ul li .btn {
       box-shadow: none;
-      padding: 5px 20px;
-      margin-top: 25px; }
-  .box-de .small-logo {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    color: #FFF; }
-    .box-de .small-logo i {
-      font-size: 22px;
-      margin-right: 5px; }
+      width: 115px;
+      font-weight: 600;
+      border-radius: 50px; }
+      .form-login-body .top-menu .sup ul li .btn i {
+        margin-right: 5px; }
+    .form-login-body .top-menu .sup ul li .btn-outline-primary {
+      color: #7d60d6;
+      border-color: #7d60d6;
+      padding-right: 20px;
+      padding-left: 20px;
+      font-weight: 600; }
+  .form-login-body .top-menu .logo img {
+    max-width: 210px;
+    margin-top: 3px; }
+.form-login-body .login-body .login-text {
+  padding-top: 25%;
+  max-width: 350px;
+  float: none;
+  margin: auto; }
   @media screen and (max-width: 767px) {
-    .box-de {
-      padding: 30px; } }
+    .form-login-body .login-body .login-text {
+      padding-top: 13px; } }
+  .form-login-body .login-body .login-text h4 {
+    font-weight: 600;
+    font-size: 1.3rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px; }
+  .form-login-body .login-body .login-text .form-control {
+    border-radius: 6px; }
+  .form-login-body .login-body .login-text label {
+    float: right;
+    text-align: right;
+    margin-bottom: 15px;
+    font-size: .85rem;
+    font-weight: 600; }
+  .form-login-body .login-body .login-text .btn {
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 600; }
+  .form-login-body .login-body .login-text p {
+    font-weight: 600;
+    font-size: .87rem;
+    margin-top: 15px;
+    text-align: center; }
+  .form-login-body .login-body .login-text a {
+    color: cornflowerblue; }
+.form-login-body .login-body .login-img {
+  text-align: center; }
+  .form-login-body .login-body .login-img img {
+    max-width: 70%;
+    padding-top: 7%; }
+.form-login-body .copy {
+  font-size: .83rem;
+  color: #a7a7a7; }
+  .form-login-body .copy a {
+    color: #a7a7a7; }
 
-.sup {
-  margin-top: 40px; }
-
+/* ===================================== Responsive Style CSS ==================================== */
 @media screen and (max-width: 767px) {
-  .sup-oi {
-    margin-top: 40px !important; } }
+  .detailsh {
+    padding-top: 0px; }
+
+  .form-login-body .login-desk .loginform .login-det {
+    padding-bottom: 45px; } }
 
 /*# sourceMappingURL=style.css.map */
