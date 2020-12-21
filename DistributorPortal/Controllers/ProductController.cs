@@ -1,5 +1,7 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
@@ -52,7 +54,38 @@ namespace ProductPortal.Controllers
         public ActionResult ProductMapping()
         {
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
-            return View("ProductMapping", productDetails);
+            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
+            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y=>y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+            return View("ProductMapping", productMasters);
+        }
+        [HttpPost]
+        public ActionResult ProductDetail(ProductDetail model)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                if (model.Id > 0)
+                {
+                    _ProductDetailBLL.UpdateProductDetail(model);
+                }
+                else
+                {
+                    _ProductDetailBLL.AddProductDetail(model);
+                }
+
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
+                return Json(new { data = jsonResponse });
+            }
         }
     }
 }

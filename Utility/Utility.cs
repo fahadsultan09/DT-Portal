@@ -33,4 +33,9 @@
         Reject = 5,
         Complete = 6
     }
+    public enum ProductVisibility
+    { 
+        Visible = 1,
+        Hide = 2
+    }
 }

@@ -36,8 +36,7 @@ namespace DistributorPortal
             });
 
             services.AddDbContextPool<DistributorPortalDbContext>(option => option.UseLazyLoadingProxies().UseMySQL(Configuration.GetConnectionString("DistributorPortalDbContext")));
-            services.AddMvc(option => option.EnableEndpointRouting = false)
-                .AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
+            services.AddMvc(option => option.EnableEndpointRouting = false).AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<Configuration, Configuration>();

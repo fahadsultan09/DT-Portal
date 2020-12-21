@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Utility;
 
 namespace Models.Application
 {
@@ -11,11 +12,11 @@ namespace Models.Application
         public int ProductMasterId { get; set; }
         [ForeignKey("ProductMasterId")]
         public virtual ProductMaster ProductMaster { get; set; }
-        public int Visibility { get; set; }
-        public string PlantLocation { get; set; }
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
+        public ProductVisibility ProductVisibilityId { get; set; }
+        public string PlantLocation { get; set; }
         public string WTaxRate { get; set; }
         public int Factor { get; set; }
         public string ParentDistributor { get; set; }
