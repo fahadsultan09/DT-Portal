@@ -80,8 +80,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Reset Password</label>
-                                                    <div class="col-lg-8">
-                                                        <a onclick="ResetPassword(this);" id="@Model.Id" class="btn btn-danger btn-sm" disabled="@(Model.Id == 0 ? "disabled" : null)">
+                                                    <div class="col-lg-8" disabled="@(Model.Id == 0 ? "disabled" : null)">
+                                                        <a onclick="ResetPassword(this);" id="@Model.Id" class="btn btn-danger btn-sm">
                                                             <strong>Reset Password</strong>
                                                         </a>
                                                     </div>
