@@ -20,7 +20,7 @@ namespace DistributorPortal.Controllers
     public class LoginController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private SessionHelper sessionHelper;
+        private readonly SessionHelper sessionHelper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LoginBLL login;
         private readonly UserBLL _UserBLL;
@@ -29,6 +29,7 @@ namespace DistributorPortal.Controllers
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = HhttpContextAccessor;
+            sessionHelper = new SessionHelper(_httpContextAccessor);
             login = new LoginBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
         }
@@ -41,7 +42,6 @@ namespace DistributorPortal.Controllers
         public JsonResult Index(User model)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            sessionHelper = new SessionHelper(_httpContextAccessor);
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
                 jsonResponse.Status = true;

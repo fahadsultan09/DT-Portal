@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-
         public int UpdateProductMaster(ProductMaster module)
         {
             var item = _unitOfWork.GenericRepository<ProductMaster>().GetById(module.Id);
@@ -46,7 +46,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Update(item);
             return _unitOfWork.Save();
         }
-
         public int DeleteProductMaster(int id)
         {
             var item = _unitOfWork.GenericRepository<ProductMaster>().GetById(id);
@@ -54,15 +53,23 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Delete(item);
             return _unitOfWork.Save();
         }
-
         public ProductMaster GetProductMasterById(int id)
         {
             return _unitOfWork.GenericRepository<ProductMaster>().GetById(id);
         }
-
         public List<ProductMaster> GetAllProductMaster()
         {
             return _unitOfWork.GenericRepository<ProductMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+        }
+        public SelectList DropDownProductList()
+        {
+            var selectList = GetAllProductMaster().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName.Trim()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
         }
     }
 }

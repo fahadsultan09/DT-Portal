@@ -1,4 +1,5 @@
-﻿using Models.Common;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,5 +19,9 @@ namespace Models.Application
         public decimal TotalValue { get; set; }
         public OrderStatus Status { get; set; }
         public string Comments { get; set; }
+        [NotMapped]
+        public List<OrderDetail> OrderDetail { get; set; }
+        [NotMapped]
+        public SelectList ProductList { get; set; }
     }
 }

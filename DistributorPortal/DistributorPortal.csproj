@@ -38,6 +38,7 @@
     <Folder Include="Views\City\" />
     <Folder Include="Views\Distributor\" />
     <Folder Include="Views\Designation\" />
+    <Folder Include="Views\Order\" />
     <Folder Include="Views\User\" />
     <Folder Include="Views\SubRegion\" />
     <Folder Include="Views\Region\" />

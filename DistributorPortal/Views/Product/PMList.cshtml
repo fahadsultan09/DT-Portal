@@ -17,6 +17,8 @@
                 <table id="example1" class="table table-bordered table-striped" style="width:100%">
                     <thead>
                         <tr>
+                            <td class="d-none"></td>
+                            <td class="d-none"></td>
                             <th>Code</th>
                             <th>Product Name </th>
                             <th>Pack Size </th>
@@ -43,8 +45,8 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td class="d-none"><input type="text" asp-for="@item.Id" class="form-control" />td>
-                                <td class="d-none"><input type="text" asp-for="@item.ProductDetail.Id" class="form-control" />td>
+                                <td class="d-none"><input type="text" asp-for="@item.Id" class="form-control" /></td>
+                                <td class="d-none"><input type="text" asp-for="@item.ProductDetail.Id" class="form-control" /></td>
                                 <td>@item.PackCode</td>
                                 <td>@item.ProductName</td>
                                 <td>@item.PackSize</td>
@@ -114,7 +116,7 @@
             ReturnItemCategory: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
         };
 
-        $.post(window.location.origin + "/Product/ProductDetail", { model: obj },
+        $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },
             function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.SaveSuccessfully' });

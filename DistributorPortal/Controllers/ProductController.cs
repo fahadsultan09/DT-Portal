@@ -59,7 +59,7 @@ namespace ProductPortal.Controllers
             return View("ProductMapping", productMasters);
         }
         [HttpPost]
-        public ActionResult ProductDetail(ProductDetail model)
+        public ActionResult UpdateProductDetail(ProductDetail model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -87,5 +87,12 @@ namespace ProductPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+        [HttpGet]
+        public JsonResult GetProduct(int Id) 
+        {
+             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(Id);
+            return Json(new { productMaster });
+        }
+
     }
 }

@@ -32,23 +32,22 @@
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box">
-                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-shopping-cart"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Orders </span>
-                            <span class="info-box-number">
-                                24
-                            </span>
+                            <span class="info-box-text">Total in Process Orders</span>
+                            <span class="info-box-number">45</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
-
+                        <span class="info-box-icon bg-danger elevation-1">
+                            <i class="fas fa-money-bill-alt"></i>
+                        </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Payment Verified</span>
-                            <span class="info-box-number">4,110</span>
+                            <span class="info-box-text">Current Year Payment</span>
+                            <span class="info-box-number">1,10,99,000</span>
                         </div>
                     </div>
                 </div>
@@ -56,11 +55,12 @@
 
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
+                        <span class="info-box-icon bg-success elevation-1">
+                            <i class="fas fa-money-bill-alt"></i>
+                        </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Product Sale</span>
-                            <span class="info-box-number">760</span>
+                            <span class="info-box-text">Unverified Payment</span>
+                            <span class="info-box-number">500,000</span>
                         </div>
                     </div>
                 </div>
@@ -69,8 +69,8 @@
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Order in Process</span>
-                            <span class="info-box-number">2,000</span>
+                            <span class="info-box-text">Orders Return</span>
+                            <span class="info-box-number">25</span>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Month Wise Payment Status</h5>   
+                            <h5 class="card-title">Month Wise Payment Status</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -110,16 +110,16 @@
                                     </p>
                                     <div class="progress-group">
                                         Verified Payment
-                                        <span class="float-right"><b>160</b>/200</span>
+                                        <span class="float-right"><b>9000000</b>/95000000</span>
                                         <div class="progress progress-sm">
-                                            <div class="progress-bar bg-success" style="width: 80%"></div>
+                                            <div class="progress-bar bg-success" style="width: 95%"></div>
                                         </div>
                                     </div>
                                     <div class="progress-group">
                                         Un Verified Payment
-                                        <span class="float-right"><b>310</b>/400</span>
+                                        <span class="float-right"><b>500000</b>/95000000</span>
                                         <div class="progress progress-sm">
-                                            <div class="progress-bar bg-danger" style="width: 75%"></div>
+                                            <div class="progress-bar bg-danger" style="width: 5%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -139,8 +139,8 @@
                                 <table class="table m-0">
                                     <thead>
                                         <tr>
-                                            <th>Order ID</th>
-                                            <th>Distributor</th>
+                                            <th>Order No</th>
+                                            <th>Amount</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -148,16 +148,40 @@
                                     <tbody>
                                         <tr>
                                             <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td>99,990</td>
+                                            <td><span class="badge badge-danger">Pending</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                                            <td>Samsung Smart TV</td>
-                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>70,711</td>
+                                            <td><span class="badge badge-success">Closed</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>99,990</td>
+                                            <td><span class="badge badge-warning">Onhold</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>70,711</td>
+                                            <td><span class="badge badge-warning">Onhold</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>70,711</td>
+                                            <td><span class="badge badge-success">Closed</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -181,28 +205,55 @@
                                 <table class="table m-0">
                                     <thead>
                                         <tr>
-                                            <th>Distributor</th>
+                                            <th>Payment Id</th>
                                             <th>Payment Mode</th>
-                                            <th>Ammount</th>
+                                            <th>Amount</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                                            <td>Call of Duty IV</td>
-                                            <td>250,000</td>
-                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
+                                            <td>Check</td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                                            <td>Samsung Smart TV</td>
-                                            <td>250,000</td>
-                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td><a href="pages/examples/invoice.html">1848</a></td>
+                                            <td>Online</td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-danger">unverified</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
+                                            <td>RTGS</td>
+                                            <td>75,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">1848</a></td>
+                                            <td>Online</td>
+                                            <td>175,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
+                                            <td>Check</td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-danger">unverified</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -212,7 +263,7 @@
                             </div>
                         </div>
                         <div class="card-footer clearfix">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Payments</a>
                         </div>
                     </div>
                 </div>
@@ -221,7 +272,7 @@
     </section>
 </div>
 
-@section scripts{ 
+@section scripts{
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
             new Chart(document.getElementById("lineChart"), {
@@ -280,7 +331,7 @@
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 datasets: [
                     {
-                        label: 'Complete',
+                        label: 'Verified',
                         backgroundColor: 'rgba(60,141,188,0.9)',
                         borderColor: 'rgba(60,141,188,0.8)',
                         pointRadius: false,
@@ -288,10 +339,10 @@
                         pointStrokeColor: 'rgba(60,141,188,1)',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(60,141,188,1)',
-                        data: [28, 48, 40, 19, 86, 27, 90, 43, 55, 80, 20, 13]
+                        data: [1000000, 1250000, 500000, 1000000, 1250000, 500000, 500000, 500000, 1000000, 750000, 0, 500000]
                     },
                     {
-                        label: 'Pending',
+                        label: 'Unverified',
                         backgroundColor: 'rgba(210, 214, 222, 1)',
                         borderColor: 'rgba(210, 214, 222, 1)',
                         pointRadius: false,
@@ -299,10 +350,10 @@
                         pointStrokeColor: '#c1c7d1',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(220,220,220,1)',
-                        data: [65, 59, 80, 81, 56, 55, 40, 19, 86, 27, 90, 58]
+                        data: [1000000, 1250000, 750000, 250000, 1250000, 750000, 250000, 1000000, 1000000, 750000, 500000, 500000]
                     },
                 ]
-            } 
+            }
 
             var barChartCanvas = $('#barChart').get(0).getContext('2d')
             var barChartData = jQuery.extend(true, {}, areaChartData)
