@@ -1,17 +1,15 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
-using BusinessLogicLayer.GeneralSetup;
-using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
-using Models.UserRights;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -19,7 +17,7 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DistributorBLL _DistributorBLL;
-        public DistributorController(IUnitOfWork unitOfWork)
+        public DistributorController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _DistributorBLL = new DistributorBLL(_unitOfWork);

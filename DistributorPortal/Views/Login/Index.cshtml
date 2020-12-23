@@ -10,79 +10,75 @@
     <meta name="description" content="Login page example" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700" rel="stylesheet">
-
     <link rel="stylesheet" href="~/Login/bootstrap.min.css">
-    <link rel="stylesheet" href="~/Login/fontawsom-all.min.css">
+    <link rel="stylesheet" href="~/Login/all.min.css">
+    <link rel="stylesheet" href="~/Login/animate.css">
     <link rel="stylesheet" type="text/css" href="~/Login/style.css" />
-
-    <link rel="stylesheet" href="~/lib/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <link href="~/lib/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.css" rel="stylesheet" />
-
-    <link href="~/lib/plugins/toastr/toastr.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-
-    <!-- jquery unobtrusive -->
-    <script src="~/lib/plugins/jquery/jquery.js"></script>
-    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <link href="~/lib/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/lib/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <script src="~/Login/jquery-3.2.1.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
 </head>
-<body>
-    <div class="container-fluid ">
-        <div class="container ">
-            <div class="row ">
-
-                <div class="col-sm-10 login-box">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-5 box-de" style="background-color: #673AB7">
-                            <div class="small-logo">
-                                <img src="~/images/favicon.png" width="50" height="50" alt=""> SAMI Pharmaceuticals
-                            </div>
-                            <div class="ditk-inf sup-oi">
-                                <h2 class="w-100" style="font-family:cursive; font-weight:bold">Distributor Portal</h2>
-                                <p>Simply login to your account by clicking the login Button</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-8 col-md-7 log-det">
-
-                            <h2>Login</h2>
-                            <div class="row">
-                                <ul>
-                                    <li><i class="fab fa-google"></i></li>
-                                    <li><i class="fab fa-twitter"></i></li>
-                                    <li><i class="fab fa-linkedin-in"></i></li>
-                                </ul>
-                            </div>
-                            <div class="row">
-                                <p class="small-info">or use your User Id account</p>
-                            </div><div class="text-box-cont">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" placeholder="User Id" aria-label="Username" aria-describedby="basic-addon1">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
-                                    </div>
-                                    <input type="password" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
-                                </div>
-                                <div class="row">
-                                    <p class="forget-p">Forget Password ?</p>
-                                </div>
-                                <div class="input-group center mb-3">
-                                    <button class="btn btn-success btn-round">SIGN IN</button>
-                                </div>
-                            </div>
-                        </div>
-
+<body class="form-login-body">
+    <div class="container-fluid">
+        <div class="top-menu">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-1 logo">
+                        <img src="~/Images/favicon.png" class="pull-right" alt="">
+                    </div>
+                    <div class="col-md-3 sup" style="margin-top: 5px">
+                        <h3><strong>SAMI</strong> Pharmaceuticals</h3>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="login-body container-fluid">
+            <div class="container">
+                <form asp-controller="Login"
+                      asp-action="Index"
+                      id="frmUser"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="Complete"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      method="post"
+                      autocomplete="off">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="login-text">
+                                <h4>Login to Distributor Portal</h4>
+                                <span asp-validation-for="UserName" style="font-size:12px" class="text-danger"></span>
+                                <input type="text" asp-for="UserName" placeholder="Enter Username" class="form-control">
+                                <span asp-validation-for="Password" style="font-size:12px" class="text-danger"></span>
+                                <input type="password" asp-for="Password" placeholder="Enter Password" class="form-control">
+                                <label class="w-100" for="">Forget Password?</label>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Loading...</span>
+                                    Sign In
+                                </button>
+
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="login-img">
+                                <img src="~/Images/login.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="copy"><p>Designed by <a href="#">SAMI Pharmaceuticals</a></p></div>
+            </div>
+        </div>
     </div>
 
+
+    <script src="~/Login/popper.min.js"></script>
+    <script src="~/Login/bootstrap.min.js"></script>
+    <script src="~/Login/script.js"></script>
     @*<div class="container-fluid">
             <div class="container">
                 <div class="col-xl-10 col-lg-11 login-container">
@@ -266,12 +262,10 @@
             }
 
         </script>*@
-
-    <script src="~/Login/jquery-3.2.1.min.js"></script>
-    <script src="~/Login/popper.min.js"></script>
-    <script src="~/Login/bootstrap.min.js"></script>
-    <script src="~/Login/jquery-scrolltofixed-min.js"></script>
-    <script src="~/Login/script.js"></script>
+    <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/plugins/toastr/toastr.min.js"></script>
     <script src="~/Pages/Common.js"></script>
+
 </body>
 </html>
