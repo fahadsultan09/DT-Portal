@@ -11,7 +11,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
+    <PackageReference Include="NwRfcNet" Version="0.7.0" />
     <PackageReference Include="SapNwRfc" Version="1.0.0.76" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

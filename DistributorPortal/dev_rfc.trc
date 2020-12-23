@@ -1,0 +1,42 @@
+
+**** Trace file opened at 2020-12-22, 16:22:09 Pakistan Standard Time
+RFC Library Release: 721 Patch Level 53, Compiled on Oct 10 2019 00:25:57
+ CPIC library: 721.2019.03.14 version 3, NI library: 40, Kernel Release: 721 Patch Level 0
+ Current working directory: D:\SAMIProjects\Distributor Portal\DistributorPortal\DistributorPortal, Program: iisexpress
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 61 Step 4), Operating_system: Windows NT 10.0
+ Hostname: L049ITD0097, IP address: 10.0.250.168, IPv6 address: 10.0.250.168
+
+Error during connect: 
+LOCATION    CPIC (TCP/IP) on local host L049ITD0097 with Unicode
+ERROR       partner '10.0.3.16:3300' not reached
+TIME        Tue Dec 22 16:22:09 2020
+RELEASE     721
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3289
+DETAIL      NiPConnect2: 10.0.3.16:3300
+SYSTEM CALL connect
+ERRNO       10061
+ERRNO TEXT  WSAECONNREFUSED: Connection refused
+COUNTER     2
+
+
+Error during connect: 
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       partner '10.0.3.16:3300' not reached
+TIME        Tue Dec 22 16:28:40 2020
+RELEASE     721
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3289
+DETAIL      NiPConnect2: 10.0.3.16:3300
+SYSTEM CALL connect
+ERRNO       10061
+ERRNO TEXT  WSAECONNREFUSED: Connection refused
+COUNTER     4
+
+

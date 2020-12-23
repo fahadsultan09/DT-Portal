@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Models.ApplicationContext;
+using SapNwRfc.Pooling;
 using System.Linq;
 using Utility.HelperClasses;
 
@@ -45,6 +46,9 @@ namespace DistributorPortal
                 options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            services.AddSingleton<ISapConnectionPool>(_ => new SapConnectionPool(Configuration.GetValue<string>("SAPSettings:SAPConnection")));
+            services.AddScoped<ISapPooledConnection, SapPooledConnection>();
         }
 
         private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
