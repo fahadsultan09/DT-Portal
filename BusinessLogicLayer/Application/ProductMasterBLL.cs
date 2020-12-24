@@ -16,7 +16,7 @@ namespace BusinessLogicLayer.Application
         {
             _unitOfWork = unitOfWork;
         }
-        public int AddProductMaster(ProductMaster module)
+        public int Add(ProductMaster module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-        public int UpdateProductMaster(ProductMaster module)
+        public int Update(ProductMaster module)
         {
             var item = _unitOfWork.GenericRepository<ProductMaster>().GetById(module.Id);
             item.ProductName = module.ProductName;
@@ -46,7 +46,7 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Update(item);
             return _unitOfWork.Save();
         }
-        public int DeleteProductMaster(int id)
+        public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<ProductMaster>().GetById(id);
             item.IsDeleted = true;

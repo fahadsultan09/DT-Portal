@@ -5,6 +5,7 @@ using DataAccessLayer.WorkProcess;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using System;
@@ -17,12 +18,12 @@ namespace UserPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserBLL _UserBLL;
-        private readonly Configuration _Configuration;
-        public UserController(IUnitOfWork unitOfWork, Configuration configuration)
+        private readonly IConfiguration _IConfiguration;
+        public UserController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _UserBLL = new UserBLL(_unitOfWork);
-            _Configuration = configuration;
+            _IConfiguration = configuration;
         }
         // GET: User
         public ActionResult Index()
@@ -42,9 +43,12 @@ namespace UserPortal.Controllers
         public JsonResult SaveEdit(User model)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             try
             {
                 ModelState.Remove("Id");
+                ModelState.Remove("Password");
+                ModelState.Remove("ConfirmPassword");
                 if (!ModelState.IsValid)
                 {
                     jsonResponse.Status = false;
@@ -63,7 +67,7 @@ namespace UserPortal.Controllers
                         }
                         else
                         {
-                            model.Password = EncryptDecrypt.Encrypt(_Configuration.ResetPassword);
+                            model.Password = EncryptDecrypt.Encrypt(password);
                             _UserBLL.AddUser(model);
                             jsonResponse.Status = true;
                             jsonResponse.Message = NotificationMessage.SaveSuccessfully;
@@ -127,8 +131,8 @@ namespace UserPortal.Controllers
         {
             try
             {
-                string password = EncryptDecrypt.Encrypt(_Configuration.ResetPassword);
-                _UserBLL.ResetPassword(id, password);
+                string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
+                _UserBLL.ResetPassword(id, EncryptDecrypt.Encrypt(password));
                 return Json(new { Result = true });
             }
             catch (Exception ex)

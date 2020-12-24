@@ -23,5 +23,7 @@ namespace Models.Application
         public int Discount { get; set; }
         [NotMapped]
         public ProductDetail ProductDetail { get; set; }
+        [NotMapped]
+        public bool IsRowDeleted { get; set; }
     }
 }

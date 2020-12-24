@@ -134,8 +134,8 @@ namespace DistributorPortal.Controllers
                 model.IsActive = true;
             }
             model.RegionList = new RegionBLL(_unitOfWork).DropDownRegionList(model.RegionId);
-            model.SubRegionList = new SubRegionBLL(_unitOfWork).DropDownSubRegionList(model.RegionId, model.SubRegionId);
-            model.CityList = new CityBLL(_unitOfWork).DropDownCityList(model.SubRegionId, model.CityId);
+            //model.SubRegionList = new SubRegionBLL(_unitOfWork).DropDownSubRegionList(model.RegionId, model.SubRegionId);
+            //model.CityList = new CityBLL(_unitOfWork).DropDownCityList(model.SubRegionId, model.CityId);
             return model;
         }
 

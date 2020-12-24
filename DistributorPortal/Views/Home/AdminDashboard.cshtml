@@ -129,12 +129,12 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="4000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" class="knob" value="4000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#932ab6" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="2000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" class="knob" value="2000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#00a65a" readonly="readonly" disabled="disabled">
 
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
@@ -144,7 +144,7 @@
                             <div class="row">
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="1000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    <input type="text" class="knob" value="1000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#39CCCC" readonly="readonly" disabled="disabled">
 
                                     <div class="knob-label">Outstanding Balance</div>
                                 </div>
@@ -167,27 +167,30 @@
                         <div class="card-body">
                             <div class="row">
                                 <!-- ./col -->
-                                <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="90" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#f56954">
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="2" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Approved</div>
                                 </div>
-                                <!-- ./col -->
-                                <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="5" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#00c0ef">
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="1" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#00c0ef">
 
                                     <div class="knob-label">Onhold</div>
                                 </div>
-                                <!-- ./col -->
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="1" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#39CCCC">
+
+                                    <div class="knob-label">Reject</div>
+                                </div>
                             </div>
                             <div class="row">
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="90" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="44" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#00a65a">
                                     <div class="knob-label">Closed</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="20" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="3" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#932ab6">
 
                                     <div class="knob-label">Reject</div>
                                 </div>
@@ -237,7 +240,7 @@
                     <div class="card">
                         <div class="card-header border-0">
                             <h2 class="card-title"><strong>Distributor</strong></h2><br />
-                            <small>Top ten Distributors</small>
+                            <small>Top ten Distributors by Orders</small>
                         </div>
                         <div class="card-body table-responsive p-0">
                             <table class="table table-striped table-valign-middle">
@@ -280,6 +283,56 @@
                     </div>
                     <!-- /.card -->
                 </div>
+                <div class="col-lg-6">
+                    <!-- /.card -->
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <h2 class="card-title"><strong>Distributor</strong></h2><br />
+                            <small>Top ten Distributors By Payments</small>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-striped table-valign-middle">
+                                <thead>
+                                    <tr>
+                                        <th>S.No.</th>
+                                        <th>Distributor Name</th>
+                                        <th>Payents</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Ammaad Medicose - KARACHI</td>
+                                        <td>11,00,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Wali Medicine Co - LAHORE</td>
+                                        <td>99,99,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>AB Pharma - ISLAMABAD</td>
+                                        <td>55,55,555</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Khan Medicine Company - PESHAWER</td>
+                                        <td>55,55,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>Khan Agencies - QUETTA</td>
+                                        <td>44,00,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-6">
                     <!-- /.card -->
                     <div class="card">

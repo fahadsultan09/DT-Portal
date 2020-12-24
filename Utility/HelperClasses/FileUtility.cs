@@ -14,7 +14,6 @@ namespace Utility.HelperClasses
                 Directory.CreateDirectory(path);
             }
         }
-
         public static List<string> GetFilesPath(string path)
         {
             List<string> filespath = new List<string>();
@@ -24,7 +23,6 @@ namespace Utility.HelperClasses
             }
             return filespath;
         }
-
         public static void DeleteFilesFromPath(string path)
         {
             CreateDirectory(path);
@@ -35,7 +33,6 @@ namespace Utility.HelperClasses
             }
             Directory.Delete(path);
         }
-
         public static Tuple<bool, string> UploadFile(IFormFile file, string FolderName, string FolderPath)
         {
             try
@@ -59,6 +56,5 @@ namespace Utility.HelperClasses
             }
 
         }
-
     }
 }

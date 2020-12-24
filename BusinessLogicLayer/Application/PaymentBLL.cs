@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.Application
         {
             _unitOfWork = unitOfWork;
         }
-        public int AddPaymentMaster(PaymentMaster module)
+        public int Add(PaymentMaster module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public int UpdatePaymentMaster(PaymentMaster module)
+        public int Update(PaymentMaster module)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(module.Id);
             item.IsActive = module.IsActive;
@@ -34,7 +34,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public int DeletePaymentMaster(int id)
+        public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
             item.IsDeleted = true;

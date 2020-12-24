@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.Application
         {
             _unitOfWork = unitOfWork;
         }
-        public int AddOrderMaster(OrderMaster module)
+        public int Add(OrderMaster module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public int UpdateOrderMaster(OrderMaster module)
+        public int Update(OrderMaster module)
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(module.Id);
             item.IsActive = module.IsActive;
@@ -34,7 +34,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public int DeleteOrderMaster(int id)
+        public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(id);
             item.IsDeleted = true;

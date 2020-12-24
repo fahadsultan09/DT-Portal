@@ -41,11 +41,11 @@ namespace ProductPortal.Controllers
             {
                 if (ProductCodes.Contains(item.SAPProductCode))
                 {
-                    _ProductMasterBLL.UpdateProductMaster(item);
+                    _ProductMasterBLL.Update(item);
                 }
                 else
                 {
-                    _ProductMasterBLL.AddProductMaster(item);
+                    _ProductMasterBLL.Add(item);
                 }
             }
             return PartialView("List", _ProductMasterBLL.GetAllProductMaster());

@@ -40,7 +40,7 @@
                 <form asp-controller="Login"
                       asp-action="Index"
                       id="frmUser"
-                      data-ajax-success="OnSuccess"
+                      data-ajax-success="OnLoginSuccess"
                       data-ajax-complete="Complete"
                       data-ajax="true"
                       data-ajax-method="POST"
@@ -51,16 +51,16 @@
                             <div class="login-text">
                                 <h4>Login to Distributor Portal</h4>
                                 <span asp-validation-for="UserName" style="font-size:12px" class="text-danger"></span>
-                                <input type="text" asp-for="UserName" placeholder="Enter Username" class="form-control">
+                                <input type="text" asp-for="UserName" id="UserId" placeholder="Enter Username" class="form-control">
                                 <span asp-validation-for="Password" style="font-size:12px" class="text-danger"></span>
                                 <input type="password" asp-for="Password" placeholder="Enter Password" class="form-control">
-                                <label class="w-100" for="">Forget Password?</label>
+                                <a href="#" id="ForgotPassword">Forgot password?</a>
+                                <p id="error" class="text-danger"></p>
                                 <button type="submit" class="btn btn-primary">
                                     <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
                                     <span class="sr-only">Loading...</span>
                                     Sign In
                                 </button>
-
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -75,6 +75,45 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <form asp-controller="Login"
+                  asp-action="ChangePassword"
+                  id="frmUser"
+                  data-ajax-success="OnSuccess"
+                  data-ajax-complete="Complete"
+                  data-ajax="true"
+                  data-ajax-method="POST"
+                  method="post"
+                  autocomplete="off">
+                <input type="hidden" asp-for="UserName" id="UserName" />
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="text-center">
+                            <h6 class="">Change default password before proceeding</h6>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="text" asp-for="Password" id="Password" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Password" autocomplete="off" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" asp-for="ConfirmPassword" id="ConfirmPassword" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Confirm Password" autocomplete="off" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" id="ChangePassword" value="ChangePassword" name="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="~/Login/popper.min.js"></script>
     <script src="~/Login/bootstrap.min.js"></script>
@@ -238,30 +277,66 @@
             </div>
         </div>
     </div>-->
-    @*<script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
-        <script src="~/lib/plugins/toastr/toastr.min.js"></script>
-        <script src="~/Pages/Common.js"></script>
-        <script>
-            function Submit() {
-                debugger
-                var form = event.target.form; // storing the form
-                $.validator.unobtrusive.parse(form);
-                if ($(form).valid()) {
-                    if ($('#Password').val() == "Sami@123") {
-                        $('#UserName').val($('#UserId').val());
-                        $('#modal-default').modal('toggle');
-                        $('#modal-default').modal('show');
-                        event.preventDefault();
-                        event.stopImmediatePropagation();
-                    }
-                    else {
-                        $(form).submit();
-                    }
-                }
-            }
+    <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/plugins/toastr/toastr.min.js"></script>
+    <script src="~/Pages/Common.js"></script>
+    <script>
 
-        </script>*@
+        $(document).ready(function () {
+
+            $('#ForgotPassword').on('click', function () {
+                $('.text-danger').empty();
+                $('#error').text('Contact to administrator');
+            })
+
+        });
+
+        //function Submit() {
+        //    debugger
+        //    var form = event.target.form; // storing the form
+        //    $.validator.unobtrusive.parse(form);
+        //    if ($(form).valid()) {
+        //        if ($('#Password').val() == "Sami@123") {
+        //            $('#UserName').val($('#UserId').val());
+        //            $('#modal-default').modal('toggle');
+        //            $('#modal-default').modal('show');
+        //            event.preventDefault();
+        //            event.stopImmediatePropagation();
+        //        }
+        //        else {
+        //            $(form).submit();
+        //        }
+        //    }
+        //}
+
+        function OnLoginSuccess(data) {
+
+            if (data.data.Status) {
+                Toast.fire({
+                    icon: 'success',
+                    title: data.data.Message
+                })
+                setTimeout(function () {
+                    window.location = data.data.RedirectURL;
+                }, 1000);
+            }
+            else {
+                if (data.data.Message == "Please change default password.") {
+                    $('#UserName').val($('#UserId').val());
+                    $('#modal-default').modal('toggle');
+                    $('#modal-default').modal('show');
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                }
+                Toast.fire({
+                    icon: 'error',
+                    title: data.data.Message
+                })
+            }
+        }
+
+    </script>
     <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/plugins/toastr/toastr.min.js"></script>

@@ -31,7 +31,7 @@
                         <tr>
                             <th>S.No</th>
                             <th>Region</th>
-                            <th>Sub Region</th>
+                            @*<th>Sub Region</th>*@
                             <th>City</th>
                             <th>Distributor Code</th>
                             <th>Name</th>
@@ -49,8 +49,8 @@
                             <tr>
                                 <td>@item.Id</td>
                                 <td>@item.Region.RegionName</td>
-                                <td>@item.SubRegion.SubRegionName</td>
-                                <td>@item.City.CityName</td>
+                                @*<td>@item.SubRegion.SubRegionName</td>*@
+                                <td>@item.City</td>
                                 <td>@item.DistributorCode</td>
                                 <td>@item.DistributorName</td>
                                 <td>@item.DistributorAddress</td>

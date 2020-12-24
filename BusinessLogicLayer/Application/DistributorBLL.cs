@@ -30,8 +30,8 @@ namespace BusinessLogicLayer.ApplicationSetup
         {
             var item = _unitOfWork.GenericRepository<Distributor>().GetById(module.Id);
             item.RegionId = module.RegionId;
-            item.SubRegionId = module.SubRegionId;
-            item.CityId = module.CityId;
+            //item.SubRegionId = module.SubRegionId;
+            item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
             item.DistributorCode = module.DistributorCode;
             item.DistributorName = module.DistributorName;

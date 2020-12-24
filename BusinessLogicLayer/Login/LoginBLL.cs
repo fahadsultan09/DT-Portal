@@ -31,5 +31,17 @@ namespace BusinessLogicLayer.Login
                 return LoginStatus.Failed;
             }
         }
+        public bool CheckUserPassword(User user,string password)
+        {
+            var Password = EncryptDecrypt.Encrypt(password);
+            if (_unitOfWork.GenericRepository<User>().Any(e => e.UserName == user.UserName && e.Password == Password))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
