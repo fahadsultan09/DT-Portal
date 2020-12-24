@@ -6,11 +6,12 @@ namespace Utility.HelperClasses
     {
         public string ResetPassword { get; set; }
         public string SAPConnection { get; set; }
+        public string SyncDistributorURL { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
             ResetPassword = configuration["AppSettings:ResetPassword"];
-            SAPConnection = configuration["SAPSettings:SAPConnection"];
+            SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
         }
     }
 }

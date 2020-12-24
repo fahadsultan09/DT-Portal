@@ -10,5 +10,6 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter your region name.")]
         [StringLength(50)]
         public string RegionName { get; set; }
+        public string SAPId { get; set; }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Utility;
 
 namespace Models.Application
@@ -14,14 +11,7 @@ namespace Models.Application
     {
         [BindRequired]
         [Required(ErrorMessage = "The City field is required.")]
-        public int CityId { get; set; }
-        [ForeignKey("CityId")]
-        public virtual City City { get; set; }
-        [Required(ErrorMessage = "The Sub Region field is required.")]
-        [BindRequired]
-        public int SubRegionId { get; set; }
-        [ForeignKey("SubRegionId")]
-        public virtual SubRegion SubRegion { get; set; }
+        public string City { get; set; }
         [Required(ErrorMessage = "The Region field is required.")]
         [BindRequired]
         public int RegionId { get; set; }
@@ -50,8 +40,6 @@ namespace Models.Application
         [NotMapped]
         public SelectList RegionList { get; set; }
         [NotMapped]
-        public SelectList SubRegionList { get; set; }
-        [NotMapped]
-        public SelectList CityList { get; set; }
+        public string RegionCode { get; set; }
     }
 }

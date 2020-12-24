@@ -1,11 +1,14 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +20,12 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DistributorBLL _DistributorBLL;
+        private readonly Configuration _configuration;
         public DistributorController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _DistributorBLL = new DistributorBLL(_unitOfWork);
+            _configuration = configuration;
         }
 
         // GET: Distributor
@@ -36,19 +41,19 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Sync()
         {
-            List<string> distributorCodes = _DistributorBLL.GetAllDistributor().Select(x => x.DistributorCode).ToList();
-            List<Distributor> distributorList = new List<Distributor>();
-            foreach (var item in distributorList)
+            var Client = new RestClient(_configuration.SyncDistributorURL);
+            var request = new RestRequest(Method.GET);
+            IRestResponse response = Client.Execute(request);
+            var SAPDistributor = JsonConvert.DeserializeObject<List<Distributor>>(response.Content);
+            var alldist = _DistributorBLL.GetAllDistributor();
+            var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
+            addDistributor.ForEach(e =>
             {
-                if (distributorCodes.Contains(item.DistributorCode))
-                {
-                    _DistributorBLL.UpdateDistributor(item);
-                }
-                else
-                {
-                    _DistributorBLL.AddDistributor(item);
-                }
-            }
+                e.CreatedBy = SessionHelper.LoginUser.Id; e.MobileNumber = e.MobileNumber.Replace("-", ""); e.CNIC = e.CNIC.Replace("-", ""); e.IsDeleted = false; e.IsActive = true; e.CreatedDate = DateTime.Now;
+            });
+            _DistributorBLL.AddRange(addDistributor);
+            var UpdateDistributor = alldist.Where(e => SAPDistributor.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && c.City != e.City && c.DistributorCode != e.DistributorCode && c.DistributorName != e.DistributorName && c.DistributorAddress != e.DistributorAddress && c.NTN != c.NTN && e.CNIC != e.CNIC && c.EmailAddress != e.EmailAddress && c.MobileNumber != e.MobileNumber && c.CustomerGroup != e.CustomerGroup));
+            
             return PartialView("List", _DistributorBLL.GetAllDistributor());
         }
 
@@ -134,8 +139,6 @@ namespace DistributorPortal.Controllers
                 model.IsActive = true;
             }
             model.RegionList = new RegionBLL(_unitOfWork).DropDownRegionList(model.RegionId);
-            model.SubRegionList = new SubRegionBLL(_unitOfWork).DropDownSubRegionList(model.RegionId, model.SubRegionId);
-            model.CityList = new CityBLL(_unitOfWork).DropDownCityList(model.SubRegionId, model.CityId);
             return model;
         }
 

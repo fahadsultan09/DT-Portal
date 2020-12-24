@@ -1,10 +1,6 @@
 ﻿using SAPConfigurationAPI.BusinessLogic;
 using SAPConfigurationAPI.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace SAPConfigurationAPI.Controllers
@@ -16,20 +12,26 @@ namespace SAPConfigurationAPI.Controllers
         {
             connectivity = new SAPConnectivity();
         }
-        public List<Teams> Get()
+        public List<Distributor> Get()
         {
-            var table = connectivity.GETTableFromSAP("ZWAS_IT_HRMS_BAPI", "TEAMS");
-            List<Teams> list = new List<Teams>();
+            var table = connectivity.GETTableFromSAP("ZWAS_IT_HRMS_BAPI", "DISTRIBUTOR");            
+            List<Distributor> list = new List<Distributor>();
             for (int i = 0; i < table.RowCount; i++)
             {
-                list.Add(new Teams()
+                list.Add(new Distributor()
                 {
-                    KDGRP = table[i].GetString("KDGRP"),
-                    SPRAS = table[i].GetString("SPRAS"),
-                    KTEXT = table[i].GetString("KTEXT")
+                    DistributorSAPCode = table[i].GetString("KUNNR"),
+                    DistributorName = table[i].GetString("NAME1"),
+                    City = table[i].GetString("ORT01"),
+                    RegionCode = table[i].GetString("REGIO"),
+                    CustomerGroup = table[i].GetString("KDGRPT"),
+                    DistributorAddress = table[i].GetString("STRAS"),
+                    NTN = table[i].GetString("STCD2"),
+                    CNIC = table[i].GetString("STCD1"),
+                    EmailAddress = table[i].GetString("EMAIL"),
+                    MobileNumber = table[i].GetString("TELF1")                    
                 });
             }
-
             return list;
         }
     }

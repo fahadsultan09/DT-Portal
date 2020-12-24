@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
@@ -11,9 +12,11 @@ namespace BusinessLogicLayer.ApplicationSetup
     public class DistributorBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly RegionBLL regionBLL;
         public DistributorBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            regionBLL = new RegionBLL(_unitOfWork);
         }
         public int AddDistributor(Distributor module)
         {
@@ -26,12 +29,19 @@ namespace BusinessLogicLayer.ApplicationSetup
             return _unitOfWork.Save();
         }
 
+        public bool AddRange(List<Distributor> distributors)
+        {
+            var region = regionBLL.GetAllRegion();
+            distributors.ForEach(e => e.RegionId = region.First(c => c.SAPId == e.RegionCode).Id);
+            _unitOfWork.GenericRepository<Distributor>().AddRange(distributors);
+            return _unitOfWork.Save() > 0;
+        }
+
         public int UpdateDistributor(Distributor module)
         {
             var item = _unitOfWork.GenericRepository<Distributor>().GetById(module.Id);
             item.RegionId = module.RegionId;
-            item.SubRegionId = module.SubRegionId;
-            item.CityId = module.CityId;
+            item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
             item.DistributorCode = module.DistributorCode;
             item.DistributorName = module.DistributorName;
