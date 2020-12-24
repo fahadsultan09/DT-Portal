@@ -14,27 +14,15 @@ namespace Models.Application
         public int RegionId { get; set; }
         [ForeignKey("RegionId")]
         public virtual Region Region { get; set; }
-        [Required(ErrorMessage = "The City is required.")]
         public string City { get; set; }
-        [Required(ErrorMessage = "The Distributor Code is required.")]
-        public int DistributorSAPCode { get; set; }
-        [Required(ErrorMessage = "The Distributor Code is required.")]
+        public string DistributorSAPCode { get; set; }
         public string DistributorCode { get; set; }
-        [Required(ErrorMessage = "The Distributor Name is required.")]
         public string DistributorName { get; set; }
-        [Required(ErrorMessage = "The Registered Address is required.")]
         public string DistributorAddress { get; set; }
-        [Required(ErrorMessage = "The NTN is required.")]
         public string NTN { get; set; }
-        [Required(ErrorMessage = "The CNIC is required.")]
         public string CNIC { get; set; }
-        [StringLength(50)]
-        [Required(ErrorMessage = "The Email is required.")]
-        [RegularExpression(@"^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$", ErrorMessage = "Invalid email address")]
         public string EmailAddress { get; set; }
-        [Required(ErrorMessage = "The Mobile Number is required.")]
         public string MobileNumber { get; set; }
-        [Required(ErrorMessage = "The Customer Grp is required.")]
         public string CustomerGroup { get; set; }
         public DistributorStatus Status { get; set; }
         [NotMapped]

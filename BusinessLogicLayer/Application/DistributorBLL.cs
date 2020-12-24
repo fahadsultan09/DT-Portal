@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
@@ -12,10 +13,12 @@ namespace BusinessLogicLayer.ApplicationSetup
     public class DistributorBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Distributor> repository;
         private readonly RegionBLL regionBLL;
         public DistributorBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            repository = unitOfWork.GenericRepository<Distributor>();
             regionBLL = new RegionBLL(_unitOfWork);
         }
         public int AddDistributor(Distributor module)
@@ -25,7 +28,7 @@ namespace BusinessLogicLayer.ApplicationSetup
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<Distributor>().Insert(module);
+            repository.Insert(module);
             return _unitOfWork.Save();
         }
 
@@ -33,13 +36,13 @@ namespace BusinessLogicLayer.ApplicationSetup
         {
             var region = regionBLL.GetAllRegion();
             distributors.ForEach(e => e.RegionId = region.First(c => c.SAPId == e.RegionCode).Id);
-            _unitOfWork.GenericRepository<Distributor>().AddRange(distributors);
+            repository.AddRange(distributors);
             return _unitOfWork.Save() > 0;
         }
 
         public int UpdateDistributor(Distributor module)
         {
-            var item = _unitOfWork.GenericRepository<Distributor>().GetById(module.Id);
+            var item = repository.GetById(module.Id);
             item.RegionId = module.RegionId;
             item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
@@ -53,32 +56,32 @@ namespace BusinessLogicLayer.ApplicationSetup
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<Distributor>().Update(item);
+            repository.Update(item);
             return _unitOfWork.Save();
         }
 
         public int DeleteDistributor(int id)
         {
-            var item = _unitOfWork.GenericRepository<Distributor>().GetById(id);
+            var item = repository.GetById(id);
             item.IsDeleted = true;
-            _unitOfWork.GenericRepository<Distributor>().Delete(item);
+            repository.Delete(item);
             return _unitOfWork.Save();
         }
 
         public Distributor GetDistributorById(int id)
         {
-            return _unitOfWork.GenericRepository<Distributor>().GetById(id);
+            return repository.GetById(id);
         }
 
         public List<Distributor> GetAllDistributor()
         {
-            return _unitOfWork.GenericRepository<Distributor>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
 
         public bool CheckDistributorName(int Id, string DistributorCode)
         {
             int? DistributorId = Id == 0 ? null : (int?)Id;
-            var model = _unitOfWork.GenericRepository<Distributor>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.DistributorCode == DistributorCode && x.Id != DistributorId || (DistributorId == null && x.Id == null)).FirstOrDefault();
+            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.DistributorCode == DistributorCode && x.Id != DistributorId || (DistributorId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;
