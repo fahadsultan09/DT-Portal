@@ -21,6 +21,7 @@ namespace BusinessLogicLayer.Application
         }
         public bool AddUser(User module)
         {
+            module.MobileNumber = module.MobileNumber.Replace("-", "");
             module.UserName.Trim();
             module.FirstName.Trim();
             module.LastName.Trim();

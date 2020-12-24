@@ -1,0 +1,350 @@
+﻿@model OrderMaster
+
+<style type="text/css">
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 40px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+</style>
+
+<form asp-controller="Order"
+      asp-action="SaveEdit"
+      id="frmOrderMaster"
+      data-ajax-begin="Begin"
+      data-ajax-success="OnSuccess"
+      data-ajax-complete="Complete"
+      data-ajax="true"
+      data-ajax-method="POST">
+    <input asp-for="Id" type="hidden" />
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Distributor Information</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group row" disabled>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Name</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.DistributorName" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>City</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.City" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Code</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.DistributorCode" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label>Additional Information</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-4 col-md-4 row m-0">
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <h6>Reference No<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="ReferenceNo" id="ReferenceNo" class="form-control" />
+                                                <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Attachment<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="custom-file">
+                                                        <input type="file" asp-for="AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
+                                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                                    </div><br />
+                                                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                                                    <input type="text" asp-for="Attachment" style="width: 0.01em; height: 0.01em;" readonly="readonly" />
+                                                </div>
+                                                <span class="caption">
+                                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Remarks<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Remarks" id="Remarks" class="form-control" />
+                                                <span asp-validation-for="Remarks" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Order Value</h3>
+                            </div>
+                            <div class="card-body p-0">
+                                <table id="example1" class="table table-bordered table-striped" style="font-size: 13px; padding: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>Order Value</th>
+                                            <th>0% Supplies</th>
+                                            <th>1% Supplies</th>
+                                            <th>4% Supplies</th>
+                                            <th>Total Order Value</th>
+                                            <th>Pending Order Value</th>
+                                            <th>Current Balance</th>
+                                            <th>Unconfirmed Payments</th>
+                                            <th>Net Payable</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>SAMI</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Healthtek</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phytek</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Products</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
+                                <h6>Product</h6>
+                                <div class="col-lg-12">
+                                    <select asp-items="@(new SelectList(Model.ProductList, "Value", "Text"))" class="form-control select2" id="ProductName">
+                                        <option value="">--Select option--</option>
+                                    </select>
+                                </div>
+                                <span id="ErrorProductName" class="text-danger"></span>
+                            </div>
+                            <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
+                                <h6>Quantity</h6>
+                                <div class="col-lg-12">
+                                    <input type="number" id="Quantity" placeholder="Enter Quantity" class="form-control" />
+                                    <span id="ErrorQuantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
+                                <h4 class="col-lg-12 col-form-h4"></h4>
+                                <button type="button" id="AddProducts" class="ladda-button btn btn-info float-right" style="margin-top:20px;">
+                                    Add To Grid
+                                </button>
+                            </div>
+                        </div>
+                        <div class="scrollmenu">
+                            <table id="example1" class="table table-bordered table-striped addProductGrid">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Code</th>
+                                        <th>Product Name</th>
+                                        <th>Pack Size</th>
+                                        <th>Pending Quantity</th>
+                                        <th>Carton Size</th>
+                                        <th>Rate</th>
+                                        <th>Discount</th>
+                                        <th>Quantity in Packs</th>
+                                        <th>Quantity in Cartons</th>
+                                        <th>Value</th>
+                                        <th>SAP Order No.</th>
+                                        <th>Supplies</th>
+                                        <th>Company</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (@Model.OrderDetail != null)
+                                    {
+                                        @for (int i = 0; i < Model.OrderDetail.Count; i++)
+                                        {
+                                            <tr class="@(Model.OrderDetail[i].IsRowDeleted == true ? "d-none" : null )">
+                                                <td style="width: 20%;">@Html.TextBoxFor(x => Model.OrderDetail[i].ProductMaster.ProductName, new { @class = "d-none" }) @Model.OrderDetail[i].ProductMaster.ProductName</td>
+                                                <td style="width:20%;">@Html.TextBoxFor(x => Model.OrderDetail[i].Quantity, new { @class = "d-none" }) @Model.OrderDetail[i].Quantity</td>
+                                                <td class="d-none">@Html.TextBoxFor(x => Model.OrderDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.OrderDetail[i].IsRowDeleted</td>
+                                                <td style="width:20%;"><button type="button" id="btnDeleteLcl" class="btn btn-danger" value="Delete" _id="@Model.OrderDetail[i].Id">Delete</button></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12"></div>
+                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                                <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                                <h4 class="col-lg-12 col-form-h4"></h4>
+                                <button type="submit" onclick="Save();" id="btnOrderNow" class="ladda-button btn btn-success float-right">
+                                    Order Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- bs-custom-file-input -->
+<script src="~/lib/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<script>
+
+    $('.custom-file-input').on("change", function () {
+        $('#Attachment').val($(this).val().split("\\").pop());
+    });
+
+    var ProductArr = [];
+    var response = [];
+
+        $(document).ready(function () {
+
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            bsCustomFileInput.init();
+
+            //add international countries to gird
+            $("#AddProducts").click(function () {
+                debugger
+                var IntCount = $('.addProductGrid tbody tr').length;
+
+                $("#ErrorProductName").empty();
+                $("#ErrorQuantity").empty();
+
+                var ProductNameId = $("#ProductName").val();
+                var ProductName = $("#ProductName option:selected").text();
+                var Quantity = $("#Quantity").val().trim();
+                var IsRowDeleted = false;
+
+                if (ProductName === '--Select option--') {
+                    $("#ErrorProductName").text('Product Name is required');
+                    return false;
+                }
+                if (Quantity === '') {
+                    $("#ErrorQuantity").text('Quantity is required');
+                    return false;
+                }
+                if (ProductArr.indexOf(ProductNameId) !== -1) {
+                    $("#ErrorProductName").text('Product Name already exists');
+                    return false;
+                } else {
+
+                    var Id = ProductNameId;
+                    var params = {
+                        Id: (Id === undefined || Id == "" || Id == null || Id.length <= 0 ? 0 : Id)
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("GetProduct", "Product")',
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: params,
+                        async: false,
+                        success: function (data) {
+                            debugger
+                            response = data.productMaster;
+                        },
+                    });
+
+                    ProductArr.push(ProductNameId);
+
+                    var IntMarkup = '<tr>  \
+                    <td><label id="' + IntCount + '">' + ProductNameId + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__ProductNameId" name="OrderDetail[' + IntCount + '].ProductNameId" type="text" value="' + ProductNameId + '" ></td> \
+                    <td><label id="' + IntCount + '">' + response.PackCode + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PackCode" name="OrderDetail[' + IntCount + '].PackCode" type="text" value="' + response.PackCode + '" ></td> \
+                    <td><label id="' + IntCount + '">' + ProductName + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__ProductName" name="OrderDetail[' + IntCount + '].ProductName" type="text" value="' + ProductName + '" ></td> \
+                    <td><label id="' + IntCount + '">' + response.PackSize + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PackSize" name="OrderDetail[' + IntCount + '].PackSize" type="text" value="' + response.PackSize + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                    <td><label id="' + IntCount + '">' + response.CartonSize + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__CartonSize" name="OrderDetail[' + IntCount + '].CartonSize" type="text" value="' + response.CartonSize + '" ></td> \
+                    <td><label id="' + IntCount + '">' + response.Rate + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__Rate" name="OrderDetail[' + IntCount + '].Rate" type="text" value="' + response.Rate + '" ></td> \
+                    <td><label id="' + IntCount + '">' + response.Discount + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__Discount" name="OrderDetail[' + IntCount + '].Discount" type="text" value="' + response.Discount + '" ></td> \
+                    <td><label id="' + IntCount + '"></label><input id="OrderDetail_' + IntCount + '__Quantity" name="OrderDetail[' + IntCount + '].Quantity" type="text" value="' + Quantity + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
+                        <td class="d-none"><label id="' + IntCount + '">' + IsRowDeleted + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__IsRowDeleted" name="OrderDetail[' + IntCount + '].IsRowDeleted" type="text" value="' + IsRowDeleted + '" ></td> \
+                    <td><button type="button" id="DeleteProducts" class="btn btn-danger" value="Delete">Delete</button></td></tr>';
+                    $(".addProductGrid tbody").append(IntMarkup);
+                }
+                $("#Quantity").val('');
+            });
+
+        });
+
+        $(".addProductGrid").on("click", "#DeleteProducts", function () {
+
+            var IntcurrentRow = $(this).closest("tr");
+            ProductArr.splice(ProductArr.indexOf(IntcurrentRow.find('td:nth-child(2)').find(':input').val()), 1);
+            IntcurrentRow.find('td:nth-child(7)').find(':input').val(true);
+            $(IntcurrentRow).hide();
+        });
+
+</script>

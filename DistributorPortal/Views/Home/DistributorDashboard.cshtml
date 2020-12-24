@@ -34,30 +34,32 @@
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box">
-                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-shopping-cart"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Orders</span>
-                            <span class="info-box-number">250</span>
+                            <span class="info-box-text">Total in Process Orders</span>
+                            <span class="info-box-number">3</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+                        <span class="info-box-icon bg-warning elevation-1">
+                            <i class="fas fa-money-bill-alt"></i>
+                        </span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Verfied Payments</span>
-                            <span class="info-box-number">180</span>
+                            <span class="info-box-text">Unverfied Payments</span>
+                            <span class="info-box-number">50,000</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-undo-alt"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Outstanding Balance</span>
-                            <span class="info-box-number">7655</span>
+                            <span class="info-box-text">Return Orders</span>
+                            <span class="info-box-number">1</span>
                         </div>
                     </div>
                 </div>
@@ -65,26 +67,17 @@
 
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clipboard-list"></i></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Complaints</span>
-                            <span class="info-box-number">5</span>
+                            <span class="info-box-number">0</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <!--<div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">Order Placed</h3>
-            </div>
-            <div class="card-body">
-                <div class="chart">
-                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-            </div>-->
                     <!-- /.card-body -->
                     <!--</div>-->
                     <div class="col-lg-12">
@@ -96,20 +89,6 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                @*<div class="d-flex">
-                                <p class="d-flex flex-column">
-                                    <span class="text-bold text-lg">820</span>
-                                    <span>Visitors Over Time</span>
-                                </p>
-                                <p class="ml-auto d-flex flex-column text-right">
-                                    <span class="text-success">
-                                        <i class="fas fa-arrow-up"></i> 12.5%
-                                    </span>
-                                    <span class="text-muted">Since last week</span>
-                                </p>
-                            </div>*@
-                                <!-- /.d-flex -->
-
                                 <div class="position-relative mb-4">
                                     <canvas id="visitors-chart" height="200"></canvas>
                                 </div>
@@ -129,26 +108,24 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-5">
                     <!-- jQuery Knob -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="far fa-chart-bar"></i>
-                                Payments
-                            </h3>
+                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
+                            <button class="btn btn-outline-primary float-right">View All</button>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="4000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="725000" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="2000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="50000" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#00a65a">
 
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
@@ -158,7 +135,7 @@
                             <div class="row">
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="1000" data-min="0" data-max="6000" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="50000" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#39CCCC">
 
                                     <div class="knob-label">Outstanding Balance</div>
                                 </div>
@@ -170,40 +147,41 @@
                     </div>
                     <!-- /.card -->
                 </div>
-                <div class="col-6">
+                <div class="col-7">
                     <!-- jQuery Knob -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="far fa-chart-bar"></i>
-                                Orders
-                            </h3>
+                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Orders - @DateTime.Now.Year</h3>
+                            <button class="btn btn-outline-primary float-right">View All</button>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="row">
                                 <!-- ./col -->
-                                <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="90" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#f56954">
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="2" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Approved</div>
                                 </div>
-                                <!-- ./col -->
-                                <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="5" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#00c0ef">
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly"  disabled="disabled"  class="knob" value="1" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#00c0ef">
 
                                     <div class="knob-label">Onhold</div>
                                 </div>
-                                <!-- ./col -->
+                                <div class="col-4 text-center">
+                                    <input type="text" readonly="readonly"  disabled="disabled"  class="knob" value="1" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#39CCCC">
+
+                                    <div class="knob-label">Reject</div>
+                                </div>
                             </div>
                             <div class="row">
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="90" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="44" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#00a65a">
                                     <div class="knob-label">Closed</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" class="knob" value="20" data-min="0" data-max="250" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="3" data-min="0" data-max="51" data-width="90" data-height="90" data-fgColor="#932ab6">
 
                                     <div class="knob-label">Reject</div>
                                 </div>
@@ -253,7 +231,7 @@
                                         <tr>
                                             <td><a href="pages/examples/invoice.html">OR9842</a></td>
                                             <td>99,990</td>
-                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td><span class="badge badge-danger">Pending</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -261,7 +239,31 @@
                                         <tr>
                                             <td><a href="pages/examples/invoice.html">OR1848</a></td>
                                             <td>70,711</td>
-                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td><span class="badge badge-success">Closed</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>99,990</td>
+                                            <td><span class="badge badge-warning">Onhold</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>70,711</td>
+                                            <td><span class="badge badge-warning">Onhold</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>70,711</td>
+                                            <td><span class="badge badge-success">Closed</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -294,19 +296,46 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
                                             <td>Check</td>
-                                            <td>250,000</td>
-                                            <td><span class="badge badge-success">Shipped</span></td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td><a href="pages/examples/invoice.html">1848</a></td>
                                             <td>Online</td>
-                                            <td>250,000</td>
-                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-danger">unverified</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
+                                            <td>RTGS</td>
+                                            <td>75,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">1848</a></td>
+                                            <td>Online</td>
+                                            <td>175,000</td>
+                                            <td><span class="badge badge-success">Verfied</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">9842</a></td>
+                                            <td>Check</td>
+                                            <td>50,000</td>
+                                            <td><span class="badge badge-danger">unverified</span></td>
                                             <td>
                                                 <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -323,90 +352,53 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <!--<div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">Order Placed</h3>
-            </div>
-            <div class="card-body">
-                <div class="chart">
-                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-            </div>-->
-                    <!-- /.card-body -->
-                    <!--</div>-->
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                         <!-- /.card -->
                         <div class="card">
                             <div class="card-header border-0">
-                                <h3 class="card-title">Products</h3><br />
-                                <small>Top ten selling products</small>
+                                <h3 class="card-title"><strong>Products</strong></h3><br />
+                                <small>Top ten purchasing products</small>
                             </div>
                             <div class="card-body table-responsive p-0">
                                 <table class="table table-striped table-valign-middle">
                                     <thead>
                                         <tr>
+                                            <th>S.No.</th>
                                             <th>Product</th>
-                                            <th>Price</th>
-                                            <th>Purchase</th>
+                                            <th>Current Price</th>
+                                            <th>Quantity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>
-                                                Some Product
-                                            </td>
-                                            <td>13  </td>
-                                            <td>
-                                                12,000
-                                            </td>
-                                            <td>
-                                                <a href="#" class="text-muted">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
+                                            <td>1</td>
+                                            <td>SEVIA</td>
+                                            <td>3869.20</td>
+                                            <td>980</td>
                                         </tr>
                                         <tr>
-                                            <td>
-                                                Another Product
-                                            </td>
-                                            <td>29  </td>
-                                            <td>
-                                                123,234
-                                            </td>
-                                            <td>
-                                                <a href="#" class="text-muted">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
+                                            <td>2</td>
+                                            <td>DEVAZO</td>
+                                            <td>136.00</td>
+                                            <td>751</td>
                                         </tr>
                                         <tr>
-                                            <td>
-                                                Amazing Product
-                                            </td>
-                                            <td>1,230  </td>
-                                            <td>
-                                                198
-                                            </td>
-                                            <td>
-                                                <a href="#" class="text-muted">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
+                                            <td>3</td>
+                                            <td>NEOFIL</td>
+                                            <td>555.00</td>
+                                            <td>492</td>
                                         </tr>
                                         <tr>
-                                            <td>
-                                                Perfect Item
-                                                @*<span class="badge bg-danger">NEW</span>*@
-                                            </td>
-                                            <td>199  </td>
-                                            <td>
-                                                87 
-                                            </td>
-                                            <td>
-                                                <a href="#" class="text-muted">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
+                                            <td>4</td>
+                                            <td>OCVIR</td>
+                                            <td>9350.00</td>
+                                            <td>443</td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>ROPO</td>
+                                            <td>199.50</td>
+                                            <td>254</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -492,7 +484,7 @@
                         pointStrokeColor: 'rgba(60,141,188,1)',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(60,141,188,1)',
-                        data: [28, 48, 40, 19, 86, 27, 90, 43, 55, 80, 20, 13]
+                        data: [100000, 125000, 0, 75000, 125000, 0, 0, 50000, 175000, 75000, 0, 50000]
                     },
                     {
                         label: 'Unverified',
@@ -503,7 +495,7 @@
                         pointStrokeColor: '#c1c7d1',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(220,220,220,1)',
-                        data: [65, 59, 80, 81, 56, 55, 40, 19, 86, 27, 90, 58]
+                        data: [100000, 125000, 75000, 0, 125000, 25000, 25000, 100000, 75000, 75000, 50000, 50000]
                     },
                 ]
             }
@@ -547,7 +539,7 @@
                     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                     datasets: [{
                         type: 'line',
-                        data: [100, 120, 170, 167, 180, 177, 160, 100, 120, 170, 167, 180],
+                        data: [7, 8, 7, 6, 5, 5, 3, 3, 2, 2, 4, 6],
                         backgroundColor: 'transparent',
                         borderColor: '#007bff',
                         pointBorderColor: '#007bff',
@@ -556,7 +548,7 @@
                     },
                     {
                         type: 'line',
-                        data: [60, 80, 70, 67, 80, 77, 100, 60, 80, 70, 67, 80],
+                        data: [5, 6, 3, 2, 3, 4, 5, 6, 6, 4, 3, 3],
                         backgroundColor: 'tansparent',
                         borderColor: '#ced4da',
                         pointBorderColor: '#ced4da',
@@ -588,7 +580,7 @@
                             },
                             ticks: $.extend({
                                 beginAtZero: true,
-                                suggestedMax: 200
+                                suggestedMax: 10
                             }, ticksStyle)
                         }],
                         xAxes: [{

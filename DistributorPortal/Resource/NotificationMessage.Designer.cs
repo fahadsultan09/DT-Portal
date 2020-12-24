@@ -88,6 +88,24 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File size should not be greater than 5mb..
+        /// </summary>
+        public static string FileSizeAllowed {
+            get {
+                return ResourceManager.GetString("FileSizeAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only image, docx or pdf file is allowed..
+        /// </summary>
+        public static string FileTypeAllowed {
+            get {
+                return ResourceManager.GetString("FileTypeAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File uploaded successfully..
         /// </summary>
         public static string FileUploadedSuccessfully {

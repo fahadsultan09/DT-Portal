@@ -126,6 +126,12 @@
   <data name="ErrorOccurred" xml:space="preserve">
     <value>Error occurred while saving changes.</value>
   </data>
+  <data name="FileSizeAllowed" xml:space="preserve">
+    <value>File size should not be greater than 5mb.</value>
+  </data>
+  <data name="FileTypeAllowed" xml:space="preserve">
+    <value>Only image, docx or pdf file is allowed.</value>
+  </data>
   <data name="FileUploadedSuccessfully" xml:space="preserve">
     <value>File uploaded successfully.</value>
   </data>

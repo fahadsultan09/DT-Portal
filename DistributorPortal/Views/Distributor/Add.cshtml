@@ -71,15 +71,6 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Mobile Number<span class="text-danger"> * </span></label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="MobileNumber" type="text" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
-                                                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">CNIC<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-8">
                                                         <input asp-for="CNIC" type="text" class="form-control" data-inputmask="'mask': '99999-9999999-9'" data-mask />
@@ -89,6 +80,28 @@
                                             </div>
                                         </div>
                                     </div>                                    
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">City<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="City" type="text" class="form-control" placeholder="City" />
+                                                        <span asp-validation-for="City" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-4 col-form-label">Mobile Number<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-8">
+                                                        <input asp-for="MobileNumber" type="text" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
+                                                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-12">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -159,8 +172,7 @@
         //Initialize Select2 Elements
         $('.select2').select2()
 
-        //Money Euro
-        $('[data-mask]').inputmask()
+        $('[data-mask]').inputmask();
 
         $('body').on('change', '#ddlRegion', function () {
             debugger;

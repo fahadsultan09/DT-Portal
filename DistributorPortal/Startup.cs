@@ -1,5 +1,3 @@
-
-
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Models.ApplicationContext;
 using SapNwRfc.Pooling;
+using System;
 using System.Linq;
 using Utility.HelperClasses;
 
@@ -31,7 +30,8 @@ namespace DistributorPortal
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(option =>
-            {                
+            {
+                option.IdleTimeout = TimeSpan.FromHours(1);
                 option.Cookie.HttpOnly = true;
                 option.Cookie.IsEssential = true;
             });

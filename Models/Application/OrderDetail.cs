@@ -15,5 +15,7 @@ namespace Models.Application
         [ForeignKey("ProductId")]
         public virtual ProductMaster ProductMaster { get; set; }
         public int Quantity { get; set; }
+        [NotMapped]
+        public bool IsRowDeleted { get; set; }
     }
 }

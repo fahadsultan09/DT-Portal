@@ -66,7 +66,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 @(Model.Id == 0 ? "d-none" : null)">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
@@ -80,7 +80,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Reset Password</label>
-                                                    <div class="col-lg-8" disabled="@(Model.Id == 0 ? "disabled" : null)">
+                                                    <div class="col-lg-8">
                                                         <a onclick="ResetPassword(this);" id="@Model.Id" class="btn btn-danger btn-sm">
                                                             <strong>Reset Password</strong>
                                                         </a>
@@ -117,7 +117,7 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Mobile No</label>
                                                     <div class="col-lg-8">
-                                                        <input asp-for="MobileNumber" type="text" placeholder="Email Address" class="form-control" />
+                                                        <input asp-for="MobileNumber" type="text" placeholder="Mobile No" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
                                                         <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -148,8 +148,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Distributor</label>
-                                                    <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "DistributorId", @disabled = "@disabled" })
+                                                    <div class="col-lg-8" disabled="true">
+                                                        @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "DistributorId" })
                                                         <span asp-validation-for="DistributorId" class="text-danger" id="errorDistributorId"></span>
                                                     </div>
                                                 </div>
@@ -180,7 +180,7 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-lg-12 ">
-                                            <button class="btn btn-sm btn-primary float-right" type="submit" onclick="Submit(); return false;">
+                                            <button class="btn btn-sm btn-success float-right" type="submit" onclick="Submit(); return false;">
                                                 @(Model.Id > 0 ? "Update" : "Add")
                                             </button>
                                             <a data-ajax-update="#divform"
@@ -206,8 +206,8 @@
         //Initialize Select2 Elements
         $('.select2').select2()
 
-        //Money Euro
-        $('[data-mask]').inputmask()
+
+        $('[data-mask]').inputmask();
 
         $('#IsDistributor').on('change', function() {
 
