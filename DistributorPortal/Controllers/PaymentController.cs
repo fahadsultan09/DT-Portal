@@ -47,7 +47,8 @@ namespace DistributorPortal.Controllers
             {
 
             }
-            
+            model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
+            model.BankList = new BankBLL(_unitOfWork).DropDownBankList();
             return model;
         }
         [HttpPost]

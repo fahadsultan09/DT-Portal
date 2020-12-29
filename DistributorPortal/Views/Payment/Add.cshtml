@@ -1,0 +1,223 @@
+﻿@model PaymentMaster
+
+<form asp-controller="Payment"
+      asp-action="SaveEdit"
+      id="frmPaymentMaster"
+      data-ajax-begin="Begin"
+      data-ajax-success="OnSuccess"
+      data-ajax-complete="Complete"
+      data-ajax="true"
+      data-ajax-method="POST">
+    <input asp-for="Id" type="hidden" />
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Distributor Information</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group row" disabled>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Name</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.DistributorName" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>City</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.City" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Code</h6>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Distributor.DistributorCode" id="Name" disabled="disabled" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Payment Value</h3>
+                            </div>
+                            <div class="card-body" style="padding-right: 0;">
+                                <div class="form-group row" style="padding-right: 0;">
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Deposit Date</h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="date" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-format="%d %b %Y" data-max-date="@DateTime.Now.ToShortDateString()" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Value Clearing <br />Date</h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="date" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-format="%d %b %Y" data-max-date="@DateTime.Now.ToShortDateString()" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Attachment</h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <div class="form-group">
+                                                <div class="custom-file">
+                                                    <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
+                                                    <label class="custom-file-label" for="customFile">Choose file</label>
+                                                </div><br />
+                                                <span asp-validation-for="File" class="text-danger"></span>
+                                                <input type="text" asp-for="File" style="width: 0.01em; height: 0.01em;" readonly="readonly" />
+                                            </div>
+                                            <span class="caption">
+                                                <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.File) ? Model.File.Split('_')[1] : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.File ) ? Model.File.Split('_')[1] : "")</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="padding-right: 0;">
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Mode Of  <br />Payment<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <select asp-items="@(new SelectList(Model.PaymentModeList, "Value", "Text"))" class="form-control select2" id="PaymentMode">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row" id="ChequeNo">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Cheque / <br />Insruemnt No.<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="ChequeNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row" id="PoNo">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>PO No.<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="PoNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row" id="RTGSNo">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>R.T.G.S <br />Ref. No.<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="RTGSNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row" id="OnlineTransactionNo">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Online <br />Transaction No.<span class="text-danger">* </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="OnlineTransactionNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Amount<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="Amount" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="padding-right: 0;">
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Depositor's <br />Bank Name<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <select asp-for="DepositorBankName" asp-items="@(new SelectList(Model.BankList, "Value", "Text"))" class="form-control select2">
+                                                <option value="">--Select option--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Depositor's <br />Bank Code<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="DepositorBankCode" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="padding-right: 0;">
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Company's <br />Bank Name<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.BankList, "Value", "Text"))" class="form-control select2">
+                                                <option value="">--Select option--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <h6>Company's <br />Bank Code<span class="text-danger"> * </span></h6>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                            <input type="text" asp-for="CompanyBankCode" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<script>
+
+    $('.custom-file-input').on("change", function () {
+        $('#Attachment').val($(this).val().split("\\").pop());
+    });
+
+    $(document).ready(function () {
+
+        var paymentMode = $('#Payment option:selected').val();
+        if (paymentMode == '') {
+
+        }
+        else if (paymentMode == '') {
+
+
+        }
+        else if (paymentMode == '') {
+
+
+        }
+        else if (paymentMode == '') {
+
+
+        }
+
+    });
+
+</script>
