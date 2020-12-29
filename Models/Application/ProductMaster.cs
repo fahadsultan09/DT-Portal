@@ -8,7 +8,7 @@ namespace Models.Application
 {
     public class ProductMaster : DeletedEntity
     {
-        public int SAPProductCode { get; set; }
+        public long SAPProductCode { get; set; }
         public string PackCode { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }

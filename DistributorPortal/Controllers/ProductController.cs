@@ -35,7 +35,7 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public IActionResult Sync()
         {
-            List<int> ProductCodes = _ProductMasterBLL.GetAllProductMaster().Select(x => x.SAPProductCode).ToList();
+            List<long> ProductCodes = _ProductMasterBLL.GetAllProductMaster().Select(x => x.SAPProductCode).ToList();
             List<ProductMaster> ProductList = new List<ProductMaster>();
             foreach (var item in ProductList)
             {
