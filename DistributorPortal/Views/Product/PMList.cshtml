@@ -5,7 +5,16 @@
     Layout = null;
     List<Company> companyList = new CompanyBLL(unitOfWork).GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
 }
+<style type="text/css">
+    th, td {
+        white-space: nowrap;
+    }
 
+    div.dataTables_wrapper {
+        width: 100%;
+        margin: 0 auto;
+    }
+</style>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -19,7 +28,7 @@
                         <tr>
                             <td class="d-none"></td>
                             <td class="d-none"></td>
-                            <th>Code</th>
+                            <th>Product Code</th>
                             <th>Product Name </th>
                             <th>Pack Size </th>
                             <th>Visibility </th>
@@ -47,7 +56,7 @@
                             <tr>
                                 <td class="d-none"><input type="text" asp-for="@item.Id" class="form-control" /></td>
                                 <td class="d-none"><input type="text" asp-for="@item.ProductDetail.Id" class="form-control" /></td>
-                                <td>@item.PackCode</td>
+                                <td>@item.SAPProductCode</td>
                                 <td>@item.ProductName</td>
                                 <td>@item.PackSize</td>
                                 <td>@(Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId))<input type="text" asp-for="@item.ProductDetail.Id" class="form-control d-none" /></td>
@@ -86,10 +95,17 @@
 <script>
 
     $(document).ready(function () {
-
         $("#example1").DataTable({
-            "responsive": true,
-            "autoWidth": false,
+            scrollY: "350px",
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            fixedColumns: {
+                leftColumns: 4
+            },
+            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            responsive: true,
+            autoWidth: false,
         });
     });
 

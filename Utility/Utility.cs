@@ -1,4 +1,6 @@
-﻿namespace Utility
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Utility
 {
     public enum IsActive
     {
@@ -37,5 +39,25 @@
     { 
         Visible = 1,
         Hide = 2
+    }
+
+    public enum OrderValues
+    {
+        [Display(Name = "0% Supplies")]
+        Supplies0 = 0,
+        [Display(Name = "1% Supplies")]
+        Supplies1 = 1,
+        [Display(Name = "4% Supplies")]
+        Supplies4 = 2,
+        [Display(Name = "Total Order Value")]
+        TotalOrderValues = 3,
+        [Display(Name = "Pending Order Values")]
+        PendingOrderValues = 4,
+        [Display(Name = "Current Balance")]
+        CurrentBalance = 5,
+        [Display(Name = "UnConfirmed Payment")]
+        UnConfirmedPayment = 6,
+        [Display(Name = "Net Payable")]
+        NetPayable = 7,
     }
 }

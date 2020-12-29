@@ -41,20 +41,42 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Sync()
         {
-            var Client = new RestClient(_configuration.SyncDistributorURL);
-            var request = new RestRequest(Method.GET);
-            IRestResponse response = Client.Execute(request);
-            var SAPDistributor = JsonConvert.DeserializeObject<List<Distributor>>(response.Content);
-            var alldist = _DistributorBLL.GetAllDistributor();
-            var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
-            addDistributor.ForEach(e =>
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {                
+                var Client = new RestClient(_configuration.SyncDistributorURL);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                var SAPDistributor = JsonConvert.DeserializeObject<List<Distributor>>(response.Content);
+                var alldist = _DistributorBLL.GetAllDistributor();
+                var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
+                addDistributor.ForEach(e =>
+                {
+                    e.CreatedBy = SessionHelper.LoginUser.Id; e.MobileNumber = e.MobileNumber.Replace("-", ""); e.CNIC = e.CNIC.Replace("-", ""); e.IsDeleted = false; e.IsActive = true; e.CreatedDate = DateTime.Now;
+                });
+                _DistributorBLL.AddRange(addDistributor);
+                var UpdateDistributor = alldist.Where(e => SAPDistributor.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup)));
+                foreach (var item in UpdateDistributor)
+                {
+                    var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);
+                    if (distributor != null)
+                    {
+                        _DistributorBLL.UpdateDistributor(distributor);
+                    }
+                }
+
+                jsonResponse.Message = "Distributor Sync Successfully";
+                jsonResponse.Status = true;
+                jsonResponse.RedirectURL = Url.Action("Index", "Distributor");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
             {
-                e.CreatedBy = SessionHelper.LoginUser.Id; e.MobileNumber = e.MobileNumber.Replace("-", ""); e.CNIC = e.CNIC.Replace("-", ""); e.IsDeleted = false; e.IsActive = true; e.CreatedDate = DateTime.Now;
-            });
-            _DistributorBLL.AddRange(addDistributor);
-            var UpdateDistributor = alldist.Where(e => SAPDistributor.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && c.City != e.City && c.DistributorCode != e.DistributorCode && c.DistributorName != e.DistributorName && c.DistributorAddress != e.DistributorAddress && c.NTN != c.NTN && e.CNIC != e.CNIC && c.EmailAddress != e.EmailAddress && c.MobileNumber != e.MobileNumber && c.CustomerGroup != e.CustomerGroup));
-            
-            return PartialView("List", _DistributorBLL.GetAllDistributor());
+                jsonResponse.Message = ex.Message;
+                jsonResponse.Status = false;
+                jsonResponse.RedirectURL = Url.Action("Index", "Distributor");
+                return Json(new { data = jsonResponse });
+            }
         }
 
         [HttpGet]

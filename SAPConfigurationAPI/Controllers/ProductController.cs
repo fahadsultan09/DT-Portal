@@ -18,16 +18,16 @@ namespace SAPConfigurationAPI.Controllers
         }
         public List<Product> Get()
         {
-            var table = connectivity.GETTableFromSAP("ZWAS_IT_HRMS_BAPI", "PRODUCT");
+            var table = connectivity.GETTableFromSAP("ZWAS_IT_HRMS_BAPI", "PRODUCTS");
             List<Product> products = new List<Product>();
             for (int i = 0; i < table.RowCount; i++)
             {
                 products.Add(new Product()
                 {
-                    SAPProductCode = table[i].GetString("MATNR"),
+                    SAPProductCode = table[i].GetString("MATNR").TrimStart(new char[] { '0' }),
                     PackSize = table[i].GetString("MVGR2T"),
                     ProductName = table[i].GetString("MVGR4T"),
-                    ProductDesc = table[i].GetString("MAKTX"),
+                    ProductDescription = table[i].GetString("MAKTX"),
                     ProductPrice = table[i].GetDouble("KBETR"),
                     CartonSize = table[i].GetString("Carton"),
                     Rate = table[i].GetDouble("KBETR"),

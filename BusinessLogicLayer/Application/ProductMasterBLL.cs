@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
@@ -12,9 +13,11 @@ namespace BusinessLogicLayer.Application
     public class ProductMasterBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<ProductMaster> repository;
         public ProductMasterBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            repository = unitOfWork.GenericRepository<ProductMaster>();
         }
         public int Add(ProductMaster module)
         {
@@ -23,6 +26,12 @@ namespace BusinessLogicLayer.Application
             module.CreatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<ProductMaster>().Insert(module);
             return _unitOfWork.Save();
+        }
+
+        public bool AddRange(List<ProductMaster> ProductMaster)
+        {            
+            repository.AddRange(ProductMaster);
+            return _unitOfWork.Save() > 0;
         }
         public int Update(ProductMaster module)
         {

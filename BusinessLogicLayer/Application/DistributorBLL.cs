@@ -42,8 +42,9 @@ namespace BusinessLogicLayer.ApplicationSetup
 
         public int UpdateDistributor(Distributor module)
         {
-            var item = repository.GetById(module.Id);
-            item.RegionId = module.RegionId;
+            var item = GetDistributorBySAPId(module.DistributorSAPCode);
+            var region = regionBLL.GetAllRegion();
+            item.RegionId = region.First(c => c.SAPId == module.RegionCode).Id;
             item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
             item.DistributorCode = module.DistributorCode;
@@ -71,6 +72,11 @@ namespace BusinessLogicLayer.ApplicationSetup
         public Distributor GetDistributorById(int id)
         {
             return repository.GetById(id);
+        }
+
+        public Distributor GetDistributorBySAPId(string id)
+        {
+            return repository.FirstOrDefault(e => e.DistributorSAPCode == id);
         }
 
         public List<Distributor> GetAllDistributor()

@@ -10,7 +10,7 @@ namespace SAPConfigurationAPI.Models
         public string SAPProductCode { get; set; }
         public string PackSize { get; set; }
         public string ProductName { get; set; }
-        public string ProductDesc { get; set; }
+        public string ProductDescription { get; set; }
         public double ProductPrice { get; set; }
         public string CartonSize { get; set; }
         public double Rate { get; set; }

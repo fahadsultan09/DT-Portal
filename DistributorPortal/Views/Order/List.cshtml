@@ -57,40 +57,11 @@
 </div>
 <!-- /.row -->
 <script>
-
-        $(document).ready(function () {
-
-
-            $("#example1").DataTable({
+    $(document).ready(function () {
+        $("#example1").DataTable({
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                 "responsive": true,
                 "autoWidth": false,
             });
-
         });
-
-    @*function Delete(e) {
-        Swal.fire({
-            title: "Are you sure you want to continue?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, delete it!",
-            closeOnConfirm: true,
-            showLoaderOnConfirm: true
-        }).then((result) => {
-            if (result.value) {
-                $.post('@Url.Action("Delete", "Distributor")/' + e.id, null, function (data) {
-                    if (data) {
-                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
-                    } else {
-                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
-                    }
-                });
-            }
-        });
-    }*@
-
 </script>
