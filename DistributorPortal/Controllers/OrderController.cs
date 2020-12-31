@@ -22,11 +22,14 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
+        private readonly ProductMasterBLL _productMasterBLL;
+        private readonly ProductDetailBLL _productDetailBLL;
         private readonly IConfiguration _IConfiguration;
         public OrderController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
+            _productDetailBLL = new ProductDetailBLL(_unitOfWork);
             _IConfiguration = configuration;
         }
         // GET: Order
@@ -41,8 +44,39 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
+            SessionHelper.AddProduct = new List<ProductDetail>();
             return PartialView("Add", BindOrderMaster(id));
         }
+        public IActionResult AddProduct(int Quantity, int Product)
+        {
+            if (!SessionHelper.AddProduct.Any(e => e.Id == Product))
+            {
+                var master = _productDetailBLL.GetProductDetailByMasterId(Product);
+                if (master != null)
+                {
+                    master.ProductMaster.Quantity = Quantity;
+                    master.TotalPrice = master.ProductMaster.Quantity * master.ProductMaster.Rate;
+                    var list = SessionHelper.AddProduct;
+                    list.Add(master);
+                    SessionHelper.AddProduct = list;
+                }                                
+            }
+            else
+            {
+                ViewBag.Error = "Product Already Exists";
+            }
+            return PartialView("AddToGrid", SessionHelper.AddProduct);            
+        }
+
+        public IActionResult Delete(int Id)
+        {            
+            var list = SessionHelper.AddProduct;
+            var item = list.First(e => e.ProductMasterId == Id);
+            list.Remove(item);
+            SessionHelper.AddProduct = list;
+            return PartialView("AddToGrid", SessionHelper.AddProduct);
+        }
+
         [HttpPost]
         public JsonResult SaveEdit(OrderMaster model)
         {
@@ -120,6 +154,10 @@ namespace DistributorPortal.Controllers
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
             return model;
         }
-
+        public ActionResult UpdateOrderValue()
+        {
+            var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
+            return PartialView("OrderValue", OrderVal);
+        }
     }
 }

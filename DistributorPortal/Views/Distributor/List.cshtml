@@ -11,18 +11,10 @@
                       data-ajax-update="#divform"
                       data-ajax="true"
                       data-ajax-method="GET"
-                      method="GET">
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="OnComplete">
                     <button type="submit" class="btn btn-info float-right">Sync</button>
                 </form>
-                @*<form asp-controller="Distributor"
-                          asp-action="Add"
-                          id="frmAdd"
-                          data-ajax-update="#divform"
-                          data-ajax="true"
-                          data-ajax-method="GET"
-                          method="GET">
-                        <button type="submit" class="btn btn-info float-right">Add</button>
-                    </form>*@
             </div>
             <!-- /.card-header -->
             <div class="card-body scrollmenu">

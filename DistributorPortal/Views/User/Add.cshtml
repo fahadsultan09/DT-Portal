@@ -135,13 +135,19 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="form-group row">
-                                                    <div class="col-lg-offset-2 col-lg-10">
-                                                    </div>
-                                                    <label class="col-lg-4 col-form-label">Is Distributor</label>
+                                                    <label class="col-lg-4 col-form-label">Is Active</label>
                                                     <div class="col-lg-8">
-                                                        <input asp-for="IsDistributor" type="checkbox" id="IsDistributor"><i></i>
+                                                        <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-6 col-form-label">Is Distributor</label>
+                                                    <div class="col-lg-6">
+                                                        <input style="margin-top: 13px" asp-for="IsDistributor" type="checkbox" id="IsDistributor"><i></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -157,20 +163,11 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6">
+                                        <div class="row">                                            
+                                            <div class="col-md-12">
                                                 <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Is Active</label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Registered Address</label>
-                                                    <div class="col-lg-8">
-
+                                                    <label class="col-lg-2 col-form-label">Registered Address</label>
+                                                    <div class="col-lg-10">
                                                         <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
                                                         <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
                                                     </div>

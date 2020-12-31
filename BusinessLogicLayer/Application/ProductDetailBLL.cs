@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
 using System;
 using System.Collections.Generic;
@@ -63,9 +64,25 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.GenericRepository<ProductDetail>().GetById(id);
         }
 
+        public ProductDetail GetProductDetailByMasterId(int id)
+        {
+            return _unitOfWork.GenericRepository<ProductDetail>().Where(e => e.ProductMasterId == id).FirstOrDefault();
+        }
+
         public List<ProductDetail> GetAllProductDetail()
         {
             return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+        }
+
+        public SelectList DropDownProductList()
+        {
+            var selectList = GetAllProductDetail().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.ProductMasterId.ToString(),
+                Text = x.ProductMaster.ProductName.Trim()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
         }
     }
 }
