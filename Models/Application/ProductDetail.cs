@@ -32,5 +32,7 @@ namespace Models.Application
         public string ReturnItemCategory { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
+        public bool IsTaxApplicable { get; set; }
+
     }
 }

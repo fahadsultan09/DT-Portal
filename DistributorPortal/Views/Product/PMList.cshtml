@@ -47,6 +47,7 @@
                             <th>R.Storage Location </th>
                             <th>Sales Item Category </th>
                             <th>Return Item Category </th>
+                            <th>Is Tax Applicable</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -79,6 +80,7 @@
                                 <td><input type="text" asp-for="@item.ProductDetail.R_StorageLocation" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.SalesItemCategory" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.ReturnItemCategory" class="form-control" /></td>
+                                <td style=" vertical-align: middle;"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
                                 <td><button type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-success">Save</button></td>
                             </tr>
                         }
@@ -130,6 +132,7 @@
             R_StorageLocation: $(this).closest("tr").find("td:eq(18)").find(":input").val(),
             SalesItemCategory: $(this).closest("tr").find("td:eq(19)").find(":input").val(),
             ReturnItemCategory: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
+            IsTaxApplicable: $(this).closest("tr").find("td:eq(21)").find(":input").val(),
         };
 
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },

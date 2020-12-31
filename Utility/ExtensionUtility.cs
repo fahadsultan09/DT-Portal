@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Utility.Constant;
 
 namespace Utility
 {
@@ -89,6 +91,60 @@ namespace Utility
             if (request.Headers != null)
                 return request.Headers["X-Requested-With"] == "XMLHttpRequest";
             return false;
+        }
+        public static Tuple<List<LastYearMonth>> MonthsBetween(DateTime startDate, DateTime endDate)
+        {
+            DateTime iterator;
+            DateTime limit;
+            List<LastYearMonth> list = new List<LastYearMonth>();
+            if (endDate > startDate)
+            {
+                iterator = new DateTime(startDate.Year, startDate.Month, 1);
+                limit = endDate;
+            }
+            else
+            {
+                iterator = new DateTime(endDate.Year, endDate.Month, 1);
+                limit = startDate;
+            }
+
+            var dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat;
+            while (iterator < limit)
+            {
+                LastYearMonth model = new LastYearMonth();
+                model.MonthName = dateTimeFormat.GetMonthName(iterator.Month);
+                model.Month = iterator.Month;
+                model.Year = iterator.Year;
+                model.LastYear = iterator.AddYears(-1).Year;
+                list.Add(model);
+                iterator = iterator.AddMonths(1);
+            }
+            return Tuple.Create(list);
+        }
+        public static string FormatNumberAmount(decimal amount)
+        {
+            if (amount < 1000)
+                return amount.ToString();
+
+            if (amount < 10000)
+                return String.Format("{0:#,.##}K", amount - 5);
+
+            if (amount < 100000)
+                return String.Format("{0:#,.#}K", amount - 50);
+
+            if (amount < 1000000)
+                return String.Format("{0:#,.}K", amount - 500);
+
+            if (amount < 10000000)
+                return String.Format("{0:#,,.##}M", amount - 5000);
+
+            if (amount < 100000000)
+                return String.Format("{0:#,,.#}M", amount - 50000);
+
+            if (amount < 1000000000)
+                return String.Format("{0:#,,.}M", amount - 500000);
+
+            return String.Format("{0:#,,,.##}B", amount - 5000000);
         }
     }
 }

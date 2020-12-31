@@ -1,9 +1,11 @@
 ﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace BusinessLogicLayer.Application
@@ -11,9 +13,11 @@ namespace BusinessLogicLayer.Application
     public class PaymentBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<PaymentMaster> _repository;
         public PaymentBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.GenericRepository<PaymentMaster>();
         }
         public int Add(PaymentMaster module)
         {
@@ -23,7 +27,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<PaymentMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-
         public int Update(PaymentMaster module)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(module.Id);
@@ -33,7 +36,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<PaymentMaster>().Update(item);
             return _unitOfWork.Save();
         }
-
         public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
@@ -41,15 +43,21 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<PaymentMaster>().Delete(item);
             return _unitOfWork.Save();
         }
-
         public PaymentMaster GetPaymentMasterById(int id)
         {
             return _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
         }
-
         public List<PaymentMaster> GetAllPaymentMaster()
         {
             return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+        }
+        public List<PaymentMaster> Where(Expression<Func<PaymentMaster, bool>> predicate)
+        {
+            return _repository.Where(predicate);
+        }
+        public PaymentMaster FirstOrDefault(Expression<Func<PaymentMaster, bool>> predicate)
+        {
+            return _repository.FirstOrDefault(predicate);
         }
     }
 }
