@@ -53,6 +53,7 @@ namespace BusinessLogicLayer.ApplicationSetup
             item.NTN = module.NTN;
             item.CNIC = module.CNIC.Replace("-", "");
             item.MobileNumber = module.MobileNumber.Replace("-", "");
+            item.IsRegistered = module.IsRegistered;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

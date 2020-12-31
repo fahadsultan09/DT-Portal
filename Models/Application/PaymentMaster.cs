@@ -13,8 +13,11 @@ namespace Models.Application
         public int DistributorId { get; set; }
         [ForeignKey("DistributorId")]
         public virtual Distributor Distributor { get; set; }
-        public DateTime DepositDate { get; set; }
-        public DateTime ValueClearingDate { get; set; }
+        public int CompanyId { get; set; }
+        [ForeignKey("CompanyId")]
+        public virtual Company Company { get; set; }
+        public DateTime? DepositDate { get; set; }
+        public DateTime? ValueClearingDate { get; set; }
         public int DepositorBankName { get; set; }
         public string DepositorBankCode { get; set; }
         public int CompanyBankName { get; set; }
@@ -23,10 +26,8 @@ namespace Models.Application
         public int PaymentModeId { get; set; }
         [ForeignKey("PaymentModeId")]
         public virtual PaymentMode PaymentMode { get; set; }
-        public string ChequeNo { get; set; }
-        public string OnlineTransactionNo { get; set; }
-        public string RTGSNo { get; set; }
-        public string PoNo { get; set; }
+        public string PaymentModeNo { get; set; }
+        public PaymentStatus Status { get; set; }
         [Required(ErrorMessage = "Attachment is required.")]
         public string File { get; set; }
         [NotMapped]

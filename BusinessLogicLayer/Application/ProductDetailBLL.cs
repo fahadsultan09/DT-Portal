@@ -43,6 +43,7 @@ namespace BusinessLogicLayer.Application
             item.R_StorageLocation = module.R_StorageLocation;
             item.SalesItemCategory = module.SalesItemCategory;
             item.ReturnItemCategory = module.ReturnItemCategory;
+            item.IsTaxApplicable = module.IsTaxApplicable;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<ProductDetail>().Update(item);

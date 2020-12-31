@@ -52,7 +52,7 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult SaveEdit(Distributor model)
+        public JsonResult SaveEdit(PaymentMaster model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model AccountDashboardViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 <style type="text/css">
@@ -28,54 +29,49 @@
     </div>
     <section class="content">
         <div class="container-fluid">
-
             <div class="row">
-                <div class="col-12 col-sm-6 col-md-3">
+                @*<div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box">
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
                         <div class="info-box-content">
                             <span class="info-box-text">Total in Process Orders</span>
                             <span class="info-box-number">45</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3">
+                </div>*@
+                <div class="col-12 col-sm-6 col-md-4">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-danger elevation-1">
                             <i class="fas fa-money-bill-alt"></i>
                         </span>
                         <div class="info-box-content">
                             <span class="info-box-text">Current Year Payment</span>
-                            <span class="info-box-number">1,10,99,000</span>
+                            <span class="info-box-number">@Model.VerifiedPayment</span>
                         </div>
                     </div>
                 </div>
-                <div class="clearfix hidden-md-up"></div>
-
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-md-4">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-success elevation-1">
                             <i class="fas fa-money-bill-alt"></i>
                         </span>
                         <div class="info-box-content">
                             <span class="info-box-text">Unverified Payment</span>
-                            <span class="info-box-number">500,000</span>
+                            <span class="info-box-number">@Model.UnverifiedPayment</span>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-6 col-md-3">
+               <div class="col-12 col-sm-6 col-md-4">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
                         <div class="info-box-content">
-                            <span class="info-box-text">Orders Return</span>
-                            <span class="info-box-number">25</span>
+                            <span class="info-box-text">Today's Verified Payment</span>
+                            <span class="info-box-number">@Model.TodayVerifiedPayment</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <!--<div class="row">
                 <div class="col-12">
                     <div class="card card-info">
                         <div class="card-header">
@@ -85,26 +81,26 @@
                             <div class="chart">
                                 <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                             </div>
-                        </div>
+                        </div>-->
                         <!-- /.card-body -->
-                    </div>
+                    <!--</div>
                 </div>
-            </div>
+            </div>-->
 
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Month Wise Payment Status</h5>
+                            <h3 class="card-title">Order Status - Last 12 Months</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-12">
                                     <div class="chart">
                                         <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                @*<div class="col-md-4">
                                     <p class="text-center">
                                         <strong>Payment Status</strong>
                                     </p>
@@ -122,79 +118,79 @@
                                             <div class="progress-bar bg-danger" style="width: 5%"></div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>*@
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header border-transparent">
-                            <h3 class="card-title">Recent Orders</h3>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table m-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Order No</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                                            <td>99,990</td>
-                                            <td><span class="badge badge-danger">Pending</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                                            <td>70,711</td>
-                                            <td><span class="badge badge-success">Closed</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                                            <td>99,990</td>
-                                            <td><span class="badge badge-warning">Onhold</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                                            <td>70,711</td>
-                                            <td><span class="badge badge-warning">Onhold</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                                            <td>70,711</td>
-                                            <td><span class="badge badge-success">Closed</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-footer clearfix">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-                        </div>
+                @*<div class="col-md-6">
+            <div class="card">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">Recent Orders</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0">
+                            <thead>
+                                <tr>
+                                    <th>Order No</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                    <td>99,990</td>
+                                    <td><span class="badge badge-danger">Pending</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                    <td>70,711</td>
+                                    <td><span class="badge badge-success">Closed</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                    <td>99,990</td>
+                                    <td><span class="badge badge-warning">Onhold</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                    <td>70,711</td>
+                                    <td><span class="badge badge-warning">Onhold</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                    <td>70,711</td>
+                                    <td><span class="badge badge-success">Closed</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                <div class="card-footer clearfix">
+                    <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+                </div>
+            </div>
+        </div>*@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header border-transparent">
@@ -213,59 +209,44 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">9842</a></td>
-                                            <td>Check</td>
-                                            <td>50,000</td>
-                                            <td><span class="badge badge-success">Verfied</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">1848</a></td>
-                                            <td>Online</td>
-                                            <td>50,000</td>
-                                            <td><span class="badge badge-danger">unverified</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">9842</a></td>
-                                            <td>RTGS</td>
-                                            <td>75,000</td>
-                                            <td><span class="badge badge-success">Verfied</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">1848</a></td>
-                                            <td>Online</td>
-                                            <td>175,000</td>
-                                            <td><span class="badge badge-success">Verfied</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="pages/examples/invoice.html">9842</a></td>
-                                            <td>Check</td>
-                                            <td>50,000</td>
-                                            <td><span class="badge badge-danger">unverified</span></td>
-                                            <td>
-                                                <a href="#" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                            </td>
-                                        </tr>
+                                        @{
+                                            if (Model.RecentPayment != null && Model.RecentPayment.Count() > 0)
+                                            {
+                                                foreach (var item in Model.RecentPayment)
+                                                {
+                                                    <tr>
+                                                        <td>@item.PaymentId</td>
+                                                        <td>@item.PaymentMode</td>
+                                                        <td>@item.Amount</td>
+                                                        <td>@item.Status</td>
+                                                        <td>
+                                                            <a asp-controller="Payment" asp-action="Index" asp-route-id="@item.PaymentId" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="card-footer clearfix">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Payments</a>
+                            <a asp-controller="Payment" asp-action="Index" class="btn btn-sm btn-secondary float-right">View All Payments</a>
                         </div>
                     </div>
+                </div>
+                <div class="col-6">
+                    <!-- PIE CHART -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Amount with payment type</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
                 </div>
             </div>
         </div>
@@ -327,8 +308,8 @@
         });
 
         $(function () {
-            var areaChartData = {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+         var areaChartData = {
+                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.Month)))'),
                 datasets: [
                     {
                         label: 'Verified',
@@ -339,7 +320,7 @@
                         pointStrokeColor: 'rgba(60,141,188,1)',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(60,141,188,1)',
-                        data: [1000000, 1250000, 500000, 1000000, 1250000, 500000, 500000, 500000, 1000000, 750000, 0, 500000]
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.VerifiedPayment)))'),
                     },
                     {
                         label: 'Unverified',
@@ -350,7 +331,7 @@
                         pointStrokeColor: '#c1c7d1',
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(220,220,220,1)',
-                        data: [1000000, 1250000, 750000, 250000, 1250000, 750000, 250000, 1000000, 1000000, 750000, 500000, 500000]
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.UnverifiedPayment)))'),
                     },
                 ]
             }
@@ -374,5 +355,44 @@
                 options: barChartOptions
             })
         });
+
+        $(function () {
+            //var donutData = {
+            //    labels: ['Check ' + 50000, 'Online Transfer ' + 40000, 'RTGS ' + 60000, 'PO ' + 30000],
+            //    datasets: [
+            //        {
+            //            data: [50000, 40000, 60000, 30000],
+            //            backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef'],
+            //        }
+            //    ]
+            //}
+              var donutData = {
+                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.PaymentMode)))'),
+                datasets: [
+                    {
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.Amount)))'),
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
+                            '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
+                    }
+                ]
+            }
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = donutData;
+            var pieOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            })
+        })
     </script>
 }
