@@ -1,4 +1,5 @@
-﻿using Models.Common;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,5 +26,9 @@ namespace Models.Application
         public ProductDetail ProductDetail { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }
+        [NotMapped]
+        public int Quantity { get; set; }
+        [NotMapped]
+        public SelectList ProductList { get; set; }
     }
 }

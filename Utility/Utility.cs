@@ -12,7 +12,7 @@ namespace Utility
     {
         True = 1,
         False = 0
-    }    
+    }
 
     public enum LoginStatus
     {
@@ -36,9 +36,16 @@ namespace Utility
         Complete = 6
     }
     public enum ProductVisibility
-    { 
+    {
         Visible = 1,
         Hide = 2
+    }
+
+    public enum CompanyEnum
+    {
+        SAMI = 1,
+        Phytek = 2,
+        Healthtek = 3
     }
 
     public enum OrderValues

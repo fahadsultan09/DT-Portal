@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ProductDetail>
+
+<table id="example1" class="table table-bordered table-striped addProductGrid">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Code</th>
+            <th>Product Name</th>
+            <th>Pack Size</th>
+            <th>Quantity</th>
+            <th>Carton Size</th>
+            <th>Rate</th>
+            <th>Discount</th>
+            <th>Quantity in Packs</th>
+            <th>Quantity in Cartons</th>
+            <th>Total</th>
+            <th>SAP Order No.</th>
+            <th>Supplies</th>
+            <th>Company</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.ProductMaster.SAPProductCode</td>
+                <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
+                <td>@item.ProductMaster.PackSize</td>
+                <td>@item.ProductMaster.Quantity</td>
+                <td>Carton Size</td>
+                <td>@item.ProductMaster.Rate</td>
+                <td>@item.ProductMaster.Discount %</td>
+                <td>Quantity in Packs</td>
+                <td>Quantity in Cartons</td>
+                <td>Value</td>
+                <td>SAP Order No.</td>
+                <td>Supplies</td>
+                <td>Company</td>
+                <td>
+                    <a asp-action="Delete"
+                       asp-controller="Order"
+                       asp-route-Id="@item.ProductMaster.Id"
+                       class="btn btn-danger"
+                       data-ajax="true"
+                       data-ajax-complete="UpdateOrderValue"
+                       data-ajax-update="#addToGrid"
+                       data-ajax-method="POST">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

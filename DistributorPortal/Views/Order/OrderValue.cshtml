@@ -1,0 +1,73 @@
+﻿@model OrderValueViewModel
+@inject IUnitOfWork iUnitOfWork
+@{
+    var Company = new CompanyBLL(iUnitOfWork).GetAllCompany();
+}
+
+<a asp-controller="Order"
+   asp-action="UpdateOrderValue"
+   id="frmUpdateOrderValue"
+   data-ajax-update="#UpdateOrderValueId"
+   data-ajax="true"
+   data-ajax-method="POST"
+   style="display: none"></a>
+    <table id="example1" class="table table-bordered table-striped" style="font-size: 13px; padding: 0;">
+        <thead>
+            <tr>
+                <th>Values</th>
+                <th>SAMI</th>
+                <th>HealthTek</th>
+                <th>PhyTek</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.LabelFor(e => e.Supplies0)</td>
+                <td>@Model.SAMISupplies0</td>
+                <td>@Model.HealthTekSupplies0</td>
+                <td>@Model.PhytekSupplies0</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.Supplies1)</td>
+                <td>@Model.SAMISupplies1</td>
+                <td>@Model.HealthTekSupplies1</td>
+                <td>@Model.PhytekSupplies1</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.Supplies4)</td>
+                <td>@Model.SAMISupplies4</td>
+                <td>@Model.HealthTekSupplies4</td>
+                <td>@Model.PhytekSupplies4</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.TotalOrderValues)</td>
+                <td>@Model.SAMITotalOrderValues</td>
+                <td>@Model.HealthTekTotalOrderValues</td>
+                <td>@Model.PhytekTotalOrderValues</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.PendingOrderValues)</td>
+                <td>@Model.SAMIPendingOrderValues</td>
+                <td>@Model.HealthTekPendingOrderValues</td>
+                <td>@Model.PhytekPendingOrderValues</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.CurrentBalance)</td>
+                <td>@Model.SAMICurrentBalance</td>
+                <td>@Model.HealthTekCurrentBalance</td>
+                <td>@Model.PhytekCurrentBalance</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.UnConfirmedPayment)</td>
+                <td>@Model.SAMIUnConfirmedPayment</td>
+                <td>@Model.HealthTekUnConfirmedPayment</td>
+                <td>@Model.PhytekUnConfirmedPayment</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(e => e.NetPayable)</td>
+                <td>@Model.SAMINetPayable</td>
+                <td>@Model.HealthTekNetPayable</td>
+                <td>@Model.PhytekNetPayable</td>
+            </tr>
+        </tbody>
+    </table>

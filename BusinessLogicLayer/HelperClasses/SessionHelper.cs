@@ -24,5 +24,11 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<List<RolePermission>>("NavigationMenu");
             set => _httpContextAccessor.HttpContext.Session.Set("NavigationMenu", value);
         }
+
+        public static List<ProductDetail> AddProduct
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<ProductDetail>>("AddProduct");
+            set => _httpContextAccessor.HttpContext.Session.Set("AddProduct", value);
+        }
     }
 }

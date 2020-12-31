@@ -1,6 +1,7 @@
 ﻿@model OrderMaster
+@inject IUnitOfWork iUnitOfWork
 @{
-    var values = Enum.GetNames(typeof(OrderValues));
+    var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
 }
 <style type="text/css">
     .select2-container .select2-selection--single {
@@ -11,26 +12,25 @@
         user-select: none;
         -webkit-user-select: none;
     }
-
-    /*.card{
-        height:470px
-    }*/
 </style>
 
-<form asp-controller="Order"
-      asp-action="SaveEdit"
-      id="frmOrderMaster"
-      data-ajax-begin="Begin"
-      data-ajax-success="OnSuccess"
-      data-ajax-complete="Complete"
-      data-ajax="true"
-      data-ajax-method="POST">
-    <input asp-for="Id" type="hidden" />
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
+
+<!-- Main content -->
+
+<section class="content-header">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-controller="Order"
+                      asp-action="SaveEdit"
+                      id="frmOrderMaster"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="Complete"
+                      data-ajax="true"
+                      data-ajax-method="POST">
+                    <input asp-for="Id" type="hidden" />
                     <div class="row">
                         <div class="col-6">
                             <div class="card card-primary h-90">
@@ -126,127 +126,81 @@
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                     </div>
                                 </div>
-                                <div class="card-body p-0">
-                                    <table id="example1" class="table table-bordered table-striped" style="font-size: 13px; padding: 0;">
-                                        <thead>
-                                            <tr>
-                                                <th>Values</th>
-                                                <th>SAMI</th>
-                                                <th>Healthtek</th>
-                                                <th>Phytek</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in EnumHelper<OrderValues>.GetValues(OrderValues.CurrentBalance))
-                                            {
-                                            <tr>
-                                                <td>@Html.DisplayFor(e => item)</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            }
-                                        </tbody>
-                                    </table>
+                                <div class="card-body p-0" id="UpdateOrderValueId">
+                                    <partial name="OrderValue" model="new OrderValueViewModel()" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">Add Products</h3>
-                                </div>
-                                <div class="card-body">
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Add Products</h3>
+                            </div>
+                            <div class="card-body">
+                                <form asp-controller="Order"
+                                      asp-action="AddProduct"
+                                      id="frmOrderDetails"
+                                      data-ajax="true"
+                                      data-ajax-complete="UpdateOrderValue"
+                                      data-ajax-update="#addToGrid"
+                                      data-ajax-method="POST">
                                     <div class="form-group row">
                                         <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
                                             <h6>Product</h6>
                                             <div class="col-lg-12">
-                                                <select asp-items="@(new SelectList(Model.ProductList, "Value", "Text"))" class="form-control select2" id="ProductName">
-                                                    <option value="">--Select option--</option>
+                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="form-control select2" name="Product">
+                                                    <option value="">--Select Product--</option>
                                                 </select>
                                             </div>
-                                            <span id="ErrorProductName" class="text-danger"></span>
+                                            <span id="ErrorProductName" class="text-danger">@ViewBag.Error</span>
                                         </div>
                                         <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
                                             <h6>Quantity</h6>
                                             <div class="col-lg-12">
-                                                <input type="number" id="Quantity" placeholder="Enter Quantity" class="form-control" />
+                                                <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />
                                                 <span id="ErrorQuantity" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="col-lg-1 col-md-1 col-sm-3 col-xs-3">
                                             <h4 class="col-lg-12 col-form-h4"></h4>
-                                            <button type="button" id="AddProducts" class="ladda-button btn btn-info float-right" style="margin-top:20px;">
+                                            <button type="submit" id="AddProducts" class="ladda-button btn btn-info float-right" style="margin-top:20px;">
                                                 Add
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="scrollmenu">
-                                        <table id="example1" class="table table-bordered table-striped addProductGrid">
-                                            <thead>
-                                                <tr>
-                                                    <th>S.No</th>
-                                                    <th>Code</th>
-                                                    <th>Product Name</th>
-                                                    <th>Pack Size</th>
-                                                    <th>Pending Quantity</th>
-                                                    <th>Carton Size</th>
-                                                    <th>Rate</th>
-                                                    <th>Discount</th>
-                                                    <th>Quantity in Packs</th>
-                                                    <th>Quantity in Cartons</th>
-                                                    <th>Value</th>
-                                                    <th>SAP Order No.</th>
-                                                    <th>Supplies</th>
-                                                    <th>Company</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if (@Model.OrderDetail != null)
-                                                {
-                                                    @for (int i = 0; i < Model.OrderDetail.Count; i++)
-                                                    {
-                                                        <tr class="@(Model.OrderDetail[i].IsRowDeleted == true ? "d-none" : null )">
-                                                            <td style="width: 20%;">@Html.TextBoxFor(x => Model.OrderDetail[i].ProductMaster.ProductName, new { @class = "d-none" }) @Model.OrderDetail[i].ProductMaster.ProductName</td>
-                                                            <td style="width:20%;">@Html.TextBoxFor(x => Model.OrderDetail[i].Quantity, new { @class = "d-none" }) @Model.OrderDetail[i].Quantity</td>
-                                                            <td class="d-none">@Html.TextBoxFor(x => Model.OrderDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.OrderDetail[i].IsRowDeleted</td>
-                                                            <td style="width:20%;"><button type="button" id="btnDeleteLcl" class="btn btn-danger" value="Delete" _id="@Model.OrderDetail[i].Id">Delete</button></td>
-                                                        </tr>
-                                                    }
-                                                }
-                                            </tbody>
-                                        </table>
+                                </form>
+                                <div class="scrollmenu" id="addToGrid">
+                                    <partial name="AddToGrid" model="SessionHelper.AddProduct" />
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12"></div>
+                                    <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                                        <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
                                     </div>
-                                    <div class="form-group row">
-                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12"></div>
-                                        <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
-                                            <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
-                                        </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mt-2">
-                                            <button type="submit" onclick="Save();" id="btnOrderNow" class="ladda-button btn btn-success float-right">
-                                                Order Now
-                                            </button>                                            
-                                        </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mt-2">
-                                            <button type="submit" class="ladda-button btn btn-primary float-right">
-                                                Draft
-                                            </button>
-                                        </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                        <button type="submit" onclick="Save();" id="btnOrderNow" class="ladda-button btn btn-success float-right">
+                                            Order Now
+                                        </button>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
+                                        <button type="submit" class="ladda-button btn btn-primary float-right">
+                                            Draft
+                                        </button>
+                                    </div>
 
-                                        </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
+
         </div>
-    </section>
-</form>
+    </div>
+</section>
 
 <script>
 
@@ -265,7 +219,7 @@
             bsCustomFileInput.init();
 
             //add international countries to gird
-            $("#AddProducts").click(function () {
+            @*$("#AddProducts").click(function () {
                 debugger
                 var IntCount = $('.addProductGrid tbody tr').length;
 
@@ -278,18 +232,17 @@
                 var IsRowDeleted = false;
 
                 if (ProductName === '--Select option--') {
-                    $("#ErrorProductName").text('Product Name is required');
+                    $("#ErrorProductName").text('Select Product');
                     return false;
                 }
                 if (Quantity === '') {
-                    $("#ErrorQuantity").text('Quantity is required');
+                    $("#ErrorQuantity").text('Enter quantity');
                     return false;
                 }
                 if (ProductArr.indexOf(ProductNameId) !== -1) {
                     $("#ErrorProductName").text('Product Name already exists');
                     return false;
                 } else {
-
                     var Id = ProductNameId;
                     var params = {
                         Id: (Id === undefined || Id == "" || Id == null || Id.length <= 0 ? 0 : Id)
@@ -330,16 +283,17 @@
                     $(".addProductGrid tbody").append(IntMarkup);
                 }
                 $("#Quantity").val('');
-            });
-
+            });*@
         });
 
         $(".addProductGrid").on("click", "#DeleteProducts", function () {
-
             var IntcurrentRow = $(this).closest("tr");
             ProductArr.splice(ProductArr.indexOf(IntcurrentRow.find('td:nth-child(2)').find(':input').val()), 1);
             IntcurrentRow.find('td:nth-child(7)').find(':input').val(true);
             $(IntcurrentRow).hide();
         });
-
+    function UpdateOrderValue() {
+        debugger;
+        $('#frmUpdateOrderValue').click();
+    }
 </script>

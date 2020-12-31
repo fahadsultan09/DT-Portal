@@ -43,5 +43,6 @@ namespace Models.ApplicationContext
         public DbSet<Designation> Designation { get; set; }
         public DbSet<PaymentMode> PaymentMode { get; set; }
         public DbSet<Bank> Bank { get; set; }
+        public DbSet<OrderValue> OrderValue { get; set; }
     }
 }

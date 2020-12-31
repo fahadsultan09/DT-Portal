@@ -30,5 +30,7 @@ namespace Models.Application
         public string R_StorageLocation { get; set; }
         public string SalesItemCategory { get; set; }
         public string ReturnItemCategory { get; set; }
+        [NotMapped]
+        public double TotalPrice { get; set; }
     }
 }
