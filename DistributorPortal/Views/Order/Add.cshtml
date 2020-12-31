@@ -112,6 +112,26 @@
                                                 <span asp-validation-for="Remarks" class="text-danger"></span>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
+                                            </div>
+
+                                            <div class="offset-3 col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                <button type="submit" name="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success float-right">
+                                                    Order Now
+                                                </button>
+                                            </div>
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
+                                                
+                                            </div>
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
+                                                <button type="submit" name="@SubmitStatus.Draft" class="ladda-button btn btn-primary float-right">
+                                                    Draft
+                                                </button>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>

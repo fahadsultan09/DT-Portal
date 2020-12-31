@@ -48,6 +48,12 @@ namespace Utility
         Healthtek = 3
     }
 
+    public enum SubmitStatus
+    {
+        OrderNow = 1,
+        Draft = 2
+    }
+
     public enum OrderValues
     {
         [Display(Name = "0% Supplies")]
