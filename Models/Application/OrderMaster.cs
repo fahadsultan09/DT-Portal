@@ -17,8 +17,6 @@ namespace Models.Application
         public string ReferenceNo { get; set; }
         [Required(ErrorMessage = "Remarks is required.")]
         public string Remarks { get; set; }
-
-        [Required(ErrorMessage = "Attachment is required.")]
         public string Attachment { get; set; }
         [NotMapped]
         public IFormFile AttachmentFormFile { get; set; }

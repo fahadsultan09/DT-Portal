@@ -68,9 +68,9 @@ namespace BusinessLogicLayer.Application
             viewModel.SAMISupplies4 = SAMIproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.TotalPrice);
             viewModel.SAMIPendingOrderValues = 0;
-            viewModel.SAMICurrentBalance = 0;
+            viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
             viewModel.SAMIUnConfirmedPayment = 0;
-            viewModel.SAMINetPayable = 0;
+            viewModel.SAMINetPayable = viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
             viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
@@ -78,9 +78,9 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.TotalPrice);
             viewModel.HealthTekPendingOrderValues = 0;
-            viewModel.HealthTekCurrentBalance = 0;
+            viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
             viewModel.HealthTekUnConfirmedPayment = 0;
-            viewModel.HealthTekNetPayable = 0;
+            viewModel.HealthTekNetPayable = viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
             viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
@@ -88,9 +88,9 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.TotalPrice);
             viewModel.PhytekPendingOrderValues = 0;
-            viewModel.PhytekCurrentBalance = 0;
+            viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             viewModel.PhytekUnConfirmedPayment = 0;
-            viewModel.PhytekNetPayable = 0;
+            viewModel.PhytekNetPayable = viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek;
             return viewModel;
         }
         public List<OrderMaster> Where(Expression<Func<OrderMaster, bool>> predicate)

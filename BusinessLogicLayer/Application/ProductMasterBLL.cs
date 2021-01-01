@@ -75,7 +75,7 @@ namespace BusinessLogicLayer.Application
             var selectList = GetAllProductMaster().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
-                Text = x.ProductName.Trim()
+                Text = x.ProductName.Trim() + " " + x.ProductDescription.Trim() 
             });
 
             return new SelectList(selectList, "Value", "Text");

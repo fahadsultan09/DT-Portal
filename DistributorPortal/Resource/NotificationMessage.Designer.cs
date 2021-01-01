@@ -142,6 +142,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order Successfully Saved.
+        /// </summary>
+        public static string OrderSaved {
+            get {
+                return ResourceManager.GetString("OrderSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please fill in the information below. The field labels marked with * are required input fields..
         /// </summary>
         public static string RequiredFieldsValidation {

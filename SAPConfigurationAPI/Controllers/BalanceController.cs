@@ -1,4 +1,5 @@
 ﻿using SAPConfigurationAPI.BusinessLogic;
+using SAPConfigurationAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,10 @@ namespace SAPConfigurationAPI.Controllers
             connectivity = new SAPConnectivity();
         }
        
-        public decimal GetBalance()
+        public DistributorBalance GetBalance(string DistributorId)
         {
-            var table = connectivity.GETBalanceFromSAP("ZWAS_IT_DP_DIST_BALANCE_BAPI", "DISTRIBUTOR");
-            return 0;
+            var Data = connectivity.GETBalanceFromSAP("ZWAS_IT_DP_DIST_BALANCE_BAPI", "DISTRIBUTOR", DistributorId);
+            return Data;
         }
     }
 }

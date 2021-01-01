@@ -144,6 +144,9 @@
   <data name="Information" xml:space="preserve">
     <value>info</value>
   </data>
+  <data name="OrderSaved" xml:space="preserve">
+    <value>Order Successfully Saved</value>
+  </data>
   <data name="RequiredFieldsValidation" xml:space="preserve">
     <value>Please fill in the information below. The field labels marked with * are required input fields.</value>
   </data>

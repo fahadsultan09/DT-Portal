@@ -1,8 +1,6 @@
 ﻿
 $(document).ready(function () {
-
     $('#Spinner').hide();
-
 });
 
 var Toast;
@@ -22,7 +20,6 @@ function Begin() {
     $('button[type="submit"]').attr('disabled', true);
 }
 function OnSuccess(data) {
-
     if (data.data.Status) {
         Toast.fire({
             icon: 'success',
@@ -39,17 +36,16 @@ function OnSuccess(data) {
         })
     }
 }
-function Complete() {
 
+
+function Complete() {
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
 }
 
 //Save
 function Save() {
-
     var form = event.target.form; // storing the form
-
     $(form).each(function () {
         $(this).children().find('textarea').each(function () {
             $(this).val($(this).val().trim());

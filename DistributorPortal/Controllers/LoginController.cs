@@ -59,7 +59,8 @@ namespace DistributorPortal.Controllers
             }
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
-                SessionHelper.DistributorBalance = GetDistributorBalance();
+
+                SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? GetDistributorBalance() : null;
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
@@ -109,18 +110,19 @@ namespace DistributorPortal.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
         }
-        public double GetDistributorBalance()
+        public DistributorBalance GetDistributorBalance()
         {
             try
             {
-                var Client = new RestClient(_configuration.SyncDistributorBalanceURL);
+                
+                var Client = new RestClient(_configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
                 var request = new RestRequest(Method.GET);
                 IRestResponse response = Client.Execute(request);
-                return Convert.ToDouble(JsonConvert.DeserializeObject<List<Distributor>>(response.Content));
+                return JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
             }
             catch (Exception ex)
             {
-                return 0;
+                return null;
             }
         }
     }

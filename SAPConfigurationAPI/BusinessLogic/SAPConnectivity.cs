@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Configuration;
 using System.Text;
+using SAPConfigurationAPI.Models;
 
 namespace SAPConfigurationAPI.BusinessLogic
 {
@@ -36,7 +37,7 @@ namespace SAPConfigurationAPI.BusinessLogic
 
 
         }
-        public object GETBalanceFromSAP(string Function, string TableName)
+        public DistributorBalance GETBalanceFromSAP(string Function, string TableName, string DistributorId)
         {
             SAPSystemConnect sapCfg = new SAPSystemConnect();
             try
@@ -46,14 +47,15 @@ namespace SAPConfigurationAPI.BusinessLogic
                 rfcDest = RfcDestinationManager.GetDestination(SystemId);
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
-                //IRfcTable rfcFields = companyBapi.GetTable(TableName);
-                //companyBapi.SetValue("DISTRIBUTOR", rfcFields);
-                companyBapi.SetValue("DISTRIBUTOR", "0010000004");
-                //IRfcStructure param = companyBapi.GetStructure("DISTRIBUTOR");
-                //param.SetValue("DISTRIBUTOR", 722);
+                companyBapi.SetValue("DISTRIBUTOR", DistributorId);
                 companyBapi.Invoke(rfcDest);
-                var s = companyBapi.GetObject(0);
-                return s;
+                var sami = companyBapi.GetValue("BAL_SAMI");
+                var HTL = companyBapi.GetValue("BAL_HTL");
+                return new DistributorBalance
+                {
+                    SAMI = Convert.ToDouble(sami),
+                    HealthTek = Convert.ToDouble(HTL)
+                };
             }
             catch (Exception ex)
             {

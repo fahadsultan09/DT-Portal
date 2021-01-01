@@ -29,7 +29,8 @@
                       data-ajax-success="OnSuccess"
                       data-ajax-complete="Complete"
                       data-ajax="true"
-                      data-ajax-method="POST">
+                      data-ajax-method="POST"
+                      enctype="multipart/form-data">
                     <input asp-for="Id" type="hidden" />
                     <div class="row">
                         <div class="col-6">
@@ -164,8 +165,8 @@
                                       asp-action="AddProduct"
                                       id="frmOrderDetails"
                                       data-ajax="true"
+                                      data-ajax-success="GetResponse"
                                       data-ajax-complete="UpdateOrderValue"
-                                      data-ajax-update="#addToGrid"
                                       data-ajax-method="POST">
                                     <div class="form-group row">
                                         <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
@@ -232,78 +233,8 @@
     var response = [];
 
         $(document).ready(function () {
-
-            //Initialize Select2 Elements
             $('.select2').select2()
-
             bsCustomFileInput.init();
-
-            //add international countries to gird
-            @*$("#AddProducts").click(function () {
-                debugger
-                var IntCount = $('.addProductGrid tbody tr').length;
-
-                $("#ErrorProductName").empty();
-                $("#ErrorQuantity").empty();
-
-                var ProductNameId = $("#ProductName").val();
-                var ProductName = $("#ProductName option:selected").text();
-                var Quantity = $("#Quantity").val().trim();
-                var IsRowDeleted = false;
-
-                if (ProductName === '--Select option--') {
-                    $("#ErrorProductName").text('Select Product');
-                    return false;
-                }
-                if (Quantity === '') {
-                    $("#ErrorQuantity").text('Enter quantity');
-                    return false;
-                }
-                if (ProductArr.indexOf(ProductNameId) !== -1) {
-                    $("#ErrorProductName").text('Product Name already exists');
-                    return false;
-                } else {
-                    var Id = ProductNameId;
-                    var params = {
-                        Id: (Id === undefined || Id == "" || Id == null || Id.length <= 0 ? 0 : Id)
-                    }
-
-                    $.ajax({
-                        type: "GET",
-                        url: '@Url.Action("GetProduct", "Product")',
-                        contentType: "application/json",
-                        dataType: "json",
-                        data: params,
-                        async: false,
-                        success: function (data) {
-                            debugger
-                            response = data.productMaster;
-                        },
-                    });
-
-                    ProductArr.push(ProductNameId);
-
-                    var IntMarkup = '<tr>  \
-                    <td><label id="' + IntCount + '">' + ProductNameId + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__ProductNameId" name="OrderDetail[' + IntCount + '].ProductNameId" type="text" value="' + ProductNameId + '" ></td> \
-                    <td><label id="' + IntCount + '">' + response.PackCode + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PackCode" name="OrderDetail[' + IntCount + '].PackCode" type="text" value="' + response.PackCode + '" ></td> \
-                    <td><label id="' + IntCount + '">' + ProductName + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__ProductName" name="OrderDetail[' + IntCount + '].ProductName" type="text" value="' + ProductName + '" ></td> \
-                    <td><label id="' + IntCount + '">' + response.PackSize + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PackSize" name="OrderDetail[' + IntCount + '].PackSize" type="text" value="' + response.PackSize + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                    <td><label id="' + IntCount + '">' + response.CartonSize + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__CartonSize" name="OrderDetail[' + IntCount + '].CartonSize" type="text" value="' + response.CartonSize + '" ></td> \
-                    <td><label id="' + IntCount + '">' + response.Rate + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__Rate" name="OrderDetail[' + IntCount + '].Rate" type="text" value="' + response.Rate + '" ></td> \
-                    <td><label id="' + IntCount + '">' + response.Discount + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__Discount" name="OrderDetail[' + IntCount + '].Discount" type="text" value="' + response.Discount + '" ></td> \
-                    <td><label id="' + IntCount + '"></label><input id="OrderDetail_' + IntCount + '__Quantity" name="OrderDetail[' + IntCount + '].Quantity" type="text" value="' + Quantity + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                    <td><label id="' + IntCount + '">' + "" + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__PendingQuantity" name="OrderDetail[' + IntCount + '].PendingQuantity" type="text" value="' + "" + '" ></td> \
-                        <td class="d-none"><label id="' + IntCount + '">' + IsRowDeleted + '</label><input style="display:none;" id="OrderDetail_' + IntCount + '__IsRowDeleted" name="OrderDetail[' + IntCount + '].IsRowDeleted" type="text" value="' + IsRowDeleted + '" ></td> \
-                    <td><button type="button" id="DeleteProducts" class="btn btn-danger" value="Delete">Delete</button></td></tr>';
-                    $(".addProductGrid tbody").append(IntMarkup);
-                }
-                $("#Quantity").val('');
-            });*@
         });
 
         $(".addProductGrid").on("click", "#DeleteProducts", function () {
@@ -313,7 +244,25 @@
             $(IntcurrentRow).hide();
         });
     function UpdateOrderValue() {
-        debugger;
         $('#frmUpdateOrderValue').click();
+    }
+
+    function GetResponse(data) {
+        debugger;
+        if (data.data.HtmlString != null) {
+            $("#addToGrid").html(data.data.HtmlString.Result);
+        }        
+        if (data.data.Status) {
+            Toast.fire({
+                icon: 'success',
+                title: data.data.Message
+            })
+        }
+        else {
+            Toast.fire({
+                icon: 'error',
+                title: data.data.Message
+            })
+        }
     }
 </script>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Models.Application;
 using Models.UserRights;
+using Models.ViewModel;
 using PDU.BusinessLogicLayer.HelperClasses;
 using System.Collections.Generic;
 
@@ -31,10 +32,10 @@ namespace BusinessLogicLayer.HelperClasses
             set => _httpContextAccessor.HttpContext.Session.Set("AddProduct", value);
         }
 
-        public static double DistributorBalance
+        public static DistributorBalance DistributorBalance
         {
-            get => _httpContextAccessor.HttpContext.Session.Get<double>("DistributorBalance");
-            set => _httpContextAccessor.HttpContext.Session.Set("GetDistributorBalance", value);
+            get => _httpContextAccessor.HttpContext.Session.Get<DistributorBalance>("DistributorBalance");
+            set => _httpContextAccessor.HttpContext.Session.Set("DistributorBalance", value);
         }
     }
 }

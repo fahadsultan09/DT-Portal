@@ -4,6 +4,9 @@ using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
@@ -11,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Utility;
 using Utility.Constant;
@@ -26,13 +30,15 @@ namespace DistributorPortal.Controllers
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly IConfiguration _IConfiguration;
-        public OrderController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private ICompositeViewEngine _viewEngine;
+        public OrderController(IUnitOfWork unitOfWork, IConfiguration configuration, ICompositeViewEngine viewEngine)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _productDetailBLL = new ProductDetailBLL(_unitOfWork);
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _IConfiguration = configuration;
+            _viewEngine = viewEngine;
         }
         // GET: Order
         public ActionResult Index()
@@ -49,9 +55,10 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddProduct = new List<ProductDetail>();
             return PartialView("Add", BindOrderMaster(id));
         }
-        public IActionResult AddProduct(int Quantity, int Product)
+        public JsonResult AddProduct(int Quantity, int Product)
         {
-            if (!SessionHelper.AddProduct.Any(e => e.Id == Product))
+            JsonResponse jsonResponse = new JsonResponse();
+            if (!SessionHelper.AddProduct.Any(e => e.ProductMasterId == Product))
             {
                 var master = _productDetailBLL.GetProductDetailByMasterId(Product);
                 if (master != null)
@@ -61,13 +68,19 @@ namespace DistributorPortal.Controllers
                     var list = SessionHelper.AddProduct;
                     list.Add(master);
                     SessionHelper.AddProduct = list;
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Product Added Successfully";
+                    jsonResponse.RedirectURL = string.Empty;
+                    jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct);
                 }                                
             }
             else
             {
-                ViewBag.Error = "Product Already Exists";
+                jsonResponse.Status = false;
+                jsonResponse.Message = "Product Already Exists";
+                jsonResponse.RedirectURL = string.Empty;
             }
-            return PartialView("AddToGrid", SessionHelper.AddProduct);            
+            return Json(new { data = jsonResponse });
         }
 
         public IActionResult Delete(int Id)
@@ -87,6 +100,7 @@ namespace DistributorPortal.Controllers
             try
             {
                 ModelState.Remove("Id");
+                ModelState.Remove("Attachment");
                 if (!ModelState.IsValid)
                 {
                     jsonResponse.Status = false;
@@ -132,8 +146,10 @@ namespace DistributorPortal.Controllers
                         });
                     }
                     _orderDetailBLL.AddRange(details);
-                    return Json(new { Result = true, model.Id });
-                }
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = NotificationMessage.OrderSaved;
+                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                }                
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -162,6 +178,19 @@ namespace DistributorPortal.Controllers
         {
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
+        }
+
+        public async Task<string> RenderRazorViewToString(string viewName, object model)
+        {
+            ViewData.Model = model;
+            using (var sw = new StringWriter())
+            {
+                var viewResult = _viewEngine.FindView(ControllerContext,viewName, false);
+                var viewContext = new ViewContext(ControllerContext, viewResult.View,
+                                             ViewData, TempData, sw, new HtmlHelperOptions());
+                await viewResult.View.RenderAsync(viewContext);
+                return sw.GetStringBuilder().ToString();
+            }
         }
     }
 }
