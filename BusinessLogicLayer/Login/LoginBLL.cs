@@ -23,7 +23,7 @@ namespace BusinessLogicLayer.Login
             if (LoginUser != null)
             {
                 SessionHelper.LoginUser = LoginUser;
-                SessionHelper.NavigationMenu = new RolePermissionBLL(_unitOfWork).Where(e => e.RoleId == SessionHelper.LoginUser.RoleId && e.ApplicationPage.IsDeleted == false).ToList();                
+                SessionHelper.NavigationMenu = new RolePermissionBLL(_unitOfWork).Where(e => e.RoleId == SessionHelper.LoginUser.RoleId && e.ApplicationPage.IsDeleted == false).ToList();
                 return LoginStatus.Success;
             }
             else

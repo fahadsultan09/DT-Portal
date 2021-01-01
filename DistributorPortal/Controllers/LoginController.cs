@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,15 +28,17 @@ namespace DistributorPortal.Controllers
         private readonly LoginBLL login;
         private readonly UserBLL _UserBLL;
         private readonly IConfiguration _IConfiguration;
+        private readonly Configuration _configuration;
 
-        public LoginController(IUnitOfWork unitOfWork, IHttpContextAccessor HhttpContextAccessor, IConfiguration configuration)
+        public LoginController(IUnitOfWork unitOfWork, IHttpContextAccessor HhttpContextAccessor, IConfiguration IConfiguration, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = HhttpContextAccessor;
             sessionHelper = new SessionHelper(_httpContextAccessor);
             login = new LoginBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
-            _IConfiguration = configuration;
+            _IConfiguration = IConfiguration;
+            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -55,6 +59,7 @@ namespace DistributorPortal.Controllers
             }
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
+                SessionHelper.DistributorBalance = GetDistributorBalance();
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
@@ -103,6 +108,20 @@ namespace DistributorPortal.Controllers
 
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
+        }
+        public double GetDistributorBalance()
+        {
+            try
+            {
+                var Client = new RestClient(_configuration.SyncDistributorBalanceURL);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                return Convert.ToDouble(JsonConvert.DeserializeObject<List<Distributor>>(response.Content));
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
     }
 }

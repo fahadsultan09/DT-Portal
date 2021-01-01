@@ -66,7 +66,7 @@ namespace DistributorPortal.Controllers
             model.Reject = _OrderMaster.Where(x => x.Status != OrderStatus.Reject).Count();
             model.PendingOrder = model.PendingApproval + model.PaymentVerified + model.InProcess + model.PartiallyProcessed;
             model.VerifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount));
-            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
+            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -132,8 +132,9 @@ namespace DistributorPortal.Controllers
             List<OrderDetail> _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
             List<PaymentMaster> _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             model.PaymentWiseStatus = new List<PaymentWiseStatus>();
-            model.UnverifiedPayment = _PaymentBLL.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
-            model.TodayVerifiedPayment = _PaymentBLL.Where(x => x.Status == PaymentStatus.Verified && x.CreatedDate.Date == DateTime.Now.Date).Sum(x => x.Amount);
+            model.VerifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Verified).Sum(x => x.Amount));
+            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
+            model.TodayVerifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.Status == PaymentStatus.Verified && x.CreatedDate.Date == DateTime.Now.Date).Sum(x => x.Amount));
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -147,25 +148,35 @@ namespace DistributorPortal.Controllers
                 model.PaymentWiseStatus.Add(PWSCurrent);
             }
             model.PaymentWiseAmount = new List<PaymentWiseAmount>();
-            model.PaymentWiseAmount = _PaymentMaster.GroupBy(x => x.PaymentModeId).Select(y => new PaymentWiseAmount
+            model.PaymentWiseAmount = _PaymentMaster.GroupBy(x => x.PaymentMode.PaymentName).Select(y => new PaymentWiseAmount
             {
-                PaymentMode = y.Key.ToString() + y.Sum(x => x.Amount),
+                PaymentMode = y.Key.ToString() + " " + ExtensionUtility.FormatNumberAmount(y.Sum(x => x.Amount)),
                 Amount = y.Sum(x => x.Amount)
             }).ToList();
 
+            model.RecentPayment = new List<RecentPayment>();
+            model.RecentPayment = _PaymentMaster.OrderByDescending(x => x.CreatedDate).Select(y => new RecentPayment
+            {
+
+                PaymentId = y.Id,
+                PaymentMode = y.PaymentMode.PaymentName,
+                DistributorName = y.Distributor.DistributorName,
+                Status = y.Status,
+                Amount = y.Amount
+            }).Take(5).ToList();
 
             return View(model);
         }
         public IActionResult DistributorDashboard()
         {
             DistributorDashboardViewModel model = new DistributorDashboardViewModel();
-            List<OrderMaster> _OrderMaster = _OrderBLL.GetAllOrderMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+            List<OrderMaster> _OrderMaster = _OrderBLL.GetAllOrderMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.OrderDetail != null).ToList();
             List<OrderDetail> _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             List<PaymentMaster> _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             model.OrderWiseStatus = new List<OrderWiseStatus>();
             model.PaymentWiseStatus = new List<PaymentWiseStatus>();
             model.InProcessOrder = _OrderBLL.Where(x => x.Status != OrderStatus.Draft && x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Reject).Count();
-            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
+            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
