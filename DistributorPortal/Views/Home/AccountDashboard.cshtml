@@ -201,7 +201,7 @@
                                 <table class="table m-0">
                                     <thead>
                                         <tr>
-                                            <th>Payment Id</th>
+                                            <th>Distributor Name</th>
                                             <th>Payment Mode</th>
                                             <th>Amount</th>
                                             <th>Status</th>
@@ -215,10 +215,19 @@
                                                 foreach (var item in Model.RecentPayment)
                                                 {
                                                     <tr>
-                                                        <td>@item.PaymentId</td>
+                                                        <td>@item.DistributorName</td>
                                                         <td>@item.PaymentMode</td>
                                                         <td>@item.Amount</td>
-                                                        <td>@item.Status</td>
+                                                        <td>
+                                                            @if (item.Status == PaymentStatus.Verified)
+                                                            {
+                                                                <span class="badge badge-success">@item.Status</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-danger">@item.Status</span>
+                                                            }
+                                                        </td>
                                                         <td>
                                                             <a asp-controller="Payment" asp-action="Index" asp-route-id="@item.PaymentId" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                                         </td>
@@ -239,7 +248,7 @@
                     <!-- PIE CHART -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Amount with payment type</h3>
+                            <h3 class="card-title">Status wise payment</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>

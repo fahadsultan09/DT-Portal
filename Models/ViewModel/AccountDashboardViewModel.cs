@@ -6,9 +6,9 @@ namespace Models.ViewModel
 {
     public class AccountDashboardViewModel
     {
-        public decimal UnverifiedPayment { get; set; }
-        public decimal VerifiedPayment { get; set; }
-        public decimal TodayVerifiedPayment { get; set; }
+        public string UnverifiedPayment { get; set; }
+        public string VerifiedPayment { get; set; }
+        public string TodayVerifiedPayment { get; set; }
         public List<PaymentWiseStatus> PaymentWiseStatus { get; set; }
         public List<PaymentWiseAmount> PaymentWiseAmount { get; set; }
         public List<RecentPayment> RecentPayment { get; set; }
