@@ -22,7 +22,7 @@ namespace Models.Application
         public string DepositorBankCode { get; set; }
         public int CompanyBankName { get; set; }
         public string CompanyBankCode { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public int PaymentModeId { get; set; }
         [ForeignKey("PaymentModeId")]
         public virtual PaymentMode PaymentMode { get; set; }

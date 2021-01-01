@@ -18,7 +18,8 @@ namespace Models.ViewModel
         public int CompletelyProcessed { get; set; }
         public int OnHold { get; set; }
         public int Reject { get; set; }
-        public List<OrderWiseStatus> OrderWiseStatus { get; set; }
+        public List<OrderWiseComparision> OrderWiseComparision { get; set; }
+        public List<PaymentWiseComparision> PaymentWiseComparision { get; set; }
         public List<PaymentWiseStatus> PaymentWiseStatus { get; set; }
         public List<RegionWiseOrder> RegionWiseOrder { get; set; }
         public List<DistributorViewModel> DistributorViewModelOrder { get; set; }

@@ -85,7 +85,28 @@
                         @*<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>*@
                     </div>
                 </div>
-                <!-- ./col -->
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="col-lg-12">
+                        <div class="card  card-success">
+                            <div class="card-header border-0">
+                                <div class="d-flex justify-content-between">
+                                    <h3 class="card-title">Order Payment Status - Last 12 Months</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="position-relative mb-4">
+                                    <canvas id="payments-chart" height="200"></canvas>
+                                </div>
+                                <div class="d-flex flex-row justify-content-end">
+                                    <span class="mr-2"><i class="fas fa-square text-primary"></i> This year</span>
+                                    <span><i class="fas fa-square text-gray"></i> Last year</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -114,13 +135,11 @@
             </div>
             <div class="row">
                 <div class="col-lg-3 col-6">
-                    <!-- jQuery Knob -->
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
                             <button class="btn btn-outline-primary float-right">View All</button>
                         </div>
-                        <!-- /.card-header -->
                         <div class="card-body">
                             <!-- /.row -->
                             <div class="row">
@@ -315,12 +334,13 @@
                                 </thead>
                                 <tbody>
                                     @{
+                                        int k = 1;
                                         if (Model.ProductViewModelOrder != null && Model.ProductViewModelOrder.Count() > 0)
                                         {
                                             foreach (var item in Model.ProductViewModelOrder.OrderByDescending(x => x.OrderCount))
                                             {
                                                 <tr>
-                                                    <td>@(i++)</td>
+                                                    <td>@(k++)</td>
                                                     <td>@item.ProductName</td>
                                                     <td>@item.CurrentPrice</td>
                                                     <td>@item.OrderCount</td>
@@ -353,12 +373,13 @@
                                 </thead>
                                 <tbody>
                                     @{
+                                        int l = 1;
                                         if (Model.ProductViewModelQuantity != null && Model.ProductViewModelQuantity.Count() > 0)
                                         {
                                             foreach (var item in Model.ProductViewModelQuantity.OrderByDescending(x => x.Quantity))
                                             {
                                                 <tr>
-                                                    <td>@(i++)</td>
+                                                    <td>@(l++)</td>
                                                     <td>@item.ProductName</td>
                                                     <td>@item.CurrentPrice</td>
                                                     <td>@item.Quantity</td>
@@ -478,11 +499,11 @@
             var $visitorsChart = $('#orders-chart')
             var visitorsChart = new Chart($visitorsChart, {
           data: {
-                    labels: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseStatus.Select(e => e.Month)))'),
+                    labels: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseComparision.Select(e => e.Month)))'),
                     datasets: [
                         {
                             type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseStatus.Select(e => e.CurrentYear)))'),
+                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseComparision.Select(e => e.CurrentYear)))'),
                             backgroundColor: 'transparent',
                             borderColor: '#007bff',
                             pointBorderColor: '#007bff',
@@ -491,7 +512,82 @@
                         },
                         {
                             type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseStatus.Select(e => e.LastYear)))'),
+                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.OrderWiseComparision.Select(e => e.LastYear)))'),
+                            backgroundColor: 'tansparent',
+                            borderColor: '#ced4da',
+                            pointBorderColor: '#ced4da',
+                            pointBackgroundColor: '#ced4da',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    tooltips: {
+                        mode: mode,
+                        intersect: intersect
+                    },
+                    hover: {
+                        mode: mode,
+                        intersect: intersect
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                display: true,
+                                lineWidth: '4px',
+                                color: 'rgba(0, 0, 0, .2)',
+                                zeroLineColor: 'transparent'
+                            },
+                            ticks: $.extend({
+                                beginAtZero: true,
+                                //suggestedMax: 200
+                            }, ticksStyle)
+                        }],
+                        xAxes: [{
+                            display: true,
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: ticksStyle
+                        }]
+                    }
+                }
+            })
+        })
+
+          $(function () {
+            'use strict'
+
+            var ticksStyle = {
+                fontColor: '#495057',
+                fontStyle: 'bold'
+            }
+
+            var mode = 'index'
+            var intersect = true
+
+
+              var $paymentsChart = $('#payments-chart')
+              var $paymentsChart = new Chart($paymentsChart, {
+          data: {
+                    labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.Month)))'),
+                    datasets: [
+                        {
+                            type: 'line',
+                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.CurrentYear)))'),
+                            backgroundColor: 'transparent',
+                            borderColor: '#007bff',
+                            pointBorderColor: '#007bff',
+                            pointBackgroundColor: '#007bff',
+                            fill: false
+                        },
+                        {
+                            type: 'line',
+                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.LastYear)))'),
                             backgroundColor: 'tansparent',
                             borderColor: '#ced4da',
                             pointBorderColor: '#ced4da',

@@ -121,7 +121,7 @@ namespace Utility
             }
             return Tuple.Create(list);
         }
-        public static string FormatNumberAmount(decimal amount)
+        public static string FormatNumberAmount(double amount)
         {
             if (amount < 1000)
                 return amount.ToString();

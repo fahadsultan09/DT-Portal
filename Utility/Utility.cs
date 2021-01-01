@@ -34,7 +34,7 @@ namespace Utility
         InProcess = 4,
         PartiallyProcessed = 5,
         CompletelyProcessed = 6,
-        Onhold = 6,
+        Onhold = 9,
         Reject = 7,
         Submit = 8
 
