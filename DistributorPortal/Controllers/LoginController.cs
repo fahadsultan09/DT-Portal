@@ -89,6 +89,18 @@ namespace DistributorPortal.Controllers
                 }
                 string newPassword = EncryptDecrypt.Encrypt(model.Password);
                 _UserBLL.ResetPassword(_UserBLL.GetAllUser().FirstOrDefault(x => x.UserName == model.UserName).Id, newPassword);
+
+                if (login.CheckLogin(model) == LoginStatus.Success)
+                {
+                    if (SessionHelper.LoginUser.IsDistributor)
+                    {
+                        SessionHelper.DistributorBalance = GetDistributorBalance();
+                    }
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Login Successfully";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Home");
+                    return Json(new { data = jsonResponse });
+                }
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Password changed Successfully.";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");

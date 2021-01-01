@@ -21,7 +21,7 @@ namespace Models.Application
         public string Attachment { get; set; }
         [NotMapped]
         public IFormFile AttachmentFormFile { get; set; }
-        public decimal TotalValue { get; set; }
+        public double TotalValue { get; set; }
         public OrderStatus Status { get; set; }
         public string Comments { get; set; }
         [NotMapped]

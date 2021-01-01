@@ -30,6 +30,7 @@
                         <tr>
                             <th>S.No</th>
                             <th>Product Name</th>
+                            <th>Product Description</th>
                             <th>Pack Code</th>
                             <th>SAP Product Code</th>
                             <th>Discount</th>
@@ -41,28 +42,27 @@
                             <th>Pack Size</th>
                             <th>Product Origin</th>
                             <th>Product Price</th>
-                            <th>Product Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.ProductName</td>
-                                <td>@item.PackCode</td>
-                                <td>@item.SAPProductCode</td>
-                                <td>@item.Discount</td>
-                                <td>@item.Rate</td>
-                                <td>@item.TradePrice</td>
-                                <td>@item.SFSize</td>
-                                <td>@item.CartonSize</td>
-                                <td>@item.Strength</td>
-                                <td>@item.PackSize</td>
-                                <td>@item.ProductOrigin</td>
-                                <td>@item.ProductPrice</td>
-                                <td>@item.ProductDescription</td>
-                            </tr>
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.ProductDescription</td>
+                            <td>@item.PackCode</td>
+                            <td>@item.SAPProductCode</td>
+                            <td>@item.Discount</td>
+                            <td>@item.Rate</td>
+                            <td>@item.TradePrice</td>
+                            <td>@item.SFSize</td>
+                            <td>@item.CartonSize</td>
+                            <td>@item.Strength</td>
+                            <td>@item.PackSize</td>
+                            <td>@item.ProductOrigin</td>
+                            <td>@item.ProductPrice</td>
+                        </tr>
                         }
                     </tbody>
                 </table>

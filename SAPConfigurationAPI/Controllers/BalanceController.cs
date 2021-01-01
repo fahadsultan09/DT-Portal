@@ -16,7 +16,7 @@ namespace SAPConfigurationAPI.Controllers
             connectivity = new SAPConnectivity();
         }
        
-        public decimal GetBalance()
+        public double GetBalance()
         {
             var table = connectivity.GETBalanceFromSAP("ZWAS_IT_DP_DIST_BALANCE_BAPI", "DISTRIBUTOR");
             return 0;

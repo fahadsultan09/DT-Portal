@@ -2,17 +2,23 @@
 
 namespace Models.ViewModel
 {
-    public class OrderWiseStatus
+    public class OrderWiseComparision
     {
         public string Month { get; set; }
         public int LastYear { get; set; }
         public int CurrentYear { get; set; }
     }
+    public class PaymentWiseComparision
+    {
+        public string Month { get; set; }
+        public double LastYear { get; set; }
+        public double CurrentYear { get; set; }
+    }
     public class PaymentWiseStatus
     {
         public string Month { get; set; }
-        public decimal VerifiedPayment { get; set; }
-        public decimal UnverifiedPayment { get; set; }
+        public double VerifiedPayment { get; set; }
+        public double UnverifiedPayment { get; set; }
     }
     public class RegionWiseOrder
     {
@@ -22,13 +28,13 @@ namespace Models.ViewModel
     public class PaymentWiseAmount
     {
         public string PaymentMode { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
     }
     public class DistributorViewModel
     {
         public string DistributorName { get; set; }
         public int OrderCount { get; set; }
-        public decimal Payment { get; set; }
+        public double Payment { get; set; }
     }
     public class ProductViewModel
     {
@@ -41,7 +47,7 @@ namespace Models.ViewModel
     {
         public int OrderNo { get; set; }
         public string DistributorName { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public OrderStatus Status { get; set; }
     }
     public class RecentPayment
@@ -49,7 +55,7 @@ namespace Models.ViewModel
         public int PaymentId { get; set; }
         public string PaymentMode { get; set; }
         public string DistributorName { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public PaymentStatus Status { get; set; }
     }
 }

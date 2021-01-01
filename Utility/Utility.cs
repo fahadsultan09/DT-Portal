@@ -34,8 +34,8 @@ namespace Utility
         InProcess = 4,
         PartiallyProcessed = 5,
         CompletelyProcessed = 6,
-        Onhold = 6,
-        Reject = 7
+        Onhold = 7,
+        Reject = 8
 
     }
     public enum PaymentStatus

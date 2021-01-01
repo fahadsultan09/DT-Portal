@@ -2,7 +2,6 @@
 $(document).ready(function () {
 
     $('#Spinner').hide();
-
 });
 
 var Toast;
@@ -20,7 +19,9 @@ function Begin() {
 
     $('#Spinner').show();
     $('button[type="submit"]').attr('disabled', true);
+    Ladda.create($("button[type=submit]", this)[0]).start();
 }
+
 function OnSuccess(data) {
 
     if (data.data.Status) {
@@ -38,11 +39,13 @@ function OnSuccess(data) {
             title: data.data.Message
         })
     }
+    Ladda.create($("button[type=submit]", this)[0]).stop();
 }
 function Complete() {
 
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
+    Ladda.create($("button[type=submit]", this)[0]).stop();
 }
 
 //Save

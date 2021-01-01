@@ -81,19 +81,15 @@
                                 <td><input type="text" asp-for="@item.ProductDetail.SalesItemCategory" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.ReturnItemCategory" class="form-control" /></td>
                                 <td style=" vertical-align: middle;"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
-                                <td><button type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-success">Save</button></td>
+                                <td><button type="submit" id="btnSubmit" name="btnSubmit" class="ladda-button btn btn-success">Save</button></td>
                             </tr>
                         }
                     </tbody>
                 </table>
-
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
 <script>
 
     $(document).ready(function () {
@@ -113,6 +109,7 @@
 
     $("#example1").on("click", "#btnSubmit", function () {
         debugger
+        Ladda.create(this).start();
         var obj = {
             ProductMasterId: $(this).closest("tr").find("td:eq(0)").find(":input").val(),
             Id: $(this).closest("tr").find("td:eq(1)").find(":input").val(),

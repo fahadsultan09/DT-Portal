@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="~/Login/style.css" />
     <link href="~/lib/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <link href="~/lib/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <!-- Ladda style -->
+    <link href="~/lib/ladda/ladda-themeless.min.css" rel="stylesheet">
     <script src="~/Login/jquery-3.2.1.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
@@ -40,6 +42,7 @@
                 <form asp-controller="Login"
                       asp-action="Index"
                       id="frmUser"
+                      data-ajax-begin="Begin"
                       data-ajax-success="OnLoginSuccess"
                       data-ajax-complete="Complete"
                       data-ajax="true"
@@ -56,7 +59,7 @@
                                 <input type="password" asp-for="Password" placeholder="Enter Password" class="form-control">
                                 <a href="#" id="ForgotPassword">Forgot password?</a>
                                 <p id="error" class="text-danger"></p>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="ladda-button btn btn-primary" data-style="zoom-in">
                                     <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
                                     <span class="sr-only">Loading...</span>
                                     Sign In
@@ -80,6 +83,7 @@
             <form asp-controller="Login"
                   asp-action="ChangePassword"
                   id="frmUser"
+                  data-ajax-begin="Begin"
                   data-ajax-success="OnSuccess"
                   data-ajax-complete="Complete"
                   data-ajax="true"
@@ -340,6 +344,10 @@
     <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/plugins/toastr/toastr.min.js"></script>
+    <!-- Ladda -->
+    <script src="~/lib/ladda/spin.min.js"></script>
+    <script src="~/lib/ladda/ladda.min.js"></script>
+    <script src="~/lib/ladda/ladda.jquery.min.js"></script>
     <script src="~/Pages/Common.js"></script>
 
 </body>
