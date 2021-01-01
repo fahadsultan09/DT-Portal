@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
 using static Utility.Constant.Common;
@@ -22,7 +23,7 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
-        private readonly ProductMasterBLL _productMasterBLL;
+        private readonly OrderDetailBLL _orderDetailBLL;
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly IConfiguration _IConfiguration;
         public OrderController(IUnitOfWork unitOfWork, IConfiguration configuration)
@@ -30,6 +31,7 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _productDetailBLL = new ProductDetailBLL(_unitOfWork);
+            _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _IConfiguration = configuration;
         }
         // GET: Order
@@ -78,7 +80,7 @@ namespace DistributorPortal.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveEdit(OrderMaster model)
+        public JsonResult SaveEdit(OrderMaster model, SubmitStatus btnSubmit)
         {
             JsonResponse jsonResponse = new JsonResponse();
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
@@ -92,42 +94,44 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    if (model.OrderDetail is null || model.OrderDetail.Where(x => x.IsRowDeleted == false).Count() == 0)
+                    if (btnSubmit == SubmitStatus.Draft)
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Must add products before creating order.";
-                        return Json(new { data = jsonResponse });
-
+                        model.Status = OrderStatus.Draft;
+                    }
+                    else
+                    {
+                        model.Status = OrderStatus.Submit;
                     }
                     string[] permittedExtensions = Common.permittedExtensions;
                     if (model.AttachmentFormFile != null)
                     {
                         var ext = Path.GetExtension(model.AttachmentFormFile.FileName).ToLowerInvariant();
-
-                        if (string.IsNullOrEmpty(ext) || (!permittedExtensions.Contains(ext)))
+                        if (permittedExtensions.Contains(ext) && model.AttachmentFormFile.Length < Convert.ToInt64(5242880))
                         {
-                            jsonResponse.Status = true;
-                            jsonResponse.Message = NotificationMessage.FileSizeAllowed;
-                            return Json(new { data = jsonResponse });
-                        }
-                        if (model.AttachmentFormFile.Length > Convert.ToInt64(5242880))
-                        {
-                            jsonResponse.Status = true;
-                            jsonResponse.Message = NotificationMessage.FileTypeAllowed;
-                            return Json(new { data = jsonResponse });
+                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
+                            if (tuple.Item1)
+                            {
+                                model.Attachment = tuple.Item2;
+                            }
                         }
                     }
-                    if (model.AttachmentFormFile != null)
-                    {
-                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
-
-                        if (tuple.Item1)
-                        {
-                            model.Attachment = tuple.Item2;
-                        }
-                    }
+                    model.TotalValue = SessionHelper.AddProduct.Select(e => e.TotalPrice).Sum();
+                    model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                     _OrderBLL.Add(model);
-                    _unitOfWork.Save();
+                    List<OrderDetail> details = new List<OrderDetail>();
+                    foreach (var item in SessionHelper.AddProduct)
+                    {
+                        details.Add(new OrderDetail()
+                        {
+                            Amount = item.TotalPrice,
+                            OrderId = model.Id,
+                            ProductId = item.ProductMasterId,
+                            Quantity = item.ProductMaster.Quantity,
+                            CreatedBy = SessionHelper.LoginUser.Id,
+                            CreatedDate = DateTime.Now
+                        });
+                    }
+                    _orderDetailBLL.AddRange(details);
                     return Json(new { Result = true, model.Id });
                 }
                 return Json(new { data = jsonResponse });

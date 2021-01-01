@@ -35,7 +35,8 @@ namespace Utility
         PartiallyProcessed = 5,
         CompletelyProcessed = 6,
         Onhold = 6,
-        Reject = 7
+        Reject = 7,
+        Submit = 8
 
     }
     public enum PaymentStatus

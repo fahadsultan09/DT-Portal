@@ -17,14 +17,11 @@ namespace Models.Application
         public string ReferenceNo { get; set; }
         [Required(ErrorMessage = "Remarks is required.")]
         public string Remarks { get; set; }
-
-        [Required(ErrorMessage = "Attachment is required.")]
         public string Attachment { get; set; }
         [NotMapped]
         public IFormFile AttachmentFormFile { get; set; }
-        public decimal TotalValue { get; set; }
-        public OrderStatus Status { get; set; }
-        public string Comments { get; set; }
+        public double TotalValue { get; set; }
+        public OrderStatus Status { get; set; }        
         [NotMapped]
         public List<OrderDetail> OrderDetail { get; set; }
         [NotMapped]

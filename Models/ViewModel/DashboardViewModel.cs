@@ -41,7 +41,7 @@ namespace Models.ViewModel
     {
         public int OrderNo { get; set; }
         public string DistributorName { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public OrderStatus Status { get; set; }
     }
     public class RecentPayment

@@ -24,6 +24,7 @@ namespace BusinessLogicLayer.Application
         public int Add(OrderMaster module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
+            module.IsActive = true;
             module.IsDeleted = false;
             module.CreatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<OrderMaster>().Insert(module);
