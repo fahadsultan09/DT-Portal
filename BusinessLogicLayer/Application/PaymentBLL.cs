@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Utility;
 
 namespace BusinessLogicLayer.Application
 {
@@ -23,6 +23,7 @@ namespace BusinessLogicLayer.Application
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
+            module.IsActive = true;
             module.CreatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<PaymentMaster>().Insert(module);
             return _unitOfWork.Save();
@@ -40,16 +41,23 @@ namespace BusinessLogicLayer.Application
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
             item.IsDeleted = true;
-            _unitOfWork.GenericRepository<PaymentMaster>().Delete(item);
             return _unitOfWork.Save();
         }
-        public PaymentMaster GetPaymentMasterById(int id)
+
+        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus)
+        {
+            model.Status = paymentStatus;
+            model.UpdatedBy = SessionHelper.LoginUser.Id;
+            model.UpdatedDate = DateTime.Now;
+            _repository.Update(model);
+        }
+        public PaymentMaster GetById(int id)
         {
             return _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
         }
         public List<PaymentMaster> GetAllPaymentMaster()
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).OrderByDescending(x => x.Id).ToList();
         }
         public List<PaymentMaster> Where(Expression<Func<PaymentMaster, bool>> predicate)
         {

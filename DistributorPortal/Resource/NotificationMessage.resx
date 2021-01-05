@@ -147,6 +147,12 @@
   <data name="OrderSaved" xml:space="preserve">
     <value>Order Successfully Saved</value>
   </data>
+  <data name="PaymentSaved" xml:space="preserve">
+    <value>Payment Successfully Saved</value>
+  </data>
+  <data name="PaymentVerified" xml:space="preserve">
+    <value>Payment Verified Successfully.</value>
+  </data>
   <data name="RequiredFieldsValidation" xml:space="preserve">
     <value>Please fill in the information below. The field labels marked with * are required input fields.</value>
   </data>

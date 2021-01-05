@@ -151,6 +151,24 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Payment Successfully Saved.
+        /// </summary>
+        public static string PaymentSaved {
+            get {
+                return ResourceManager.GetString("PaymentSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment Verified Successfully..
+        /// </summary>
+        public static string PaymentVerified {
+            get {
+                return ResourceManager.GetString("PaymentVerified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please fill in the information below. The field labels marked with * are required input fields..
         /// </summary>
         public static string RequiredFieldsValidation {
