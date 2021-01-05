@@ -148,7 +148,7 @@
     <value>Order Successfully Saved</value>
   </data>
   <data name="PaymentSaved" xml:space="preserve">
-    <value>Payment Successfully Saved</value>
+    <value>Payment Saved Successfully.</value>
   </data>
   <data name="PaymentVerified" xml:space="preserve">
     <value>Payment Verified Successfully.</value>

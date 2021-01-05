@@ -61,13 +61,13 @@ namespace DistributorPortal.Controllers
                 List<OrderDetail> _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
                 List<PaymentMaster> _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
 
-                model.PendingApproval = _OrderMaster.Where(x => x.Status != OrderStatus.PendingApproval).Count();
-                model.PaymentVerified = _OrderMaster.Where(x => x.Status != OrderStatus.PaymentVerified).Count();
-                model.InProcess = _OrderMaster.Where(x => x.Status != OrderStatus.InProcess).Count();
-                model.PartiallyProcessed = _OrderMaster.Where(x => x.Status != OrderStatus.PartiallyProcessed).Count();
-                model.CompletelyProcessed = _OrderMaster.Where(x => x.Status != OrderStatus.CompletelyProcessed).Count();
-                model.OnHold = _OrderMaster.Where(x => x.Status != OrderStatus.Onhold).Count();
-                model.Reject = _OrderMaster.Where(x => x.Status != OrderStatus.Reject).Count();
+                model.PendingApproval = _OrderMaster.Where(x => x.Status == OrderStatus.PendingApproval).Count();
+                model.PaymentVerified = _OrderMaster.Where(x => x.Status == OrderStatus.PaymentVerified).Count();
+                model.InProcess = _OrderMaster.Where(x => x.Status == OrderStatus.InProcess).Count();
+                model.PartiallyProcessed = _OrderMaster.Where(x => x.Status == OrderStatus.PartiallyProcessed).Count();
+                model.CompletelyProcessed = _OrderMaster.Where(x => x.Status == OrderStatus.CompletelyProcessed).Count();
+                model.OnHold = _OrderMaster.Where(x => x.Status == OrderStatus.Onhold).Count();
+                model.Reject = _OrderMaster.Where(x => x.Status == OrderStatus.Reject).Count();
                 model.PendingOrder = model.PendingApproval + model.PaymentVerified + model.InProcess + model.PartiallyProcessed;
                 model.VerifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount));
                 model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));

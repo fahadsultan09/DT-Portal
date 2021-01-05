@@ -151,7 +151,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Payment Successfully Saved.
+        ///   Looks up a localized string similar to Payment Saved Successfully..
         /// </summary>
         public static string PaymentSaved {
             get {

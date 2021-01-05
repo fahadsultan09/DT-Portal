@@ -13,9 +13,7 @@ namespace Models.Application
         public int DistributorId { get; set; }
         [ForeignKey("DistributorId")]
         public virtual Distributor Distributor { get; set; }
-        [Required(ErrorMessage = "Reference No is required.")]
         public string ReferenceNo { get; set; }
-        [Required(ErrorMessage = "Remarks is required.")]
         public string Remarks { get; set; }
         public string Attachment { get; set; }
         [NotMapped]

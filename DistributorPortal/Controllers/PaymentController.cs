@@ -31,7 +31,8 @@ namespace DistributorPortal.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            return View(_PaymentBLL.GetAllPaymentMaster().ToList());
+            var list = _PaymentBLL.GetAllPaymentMaster().OrderByDescending(x => x.Id).ToList();
+            return View(list);
         }
         public IActionResult List()
         {

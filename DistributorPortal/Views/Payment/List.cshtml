@@ -22,13 +22,12 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            @*<th>S.No</th>*@
                             <th>Payment No</th>
                             <th>Distributor Name</th>
                             <th>Payment Mode</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th>Created</th>
+                            <th>Payment Placed Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -36,12 +35,21 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                @*<td>@item.Id</td>*@
                                 <td>@item.Id</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.PaymentMode.PaymentName</td>
                                 <td>@item.Amount</td>
-                                <td>@item.Status</td>
+                                <td>
+                                    @if (item.Status == PaymentStatus.Verified)
+                                    {
+                                        <span class="badge badge-success">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">@item.Status</span>
+                                    }
+                                </td>
+
                                 <td>@item.CreatedDate</td>
                                 <td>
                                     <a data-ajax-update="#divform"
@@ -61,13 +69,13 @@
 </div>
 <script>
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            $("#example1").DataTable({
-                "responsive": true,
-                "autoWidth": false,
-            });
-
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
         });
+
+    });
 
 </script>

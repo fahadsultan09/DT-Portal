@@ -1,4 +1,4 @@
-﻿@model Region
+﻿@model ApplicationAction
 @{
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
@@ -14,16 +14,17 @@
 <!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Region</h3>
+        <h3 class="card-title">Application Action</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <form asp-controller="Region"
+                <form asp-controller="ApplicationAction"
                       asp-action="SaveEdit"
                       id="frmDosageForm"
                       data-ajax-update="#divform"
+                      data-ajax-success="Success"
                       data-ajax-complete="MessageDisappear"
                       data-ajax="true"
                       data-ajax-method="POST">
@@ -33,10 +34,10 @@
                                 <input asp-for="Id" type="hidden" />
                                 <div class="ibox-content">
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Region Name<span class="text-danger"> * </span></label>
+                                        <label class="col-lg-3 col-form-label">Application Action Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <input asp-for="RegionName" type="text" placeholder="Name" class="form-control" />
-                                            <span asp-validation-for="RegionName" class="text-danger"></span>
+                                            <input asp-for="ActionName" type="text" placeholder="Name" class="form-control" />
+                                            <span asp-validation-for="ActionName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -52,7 +53,7 @@
                                             <a data-ajax-update="#divform"
                                                data-ajax="true"
                                                data-ajax-method="GET"
-                                               asp-controller="Region" asp-action="List"
+                                               asp-controller="ApplicationAction" asp-action="List"
                                                class="btn btn-sm btn-default float-right mr-3">Back</a>
                                         </div>
                                     </div>
@@ -72,11 +73,5 @@
         setInterval(function () {
             $("#alertmessage").hide('slow');
         }, 5000);
-    }
-    var OnSuccess = function () {
-        Toast.fire({
-            icon: 'success',
-            title: '@NotificationMessage.SaveSuccessfully'
-        })
     }
 </script>

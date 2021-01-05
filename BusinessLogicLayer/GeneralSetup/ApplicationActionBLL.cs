@@ -27,7 +27,6 @@ namespace BusinessLogicLayer.GeneralSetup
             repository.Insert(module);
             return _unitOfWork.Save() > 0;
         }
-
         public bool UpdateApplicationAction(ApplicationAction module)
         {
             var item = repository.GetById(module.Id);
@@ -38,7 +37,6 @@ namespace BusinessLogicLayer.GeneralSetup
             repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
-
         public bool DeleteApplicationAction(int id)
         {
             var item = repository.GetById(id);
@@ -46,7 +44,6 @@ namespace BusinessLogicLayer.GeneralSetup
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }
-
         public ApplicationAction GetApplicationActionById(int id)
         {
             return repository.GetById(id);
@@ -56,11 +53,10 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-
-        public bool CheckActionName(int Id, string ActionName)
+        public bool CheckApplicationActionName(int Id, string ModuleName)
         {
-            
-            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.ActionName == ActionName.Trim()).FirstOrDefault();
+            int? DosageFormId = Id == 0 ? null : (int?)Id;
+            var model = _unitOfWork.GenericRepository<ApplicationModule>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.ModuleName == ModuleName && x.Id != DosageFormId || (DosageFormId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;
@@ -70,7 +66,6 @@ namespace BusinessLogicLayer.GeneralSetup
                 return true;
             }
         }
-
         public MultiSelectList DropDownActionNameList(int[] SelectedValue)
         {
             var selectList = GetAllApplicationAction().Where(x => x.IsActive == true).Select(x => new SelectListItem

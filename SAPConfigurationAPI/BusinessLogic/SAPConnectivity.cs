@@ -66,5 +66,35 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
+        public DistributorBalance UpdateDistributorBalance(string Function, string DistributorSAPCode, double Amount)
+        {
+            SAPSystemConnect sapCfg = new SAPSystemConnect();
+            try
+            {
+                RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
+                RfcDestination rfcDest = null;
+                rfcDest = RfcDestinationManager.GetDestination(SystemId);
+                RfcRepository repo = rfcDest.Repository;
+                IRfcFunction companyBapi = repo.CreateFunction(Function);
+                companyBapi.SetValue("", DistributorSAPCode);
+                companyBapi.SetValue("", Amount);
+                companyBapi.Invoke(rfcDest);
+                var sami = companyBapi.GetValue("");
+                var HTL = companyBapi.GetValue("");
+                return new DistributorBalance
+                {
+                    SAMI = Convert.ToDouble(sami),
+                    HealthTek = Convert.ToDouble(HTL)
+                };
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+            }
+        }
     }
 }

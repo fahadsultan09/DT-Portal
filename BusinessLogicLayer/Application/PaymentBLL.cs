@@ -57,7 +57,7 @@ namespace BusinessLogicLayer.Application
         }
         public List<PaymentMaster> GetAllPaymentMaster()
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).OrderByDescending(x => x.Id).ToList();
+            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<PaymentMaster> Where(Expression<Func<PaymentMaster, bool>> predicate)
         {
