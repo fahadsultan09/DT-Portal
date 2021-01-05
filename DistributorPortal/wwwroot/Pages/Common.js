@@ -87,3 +87,30 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
         },
     });
 }
+
+//Approve
+function UpdateStatus(e, controllerName, actionName, id) {
+    
+    Swal.fire({
+        title: "Are you sure you want to verify?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes",
+        closeOnConfirm: true,
+        showLoaderOnConfirm: true
+    }).then((result) => {
+        if (result.value) {
+            $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, paymentStatus: e.value }, function (data) {
+                if (data) {
+                    Toast.fire({ icon: 'success', title: 'Verified successfully.' });
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                }
+            });
+        }
+    });
+}

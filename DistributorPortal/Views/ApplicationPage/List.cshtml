@@ -5,6 +5,7 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">Application Page List</h2>
+
                 <form asp-controller="ApplicationPage"
                       asp-action="Add"
                       id="frmAdd"
@@ -12,9 +13,13 @@
                       data-ajax="true"
                       data-ajax-method="GET"
                       method="GET">
-                    <button type="submit" class="btn btn-info float-right">Add</button>
+                    @if (SessionHelper.LoginUser.IsDistributor == true)
+                    {
+                        <button type="submit" class="btn btn-info float-right">Add</button>
+                    }
                 </form>
             </div>
+
             <!-- /.card-header -->
             <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">

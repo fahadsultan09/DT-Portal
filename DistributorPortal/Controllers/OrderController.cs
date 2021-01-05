@@ -55,6 +55,12 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddProduct = new List<ProductDetail>();
             return PartialView("Add", BindOrderMaster(id));
         }
+        [HttpGet]
+        public IActionResult PaymentApproval(int id)
+        {
+            SessionHelper.AddProduct = new List<ProductDetail>();
+            return PartialView("PaymentApproval", BindOrderMaster(id));
+        }
         public JsonResult AddProduct(int Quantity, int Product)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -82,7 +88,6 @@ namespace DistributorPortal.Controllers
             }
             return Json(new { data = jsonResponse });
         }
-
         public IActionResult Delete(int Id)
         {            
             var list = SessionHelper.AddProduct;
@@ -91,7 +96,6 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddProduct = list;
             return PartialView("AddToGrid", SessionHelper.AddProduct);
         }
-
         [HttpPost]
         public JsonResult SaveEdit(OrderMaster model, SubmitStatus btnSubmit)
         {
@@ -179,7 +183,6 @@ namespace DistributorPortal.Controllers
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
         }
-
         public async Task<string> RenderRazorViewToString(string viewName, object model)
         {
             ViewData.Model = model;

@@ -1,7 +1,7 @@
 ﻿@model DistributorDashboardViewModel
 @{
     ViewData["Title"] = "Home";
-    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
+    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed;
 }
 
 <style type="text/css">
