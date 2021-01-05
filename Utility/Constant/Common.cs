@@ -13,6 +13,11 @@
         {
             public const string Order = "Order";
         }
+
+        public class OrderContant
+        {
+            public const string OrderDraft = "Successfully save to draft";
+        }
     }
     public class LastYearMonth
     {

@@ -50,7 +50,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">Unverfied Payments</span>
-                            <span class="info-box-number">@Model.UnverifiedPayment</span>
+                            <span class="info-box-number">@Model.UnverifiedPaymentAll</span>
                         </div>
                     </div>
                 </div>
@@ -138,12 +138,12 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#00a65a">
 
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
@@ -152,10 +152,15 @@
                             <!-- /.row -->
                             <div class="row">
                                 <!-- ./col -->
-                                <div class="col-12 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OutstandingBalance" data-min="0" data-max="775000" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                <div class="col-6 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@((int)SessionHelper.DistributorBalance.SAMI)" data-max="@((int)SessionHelper.DistributorBalance.SAMI + (int)SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
 
-                                    <div class="knob-label">Outstanding Balance</div>
+                                    <div class="knob-label">SAMI Balance</div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@((int)SessionHelper.DistributorBalance.HealthTek)" data-max="@((int)SessionHelper.DistributorBalance.SAMI + (int)SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
+
+                                    <div class="knob-label">Healthtek Balance</div>
                                 </div>
                                 <!-- ./col -->
                             </div>

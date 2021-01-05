@@ -28,7 +28,6 @@ namespace Models.Application
         public virtual PaymentMode PaymentMode { get; set; }
         public string PaymentModeNo { get; set; }
         public PaymentStatus Status { get; set; }
-        [Required(ErrorMessage = "Attachment is required.")]
         public string File { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }

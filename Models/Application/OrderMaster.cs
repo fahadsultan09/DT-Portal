@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Utility;
 
@@ -13,9 +12,7 @@ namespace Models.Application
         public int DistributorId { get; set; }
         [ForeignKey("DistributorId")]
         public virtual Distributor Distributor { get; set; }
-        [Required(ErrorMessage = "Reference No is required.")]
         public string ReferenceNo { get; set; }
-        [Required(ErrorMessage = "Remarks is required.")]
         public string Remarks { get; set; }
         public string Attachment { get; set; }
         [NotMapped]

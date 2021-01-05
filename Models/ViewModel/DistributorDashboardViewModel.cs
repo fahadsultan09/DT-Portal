@@ -7,7 +7,8 @@ namespace Models.ViewModel
     public class DistributorDashboardViewModel
     {
         public int InProcessOrder { get; set; }
-        public string UnverifiedPayment { get; set; }
+        public string UnverifiedPaymentAll { get; set; }
+        public double UnverifiedPayment { get; set; }
         public int ReturnOrder { get; set; }
         public int Complaint { get; set; }
         public double VerifiedPayment { get; set; }
