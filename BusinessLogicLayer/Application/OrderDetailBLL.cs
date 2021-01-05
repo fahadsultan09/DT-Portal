@@ -32,6 +32,12 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<OrderDetail>().AddRange(module);
             return _unitOfWork.Save();
         }
+
+        public int DeleteRange(List<OrderDetail> module)
+        {
+            _unitOfWork.GenericRepository<OrderDetail>().DeleteRange(module);
+            return _unitOfWork.Save();
+        }
         public int Update(OrderDetail module)
         {
             var item = _unitOfWork.GenericRepository<OrderDetail>().GetById(module.Id);

@@ -1,9 +1,8 @@
 ﻿@model IEnumerable<ProductDetail>
 
-<table id="example1" class="table table-bordered table-striped addProductGrid">
+<table id="example1" class="table table-bordered table-striped addProductGrid table-sm">
     <thead>
         <tr>
-            <th>S.No</th>
             <th>Code</th>
             <th>Product Name</th>
             <th>Pack Size</th>
@@ -24,7 +23,6 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Id</td>
                 <td>@item.ProductMaster.SAPProductCode</td>
                 <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
                 <td>@item.ProductMaster.PackSize</td>

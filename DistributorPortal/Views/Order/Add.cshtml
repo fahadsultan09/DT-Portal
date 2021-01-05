@@ -12,6 +12,10 @@
         user-select: none;
         -webkit-user-select: none;
     }
+
+    .card-header {
+        padding: 5px 15px 0px 15px
+    }
 </style>
 
 
@@ -42,36 +46,34 @@
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                     </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body" style="padding:10px;">
                                     <div class="form-group" disabled>
                                         <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>Name</h6>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Name:</h6>
                                             </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="Distributor.DistributorName" id="Name" disabled="disabled" class="form-control" />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>City</h6>
-                                            </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="Distributor.City" id="Name" disabled="disabled" class="form-control" />
+                                            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.DistributorName</strong></span>
                                             </div>
                                         </div>
-                                        <br />
                                         <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>Code</h6>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>City:</h6>
                                             </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="Distributor.DistributorCode" id="Name" disabled="disabled" class="form-control" />
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.City</strong></span>
                                             </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Code:</h6>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                                            </div>
+
                                         </div>
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                             <label>Additional Information</label>
                                         </div>
@@ -79,52 +81,38 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>Reference No<span class="text-danger"> * </span></h6>
-                                            </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                                <h6>Reference No</h6>
                                                 <input type="text" asp-for="ReferenceNo" id="ReferenceNo" class="form-control" />
-                                                <span asp-validation-for="ReferenceNo" class="text-danger"></span>
                                             </div>
-                                        </div>
-                                        <br />
-                                        <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>Attachment<span class="text-danger"> * </span></h6>
-                                            </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                                <h6>Attachment</h6>
                                                 <div class="form-group">
                                                     <div class="custom-file">
                                                         <input type="file" asp-for="AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
                                                         <span asp-validation-for="AttachmentFormFile" class="text-danger"></span> <label class="custom-file-label" for="customFile">Choose file</label>
-                                                    </div><br />
-                                                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                                                    </div>
                                                 </div>
                                                 <span class="caption">
                                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
                                                 </span>
                                             </div>
-                                        </div>
-                                        <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <h6>Remarks<span class="text-danger"> * </span></h6>
-                                            </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                                <h6>Remarks</h6>
                                                 <input type="text" asp-for="Remarks" id="Remarks" class="form-control" />
-                                                <span asp-validation-for="Remarks" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
+                                                <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
 
-                                            <div class="offset-3 col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button type="submit" name="btnSubmit" value="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success float-right">
+                                            <div class="offset-2 col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                <button type="button" onclick="return SubmitForm();" name="btnSubmit" value="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success float-right">
                                                     Order Now
                                                 </button>
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
-                                                
+
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
                                                 <button type="submit" name="btnSubmit" value="@SubmitStatus.Draft" class="ladda-button btn btn-primary float-right">
@@ -169,25 +157,27 @@
                                       data-ajax-complete="UpdateOrderValue"
                                       data-ajax-method="POST">
                                     <div class="form-group row">
-                                        <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
+                                        <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
                                             <h6>Product</h6>
-                                            <div class="col-lg-12">
-                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="form-control select2" name="Product">
-                                                    <option value="">--Select Product--</option>
-                                                </select>
-                                            </div>
-                                            <span id="ErrorProductName" class="text-danger">@ViewBag.Error</span>
                                         </div>
                                         <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
+                                            <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single" name="Product">
+                                                <option value="">--Select Product--</option>
+                                            </select>
+                                            <span id="ErrorProductName" class="text-danger">@ViewBag.Error</span>
+                                        </div>
+                                        <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
                                             <h6>Quantity</h6>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                             <div class="col-lg-12">
-                                                <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />
+                                                <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" style="height: calc(2.25rem + -4px)" class="form-control" />
                                                 <span id="ErrorQuantity" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="col-lg-1 col-md-1 col-sm-3 col-xs-3">
                                             <h4 class="col-lg-12 col-form-h4"></h4>
-                                            <button type="submit" id="AddProducts" class="ladda-button btn btn-info float-right" style="margin-top:20px;">
+                                            <button type="submit" id="AddProducts" onclick="return CheckQuantity();" style="margin-top: -10px" class="ladda-button btn btn-info float-right">
                                                 Add
                                             </button>
                                         </div>
@@ -196,29 +186,11 @@
                                 <div class="scrollmenu" id="addToGrid">
                                     <partial name="AddToGrid" model="SessionHelper.AddProduct" />
                                 </div>
-                                @*<div class="form-group row">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12"></div>
-                                    <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
-                                        <label style="margin-top: 15px;">Total Value of Order: </label> <span id="TotalValue"></span>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                        <button type="submit" onclick="Save();" id="btnOrderNow" class="ladda-button btn btn-success float-right">
-                                            Order Now
-                                        </button>
-                                    </div>
-                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 mt-2">
-                                        <button type="submit" class="ladda-button btn btn-primary float-right">
-                                            Draft
-                                        </button>
-                                    </div>
-
-                                </div>*@
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
@@ -231,18 +203,55 @@
 
     var ProductArr = [];
     var response = [];
+    function CheckQuantity() {
+        $('#ErrorQuantity').empty();
+        var qty = $('#Quantity').val();
+        if (qty > 0) {
+            return true;
+        }
+        else {
+            $('#ErrorQuantity').text('Enter Valid Quantity');
+            return false;
+        }
+    }
 
-        $(document).ready(function () {
-            $('.select2').select2()
-            bsCustomFileInput.init();
-        });
+    function CalculateTotal() {
+        debugger;
+        var sami = $('#SAMITotalOrderValues').text();
+        var HealthTek = $('#HealthTekTotalOrderValues').text();
+        var Phytek = $('#PhytekTotalOrderValues').text();
+        var total = parseInt(sami) + parseInt(HealthTek) + parseInt(Phytek);
+        $('#TotalValue').text(total);
+    }
 
-        $(".addProductGrid").on("click", "#DeleteProducts", function () {
-            var IntcurrentRow = $(this).closest("tr");
-            ProductArr.splice(ProductArr.indexOf(IntcurrentRow.find('td:nth-child(2)').find(':input').val()), 1);
-            IntcurrentRow.find('td:nth-child(7)').find(':input').val(true);
-            $(IntcurrentRow).hide();
-        });
+    function SubmitForm() {
+        debugger;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to place the order!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Order Place!'
+        }).then((result) => {
+            if (result.value == true) {
+                $('#frmOrderMaster').submit();
+            }
+        })
+        return false;
+    }
+    $(document).ready(function () {
+        $('.js-example-basic-single').select2();
+        bsCustomFileInput.init();
+    });
+
+    $(".addProductGrid").on("click", "#DeleteProducts", function () {
+        var IntcurrentRow = $(this).closest("tr");
+        ProductArr.splice(ProductArr.indexOf(IntcurrentRow.find('td:nth-child(2)').find(':input').val()), 1);
+        IntcurrentRow.find('td:nth-child(7)').find(':input').val(true);
+        $(IntcurrentRow).hide();
+    });
     function UpdateOrderValue() {
         $('#frmUpdateOrderValue').click();
     }
@@ -251,7 +260,7 @@
         debugger;
         if (data.data.HtmlString != null) {
             $("#addToGrid").html(data.data.HtmlString.Result);
-        }        
+        }
         if (data.data.Status) {
             Toast.fire({
                 icon: 'success',

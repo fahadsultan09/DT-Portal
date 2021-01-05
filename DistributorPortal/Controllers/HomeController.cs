@@ -206,10 +206,22 @@ namespace DistributorPortal.Controllers
             List<OrderDetail> _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             List<PaymentMaster> _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             model.InProcessOrder = _OrderBLL.Where(x => x.Status != OrderStatus.Draft && x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Reject).Count();
-            model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
+            model.UnverifiedPaymentAll = ExtensionUtility.FormatNumberAmount(_PaymentBLL.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
+
+            model.PendingApproval = _OrderMaster.Where(x => x.Status != OrderStatus.PendingApproval).Count();
+            model.PaymentVerified = _OrderMaster.Where(x => x.Status != OrderStatus.PaymentVerified).Count();
+            model.InProcess = _OrderMaster.Where(x => x.Status != OrderStatus.InProcess).Count();
+            model.PartiallyProcessed = _OrderMaster.Where(x => x.Status != OrderStatus.PartiallyProcessed).Count();
+            model.CompletelyProcessed = _OrderMaster.Where(x => x.Status != OrderStatus.CompletelyProcessed).Count();
+            model.OnHold = _OrderMaster.Where(x => x.Status != OrderStatus.Onhold).Count();
+            model.Reject = _OrderMaster.Where(x => x.Status != OrderStatus.Reject).Count();
+            model.Draft = _OrderMaster.Where(x => x.Status != OrderStatus.Draft).Count();
+            model.InProcessOrder = model.PendingApproval + model.PaymentVerified + model.InProcess + model.PartiallyProcessed;
+            model.VerifiedPayment =_PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount);
+            model.UnverifiedPayment = _PaymentMaster.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
 
             model.OrderWiseComparision = new List<OrderWiseComparision>();
             foreach (var item in months.Item1)

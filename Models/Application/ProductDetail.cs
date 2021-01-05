@@ -33,6 +33,8 @@ namespace Models.Application
         [NotMapped]
         public double TotalPrice { get; set; }
         public bool IsTaxApplicable { get; set; }
+        [NotMapped]
+        public int OrderNumber { get; set; }
 
     }
 }

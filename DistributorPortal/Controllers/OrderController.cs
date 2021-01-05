@@ -72,12 +72,13 @@ namespace DistributorPortal.Controllers
                     master.ProductMaster.Quantity = Quantity;
                     master.TotalPrice = master.ProductMaster.Quantity * master.ProductMaster.Rate;
                     var list = SessionHelper.AddProduct;
+                    master.OrderNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderNumber) + 1;
                     list.Add(master);
                     SessionHelper.AddProduct = list;
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Product Added Successfully";
                     jsonResponse.RedirectURL = string.Empty;
-                    jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct);
+                    jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber).ToList());
                 }                                
             }
             else
@@ -94,7 +95,7 @@ namespace DistributorPortal.Controllers
             var item = list.First(e => e.ProductMasterId == Id);
             list.Remove(item);
             SessionHelper.AddProduct = list;
-            return PartialView("AddToGrid", SessionHelper.AddProduct);
+            return PartialView("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber));
         }
         [HttpPost]
         public JsonResult SaveEdit(OrderMaster model, SubmitStatus btnSubmit)
@@ -150,9 +151,10 @@ namespace DistributorPortal.Controllers
                         });
                     }
                     _orderDetailBLL.AddRange(details);
+                    _OrderBLL.AddRange(_OrderBLL.GetValues(_OrderBLL.GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                     jsonResponse.Status = true;
                     jsonResponse.Message = NotificationMessage.OrderSaved;
-                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                    jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
                 }                
                 return Json(new { data = jsonResponse });
             }
@@ -170,6 +172,8 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
+                model.OrderDetail = _orderDetailBLL.Where(e => e.OrderId == Id).ToList();
+                
             }
             else
             {
