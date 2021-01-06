@@ -1,4 +1,5 @@
 ﻿@model AdminDashboardViewModel
+@using Utility 
 @{
     ViewData["Title"] = "Home Page";
     int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
@@ -48,7 +49,7 @@
                     <!-- small box -->
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3>@Model.UnverifiedPayment</h3>
+                            <h3>@ExtensionUtility.FormatNumberAmount(Model.UnverifiedPayment)</h3>
                             <p>Unverified Payment</p>
                         </div>
                         <div class="icon">
@@ -144,13 +145,13 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#932ab6" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.VerifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#00a65a" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
                             </div>

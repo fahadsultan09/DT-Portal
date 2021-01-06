@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Utility;
@@ -31,12 +32,11 @@ namespace DistributorPortal.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            var list = _PaymentBLL.GetAllPaymentMaster().OrderByDescending(x => x.Id).ToList();
-            return View(list);
+            return View(GetPaymentList());
         }
         public IActionResult List()
         {
-            return PartialView("List", _PaymentBLL.GetAllPaymentMaster());
+            return PartialView("List", GetPaymentList());
         }
         [HttpGet]
         public IActionResult Add(int id)
@@ -133,6 +133,17 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 return Json(new { data = jsonResponse });
+            }
+        }
+        public List<PaymentMaster> GetPaymentList()
+        {
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                return _PaymentBLL.GetAllPaymentMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList(); 
+            }
+            else
+            {
+                return _PaymentBLL.GetAllPaymentMaster().OrderByDescending(x => x.Id).ToList();
             }
         }
     }

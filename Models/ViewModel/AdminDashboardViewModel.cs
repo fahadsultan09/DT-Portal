@@ -6,11 +6,11 @@ namespace Models.ViewModel
 {
     public class AdminDashboardViewModel
     {
+        public double UnverifiedPayment { get; set; }
+        public double VerifiedPayment { get; set; }
         public int PendingOrder { get; set; }
-        public string UnverifiedPayment { get; set; }
         public int ReturnOrder { get; set; }
         public int Complaint { get; set; }
-        public string VerifiedPayment { get; set; }
         public int PendingApproval { get; set; }
         public int PaymentVerified { get; set; }
         public int InProcess { get; set; }

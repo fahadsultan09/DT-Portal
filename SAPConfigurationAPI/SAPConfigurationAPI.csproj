@@ -98,6 +98,7 @@
     <Compile Include="BusinessLogic\SAPConnectivity.cs" />
     <Compile Include="Controllers\BalanceController.cs" />
     <Compile Include="Controllers\DistributorController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
