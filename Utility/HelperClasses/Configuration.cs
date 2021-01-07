@@ -9,6 +9,7 @@ namespace Utility.HelperClasses
         public string SyncDistributorURL { get; set; }
         public string SyncProductURL { get; set; }
         public string SyncDistributorBalanceURL { get; set; }
+        public string PostOrder { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -16,6 +17,7 @@ namespace Utility.HelperClasses
             SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
             SyncProductURL = configuration["AppSettings:SyncProductURL"];
             SyncDistributorBalanceURL = configuration["AppSettings:SyncDistributorBalanceURL"];
+            PostOrder = configuration["AppSettings:PostOrder"];
         }
     }
 }

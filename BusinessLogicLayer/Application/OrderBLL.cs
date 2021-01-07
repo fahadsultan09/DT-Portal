@@ -24,6 +24,7 @@ namespace BusinessLogicLayer.Application
         private readonly IGenericRepository<OrderValue> _OrderValuerepository;
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly OrderValueBLL _orderValueBLL;
+        private readonly ProductDetailBLL ProductDetailBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -31,6 +32,7 @@ namespace BusinessLogicLayer.Application
             _OrderValuerepository = _unitOfWork.GenericRepository<OrderValue>();
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _orderValueBLL = new OrderValueBLL(_unitOfWork);
+            ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
         }
         public int Add(OrderMaster module)
         {
@@ -103,10 +105,48 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekPendingOrderValues = 0;
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             viewModel.PhytekUnConfirmedPayment = 0;
-            viewModel.PhytekNetPayable = (viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek) > 0 ? viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek : 0 ;
+            viewModel.PhytekNetPayable = (viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek) > 0 ? viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek : 0;
             return viewModel;
         }
 
+        public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
+        {
+            OrderValueViewModel viewModel = new OrderValueViewModel();
+            var sami = Convert.ToInt32(CompanyEnum.SAMI);
+            var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
+            var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
+
+            var SAMIproductDetails = OrderValue.First(e => e.CompanyId == sami);
+            viewModel.SAMISupplies0 = SAMIproductDetails.SuppliesZero;
+            viewModel.SAMISupplies1 = SAMIproductDetails.SuppliesOne;
+            viewModel.SAMISupplies4 = SAMIproductDetails.SuppliesFour;
+            viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
+            viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+            viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
+            viewModel.SAMIUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
+            viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
+
+            var HealthTekproductDetails = OrderValue.First(e => e.CompanyId == HealthTek);
+            viewModel.HealthTekSupplies0 = SAMIproductDetails.SuppliesZero;
+            viewModel.HealthTekSupplies1 = SAMIproductDetails.SuppliesOne;
+            viewModel.HealthTekSupplies4 = SAMIproductDetails.SuppliesFour;
+            viewModel.HealthTekTotalOrderValues = SAMIproductDetails.TotalOrderValues;
+            viewModel.HealthTekPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+            viewModel.HealthTekCurrentBalance = SAMIproductDetails.CurrentBalance;
+            viewModel.HealthTekUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
+            viewModel.HealthTekNetPayable = SAMIproductDetails.NetPayable;
+
+            var PhytekproductDetails = OrderValue.First(e => e.CompanyId == HealthTek);
+            viewModel.PhytekSupplies0 = SAMIproductDetails.SuppliesZero;
+            viewModel.PhytekSupplies1 = SAMIproductDetails.SuppliesOne;
+            viewModel.PhytekSupplies4 = SAMIproductDetails.SuppliesFour;
+            viewModel.PhytekTotalOrderValues = SAMIproductDetails.TotalOrderValues;
+            viewModel.PhytekPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+            viewModel.PhytekCurrentBalance = SAMIproductDetails.CurrentBalance;
+            viewModel.PhytekUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
+            viewModel.PhytekNetPayable = SAMIproductDetails.NetPayable;
+            return viewModel;
+        }
         public List<OrderValue> GetValues(OrderValueViewModel orderValueViewModel, int OrderId)
         {
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
@@ -126,7 +166,7 @@ namespace BusinessLogicLayer.Application
                 UnConfirmedPayment = orderValueViewModel.SAMIUnConfirmedPayment,
                 TotalOrderValues = orderValueViewModel.SAMITotalOrderValues,
                 NetPayable = orderValueViewModel.SAMINetPayable,
-                OrderId = OrderId                
+                OrderId = OrderId
             });
             model.Add(new OrderValue()
             {
@@ -182,7 +222,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public JsonResponse Draft(OrderMaster model, IConfiguration configuration, IUrlHelper Url)
+        public JsonResponse Save(OrderMaster model, IConfiguration configuration, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
             string FolderPath = configuration.GetSection("Settings").GetSection("FolderPath").Value;
@@ -220,7 +260,7 @@ namespace BusinessLogicLayer.Application
                 _orderDetailBLL.AddRange(details);
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
-                jsonResponse.Message = OrderContant.OrderDraft;
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
                 jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
             }
             else
@@ -246,11 +286,41 @@ namespace BusinessLogicLayer.Application
                 DeleteRange(_orderValueBLL.GetOrderValueByOrderId(model.Id));
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
-                jsonResponse.Message = OrderContant.OrderDraft;
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
                 jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
             }
-
             return jsonResponse;
+        }
+
+        public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
+        {
+            List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
+            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new OrderStatusViewModel()
+                {
+                    SNO = string.Format("{0:0000000000}", item.OrderId),
+                    ITEMNO = "",
+                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderMaster.ReferenceNo,
+                    PURCH_DATE = DateTime.Now,
+                    PRICE_DATE = DateTime.Now,
+                    ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    BATCH = "",
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    REQ_QTY = item.Quantity.ToString()
+                });
+            }
+            return model;
         }
     }
 }

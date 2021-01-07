@@ -1,0 +1,148 @@
+﻿@model OrderMaster
+@inject IUnitOfWork iUnitOfWork
+@{
+    var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
+    ViewData["Title"] = "AddDetail";
+}
+
+
+<style type="text/css">
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 40px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .card-header {
+        padding: 5px 15px 0px 15px
+    }
+</style>
+
+
+<!-- Main content -->
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-12">                   
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card card-primary h-90">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Distributor Information</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style="padding:10px;">
+                                        <div class="form-group" disabled>
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                    <h6>Name:</h6>
+                                                </div>
+                                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                                    <span><strong>@Model.Distributor.DistributorName</strong></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                    <h6>City:</h6>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                    <span><strong>@Model.Distributor.City</strong></span>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                    <h6>Code:</h6>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                    <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                <label>Additional Information</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <h6>Reference No</h6>
+                                                    <input disabled="disabled" type="text" asp-for="ReferenceNo" id="ReferenceNo" class="form-control" />
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <h6>Attachment</h6>                                                    
+                                                    <span class="caption">
+                                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                                    </span>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <h6>Remarks</h6>
+                                                    <input disabled="disabled" type="text" asp-for="Remarks" id="Remarks" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                    <a asp-action="OnHold" asp-controller="Order" asp-route-Id="@Model.Id" class="btn btn-success float-right">
+                                                        On Hold
+                                                    </a>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                    <a asp-action="ApproveOrder" asp-controller="Order" asp-route-Id="@Model.Id" class="btn btn-primary float-right">
+                                                        Approve
+                                                    </a>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="card card-primary h-90">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Order Values</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <partial name="OrderValue" model="Model.OrderValueViewModel" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                   
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Add Products</h3>
+                                </div>
+                                <div class="card-body">                                   
+                                    <div class="scrollmenu">
+                                        <partial name="AddToGrid" model="Model.productDetails" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+   
+
