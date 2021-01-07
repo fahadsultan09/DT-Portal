@@ -124,7 +124,7 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, PaymentStatus paymentStatus)
+        public JsonResult UpdateStatus(int id, PaymentStatus Status)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -132,7 +132,7 @@ namespace DistributorPortal.Controllers
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {
-                    _PaymentBLL.UpdateStatus(model, paymentStatus);
+                    _PaymentBLL.UpdateStatus(model, Status);
                 }
                 _unitOfWork.Save();
                 jsonResponse.Status = true;

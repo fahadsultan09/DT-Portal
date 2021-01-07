@@ -101,7 +101,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
         showLoaderOnConfirm: true
     }).then((result) => {
         if (result.value) {
-            $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, paymentStatus: e.value }, function (data) {
+            $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value }, function (data) {
                 if (data) {
                     Toast.fire({ icon: 'success', title: 'Verified successfully.' });
                     setTimeout(function () {
