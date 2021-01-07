@@ -114,7 +114,7 @@
                     <!-- /.card-body -->
                     <!--</div>-->
                     <div class="col-lg-12">
-                        <div class="card  card-success">
+                        <div class="card  card-primary">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Status - Last 12 Months</h3>
@@ -145,7 +145,7 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.VerifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                             </div>

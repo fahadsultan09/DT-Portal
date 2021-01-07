@@ -1,11 +1,11 @@
-﻿@model IEnumerable<PaymentMaster>
+﻿@model IEnumerable<Complaint>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Payment List</h2>
-                <form asp-controller="Payment"
+                <h2 class="card-title">Complaint List</h2>
+                <form asp-controller="Complaint"
                       asp-action="Add"
                       id="frmAdd"
                       data-ajax-update="#divform"
@@ -22,12 +22,10 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Payment No</th>
+                            <th>Complaint No</th>
                             <th>Distributor Name</th>
-                            <th>Payment Mode</th>
-                            <th>Amount</th>
                             <th>Status</th>
-                            <th>Payment Placed Date</th>
+                            <th>Create Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -37,10 +35,8 @@
                             <tr>
                                 <td>@item.Id</td>
                                 <td>@item.Distributor.DistributorName</td>
-                                <td>@item.PaymentMode.PaymentName</td>
-                                <td>@item.Amount</td>
                                 <td>
-                                    @if (item.Status == PaymentStatus.Verified)
+                                    @if (item.Status == ComplaintStatus.Resolved)
                                     {
                                         <span class="badge badge-success">@item.Status</span>
                                     }
@@ -55,7 +51,7 @@
                                     <a data-ajax-update="#divform"
                                        data-ajax="true"
                                        data-ajax-method="GET"
-                                       asp-controller="Payment" asp-action="PaymentApproval" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                       asp-controller="Complaint" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>

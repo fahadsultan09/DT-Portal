@@ -44,5 +44,8 @@ namespace Models.ApplicationContext
         public DbSet<PaymentMode> PaymentMode { get; set; }
         public DbSet<Bank> Bank { get; set; }
         public DbSet<OrderValue> OrderValue { get; set; }
+        public DbSet<Complaint> Complaint { get; set; }
+        public DbSet<ComplaintCategory> ComplaintCategory { get; set; }
+        public DbSet<ComplaintSubCategory> ComplaintSubCategory { get; set; }
     }
 }

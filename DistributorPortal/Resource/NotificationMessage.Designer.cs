@@ -187,6 +187,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resolved Successfully..
+        /// </summary>
+        public static string Resolved {
+            get {
+                return ResourceManager.GetString("Resolved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data Saved successfully..
         /// </summary>
         public static string SaveSuccessfully {

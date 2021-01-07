@@ -19,7 +19,7 @@ namespace DistributorPortal.Controllers
             _ApplicationActionBLL = new ApplicationActionBLL(_unitOfWork);
         }
         // GET: ApplicationAction
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_ApplicationActionBLL.GetAllApplicationAction());
         }

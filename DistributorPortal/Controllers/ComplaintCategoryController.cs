@@ -1,5 +1,5 @@
-﻿using BusinessLogicLayer.Application;
-using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -9,35 +9,35 @@ using System.Linq;
 
 namespace DistributorPortal.Controllers
 {
-    public class RegionController : BaseController
+    public class ComplaintCategoryController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly RegionBLL _RegionBLL;
-        public RegionController(IUnitOfWork unitOfWork)
+        private readonly ComplaintCategoryBLL _ComplaintCategoryBLL;
+        public ComplaintCategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _RegionBLL = new RegionBLL(_unitOfWork);
+            _ComplaintCategoryBLL = new ComplaintCategoryBLL(_unitOfWork);
         }
 
-        // GET: Region
+        // GET: ComplaintCategory
         public IActionResult Index()
         {
-            return View(_RegionBLL.GetAllRegion());
+            return View(_ComplaintCategoryBLL.GetAllComplaintCategory());
         }
 
         public IActionResult List()
         {
-            return PartialView("List", _RegionBLL.GetAllRegion());
+            return PartialView("List", _ComplaintCategoryBLL.GetAllComplaintCategory());
         }
 
         [HttpGet]
         public IActionResult Add(int id)
         {
-            return PartialView("Add", BindRegion(id));
+            return PartialView("Add", BindComplaintCategory(id));
         }
 
         [HttpPost]
-        public IActionResult SaveEdit(Region model)
+        public IActionResult SaveEdit(ComplaintCategory model)
         {
             try
             {
@@ -49,22 +49,22 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    if (_RegionBLL.CheckRegionName(model.Id, model.RegionName))
+                    if (_ComplaintCategoryBLL.CheckComplaintCategoryName(model.Id, model.ComplaintCategoryName))
                     {
                         if (model.Id > 0)
                         {
-                            _RegionBLL.UpdateRegion(model);
+                            _ComplaintCategoryBLL.UpdateComplaintCategory(model);
                             TempData["Message"] = NotificationMessage.UpdateSuccessfully;
                         }
                         else
                         {
-                            _RegionBLL.AddRegion(model);
+                            _ComplaintCategoryBLL.AddComplaintCategory(model);
                             TempData["Message"] = NotificationMessage.SaveSuccessfully;
                         }
                     }
                     else
                     {
-                        TempData["Message"] = "Region name already exist";
+                        TempData["Message"] = "Complaint Category name already exist";
                         return PartialView("Add", model);
                     }
                 }
@@ -83,7 +83,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                _RegionBLL.DeleteRegion(id);
+                _ComplaintCategoryBLL.DeleteComplaintCategory(id);
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -94,12 +94,12 @@ namespace DistributorPortal.Controllers
             }
         }
 
-        private Region BindRegion(int Id)
+        private ComplaintCategory BindComplaintCategory(int Id)
         {
-            Region model = new Region();
+            ComplaintCategory model = new ComplaintCategory();
             if (Id > 0)
             {
-                model = _RegionBLL.GetRegionById(Id);
+                model = _ComplaintCategoryBLL.GetComplaintCategoryById(Id);
             }
             else
             {
@@ -108,9 +108,9 @@ namespace DistributorPortal.Controllers
             return model;
         }
 
-        public JsonResult GetRegionList()
+        public JsonResult GetComplaintCategoryList()
         {
-            return Json(_RegionBLL.GetAllRegion().ToList());
+            return Json(_ComplaintCategoryBLL.GetAllComplaintCategory().ToList());
         }
     }
 }

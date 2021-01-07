@@ -29,7 +29,7 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: Distributor
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_DistributorBLL.GetAllDistributor());
         }

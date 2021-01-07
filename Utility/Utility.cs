@@ -83,4 +83,9 @@ namespace Utility
         [Display(Name = "Net Payable")]
         NetPayable = 7,
     }
+    public enum ComplaintStatus
+    {
+        Pending = 1,
+        Resolved = 2
+    }
 }

@@ -20,49 +20,38 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class PaymentController : Controller
+    public class ComplaintController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly PaymentBLL _PaymentBLL;
+        private readonly ComplaintBLL _ComplaintBLL;
         private readonly IConfiguration _IConfiguration;
-        public PaymentController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public ComplaintController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
-            _PaymentBLL = new PaymentBLL(_unitOfWork);
+            _ComplaintBLL = new ComplaintBLL(_unitOfWork);
             _IConfiguration = configuration;
         }
-        // GET: Payment
-        public ActionResult Index()
+        // GET: Complaint
+        public IActionResult Index()
         {
-            PaymentViewModel model = new PaymentViewModel();
-            model.PaymentMaster = GetPaymentList();
-            model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
-            return View(model);
+            return View(GetComplaintList());
         }
-        public PaymentViewModel List(PaymentViewModel model)
+        public IActionResult List()
         {
-            if (model.DistributorId == 0 && model.Status is null && model.FromDate is null && model.ToDate is null)
-            {
-                model.PaymentMaster = GetPaymentList();
-            }
-            else
-            {
-                model.PaymentMaster = _PaymentBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
-            }
-            return model;
+            return PartialView("List", GetComplaintList());
         }
         [HttpGet]
         public IActionResult Add(int id)
         {
-            return PartialView("Add", BindPaymentMaster(id));
+            return PartialView("Add", BindComplaint(id));
         }
         [HttpGet]
-        public IActionResult PaymentApproval(int id)
+        public IActionResult ComplaintApproval(int id)
         {
-            return PartialView("PaymentApproval", BindPaymentMaster(id));
+            return PartialView("ComplaintApproval", BindComplaint(id));
         }
         [HttpPost]
-        public JsonResult SaveEdit(PaymentMaster model)
+        public JsonResult SaveEdit(Complaint model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
@@ -89,13 +78,13 @@ namespace DistributorPortal.Controllers
                             }
                         }
                     }
-                    model.Status = PaymentStatus.Unverified;
+                    model.Status = ComplaintStatus.Pending;
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                    _PaymentBLL.Add(model);
+                    _ComplaintBLL.Add(model);
                 }
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.PaymentSaved;
-                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                jsonResponse.RedirectURL = Url.Action("Index", "Complaint");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -106,38 +95,37 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        private PaymentMaster BindPaymentMaster(int Id)
+        private Complaint BindComplaint(int Id)
         {
-            PaymentMaster model = new PaymentMaster();
+            Complaint model = new Complaint();
             if (Id > 0)
             {
-                model = _PaymentBLL.GetById(Id);
+                model = _ComplaintBLL.GetById(Id);
             }
             else
             {
 
             }
             model.Distributor = SessionHelper.LoginUser.Distributor;
-            model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
-            model.BankList = new BankBLL(_unitOfWork).DropDownBankList();
-            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList();
+            model.ComplaintCategoryList = new ComplaintCategoryBLL(_unitOfWork).DropDownComplaintCategoryList(model.ComplaintCategoryId);
+            model.ComplaintSubCategoryList = new ComplaintSubCategoryBLL(_unitOfWork).DropDownComplaintSubCategoryList(model.ComplaintSubCategoryId);
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, PaymentStatus paymentStatus)
+        public JsonResult UpdateStatus(int id, ComplaintStatus ComplaintStatus)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                PaymentMaster model = _PaymentBLL.GetById(id);
+                Complaint model = _ComplaintBLL.GetById(id);
                 if (model != null)
                 {
-                    _PaymentBLL.UpdateStatus(model, paymentStatus);
+                    _ComplaintBLL.UpdateStatus(model, ComplaintStatus);
                 }
                 _unitOfWork.Save();
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.PaymentVerified;
-                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                jsonResponse.Message = NotificationMessage.Resolved;
+                jsonResponse.RedirectURL = Url.Action("Index", "Complaint");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -148,22 +136,16 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        [HttpPost]
-        public IActionResult Search(PaymentViewModel model, string Search)
+        public List<Complaint> GetComplaintList()
         {
-            if (!string.IsNullOrEmpty(Search))
+            if (SessionHelper.LoginUser.IsDistributor)
             {
-                model = List(model);
+                return _ComplaintBLL.GetAllComplaint().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
             }
             else
             {
-                model.PaymentMaster = GetPaymentList();
+                return _ComplaintBLL.GetAllComplaint().OrderByDescending(x => x.Id).ToList();
             }
-            return PartialView("List", model.PaymentMaster);
-        }
-        public List<PaymentMaster> GetPaymentList()
-        {
-            return _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
         }
     }
 }

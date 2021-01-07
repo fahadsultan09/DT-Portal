@@ -159,6 +159,9 @@
   <data name="ResetPasswordSuccessfully" xml:space="preserve">
     <value>Password Reset Successfully.</value>
   </data>
+  <data name="Resolved" xml:space="preserve">
+    <value>Resolved Successfully.</value>
+  </data>
   <data name="SaveSuccessfully" xml:space="preserve">
     <value>Data Saved successfully.</value>
   </data>

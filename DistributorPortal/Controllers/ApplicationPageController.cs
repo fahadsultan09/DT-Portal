@@ -24,7 +24,7 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: ApplicationPage
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_ApplicationPageBLL.GetAllApplicationPage());
         }

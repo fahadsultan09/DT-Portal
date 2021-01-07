@@ -30,7 +30,7 @@ namespace ProductPortal.Controllers
             _configuration = configuration;
         }
         // GET: Product
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_ProductMasterBLL.GetAllProductMaster());
         }
@@ -67,7 +67,7 @@ namespace ProductPortal.Controllers
             return PartialView("List", _ProductMasterBLL.GetAllProductMaster());
         }
         [HttpGet]
-        public ActionResult ProductMapping()
+        public IActionResult ProductMapping()
         {
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
             List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
@@ -75,7 +75,7 @@ namespace ProductPortal.Controllers
             return View("ProductMapping", productMasters);
         }
         [HttpPost]
-        public ActionResult UpdateProductDetail(ProductDetail model)
+        public IActionResult UpdateProductDetail(ProductDetail model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try

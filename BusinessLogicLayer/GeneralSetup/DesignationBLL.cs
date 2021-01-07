@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BusinessLogicLayer.ApplicationSetup
+namespace BusinessLogicLayer.GeneralSetup
 {
     public class DesignationBLL
     {
