@@ -95,9 +95,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BusinessLogic\ExtensionUtility.cs" />
     <Compile Include="BusinessLogic\SAPConnectivity.cs" />
     <Compile Include="Controllers\BalanceController.cs" />
     <Compile Include="Controllers\DistributorController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
@@ -105,6 +107,7 @@
     </Compile>
     <Compile Include="Models\Distributor.cs" />
     <Compile Include="Models\DistributorBalance.cs" />
+    <Compile Include="Models\OrderStatusViewModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

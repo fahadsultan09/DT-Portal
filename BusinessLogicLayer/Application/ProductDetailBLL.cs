@@ -5,6 +5,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace BusinessLogicLayer.Application
@@ -72,6 +73,10 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
+        public List<ProductDetail> GetAllProductDetailById(int[] list)
+        {
+            return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false && list.Contains(x.ProductMasterId)).ToList();
+        }
 
         public SelectList DropDownProductList()
         {
@@ -82,6 +87,11 @@ namespace BusinessLogicLayer.Application
             });
 
             return new SelectList(selectList, "Value", "Text");
+        }
+
+        public List<ProductDetail> Where(Expression<Func<ProductDetail, bool>> expression)
+        {
+            return _unitOfWork.GenericRepository<ProductDetail>().Where(expression);
         }
     }
 }

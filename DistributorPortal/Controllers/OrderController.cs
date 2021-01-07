@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,17 +29,22 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
         private readonly OrderDetailBLL _orderDetailBLL;
+        private readonly OrderValueBLL _OrderValueBLL;
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly IConfiguration _IConfiguration;
         private ICompositeViewEngine _viewEngine;
-        public OrderController(IUnitOfWork unitOfWork, IConfiguration configuration, ICompositeViewEngine viewEngine)
+        private readonly Configuration _Configuration;
+
+        public OrderController(IUnitOfWork unitOfWork, Configuration _configuration, IConfiguration configuration, ICompositeViewEngine viewEngine)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _productDetailBLL = new ProductDetailBLL(_unitOfWork);
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _OrderValueBLL = new OrderValueBLL(_unitOfWork);
             _IConfiguration = configuration;
             _viewEngine = viewEngine;
+            _Configuration = _configuration;
         }
         // GET: Order
         public ActionResult Index()
@@ -53,8 +59,31 @@ namespace DistributorPortal.Controllers
         public IActionResult Add(int id)
         {
             SessionHelper.AddProduct = new List<ProductDetail>();
-            return PartialView("Add", BindOrderMaster(id));
+            return View("AddDetail", BindOrderMaster(id));
         }
+        [HttpGet]
+        public IActionResult Approve(int id)
+        {
+            return View("OrderApprove", BindOrderMaster(id));
+        }
+
+        [HttpGet]
+        public IActionResult ApproveOrder(int id)
+        {
+            try
+            {
+                var Client = new RestClient(_Configuration.PostOrder);
+                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
+                IRestResponse response = Client.Execute(request);
+                return View();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
         [HttpGet]
         public IActionResult PaymentApproval(int id)
         {
@@ -100,12 +129,10 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public JsonResult SaveEdit(OrderMaster model, SubmitStatus btnSubmit)
         {
-            JsonResponse jsonResponse = new JsonResponse();
-            string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
+            JsonResponse jsonResponse = new JsonResponse();            
             try
             {
                 ModelState.Remove("Id");
-                ModelState.Remove("Attachment");
                 if (!ModelState.IsValid)
                 {
                     jsonResponse.Status = false;
@@ -113,48 +140,23 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    if (btnSubmit == SubmitStatus.Draft)
+                    if (SessionHelper.AddProduct.Count > 0)
                     {
-                        model.Status = OrderStatus.Draft;
+                        if (btnSubmit == SubmitStatus.Draft)
+                        {
+                            model.Status = OrderStatus.Draft;
+                        }
+                        else
+                        {
+                            model.Status = OrderStatus.PendingApproval;
+                        }
+                        jsonResponse = _OrderBLL.Save(model, _IConfiguration, Url);
                     }
                     else
                     {
-                        model.Status = OrderStatus.Submit;
-                    }
-                    string[] permittedExtensions = Common.permittedExtensions;
-                    if (model.AttachmentFormFile != null)
-                    {
-                        var ext = Path.GetExtension(model.AttachmentFormFile.FileName).ToLowerInvariant();
-                        if (permittedExtensions.Contains(ext) && model.AttachmentFormFile.Length < Convert.ToInt64(5242880))
-                        {
-                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
-                            if (tuple.Item1)
-                            {
-                                model.Attachment = tuple.Item2;
-                            }
-                        }
-                    }
-                    model.TotalValue = SessionHelper.AddProduct.Select(e => e.TotalPrice).Sum();
-                    model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
-                    _OrderBLL.Add(model);
-                    List<OrderDetail> details = new List<OrderDetail>();
-                    foreach (var item in SessionHelper.AddProduct)
-                    {
-                        details.Add(new OrderDetail()
-                        {
-                            Amount = item.TotalPrice,
-                            OrderId = model.Id,
-                            ProductId = item.ProductMasterId,
-                            Quantity = item.ProductMaster.Quantity,
-                            CreatedBy = SessionHelper.LoginUser.Id,
-                            CreatedDate = DateTime.Now
-                        });
-                    }
-                    _orderDetailBLL.AddRange(details);
-                    _OrderBLL.AddRange(_OrderBLL.GetValues(_OrderBLL.GetOrderValueModel(SessionHelper.AddProduct), model.Id));
-                    jsonResponse.Status = true;
-                    jsonResponse.Message = NotificationMessage.OrderSaved;
-                    jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = Common.OrderContant.OrderItem;
+                    }                                        
                 }                
                 return Json(new { data = jsonResponse });
             }
@@ -172,11 +174,14 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
-                model.OrderDetail = _orderDetailBLL.Where(e => e.OrderId == Id).ToList();
-                
+                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray()); ;
+                model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(model.Id));
+                SessionHelper.AddProduct = model.productDetails;
             }
             else
             {
+                model.productDetails = new List<ProductDetail>();
+                model.OrderValueViewModel = new OrderValueViewModel();
             }
             model.Distributor = SessionHelper.LoginUser.Distributor;
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();

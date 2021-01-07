@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
+using Models.ViewModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Utility;
@@ -25,5 +26,9 @@ namespace Models.Application
         public List<ProductMaster> ProductMaster { get; set; }
         [NotMapped]
         public SelectList ProductList { get; set; }
+        [NotMapped]
+        public OrderValueViewModel OrderValueViewModel { get; set; }
+        [NotMapped]
+        public List<ProductDetail> productDetails { get; set; }
     }
 }

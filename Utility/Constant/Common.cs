@@ -17,6 +17,8 @@
         public class OrderContant
         {
             public const string OrderDraft = "Successfully save to draft";
+            public const string OrderSubmit = "Order Submitted Successfully";
+            public const string OrderItem = "Please add atleast one product";
         }
     }
     public class LastYearMonth
