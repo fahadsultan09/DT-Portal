@@ -20,7 +20,7 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: Region
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_RegionBLL.GetAllRegion());
         }

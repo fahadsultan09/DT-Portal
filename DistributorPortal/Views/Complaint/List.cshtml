@@ -1,0 +1,86 @@
+﻿@model IEnumerable<Complaint>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Complaint List</h2>
+                <form asp-controller="Complaint"
+                      asp-action="Add"
+                      id="frmAdd"
+                      data-ajax-update="#divform"
+                      data-ajax="true"
+                      data-ajax-method="GET"
+                      method="GET">
+                    @if (SessionHelper.LoginUser.IsDistributor == true)
+                    {
+                        <button type="submit" class="btn btn-info float-right">Add</button>
+                    }
+                </form>
+            </div>
+            <div class="card-body scrollmenu">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Complaint No</th>
+                            <th>Distributor Name</th>
+                            <th>Status</th>
+                            <th>Create Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Distributor.DistributorName</td>
+                                <td>
+                                    @if (item.Status == ComplaintStatus.Resolved)
+                                    {
+                                        <span class="badge badge-success">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">@item.Status</span>
+                                    }
+                                </td>
+
+                                <td>@item.CreatedDate</td>
+                                <td>
+                                    <a data-ajax-update="#divform"
+                                       data-ajax="true"
+                                       data-ajax-method="GET"
+                                       asp-controller="Complaint" asp-action="ComplaintApproval" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+        });
+
+        $('.select2').select2();
+
+        //Date range picker
+        $('.date').datetimepicker({
+            format: 'L',
+            todayHighlight: true,
+            maxDate: moment()
+        });
+
+    });
+
+</script>

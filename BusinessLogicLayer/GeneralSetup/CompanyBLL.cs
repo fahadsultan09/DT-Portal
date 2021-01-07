@@ -7,26 +7,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BusinessLogicLayer.Application
+namespace BusinessLogicLayer.GeneralSetup
 {
-    public class BankBLL
+    public class CompanyBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        public BankBLL(IUnitOfWork unitOfWork)
+        public CompanyBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public List<Bank> GetAllBank()
+        public List<Company> GetAllCompany()
         {
-            return _unitOfWork.GenericRepository<Bank>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _unitOfWork.GenericRepository<Company>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-        public SelectList DropDownBankList()
+        public SelectList DropDownCompanyList()
         {
-            var selectList = GetAllBank().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
-                Text = x.BankName.Trim()
+                Text = x.CompanyName.Trim()
             });
 
             return new SelectList(selectList, "Value", "Text");

@@ -54,13 +54,23 @@
                                     <h6>Deposit Date</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="date" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-format="%d %b %Y" data-max-date="@DateTime.Now.ToShortDateString()" class="form-control" />
+                                    <div class="input-group date" id="DepositDate" data-target-input="nearest">
+                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-target="#DepositDate" class="form-control" />
+                                        <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Value Clearing Date</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="date" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-format="%d %b %Y" data-max-date="@DateTime.Now.ToShortDateString()" class="form-control" />
+                                    <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
+                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-target="#ValueClearingDate" class="form-control" />
+                                        <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div><br />
                             <div class=" row">
@@ -162,7 +172,7 @@
                                         </button>*@
                                 </div>
                                 <div class="col-6 pull-right">
-                                    <button type="submit" onclick="Save();" class="btn btn-success mr-1 float-right">
+                                    <button type="submit" onclick="Save();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
                                         Submit
                                     </button>
                                     <a data-ajax-update="#divform"
@@ -195,7 +205,16 @@
     });
 
     $(document).ready(function () {
+
         $('.select2').select2();
+
+        //Date range picker
+        $('.date').datetimepicker({
+            format: 'L',
+            todayHighlight: true,
+            maxDate: moment()
+        });
+
     });
 
 </script>

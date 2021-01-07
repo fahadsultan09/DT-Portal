@@ -5,9 +5,12 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">Order List</h2>
+                 @if (SessionHelper.LoginUser.IsDistributor == true)
+                    {
                 <a asp-action="Add"
                    asp-controller="Order"
                    class="btn btn-info float-right">Add</a>
+                }
             </div>
             <!-- /.card-header -->
             <div class="card-body scrollmenu">
@@ -20,12 +23,12 @@
                             <th>Created</th>
                             <th>Action</th>
                         </tr>
-                    </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@string.Format("{0:0000000000}", item.Id)</td>
+                                <td>@item.Id</td>
+                                <td>@item.Id</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.Status</td>
                                 <td>@item.CreatedDate</td>

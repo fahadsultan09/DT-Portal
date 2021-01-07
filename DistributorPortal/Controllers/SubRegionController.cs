@@ -20,7 +20,7 @@ namespace DistributorPortal.Controllers
             _SubRegionBLL = new SubRegionBLL(_unitOfWork);
         }
         // GET: SubRegion
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_SubRegionBLL.GetAllSubRegion());
         }
@@ -116,7 +116,7 @@ namespace DistributorPortal.Controllers
         {
             return Json(_SubRegionBLL.GetAllSubRegion().ToList());
         }
-        public ActionResult DropDownSubRegionList(int RegionId)
+        public IActionResult DropDownSubRegionList(int RegionId)
         {
             return Json(_SubRegionBLL.DropDownSubRegionList(RegionId, 0));
         }

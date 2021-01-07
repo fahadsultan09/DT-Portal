@@ -20,7 +20,7 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: ApplicationModule
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_ApplicationModuleBLL.GetAllApplicationModule());
         }
@@ -64,7 +64,7 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        TempData["Message"] = "ApplicationModule name already exist";
+                        TempData["Message"] = "Application Module name already exist";
                         return PartialView("Add", model);
                     }
                 }

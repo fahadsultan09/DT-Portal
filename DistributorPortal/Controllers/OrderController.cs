@@ -49,11 +49,11 @@ namespace DistributorPortal.Controllers
         // GET: Order
         public ActionResult Index()
         {
-            return View(_OrderBLL.GetAllOrderMaster());
+            return View(GetOrderList());
         }
         public IActionResult List()
         {
-            return PartialView("List", _OrderBLL.GetAllOrderMaster());
+            return PartialView("List", GetOrderList());
         }
         [HttpGet]
         public IActionResult Add(int id)
@@ -202,6 +202,17 @@ namespace DistributorPortal.Controllers
                                              ViewData, TempData, sw, new HtmlHelperOptions());
                 await viewResult.View.RenderAsync(viewContext);
                 return sw.GetStringBuilder().ToString();
+            }
+        }
+        public List<OrderMaster> GetOrderList()
+        {
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                return _OrderBLL.GetAllOrderMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
+            }
+            else
+            {
+                return _OrderBLL.GetAllOrderMaster().OrderByDescending(x => x.Id).ToList();
             }
         }
     }

@@ -94,7 +94,7 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 function UpdateStatus(e, controllerName, actionName, id) {
     
     Swal.fire({
-        title: "Are you sure you want to verify?",
+        title: "Are you sure you want to continue?",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",

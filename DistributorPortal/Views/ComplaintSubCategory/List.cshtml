@@ -1,0 +1,110 @@
+﻿@model IEnumerable<ComplaintSubCategory>
+@{
+    var viewdata = (string)TempData["Message"];
+    if (!string.IsNullOrEmpty(viewdata))
+    {
+        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            @viewdata <a class="alert-link" href="#"></a>.
+        </div>
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Complaint Sub Category List</h2>
+                <form asp-controller="ComplaintSubCategory"
+                      asp-action="Add"
+                      id="frmAdd"
+                      data-ajax-update="#divform"
+                      data-ajax="true"
+                      data-ajax-method="GET"
+                      method="GET">
+                    <button type="submit" class="btn btn-info float-right">Add</button>
+                </form>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Name</th>
+                            <th>Complaint Category Name</th>
+                            <th>Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.ComplaintSubCategoryName</td>
+                                <td>@item.ComplaintCategory.ComplaintCategoryName</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {<i class="fa fa-check text-navy"></i> }
+                                    else
+                                    {<i class="fa fa-times text-danger"></i>}
+                                </td>
+                                <td>
+                                    <a data-ajax-update="#divform"
+                                       data-ajax="true"
+                                       data-ajax-method="GET"
+                                       asp-controller="ComplaintSubCategory" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <a onclick="Delete(this);" id="@item.Id" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+<script>
+
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+        });
+    });
+
+    function Delete(e) {
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.value) {
+                $.post('@Url.Action("Delete", "ComplaintSubCategory")/' + e.id, null, function (data) {
+                    if (data) {
+                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
+                    }
+                });
+            }
+        });
+    }
+
+</script>

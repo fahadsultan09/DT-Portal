@@ -1,5 +1,7 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Utility;
@@ -31,11 +34,22 @@ namespace DistributorPortal.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            return View(_PaymentBLL.GetAllPaymentMaster().ToList());
+            PaymentViewModel model = new PaymentViewModel();
+            model.PaymentMaster = GetPaymentList();
+            model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
+            return View(model);
         }
-        public IActionResult List()
+        public PaymentViewModel List(PaymentViewModel model)
         {
-            return PartialView("List", _PaymentBLL.GetAllPaymentMaster());
+            if (model.DistributorId == 0 && model.Status is null && model.FromDate is null && model.ToDate is null)
+            {
+                model.PaymentMaster = GetPaymentList();
+            }
+            else
+            {
+                model.PaymentMaster = _PaymentBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            return model;
         }
         [HttpGet]
         public IActionResult Add(int id)
@@ -133,6 +147,23 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 return Json(new { data = jsonResponse });
             }
+        }
+        [HttpPost]
+        public IActionResult Search(PaymentViewModel model, string Search)
+        {
+            if (!string.IsNullOrEmpty(Search))
+            {
+                model = List(model);
+            }
+            else
+            {
+                model.PaymentMaster = GetPaymentList();
+            }
+            return PartialView("List", model.PaymentMaster);
+        }
+        public List<PaymentMaster> GetPaymentList()
+        {
+            return _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
         }
     }
 }

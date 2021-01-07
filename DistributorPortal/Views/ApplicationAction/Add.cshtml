@@ -1,0 +1,77 @@
+﻿@model ApplicationAction
+@{
+    var viewdata = (string)TempData["Message"];
+    if (!string.IsNullOrEmpty(viewdata))
+    {
+        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            @viewdata <a class="alert-link" href="#"></a>.
+        </div>
+    }
+}
+
+<!-- Main content -->
+<!-- SELECT2 EXAMPLE -->
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">Application Action</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-controller="ApplicationAction"
+                      asp-action="SaveEdit"
+                      id="frmDosageForm"
+                      data-ajax-update="#divform"
+                      data-ajax-success="Success"
+                      data-ajax-complete="MessageDisappear"
+                      data-ajax="true"
+                      data-ajax-method="POST">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox ">
+                                <input asp-for="Id" type="hidden" />
+                                <div class="ibox-content">
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Application Action Name<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="ActionName" type="text" placeholder="Name" class="form-control" />
+                                            <span asp-validation-for="ActionName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <div class="i-checks"><label>Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 ">
+                                            <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
+                                                @(Model.Id > 0 ? "Update" : "Add")
+                                            </button>
+                                            <a data-ajax-update="#divform"
+                                               data-ajax="true"
+                                               data-ajax-method="GET"
+                                               asp-controller="ApplicationAction" asp-action="List"
+                                               class="btn btn-sm btn-default float-right mr-3">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.card -->
+
+<script>
+    var MessageDisappear = function () {
+        setInterval(function () {
+            $("#alertmessage").hide('slow');
+        }, 5000);
+    }
+</script>

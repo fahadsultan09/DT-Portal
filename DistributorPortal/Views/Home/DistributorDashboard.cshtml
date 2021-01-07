@@ -1,7 +1,7 @@
 ﻿@model DistributorDashboardViewModel
 @{
     ViewData["Title"] = "Home";
-    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed;
+    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
 }
 
 <style type="text/css">
@@ -138,12 +138,12 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                                 <!-- ./col -->
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545">
 
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
@@ -213,7 +213,7 @@
                                 </div>
                                 <div class="col-3 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Draft" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
-                                    <div class="knob-label">Reject</div>
+                                    <div class="knob-label">Draft</div>
                                 </div>
                             </div>
                             <!-- /.row -->
@@ -341,7 +341,7 @@
                     <!-- /.card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><strong>Products</strong></h3><br />
+                            <h3 class="card-title">Products</h3><br />
                             <small>Top five purchasing products by quantity</small>
                         </div>
                         <div class="card-body table-responsive p-0">
@@ -380,7 +380,7 @@
                     <!-- /.card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><strong>Products</strong></h3><br />
+                            <h3 class="card-title">Products</h3><br />
                             <small>Top five purchasing products by order</small>
                         </div>
                         <div class="card-body table-responsive p-0">

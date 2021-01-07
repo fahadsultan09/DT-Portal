@@ -1,6 +1,8 @@
-﻿using BusinessLogicLayer.Application;
+﻿
+using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
@@ -26,7 +28,7 @@ namespace UserPortal.Controllers
             _IConfiguration = configuration;
         }
         // GET: User
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_UserBLL.GetAllUser());
         }

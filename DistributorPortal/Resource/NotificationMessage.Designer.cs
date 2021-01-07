@@ -151,7 +151,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Payment Successfully Saved.
+        ///   Looks up a localized string similar to Payment Saved Successfully..
         /// </summary>
         public static string PaymentSaved {
             get {
@@ -183,6 +183,15 @@ namespace DistributorPortal.Resource {
         public static string ResetPasswordSuccessfully {
             get {
                 return ResourceManager.GetString("ResetPasswordSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resolved Successfully..
+        /// </summary>
+        public static string Resolved {
+            get {
+                return ResourceManager.GetString("Resolved", resourceCulture);
             }
         }
         

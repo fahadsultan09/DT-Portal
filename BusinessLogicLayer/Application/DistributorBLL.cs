@@ -111,7 +111,7 @@ namespace BusinessLogicLayer.ApplicationSetup
         }
 
 
-        public SelectList DropDownDistributorList(int SelectedValue)
+        public SelectList DropDownDistributorList(int? SelectedValue)
         {
             var selectList = GetAllDistributor().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {

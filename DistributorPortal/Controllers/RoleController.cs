@@ -20,7 +20,7 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: Role
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_RoleBLL.GetAllRole());
         }

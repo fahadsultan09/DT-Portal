@@ -22,7 +22,7 @@ namespace DistributorPortal.Controllers
             _CityBLL = new CityBLL(_unitOfWork);
         }
         // GET: City
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View(_CityBLL.GetAllCity());
         }
@@ -115,7 +115,7 @@ namespace DistributorPortal.Controllers
         {
             return Json(_CityBLL.GetAllCity().ToList());
         }
-        public ActionResult DropDownCityList(int SubRegionId)
+        public IActionResult DropDownCityList(int SubRegionId)
         {
             return Json(_CityBLL.DropDownCityList(SubRegionId, 0));
         }

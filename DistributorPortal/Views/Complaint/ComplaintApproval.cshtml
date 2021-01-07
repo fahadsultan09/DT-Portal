@@ -1,0 +1,141 @@
+﻿@model Complaint
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary defaultColor">
+                    <div class="card-header">
+                        <h3 class="card-title">Distributor Information</h3>
+                    </div>
+                    <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                        <div class="row">
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <h6>Name:</h6>
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <span><strong>@Model.Distributor.DistributorName</strong></span>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <h6>City:</h6>
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <span><strong>@Model.Distributor.City</strong></span>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <h6>Code:</h6>
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Complaint</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class=" row">
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Complaint Category<span class="text-danger"> * </span></h6>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "Please Select", htmlAttributes: new { @class = "form-control" })
+                                <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Complaint Sub Category<span class="text-danger"> * </span></h6>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                @Html.DropDownListFor(e => e.ComplaintSubCategoryId, Model.ComplaintSubCategoryList, "Please Select", htmlAttributes: new { @class = "form-control" })
+                                <span asp-validation-for="ComplaintSubCategoryId" class="text-danger"></span>
+                            </div>
+                        </div><br />
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Description<span class="text-danger"> * </span></h6>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <input type="text" asp-for="Description" class="form-control" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Attachment</h6>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <div class="custom-file">
+                                        <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
+                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                    </div>
+                                </div>
+                                <span class="caption">
+                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                            </div>
+                            <div class="col-6 pull-right">
+                                @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5))
+                                {
+                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
+                                        Resolve
+                                    </button>
+                                }
+                                <a data-ajax-update="#divform"
+                                   data-ajax="true"
+                                   data-ajax-method="GET"
+                                   asp-controller="Complaint" asp-action="List"
+                                   class="btn btn-secondary float-right mr-3">
+                                    Back
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $(document).ready(function () {
+
+        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
+
+        $('.select2').select2();
+    });
+
+     function Delete(e) {
+        Swal.fire({
+            title: "Are you sure you want to verify Complaint?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.value) {
+                $.post('@Url.Action("VerifyComplaint", "Complaint")/' + e.id, null, function (data) {
+                    if (data) {
+                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
+                    }
+                });
+            }
+        });
+    }
+
+</script>
