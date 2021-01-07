@@ -112,7 +112,7 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, ComplaintStatus Status)
+        public JsonResult UpdateStatus(int id, ComplaintStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -120,7 +120,7 @@ namespace DistributorPortal.Controllers
                 Complaint model = _ComplaintBLL.GetById(id);
                 if (model != null)
                 {
-                    _ComplaintBLL.UpdateStatus(model, Status);
+                    _ComplaintBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
                 jsonResponse.Status = true;

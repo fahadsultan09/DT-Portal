@@ -92,27 +92,58 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 
 //Approve
 function UpdateStatus(e, controllerName, actionName, id) {
-    
-    Swal.fire({
-        title: "Are you sure you want to continue?",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Yes",
-        closeOnConfirm: true,
-        showLoaderOnConfirm: true
-    }).then((result) => {
-        if (result.value) {
-            $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value }, function (data) {
-                if (data) {
-                    Toast.fire({ icon: 'success', title: 'Verified successfully.' });
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+
+    if (e.value == "Resolved") {
+        Swal.fire({
+            title: 'Enter Remarks',
+            input: 'text',
+            inputLabel: 'Remarks',
+            inputValue: '',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to write something!'
                 }
-            });
-        }
-    });
+            }
+        }).then(function (result) {
+
+            if (result.value) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: result.value }, function (data) {
+                    if (data) {
+                        Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                    }
+                });
+            }
+        })
+    }
+    else {
+
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.value) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value }, function (data) {
+                    if (data) {
+                        Toast.fire({ icon: 'success', title: 'Verified successfully.' });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                    }
+                });
+            }
+        });
+    }
 }

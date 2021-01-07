@@ -79,10 +79,22 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
-                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Remarks))
+                            {
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <h6>Remarks</h6>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <input type="text" asp-for="Remarks" class="form-control" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-6">
+                                </div>
+                            }
                             <div class="col-6 pull-right">
-                                @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5))
+                                @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 22))
                                 {
                                     <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
                                         Resolve
