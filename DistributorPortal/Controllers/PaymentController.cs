@@ -41,7 +41,7 @@ namespace DistributorPortal.Controllers
         }
         public PaymentViewModel List(PaymentViewModel model)
         {
-            if (model.DistributorId == 0 && model.Status is null && model.FromDate is null && model.ToDate is null)
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null)
             {
                 model.PaymentMaster = GetPaymentList();
             }
