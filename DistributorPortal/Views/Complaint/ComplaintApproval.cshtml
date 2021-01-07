@@ -84,14 +84,14 @@
                             <div class="col-6 pull-right">
                                 @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5))
                                 {
-                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
-                                        Verify
+                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
+                                        Resolve
                                     </button>
                                 }
                                 <a data-ajax-update="#divform"
                                    data-ajax="true"
                                    data-ajax-method="GET"
-                                   asp-controller="Payment" asp-action="List"
+                                   asp-controller="Complaint" asp-action="List"
                                    class="btn btn-secondary float-right mr-3">
                                     Back
                                 </a>
