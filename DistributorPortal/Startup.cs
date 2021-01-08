@@ -26,7 +26,6 @@ namespace DistributorPortal
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(option =>
@@ -72,16 +71,13 @@ namespace DistributorPortal
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-            app.UseRouting();
+            //app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            app.UseMvc(route =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Login}/{action=Index}/{id?}");
-                
+                route.MapRoute("default", "{Controller=Login}/{Action=Index}/{Id?}");
             });
         }
     }
