@@ -61,8 +61,7 @@ namespace ProductPortal.Controllers
             }
             catch (Exception ex)
             {
-
-                throw;
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
             }
             return PartialView("List", _ProductMasterBLL.GetAllProductMaster());
         }

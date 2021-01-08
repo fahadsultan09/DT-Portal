@@ -79,8 +79,8 @@ namespace DistributorPortal.Controllers
             }
             catch (Exception ex)
             {
-
-                throw;
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return null;
             }
         }
 

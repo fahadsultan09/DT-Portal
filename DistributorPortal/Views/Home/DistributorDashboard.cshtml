@@ -1,7 +1,7 @@
 ﻿@model DistributorDashboardViewModel
 @{
     ViewData["Title"] = "Home";
-    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
+    int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
 }
 
 <style type="text/css">
@@ -108,7 +108,6 @@
                             <div class="card-header">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Status - Last 12 Months</h3>
-                                    @*<a href="javascript:void(0);">View Report</a>*@
                                 </div>
                             </div>
                             <div class="card-body">
@@ -181,19 +180,15 @@
                         <div class="card-body">
                             <div class="row">
                                 <!-- ./col -->
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Pending Approval</div>
                                 </div>
-                                <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PaymentVerified" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00c0ef">
-                                    <div class="knob-label">Payment Verified</div>
-                                </div>
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
                                     <div class="knob-label">In Process</div>
                                 </div>
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Partially Processed</div>
                                 </div>
