@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Utility;
 
 namespace Models.Application
 {
@@ -16,6 +17,8 @@ namespace Models.Application
         public virtual ProductMaster ProductMaster { get; set; }
         public int Quantity { get; set; }
         public double Amount { get; set; }
+        public string SAPOrderNumber { get; set; }
+        public OrderStatus? OrderProductStatus { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }
     }

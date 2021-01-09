@@ -77,11 +77,13 @@ namespace SAPConfigurationAPI.BusinessLogic
                 rfcDest = RfcDestinationManager.GetDestination(SystemId);
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
-                IRfcStructure structInputs = rfcDest.Repository.GetStructureMetadata(TableName).CreateStructure();
+                
                 var dt1 = Table.ToDataTable();
                 IRfcTable tableimport = companyBapi.GetTable("ORDERS");
                 for (int i = 0; i < dt1.Rows.Count; i++)
                 {
+                    IRfcStructure structInputs = rfcDest.Repository.GetStructureMetadata(TableName).CreateStructure();
+                    
                     structInputs.SetValue("SNO", dt1.Rows[i]["SNO"].ToString());
                     structInputs.SetValue("ITEMNO", dt1.Rows[i]["ITEMNO"].ToString());
                     structInputs.SetValue("PARTN_NUMB", dt1.Rows[i]["PARTN_NUMB"].ToString());
@@ -100,11 +102,11 @@ namespace SAPConfigurationAPI.BusinessLogic
                     structInputs.SetValue("STORE_LOC", dt1.Rows[i]["STORE_LOC"].ToString());
                     structInputs.SetValue("BATCH", dt1.Rows[i]["BATCH"].ToString());
                     structInputs.SetValue("ITEM_CATEG", dt1.Rows[i]["ITEM_CATEG"].ToString());
-                    
+                    tableimport.Append(structInputs);
 
                     //IRfcStructure structInputs = destination.Repository.GetStructureMetadata("ZECOM_VA01").CreateStructure();
 
-                    tableimport.Insert(structInputs);
+                    //tableimport.Insert(structInputs);
 
                 }
 

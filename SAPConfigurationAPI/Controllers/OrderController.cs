@@ -18,10 +18,19 @@ namespace SAPConfigurationAPI.Controllers
         }
 
         [HttpPost]
-        public List<OrderStatusViewModel> GetBalance(List<OrderStatusViewModel> Table)
+        public List<SAPOrderStatus> GetBalance(List<OrderStatusViewModel> Table)
         {
             var Data = connectivity.PostOrdertoSAP("ZWAS_IT_DP_ORDER_CREATE_BAPI", "ZWAS_IT_DP_VA01UP_ITAB", Table);
-            return Table;
+            List<SAPOrderStatus> list = new List<SAPOrderStatus>();
+            for (int i = 0; i < Data.RowCount; i++)
+            {
+                list.Add(new SAPOrderStatus()
+                {
+                    ProductCode = Data[i].GetString("MATNR"),
+                    SAPOrderNo = Data[i].GetString("VBELN")                   
+                });
+            }
+            return list;
         }
     }
 }

@@ -37,7 +37,8 @@ namespace Utility
         Reject = 7,
         Submit = 8,
         Onhold = 9,
-        Approved = 10
+        Approved = 10,
+        NotYetProcess = 11
 
     }
     public enum PaymentStatus

@@ -73,9 +73,15 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-        public List<ProductDetail> GetAllProductDetailById(int[] list)
+        public List<ProductDetail> GetAllProductDetailById(int[] list, int OrderId)
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false && list.Contains(x.ProductMasterId)).ToList();
+            var detail = _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false && list.Contains(x.ProductMasterId)).ToList();
+            var OrderDetail = _unitOfWork.GenericRepository<OrderDetail>().Where(e => list.Contains(e.ProductId) && e.OrderId == OrderId).ToList();
+            foreach (var item in detail)
+            {
+                item.ProductMaster.Quantity = OrderDetail.First(e => e.ProductId == item.ProductMasterId).Quantity;
+            }
+            return detail;
         }
 
         public SelectList DropDownProductList()

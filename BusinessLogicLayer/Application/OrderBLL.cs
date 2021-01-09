@@ -48,6 +48,11 @@ namespace BusinessLogicLayer.Application
         public int Update(OrderMaster module)
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(module.Id);
+            item.ReferenceNo = module.ReferenceNo;
+            item.Remarks = module.Remarks;
+            item.Status = module.Status;
+            item.Attachment = module.Attachment;
+            item.Comments = module.Comments;            
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
@@ -76,7 +81,7 @@ namespace BusinessLogicLayer.Application
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
-
+            productDetails.ForEach(e => e.TotalPrice = e.ProductMaster.Quantity * e.ProductMaster.Rate);
             var SAMIproductDetails = productDetails.Where(e => e.CompanyId == sami).ToList();
             viewModel.SAMISupplies0 = SAMIproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
             viewModel.SAMISupplies1 = SAMIproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
@@ -116,35 +121,42 @@ namespace BusinessLogicLayer.Application
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
 
-            var SAMIproductDetails = OrderValue.First(e => e.CompanyId == sami);
-            viewModel.SAMISupplies0 = SAMIproductDetails.SuppliesZero;
-            viewModel.SAMISupplies1 = SAMIproductDetails.SuppliesOne;
-            viewModel.SAMISupplies4 = SAMIproductDetails.SuppliesFour;
-            viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
-            viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
-            viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
-            viewModel.SAMIUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
-            viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
-
-            var HealthTekproductDetails = OrderValue.First(e => e.CompanyId == HealthTek);
-            viewModel.HealthTekSupplies0 = SAMIproductDetails.SuppliesZero;
-            viewModel.HealthTekSupplies1 = SAMIproductDetails.SuppliesOne;
-            viewModel.HealthTekSupplies4 = SAMIproductDetails.SuppliesFour;
-            viewModel.HealthTekTotalOrderValues = SAMIproductDetails.TotalOrderValues;
-            viewModel.HealthTekPendingOrderValues = SAMIproductDetails.PendingOrderValues;
-            viewModel.HealthTekCurrentBalance = SAMIproductDetails.CurrentBalance;
-            viewModel.HealthTekUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
-            viewModel.HealthTekNetPayable = SAMIproductDetails.NetPayable;
-
-            var PhytekproductDetails = OrderValue.First(e => e.CompanyId == HealthTek);
-            viewModel.PhytekSupplies0 = SAMIproductDetails.SuppliesZero;
-            viewModel.PhytekSupplies1 = SAMIproductDetails.SuppliesOne;
-            viewModel.PhytekSupplies4 = SAMIproductDetails.SuppliesFour;
-            viewModel.PhytekTotalOrderValues = SAMIproductDetails.TotalOrderValues;
-            viewModel.PhytekPendingOrderValues = SAMIproductDetails.PendingOrderValues;
-            viewModel.PhytekCurrentBalance = SAMIproductDetails.CurrentBalance;
-            viewModel.PhytekUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
-            viewModel.PhytekNetPayable = SAMIproductDetails.NetPayable;
+            var SAMIproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == sami);
+            if (SAMIproductDetails != null)
+            {
+                viewModel.SAMISupplies0 = SAMIproductDetails.SuppliesZero;
+                viewModel.SAMISupplies1 = SAMIproductDetails.SuppliesOne;
+                viewModel.SAMISupplies4 = SAMIproductDetails.SuppliesFour;
+                viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
+                viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+                viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
+                viewModel.SAMIUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
+                viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
+            }
+            var HealthTekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == HealthTek);
+            if (HealthTekproductDetails != null)
+            {
+                viewModel.HealthTekSupplies0 = HealthTekproductDetails.SuppliesZero;
+                viewModel.HealthTekSupplies1 = HealthTekproductDetails.SuppliesOne;
+                viewModel.HealthTekSupplies4 = HealthTekproductDetails.SuppliesFour;
+                viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.TotalOrderValues;
+                viewModel.HealthTekPendingOrderValues = HealthTekproductDetails.PendingOrderValues;
+                viewModel.HealthTekCurrentBalance = HealthTekproductDetails.CurrentBalance;
+                viewModel.HealthTekUnConfirmedPayment = HealthTekproductDetails.UnConfirmedPayment;
+                viewModel.HealthTekNetPayable = HealthTekproductDetails.NetPayable;
+            }
+            var PhytekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == Phytek);
+            if (PhytekproductDetails != null)
+            {
+                viewModel.PhytekSupplies0 = PhytekproductDetails.SuppliesZero;
+                viewModel.PhytekSupplies1 = PhytekproductDetails.SuppliesOne;
+                viewModel.PhytekSupplies4 = PhytekproductDetails.SuppliesFour;
+                viewModel.PhytekTotalOrderValues = PhytekproductDetails.TotalOrderValues;
+                viewModel.PhytekPendingOrderValues = PhytekproductDetails.PendingOrderValues;
+                viewModel.PhytekCurrentBalance = PhytekproductDetails.CurrentBalance;
+                viewModel.PhytekUnConfirmedPayment = PhytekproductDetails.UnConfirmedPayment;
+                viewModel.PhytekNetPayable = PhytekproductDetails.NetPayable;
+            }            
             return viewModel;
         }
         public List<OrderValue> GetValues(OrderValueViewModel orderValueViewModel, int OrderId)
@@ -261,7 +273,7 @@ namespace BusinessLogicLayer.Application
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { Id = model.Id }) : Url.Action("Index", "Order", new { Id = model.Id });
             }
             else
             {
@@ -287,7 +299,7 @@ namespace BusinessLogicLayer.Application
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = Url.Action("Add", "Order", new { Id = model.Id });
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { Id = model.Id }) : Url.Action("Index", "Order", new { Id = model.Id });
             }
             return jsonResponse;
         }

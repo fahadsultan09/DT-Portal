@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -66,21 +67,91 @@ namespace DistributorPortal.Controllers
         {
             return View("OrderApprove", BindOrderMaster(id));
         }
+        public IActionResult OnHold(int id, string Comments)
+        {
+            try
+            {
+                JsonResponse jsonResponse = new JsonResponse();
+                var order = _OrderBLL.GetOrderMasterById(id);
+                order.Status = OrderStatus.Onhold;
+                order.Comments = Comments;
+                var result = _OrderBLL.Update(order);
+                if (result > 0)
+                {
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Order on hold";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                }
+                return Json(jsonResponse);
+            }
+            catch (Exception)
+            {
+                throw;
+            }            
+        }
+
+        public IActionResult Reject(int id, string Comments)
+        {
+            try
+            {
+                JsonResponse jsonResponse = new JsonResponse();
+                var order = _OrderBLL.GetOrderMasterById(id);
+                order.Status = OrderStatus.Reject;
+                order.Comments = Comments;
+                var result = _OrderBLL.Update(order);
+                if (result > 0)
+                {
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Order Rejected";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                }
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public IActionResult OrderView(int id)
+        {
+            return View(BindOrderMaster(id));
+        }
 
         [HttpGet]
         public IActionResult ApproveOrder(int id)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
-            {
+            {                
                 var Client = new RestClient(_Configuration.PostOrder);
                 var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
                 IRestResponse response = Client.Execute(request);
-                return View();
+                var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                var detail = _orderDetailBLL.Where(e => e.OrderId == id).ToList();
+                foreach (var item in SAPProduct)
+                {
+                    var product = detail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
+                    if (product != null)
+                    {
+                        product.SAPOrderNumber = item.SAPOrderNo;
+                        product.OrderProductStatus = OrderStatus.NotYetProcess;
+                        _orderDetailBLL.Update(product);
+                    }
+                }
+                var order = _OrderBLL.GetOrderMasterById(id);
+                order.Status = OrderStatus.InProcess;
+                var result = _OrderBLL.Update(order);
+                jsonResponse.Status = result > 0;
+                jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                return Json(jsonResponse);
             }
             catch (Exception ex)
             {
-
-                throw;
+                jsonResponse.Status = false;
+                jsonResponse.Message = ex.Message;
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                return Json(jsonResponse);
             }
         }
 
@@ -121,8 +192,11 @@ namespace DistributorPortal.Controllers
         public IActionResult Delete(int Id)
         {            
             var list = SessionHelper.AddProduct;
-            var item = list.First(e => e.ProductMasterId == Id);
-            list.Remove(item);
+            var item = list.FirstOrDefault(e => e.ProductMasterId == Id);
+            if (item != null)
+            {
+                list.Remove(item);
+            }
             SessionHelper.AddProduct = list;
             return PartialView("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber));
         }
@@ -174,8 +248,8 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
-                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray()); ;
-                model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(model.Id));
+                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray(), Id);
+                model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
                 SessionHelper.AddProduct = model.productDetails;
             }
             else

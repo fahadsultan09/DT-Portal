@@ -130,11 +130,19 @@ namespace DistributorPortal.Controllers
                 var Client = new RestClient(_configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
                 var request = new RestRequest(Method.GET);
                 IRestResponse response = Client.Execute(request);
-                return JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
+                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
+                if (resp == null)
+                {
+                    return new DistributorBalance();
+                }
+                else
+                {
+                    return resp;
+                }
             }
             catch (Exception ex)
             {
-                return null;
+                return new DistributorBalance();
             }
         }
     }

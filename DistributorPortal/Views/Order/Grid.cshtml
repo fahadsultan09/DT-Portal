@@ -15,7 +15,6 @@
                 <th>Total</th>
                 <th>Supplies</th>
                 <th>Company</th>
-                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -34,16 +33,6 @@
                     <td>@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
                     <td>@item.WTaxRate %</td>
                     <td>@item.Company.CompanyName</td>
-                    <td>
-                        <a asp-action="Delete"
-                           asp-controller="Order"
-                           asp-route-Id="@item.ProductMaster.Id"
-                           class="btn btn-danger"
-                           data-ajax="true"
-                           data-ajax-complete="UpdateOrderValue"
-                           data-ajax-update="#addToGrid"
-                           data-ajax-method="POST">Delete</a>
-                    </td>
                 </tr>
             }
         </tbody>

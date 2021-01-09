@@ -90,23 +90,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                                                <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
-                                            </div>
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-primary float-right" id="Approve">
-                                                    Approve
-                                                </button>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="OnHold(@Model.Id);" class="btn btn-success float-right">
-                                                    On Hold
-                                                </button>
-                                            </div>
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Reject(@Model.Id);" class="btn btn-danger float-right">
-                                                    Reject
-                                                </button>
-                                            </div>
+                                                <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue">@Model.TotalValue</span></strong>
+                                            </div>                                           
                                         </div>
                                     </div>
                                 </div>
@@ -149,6 +134,7 @@
 </div>
 <script type="text/javascript">
     function OnHold(Id) {
+        debugger;
         Swal.fire({
             title: 'Enter Comment before onhold',
             input: 'text',
@@ -159,6 +145,7 @@
             confirmButtonText: 'On Hold Now',
             showLoaderOnConfirm: true,
             preConfirm: (Comments) => {
+                debugger;
                 if (Comments == "") {
                     Swal.showValidationMessage(
                         `Request failed: Enter Comments`
@@ -167,6 +154,7 @@
             },
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
+            debugger;
             if (result.value != null || result.value != undefined) {
                     $.ajax({
                     type: "POST",
@@ -184,6 +172,7 @@
         })
     }
     function Reject(Id) {
+        debugger;
         Swal.fire({
             title: 'Enter Comment before Reject',
             input: 'text',
@@ -194,6 +183,7 @@
             confirmButtonText: 'Reject',
             showLoaderOnConfirm: true,
             preConfirm: (Comments) => {
+                debugger;
                 if (Comments == "") {
                     Swal.showValidationMessage(
                         `Request failed: Enter Comments`
@@ -203,7 +193,7 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.value != null || result.value != undefined) {
-                $.ajax({
+                    $.ajax({
                     type: "POST",
                     url: '@Url.Action("Reject", "Order")',
                     data: { 'Id': Id, 'Comments': result.value },
@@ -218,37 +208,6 @@
             }
         })
     }
-    function Approve(Id) {
-        Ladda.create($("#Approve", this)[0]).start();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to approve this order!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Approve it!'
-            }).then((result) => {
-                if (result.value) {
-                    $.ajax({
-                        type: "GET",
-                        url: '@Url.Action("ApproveOrder", "Order")',
-                        data: { 'Id': Id },
-                        cache: false,
-                        success: function (response) {
-                            Swal.fire('Saved!', response.Message, 'success')
-                            Ladda.create($("#Approve", this)[0]).stop();
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 2000);
-                        },
-                        complete: function (response) {
-                            Ladda.create($("#Approve", this)[0]).stop();
-                        }
-                    })
-                }
-            })
-        }
 
 </script>
 
