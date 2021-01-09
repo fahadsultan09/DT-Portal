@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserRights;
@@ -21,6 +22,7 @@ namespace DistributorPortal.Controllers
         // GET: ApplicationAction
         public IActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Index", " Form");
             return View(_ApplicationActionBLL.GetAllApplicationAction());
         }
         public IActionResult List()
@@ -30,6 +32,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindApplicationAction(id));
         }
         [HttpPost]
@@ -37,6 +40,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -60,10 +64,12 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
+                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "ApplicationAction name already exist";
                         return PartialView("Add", model);
                     }
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -78,7 +84,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Delete", "Start Click on Delete Button of ");
                 _ApplicationActionBLL.DeleteApplicationAction(id);
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

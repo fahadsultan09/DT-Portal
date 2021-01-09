@@ -56,7 +56,9 @@
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-undo-alt"></i></span>
+                        <span class="info-box-icon bg-gradient-secondary elevation-1">
+                            <i class="fas fa-undo-alt"></i>
+                        </span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Return Orders</span>
@@ -80,7 +82,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="col-lg-12">
-                        <div class="card  card-success">
+                        <div class="card card-primary">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Payment Status - Last 12 Months</h3>
@@ -104,7 +106,7 @@
                     <!-- /.card-body -->
                     <!--</div>-->
                     <div class="col-lg-12">
-                        <div class="card">
+                        <div class="card card-primary">
                             <div class="card-header">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Status - Last 12 Months</h3>
@@ -203,11 +205,11 @@
                                     <div class="knob-label">On Hold</div>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
                                     <div class="knob-label">Reject</div>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Draft" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Draft" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
                                     <div class="knob-label">Draft</div>
                                 </div>
                             </div>
@@ -221,7 +223,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-success">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Payment Status - Last 12 Months</h3>
                         </div>

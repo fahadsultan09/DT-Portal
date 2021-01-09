@@ -121,9 +121,8 @@
 <script>
     $('#btnClear').on('click', function () {
 
-        $('.select2').val('--Select option--');
-        $('.select2').trigger('change');
         $('.select2').val('');
+        $('.select2').trigger('change');
         $('#frmHome').submit();
     });
 </script>

@@ -4,6 +4,7 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -34,6 +35,7 @@ namespace DistributorPortal.Controllers
         // GET: Payment
         public ActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "Index", " Form");
             PaymentViewModel model = new PaymentViewModel();
             model.PaymentMaster = GetPaymentList();
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
@@ -54,11 +56,13 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindPaymentMaster(id));
         }
         [HttpGet]
         public IActionResult PaymentApproval(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "PaymentApproval", "Click on Approval Button of ");
             return PartialView("PaymentApproval", BindPaymentMaster(id));
         }
         [HttpPost]
@@ -68,6 +72,7 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -93,6 +98,7 @@ namespace DistributorPortal.Controllers
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _PaymentBLL.Add(model);
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "SaveEdit", "End Click on Save Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.PaymentSaved;
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
@@ -129,12 +135,14 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "UpdateStatus", "Start Click on Approve Button of ");
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {
                     _PaymentBLL.UpdateStatus(model, Status);
                 }
                 _unitOfWork.Save();
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "UpdateStatus", "End Click on Approve Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.PaymentVerified;
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
@@ -151,6 +159,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult Search(PaymentViewModel model, string Search)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "Search", "Start Click on Search Button of ");
             if (!string.IsNullOrEmpty(Search))
             {
                 model = List(model);
@@ -159,6 +168,7 @@ namespace DistributorPortal.Controllers
             {
                 model.PaymentMaster = GetPaymentList();
             }
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "Search", "End Click on Search Button of ");
             return PartialView("List", model.PaymentMaster);
         }
         public List<PaymentMaster> GetPaymentList()

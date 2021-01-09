@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -18,29 +19,28 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _DesignationBLL = new DesignationBLL(_unitOfWork);
         }
-
         // GET: Designation
         public IActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "Index", " Form");
             return View(_DesignationBLL.GetAllDesignation());
         }
-
         public IActionResult List()
         {
             return PartialView("List", _DesignationBLL.GetAllDesignation());
         }
-
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindDesignation(id));
         }
-
         [HttpPost]
         public IActionResult SaveEdit(Designation model)
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,10 +64,12 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
+                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "Designation name already exist";
                         return PartialView("Add", model);
                     }
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -77,13 +79,14 @@ namespace DistributorPortal.Controllers
                 return RedirectToAction("List");
             }
         }
-
         [HttpPost]
         public IActionResult Delete(int id)
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "Delete", "Start Click on Delete Button of ");
                 _DesignationBLL.DeleteDesignation(id);
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -93,7 +96,6 @@ namespace DistributorPortal.Controllers
                 return RedirectToAction("List");
             }
         }
-
         private Designation BindDesignation(int Id)
         {
             Designation model = new Designation();
@@ -107,7 +109,6 @@ namespace DistributorPortal.Controllers
             }
             return model;
         }
-
         public JsonResult GetDesignationList()
         {
             return Json(_DesignationBLL.GetAllDesignation().ToList());

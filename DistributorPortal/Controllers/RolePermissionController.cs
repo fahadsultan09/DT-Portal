@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.FormLogic;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,12 @@ namespace DistributorPortal.Controllers
         // GET: Role Permission
         public IActionResult Index(int Id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("RolePermission", "Index", " Form");
             return View(_rolePermissionLogic.GetPermissionList(Id));
         }
         public IActionResult List(int Id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("RolePermission", "Add", "Click on Add  Button of ");
             return PartialView(_rolePermissionLogic.GetPermissionList(Id));
         }
 
@@ -33,8 +36,10 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("RolePermission", "UpdatePermission", "Start Click on Delete Button of ");
                 var data = _rolePermissionLogic.UpdatePermission(models);
                 TempData["Message"] = NotificationMessage.UpdateSuccessfully;
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("RolePermission", "UpdatePermission", "End Click on Delete Button of ");
                 return PartialView("List", _rolePermissionLogic.GetPermissionList(models.RoleId));
             }
             catch (Exception ex)

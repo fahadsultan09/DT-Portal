@@ -2,6 +2,7 @@
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -24,6 +25,7 @@ namespace DistributorPortal.Controllers
         // GET: City
         public IActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Index", " Form");
             return View(_CityBLL.GetAllCity());
         }
         public IActionResult List()
@@ -33,6 +35,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindCity(id));
         }
         [HttpPost]
@@ -41,6 +44,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -72,6 +76,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "City name already exist";
                     }
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -87,7 +92,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Delete", "Start Click on Delete Button of ");
                 _CityBLL.DeleteCity(id);
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
