@@ -29,7 +29,8 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Role<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.RoleId, Model.RoleList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "ddlRegion" })
+                                                        @Html.DropDownListFor(e => e.RoleId, Model.RoleList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "ddlRegion" })
+                                                        <br />
                                                         <span asp-validation-for="RoleId" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -96,7 +97,7 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">City</label>
                                                     <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.CityId, Model.CityList, "--Select option--", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.DropDownListFor(e => e.CityId, Model.CityList, "--Select option--", htmlAttributes: new { @class = "form-control select2" })
                                                         <span asp-validation-for="CityId" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -105,7 +106,8 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Designation</label>
                                                     <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.DesignationId, Model.DesignationList, "--Select option--", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.DropDownListFor(e => e.DesignationId, Model.DesignationList, "--Select option--", htmlAttributes: new { @class = "form-control  select2" })
+                                                        <br />
                                                         <span asp-validation-for="DesignationId" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -156,8 +158,8 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Distributor</label>
                                                     <div class="col-lg-8" disabled="true">
-                                                        @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control", @id = "DistributorId" })
-                                                        <span asp-validation-for="DistributorId" class="text-danger" id="errorDistributorId"></span>
+                                                        @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "DistributorId" })
+                                                        <span class="text-danger" id="errorDistributorId"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -201,20 +203,23 @@
 <script>
 
     $(document).ready(function () {
-        //Initialize Select2 Elements
-        $('.select2').select2()
+
+        $('.select2').select2();
+        $('#DistributorId').attr("disabled", true);
 
 
         $('[data-mask]').inputmask();
 
         $('#IsDistributor').on('change', function() {
-
+            
             if ($('#IsDistributor').is(':checked')) {
-            $('#DistributorId').attr("disabled", false);
-        }
-        else {
-            $('#DistributorId').attr("disabled", true);
-        }
+                $('#DistributorId').attr("disabled", false);
+            }
+            else {
+                $('#DistributorId').attr("disabled", true);
+                $('#DistributorId').val('');
+                $('#DistributorId').trigger('change');
+            }
         });
 
     });
@@ -243,7 +248,7 @@
 
     //Submit
     function Submit() {
-    debugger
+    
         var form = event.target.form;
 
         $(form).each(function () {

@@ -3,6 +3,7 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -27,13 +28,12 @@ namespace DistributorPortal.Controllers
             _DistributorBLL = new DistributorBLL(_unitOfWork);
             _configuration = configuration;
         }
-
         // GET: Distributor
         public IActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Index", " Form");
             return View(_DistributorBLL.GetAllDistributor());
         }
-
         public IActionResult List()
         {
             return PartialView("List", _DistributorBLL.GetAllDistributor());
@@ -78,19 +78,19 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindDistributor(id));
         }
-
         [HttpPost]
         public JsonResult SaveEdit(Distributor model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -122,6 +122,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Distributor name already exist";
                     }
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -132,13 +133,14 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-
         [HttpPost]
         public IActionResult Delete(int id)
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "Start Click on Delete Button of ");
                 _DistributorBLL.DeleteDistributor(id);
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -148,7 +150,6 @@ namespace DistributorPortal.Controllers
                 return RedirectToAction("List");
             }
         }
-
         private Distributor BindDistributor(int Id)
         {
             Distributor model = new Distributor();
@@ -163,7 +164,6 @@ namespace DistributorPortal.Controllers
             model.RegionList = new RegionBLL(_unitOfWork).DropDownRegionList(model.RegionId);
             return model;
         }
-
         public JsonResult GetDistributorList()
         {
             return Json(_DistributorBLL.GetAllDistributor().ToList());

@@ -47,5 +47,6 @@ namespace Models.ApplicationContext
         public DbSet<Complaint> Complaint { get; set; }
         public DbSet<ComplaintCategory> ComplaintCategory { get; set; }
         public DbSet<ComplaintSubCategory> ComplaintSubCategory { get; set; }
+        public DbSet<AuditTrail> AuditTrail { get; set; }
     }
 }

@@ -25,103 +25,104 @@
             </div>
         </div>
     </section>
-    @*<section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Search</h2>
-                        </div>
-                        <form data-ajax-update="#divform"
-                              data-ajax="true"
-                              data-ajax-method="POST"
-                              asp-controller="Payment"
-                              asp-action="Search"
-                              id="frmPayment">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="form-group">
-                                            <label class="control-label">From Date</label>
-                                            <div class="input-group date" id="FromDate" data-target-input="nearest">
-                                                <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control" />
-                                                <div class="input-group-append" data-target="#FromDate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="form-group">
-                                            <label class="control-label">To Date</label>
-                                            <div class="input-group date" id="ToDate" data-target-input="nearest">
-                                                <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control" />
-                                                <div class="input-group-append" data-target="#ToDate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Status</label>
-                                            <select asp-for="Status" asp-items="Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
-                                                <option value="">--Select option--</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    @if (!SessionHelper.LoginUser.IsDistributor)
-                                    {
+    <div id="divformPayment">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Search</h2>
+                            </div>
+                            <form data-ajax-update="#divform"
+                                  data-ajax="true"
+                                  data-ajax-method="POST"
+                                  asp-controller="Payment"
+                                  asp-action="Search"
+                                  id="frmPayment">
+                                <div class="card-body">
+                                    <div class="row">
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                             <div class="form-group">
-                                                <label class="control-label">Distributor</label>
-                                                <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2">
+                                                <label class="control-label">From Date</label>
+                                                <div class="input-group date" id="FromDate" data-target-input="nearest">
+                                                    <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control" />
+                                                    <div class="input-group-append" data-target="#FromDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="form-group">
+                                                <label class="control-label">To Date</label>
+                                                <div class="input-group date" id="ToDate" data-target-input="nearest">
+                                                    <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control" />
+                                                    <div class="input-group-append" data-target="#ToDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Status</label>
+                                                <select asp-for="Status" asp-items="Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                             </div>
                                         </div>
-                                    }
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="form-group">
-                                            <label class="col-form-label font-weight-bold" for="Search"></label>
-                                            <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
-                                                Search
-                                            </button>
-                                        </div>
                                     </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="form-group">
-                                            <label class="col-form-label font-weight-bold" for="Clear"></label>
-                                            <button type="submit" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
-                                                Clear
-                                            </button>
+
+                                    <div class="row">
+                                        @if (!SessionHelper.LoginUser.IsDistributor)
+                                        {
+                                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                                <div class="form-group">
+                                                    <label class="control-label">Distributor</label>
+                                                    <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2">
+                                                        <option value="">--Select option--</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label font-weight-bold" for="Search"></label>
+                                                <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
+                                                    Search
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label font-weight-bold" for="Clear"></label>
+                                                <button type="submit" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
+                                                    Clear
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>*@
-    <section class="content">
-        <div class="container-fluid scrollmenu" id="divform">
-            <partial name="List" model="Model.PaymentMaster" />
-        </div>
-    </section>
+        </section>
+        <section class="content">
+            <div class="container-fluid scrollmenu" id="divform">
+                <partial name="List" model="Model.PaymentMaster" />
+            </div>
+        </section>
+    </div>
 </div>
 
 <script>
     $('#btnClear').on('click', function () {
 
-        $('.select2').val('--Select option--');
-        $('.select2').trigger('change');
         $('.select2').val('');
+        $('.select2').trigger('change');
         $('#frmHome').submit();
     });
 </script>

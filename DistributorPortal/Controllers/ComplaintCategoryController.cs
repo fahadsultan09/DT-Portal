@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -18,29 +19,28 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _ComplaintCategoryBLL = new ComplaintCategoryBLL(_unitOfWork);
         }
-
         // GET: ComplaintCategory
         public IActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Index", " Form");
             return View(_ComplaintCategoryBLL.GetAllComplaintCategory());
         }
-
         public IActionResult List()
         {
             return PartialView("List", _ComplaintCategoryBLL.GetAllComplaintCategory());
         }
-
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindComplaintCategory(id));
         }
-
         [HttpPost]
         public IActionResult SaveEdit(ComplaintCategory model)
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,10 +64,12 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
+                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "Complaint Category name already exist";
                         return PartialView("Add", model);
                     }
                 }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -83,7 +85,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Delete", "Start Click on Delete Button of ");
                 _ComplaintCategoryBLL.DeleteComplaintCategory(id);
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -93,7 +97,6 @@ namespace DistributorPortal.Controllers
                 return RedirectToAction("List");
             }
         }
-
         private ComplaintCategory BindComplaintCategory(int Id)
         {
             ComplaintCategory model = new ComplaintCategory();
@@ -107,7 +110,6 @@ namespace DistributorPortal.Controllers
             }
             return model;
         }
-
         public JsonResult GetComplaintCategoryList()
         {
             return Json(_ComplaintCategoryBLL.GetAllComplaintCategory().ToList());

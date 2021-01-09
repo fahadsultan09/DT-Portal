@@ -14,7 +14,6 @@ namespace Models.ViewModel
         public double VerifiedPayment { get; set; }
         public double OutstandingBalance { get; set; }
         public int PendingApproval { get; set; }
-        public int PaymentVerified { get; set; }
         public int InProcess { get; set; }
         public int PartiallyProcessed { get; set; }
         public int CompletelyProcessed { get; set; }

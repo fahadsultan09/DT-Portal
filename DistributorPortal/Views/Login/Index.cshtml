@@ -85,7 +85,7 @@
                   id="frmUser"
                   data-ajax-begin="Begin"
                   data-ajax-success="OnSuccess"
-                  data-ajax-complete="Complete"
+                  data-ajax-complete="OnComplete"
                   data-ajax="true"
                   data-ajax-method="POST"
                   method="post"
@@ -119,172 +119,6 @@
         </div>
     </div>
 
-    <script src="~/Login/popper.min.js"></script>
-    <script src="~/Login/bootstrap.min.js"></script>
-    <script src="~/Login/script.js"></script>
-    @*<div class="container-fluid">
-            <div class="container">
-                <div class="col-xl-10 col-lg-11 login-container">
-                    <div class="row">
-                        <div class="col-lg-7 img-box">
-                            <img src="~/images/login-banner.png" alt="">
-                        </div>
-                        <div class="col-lg-5 no-padding">
-                            <form asp-controller="Login"
-                                  asp-action="ChangePassword"
-                                  id="frmUser"
-                                  data-ajax-success="OnSuccess"
-                                  data-ajax-complete="Complete"
-                                  data-ajax="true"
-                                  data-ajax-method="POST"
-                                  method="post"
-                                  autocomplete="off">
-                                <div class="login-box">
-                                    <div class="login-row row no-margin">
-                                        <img src="~/images/favicon.png" width="50px" height="50px" alt="">
-                                        <h4 style="font-family:cursive; font-weight:bold">&nbsp; Distributor Portal</h4>
-                                    </div>
-
-                                    <div class="login-row row no-margin">
-                                        <label for=""><i class="fas fa-user"></i> User Id</label>
-                                        <input type="text" asp-for="UserName" class="form-control form-control-sm">
-                                        <span asp-validation-for="UserName" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="login-row row no-margin">
-                                        <label for=""><i class="fas fa-unlock-alt"></i> Password</label>
-                                        <input type="password" asp-for="Password" class="form-control form-control-sm">
-                                        <span asp-validation-for="Password" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="login-row row forrr no-margin">
-                                        <p> <input type="checkbox"> Remember Me</p>
-                                    </div>
-
-                                    <div class="login-row btnroo row no-margin">
-                                        <button class="btn btn-primary btn-sm"><span id="Spinner" class="spinner-grow spinner-grow-sm"></span> Sign In</button>
-                                    </div>
-                                    <div class="login-row donroo row no-margin">
-                                        <p>Dont have an Account ? <a href="">Contact Administrator</a></p>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copyc">
-            <p>Designed by <a href="https://www.smarteyeapps.com/">www.smarteyeapps.com</a></p>
-        </div>*@
-
-    <!--<div class="d-flex flex-column flex-root">
-        <div class="login login-2 login-signin-on d-flex flex-column flex-lg-row flex-column-fluid bg-white" id="kt_login">
-            <div class="login-aside order-2 order-lg-1 d-flex flex-row-auto position-relative overflow-hidden">
-                <div class="d-flex flex-column-fluid flex-column justify-content-between py-9 px-7 py-lg-13 px-lg-35">
-                    <div class="d-flex flex-column-fluid flex-column flex-center">
-                        <a href="#" class="text-center pt-2">
-                            <img src="~/Images/favicon.png" class="max-h-75px" alt="" />
-                        </a>
-                        <div class="login-form login-signin py-11">
-                            <form class="form"
-                                  asp-action="Index"
-                                  asp-controller="Login"
-                                  data-ajax-method="POST"
-                                  data-ajax-begin="Begin"
-                                  data-ajax-success="OnSuccess"
-                                  data-ajax-complete="Complete"
-                                  data-ajax="true"
-                                  id="kt_login_signin_form"
-                                  autocomplete="off">
-                                <div class="text-center pb-8">
-                                    <h2 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Sign In</h2>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-size-h6 font-weight-bolder text-dark">User Id</label>
-                                    <input class="form-control form-control-solid h-auto py-7 px-6 rounded-lg" type="text" asp-for="UserName" id="UserId" max="6" autocomplete="off" />
-                                    <span asp-validation-for="UserName" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-                                    <div class="d-flex justify-content-between mt-n5">
-                                        <label class="font-size-h6 font-weight-bolder text-dark pt-5">Password</label>
-                                        <a href="javascript:;" class="text-primary font-size-h6 font-weight-bolder text-hover-primary pt-5" id="kt_login_forgot" data-toggle="modal" data-target="#modal-default">Forgot Password ?</a>
-                                    </div>
-                                    <input class="form-control form-control-solid h-auto py-7 px-6 rounded-lg" type="password" asp-for="Password" autocomplete="off" />
-                                    <span asp-validation-for="Password" class="text-danger"></span>
-                                </div>
-                                <div class="text-center pt-2">
-                                    <button type="submit" id="login" value="login" onclick="Submit();" class="btn btn-dark font-weight-bolder font-size-h6 px-8 py-4 my-3">
-                                        <span id="Spinner" class="spinner-grow spinner-grow-sm"></span>
-                                        Sign In
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal fade" id="modal-default">
-                            <div class="modal-dialog">
-                                <form asp-controller="Login"
-                                      asp-action="ChangePassword"
-                                      id="frmUser"
-                                      data-ajax-success="OnSuccess"
-                                      data-ajax-complete="Complete"
-                                      data-ajax="true"
-                                      data-ajax-method="POST"
-                                      method="post"
-                                      autocomplete="off">
-                                    <input type="hidden" asp-for="UserName" id="UserName" />
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <div class="text-center">
-                                                <h4 class="font-weight-bolder text-dark font-size-h2">Change Password</h4>
-                                                <h6 class="">Change default password before proceeding</h6>
-                                            </div>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                                <input type="text" asp-for="Password" id="Password" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Password" autocomplete="off" />
-                                                <span asp-validation-for="Password" class="text-danger"></span>
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text" asp-for="ConfirmPassword" id="ConfirmPassword" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Confirm Password" autocomplete="off" />
-                                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer justify-content-between">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                            <button type="submit" id="ChangePassword" value="ChangePassword" name="button" class="btn btn-primary">Save</button>
-                                        </div>
-                                    </div>
-                                </form>-->
-    <!-- /.modal-content -->
-    <!--</div>-->
-    <!-- /.modal-dialog -->
-    <!--</div>
-
-                        <div class="login-form login-forgot pt-11">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content order-1 order-lg-2 d-flex flex-column w-100 pb-0" style="background-color: #B1DCED;">
-                <div class="d-flex flex-column justify-content-center text-center pt-lg-40 pt-md-5 pt-sm-5 px-lg-0 pt-5 px-7">
-                    <h3 class="display4 font-weight-bolder my-7 text-dark" style="color: #986923;">SAMI Pharmaceuticals</h3>
-                    <p class="font-weight-bolder font-size-h2-md font-size-lg text-dark opacity-70">
-                        User Experience &amp; Interface Design, Product Strategy
-                        <br />Web Application SaaS Solutions
-                    </p>
-                </div>
-                <div class="content-img d-flex flex-row-fluid bgi-no-repeat bgi-position-y-bottom bgi-position-x-center" style="background-image: url(/Images/19241.jpg); background-size:contain"></div>
-            </div>
-        </div>
-    </div>-->
-    <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
-    <script src="~/lib/plugins/toastr/toastr.min.js"></script>
-    <script src="~/Pages/Common.js"></script>
     <script>
 
         $(document).ready(function () {
@@ -295,24 +129,6 @@
             })
 
         });
-
-        //function Submit() {
-        //    debugger
-        //    var form = event.target.form; // storing the form
-        //    $.validator.unobtrusive.parse(form);
-        //    if ($(form).valid()) {
-        //        if ($('#Password').val() == "Sami@123") {
-        //            $('#UserName').val($('#UserId').val());
-        //            $('#modal-default').modal('toggle');
-        //            $('#modal-default').modal('show');
-        //            event.preventDefault();
-        //            event.stopImmediatePropagation();
-        //        }
-        //        else {
-        //            $(form).submit();
-        //        }
-        //    }
-        //}
 
         function OnLoginSuccess(data) {
 
@@ -340,7 +156,23 @@
             }
         }
 
+        function Complete() {
+            $('#modal-default').modal('toggle');
+            $('#modal-default').modal('hide');
+            $('#Spinner').hide('slow');
+            $('button[type="submit"]').attr('disabled', false);
+            Ladda.create($("button[type=submit]", this)[0]).stop();
+        }
+
     </script>
+
+    <script src="~/Login/popper.min.js"></script>
+    <script src="~/Login/bootstrap.min.js"></script>
+    <script src="~/Login/script.js"></script>
+    <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/plugins/toastr/toastr.min.js"></script>
+    <script src="~/Pages/Common.js"></script>
     <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/plugins/toastr/toastr.min.js"></script>
@@ -349,6 +181,5 @@
     <script src="~/lib/ladda/ladda.min.js"></script>
     <script src="~/lib/ladda/ladda.jquery.min.js"></script>
     <script src="~/Pages/Common.js"></script>
-
 </body>
 </html>

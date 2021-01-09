@@ -2,7 +2,7 @@
 @using Utility 
 @{
     ViewData["Title"] = "Home Page";
-    int MaxOrder = Model.PendingApproval + Model.PaymentVerified + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
+    int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
 }
 <style type="text/css">
     body {
@@ -61,7 +61,7 @@
                 <!-- ./col -->
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
-                    <div class="small-box bg-danger">
+                    <div class="small-box bg-gradient-secondary">
                         <div class="inner">
                             <h3>@Model.ReturnOrder</h3>
                             <p>Return Orders</p>
@@ -90,7 +90,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="col-lg-12">
-                        <div class="card  card-success">
+                        <div class="card card-primary">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Payment Status - Last 12 Months</h3>
@@ -114,7 +114,7 @@
                     <!-- /.card-body -->
                     <!--</div>-->
                     <div class="col-lg-12">
-                        <div class="card  card-primary">
+                        <div class="card card-primary">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="card-title">Order Status - Last 12 Months</h3>
@@ -135,7 +135,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-4 col-6">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
@@ -160,7 +160,7 @@
                     </div>
                     <!-- /.card -->
                 </div>
-                <div class="col-lg-9 col-6">
+                <div class="col-lg-8 col-6">
                     <!-- jQuery Knob -->
                     <div class="card">
                         <div class="card-header">
@@ -169,20 +169,15 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <!-- ./col -->
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Pending Approval</div>
                                 </div>
-                                <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PaymentVerified" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00c0ef">
-                                    <div class="knob-label">Payment Verified</div>
-                                </div>
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
                                     <div class="knob-label">In Process</div>
                                 </div>
-                                <div class="col-3 text-center">
+                                <div class="col-4 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Partially Processed</div>
                                 </div>
@@ -193,11 +188,11 @@
                                     <div class="knob-label">Completely Processed</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
                                     <div class="knob-label">On Hold</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
                                     <div class="knob-label">Reject</div>
                                 </div>
                             </div>
@@ -212,7 +207,7 @@
 
             <div class="row">
                 <div class="col-8">
-                    <div class="card card-success">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Payment Status - Last 12 Months</h3>
                         </div>

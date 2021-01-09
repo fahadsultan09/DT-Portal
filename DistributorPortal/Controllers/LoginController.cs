@@ -3,6 +3,7 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using BusinessLogicLayer.Login;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,11 +60,12 @@ namespace DistributorPortal.Controllers
             }
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
-
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "Start Click on Login Button of ");
                 SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? GetDistributorBalance() : null;
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "End Click on Login Button of ");
                 return Json(new { data = jsonResponse });
             }
             else
@@ -118,7 +120,7 @@ namespace DistributorPortal.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Logout()
         {
-
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
         }
@@ -141,7 +143,8 @@ namespace DistributorPortal.Controllers
                 }
             }
             catch (Exception ex)
-            {
+            {                
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return new DistributorBalance();
             }
         }

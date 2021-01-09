@@ -45,9 +45,10 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus)
+        public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus, string Remarks)
         {
             model.Status = ComplaintStatus;
+            model.Remarks = Remarks;
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
             _repository.Update(model);

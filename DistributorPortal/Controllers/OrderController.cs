@@ -2,6 +2,7 @@
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -50,6 +51,7 @@ namespace DistributorPortal.Controllers
         // GET: Order
         public ActionResult Index()
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Index", " Form");
             return View(GetOrderList());
         }
         public IActionResult List()
@@ -59,6 +61,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Add", "Click on Add  Button of ");
             SessionHelper.AddProduct = new List<ProductDetail>();
             return View("AddDetail", BindOrderMaster(id));
         }
@@ -151,6 +154,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Status = false;
                 jsonResponse.Message = ex.Message;
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(jsonResponse);
             }
         }
@@ -190,7 +194,8 @@ namespace DistributorPortal.Controllers
             return Json(new { data = jsonResponse });
         }
         public IActionResult Delete(int Id)
-        {            
+        {
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "Start Click on Delete Button of ");
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == Id);
             if (item != null)
@@ -198,6 +203,7 @@ namespace DistributorPortal.Controllers
                 list.Remove(item);
             }
             SessionHelper.AddProduct = list;
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "End Click on Delete Button of ");
             return PartialView("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber));
         }
         [HttpPost]
@@ -206,6 +212,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();            
             try
             {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -230,8 +237,9 @@ namespace DistributorPortal.Controllers
                     {
                         jsonResponse.Status = false;
                         jsonResponse.Message = Common.OrderContant.OrderItem;
-                    }                                        
-                }                
+                    }
+                }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
