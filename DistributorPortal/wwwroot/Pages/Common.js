@@ -40,7 +40,6 @@ function OnSuccess(data) {
     Ladda.create($("button[type=submit]", this)[0]).stop();
 }
 
-
 function Complete() {
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
@@ -93,7 +92,7 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 //Approve
 function UpdateStatus(e, controllerName, actionName, id) {
 
-    if (e.value == "Resolved") {
+    if (e.value == "Resolved" || e.value == "Reject") {
         Swal.fire({
             title: 'Enter Remarks',
             input: 'text',
@@ -104,13 +103,20 @@ function UpdateStatus(e, controllerName, actionName, id) {
                 if (!value) {
                     return 'You need to write something!'
                 }
+                if (value.length > 255) {
+                    return 'You have exceeded 255 characters';
+                } 
             }
         }).then(function (result) {
 
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: result.value }, function (data) {
                     if (data) {
-                        Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        if (e.value == "Resolved") {
+                            Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        } else if (e.value == "Reject") {
+                            Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+                        }
                         setTimeout(function () {
                             window.location.reload();
                         }, 1000);

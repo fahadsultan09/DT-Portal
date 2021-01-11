@@ -43,7 +43,8 @@ namespace Utility
     public enum PaymentStatus
     {
         Verified = 1,
-        Unverified = 2
+        Unverified = 2,
+        Reject = 3
     }
     public enum ProductVisibility
     {

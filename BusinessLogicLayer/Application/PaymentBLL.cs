@@ -45,8 +45,9 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
 
-        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus)
+        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
+            model.Remarks = Remarks;
             model.Status = paymentStatus;
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;

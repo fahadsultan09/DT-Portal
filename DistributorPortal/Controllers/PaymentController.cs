@@ -130,7 +130,7 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, PaymentStatus Status)
+        public JsonResult UpdateStatus(int id, PaymentStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -139,7 +139,7 @@ namespace DistributorPortal.Controllers
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {
-                    _PaymentBLL.UpdateStatus(model, Status);
+                    _PaymentBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "UpdateStatus", "End Click on Approve Button of ");

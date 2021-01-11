@@ -37,6 +37,8 @@ namespace Models.Application
         public virtual PaymentMode PaymentMode { get; set; }
         [Required(ErrorMessage = "Payment Mode No is required.")]
         public string PaymentModeNo { get; set; }
+        [StringLength(255)]
+        public string Remarks { get; set; }
         public PaymentStatus Status { get; set; }
         public string File { get; set; }
         [NotMapped]

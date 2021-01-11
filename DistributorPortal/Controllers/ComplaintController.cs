@@ -113,7 +113,7 @@ namespace DistributorPortal.Controllers
             }
             model.Distributor = SessionHelper.LoginUser.Distributor;
             model.ComplaintCategoryList = new ComplaintCategoryBLL(_unitOfWork).DropDownComplaintCategoryList(model.ComplaintCategoryId);
-            model.ComplaintSubCategoryList = new ComplaintSubCategoryBLL(_unitOfWork).DropDownComplaintSubCategoryList(model.ComplaintSubCategoryId);
+            model.ComplaintSubCategoryList = new ComplaintSubCategoryBLL(_unitOfWork).DropDownComplaintSubCategoryList(model.ComplaintCategoryId, model.ComplaintSubCategoryId);
             return model;
         }
         [HttpPost]
@@ -145,14 +145,8 @@ namespace DistributorPortal.Controllers
         }
         public List<Complaint> GetComplaintList()
         {
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                return _ComplaintBLL.GetAllComplaint().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
-            }
-            else
-            {
-                return _ComplaintBLL.GetAllComplaint().OrderByDescending(x => x.Id).ToList();
-            }
+            var list = _ComplaintBLL.GetAllComplaint().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            return list;
         }
     }
 }

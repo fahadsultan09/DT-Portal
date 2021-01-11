@@ -160,7 +160,16 @@
                                     <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == PaymentStatus.Verified ? "d-none" : null)">
                                         Verify
                                     </button>
+                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Reject" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || Model.Status == PaymentStatus.Reject ? "d-none" : null)">
+                                        Reject
+                                    </button>
                                 }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                            </div>
+                            <div class="col-6 pull-right">
                                 <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
                                     Back
                                 </a>
