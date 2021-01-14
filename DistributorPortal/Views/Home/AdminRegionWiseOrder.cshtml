@@ -1,0 +1,40 @@
+﻿@model IEnumerable<RegionWiseOrder>
+
+
+<canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+
+<script>
+
+        $(function () {
+            var donutData = {
+                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.Region)))'),
+                datasets: [
+                    {
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.OrderCount)))'),
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
+                            '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
+                    }
+                ]
+            }
+
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = donutData;
+            var pieOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            })
+
+        });
+
+</script>

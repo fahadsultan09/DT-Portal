@@ -100,11 +100,11 @@
                                         Resolve
                                     </button>
                                 }
-                            </div>
-                        </div><br />
-                        <div class="row">
-                            <div class="col-12 pull-right">
-                                <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                <a data-ajax-update="#divform"
+                                   data-ajax="true"
+                                   data-ajax-method="GET"
+                                   asp-controller="Complaint" asp-action="List"
+                                   class="btn btn-secondary float-right mr-3">
                                     Back
                                 </a>
                             </div>

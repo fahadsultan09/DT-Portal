@@ -1,4 +1,5 @@
-﻿using Utility;
+﻿using System.Collections.Generic;
+using Utility;
 
 namespace Models.ViewModel
 {
@@ -57,5 +58,24 @@ namespace Models.ViewModel
         public string DistributorName { get; set; }
         public double Amount { get; set; }
         public PaymentStatus Status { get; set; }
+    }
+    public class AccountRecentPaymentStatus 
+    {
+        public List<PaymentWiseAmount> PaymentWiseAmount { get; set; }
+        public List<RecentPayment> RecentPayment { get; set; }
+    }
+    public class DistributorRecentPaymentStatus
+    {
+        public List<RecentOrder> RecentOrder { get; set; }
+        public List<RecentPayment> RecentPayment { get; set; }
+        public List<ProductViewModel> ProductViewModelOrder { get; set; }
+        public List<ProductViewModel> ProductViewModelQuantity { get; set; }
+    }
+    public class AdminRecentPaymentStatus
+    {
+        public List<DistributorViewModel> DistributorViewModelOrder { get; set; }
+        public List<DistributorViewModel> DistributorViewModelPayment { get; set; }
+        public List<ProductViewModel> ProductViewModelOrder { get; set; }
+        public List<ProductViewModel> ProductViewModelQuantity { get; set; }
     }
 }

@@ -145,7 +145,7 @@
             var params = {
                 ComplaintCategoryId: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
             }
-            $("#ddlCity option").remove();
+            $("#ddlComplaintSubCategory option").remove();
             var ddlComplaintSubCategory = $("#ddlComplaintSubCategory");
             bindDropDownList(ddlComplaintSubCategory, "/ComplaintSubCategory/DropDownComplaintSubCategoryList", params, "0");
             $('#ddlComplaintSubCategory').change();
