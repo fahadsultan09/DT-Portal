@@ -1,11 +1,8 @@
-﻿using BusinessLogicLayer.HelperClasses;
-using DataAccessLayer.WorkProcess;
+﻿using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BusinessLogicLayer.GeneralSetup
 {
@@ -30,6 +27,15 @@ namespace BusinessLogicLayer.GeneralSetup
             });
 
             return new SelectList(selectList, "Value", "Text");
+        }
+        public SelectList DropDownCompanyList(int SelectedValue)
+        {
+            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.CompanyName.ToString()
+            });
+            return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
     }
 }

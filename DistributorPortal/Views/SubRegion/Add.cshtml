@@ -28,7 +28,7 @@
                                     <div class="form-group row">
                                         <label class="col-lg-4 col-form-label">Region Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-8">
-                                            @Html.DropDownListFor(e => e.RegionId, Model.RegionList, "Please Select", htmlAttributes: new { @class = "form-control" })
+                                            @Html.DropDownListFor(e => e.RegionId, Model.RegionList, "--Please Select--", htmlAttributes: new { @class = "form-control" })
                                             <span asp-validation-for="RegionId" class="text-danger"></span>
                                         </div>
                                     </div>

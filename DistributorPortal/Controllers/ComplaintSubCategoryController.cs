@@ -114,5 +114,9 @@ namespace DistributorPortal.Controllers
         {
             return Json(_ComplaintSubCategoryBLL.GetAllComplaintSubCategory().ToList());
         }
+        public IActionResult DropDownComplaintSubCategoryList(int ComplaintCategoryId)
+        {
+            return Json(_ComplaintSubCategoryBLL.DropDownComplaintSubCategoryList(ComplaintCategoryId, 0));
+        }
     }
 }

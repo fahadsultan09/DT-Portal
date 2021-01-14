@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.GeneralSetup;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
@@ -15,10 +16,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<PaymentMaster> _repository;
+        private readonly CompanyBLL _CompanyBLL;
         public PaymentBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<PaymentMaster>();
+            _CompanyBLL = new CompanyBLL(_unitOfWork);
         }
         public int Add(PaymentMaster module)
         {
@@ -29,14 +32,16 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<PaymentMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-        public int Update(PaymentMaster module)
+        public bool Update(PaymentMaster module)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(module.Id);
-            item.IsActive = module.IsActive;
+            item.SAPCompanyCode = module.SAPCompanyCode;
+            item.SAPDocumentNumber = module.SAPDocumentNumber;
+            item.SAPFiscalYear = module.SAPFiscalYear;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<PaymentMaster>().Update(item);
-            return _unitOfWork.Save();
+            return _unitOfWork.Save() > 0;
         }
         public int Delete(int id)
         {
@@ -44,9 +49,9 @@ namespace BusinessLogicLayer.Application
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
-
-        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus)
+        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
+            model.Remarks = Remarks;
             model.Status = paymentStatus;
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
@@ -105,6 +110,21 @@ namespace BusinessLogicLayer.Application
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
+        }
+        public SAPPaymentViewModel AddPaymentToSAP(int PaymentId)
+        {
+            var payment = GetAllPaymentMaster().Where(e => e.Id == PaymentId).FirstOrDefault();
+
+            SAPPaymentViewModel model = new SAPPaymentViewModel() 
+            {
+                PAY_ID = payment.Id.ToString(),
+                REF = payment.PaymentModeNo.ToString(),
+                COMPANY = _CompanyBLL.GetAllCompany().FirstOrDefault(x=>x.Id == payment.CompanyId).SAPCompanyCode,
+                AMOUNT = payment.Amount.ToString(),
+                DISTRIBUTOR = payment.Distributor.DistributorSAPCode,
+                B_CODE = "2902051" //payment.DepositorBankCode
+            };
+            return model;
         }
     }
 }
