@@ -65,23 +65,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
-                    <div class="col-lg-12">
-                        <div class="card card-primary">
-                            <div class="card-header border-0">
-                                <div class="d-flex justify-content-between">
-                                    <h3 class="card-title">Payment Comparision - Last 12 Months</h3>
-                                </div>
+                <div class="col-lg-12">
+                    <div class="card card-primary">
+                        <div class="card-header border-0">
+                            <div class="d-flex justify-content-between">
+                                <h3 class="card-title">Payment Comparision - Last 12 Months</h3>
                             </div>
-                            <div class="card-body">
-                                <div class="position-relative mb-4">
-                                    <canvas id="payments-chart" height="200"></canvas>
-                                </div>
-                                <div class="d-flex flex-row justify-content-end">
-                                    <span class="mr-2"><i class="fas fa-square text-primary"></i> This year</span>
-                                    <span><i class="fas fa-square text-gray"></i> Last year</span>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="card-body" id="PaymentWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
                         </div>
                     </div>
                 </div>
@@ -92,305 +83,66 @@
                         <div class="card-header">
                             <h3 class="card-title">Order Payment Status - Last 12 Months</h3>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="chart">
-                                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="card-body" id="PaymentWiseStatus" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header border-transparent">
-                            <h3 class="card-title">Recent Payments</h3>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table m-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Distributor Name</th>
-                                            <th>Payment Mode</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @{
-                                            if (Model.RecentPayment != null && Model.RecentPayment.Count() > 0)
-                                            {
-                                                foreach (var item in Model.RecentPayment)
-                                                {
-                                                    <tr>
-                                                        <td>@item.DistributorName</td>
-                                                        <td>@item.PaymentMode</td>
-                                                        <td>@item.Amount</td>
-                                                        <td>
-                                                            @if (item.Status == PaymentStatus.Verified)
-                                                            {
-                                                                <span class="badge badge-success">@item.Status</span>
-                                                            }
-                                                            else
-                                                            {
-                                                                <span class="badge badge-danger">@item.Status</span>
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            <a asp-controller="Payment" asp-action="Index" asp-route-id="@item.PaymentId" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-footer clearfix">
-                            <a asp-controller="Payment" asp-action="Index" class="btn btn-sm btn-secondary float-right">View All Payments</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <!-- PIE CHART -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Status wise payment</h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </div>
+            <div class="row" id="RecentPaymentStatus" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
             </div>
         </div>
     </section>
 </div>
 
 @section scripts{
+
     <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            new Chart(document.getElementById("lineChart"), {
-                type: "line",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    datasets: [{
-                        label: "Sales ($)",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: "#adb5bd",
-                        data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917, 3327]
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
-                    tooltips: {
-                        intersect: false
-                    },
-                    hover: {
-                        intersect: true
-                    },
-                    plugins: {
-                        filler: {
-                            propagate: false
-                        }
-                    },
-                    scales: {
-                        xAxes: [{
-                            reverse: true,
-                            gridLines: {
-                                color: "rgba(0,0,0,0.05)"
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                stepSize: 500
-                            },
-                            display: true,
-                            borderDash: [5, 5],
-                            gridLines: {
-                                color: "rgba(0,0,0,0)",
-                                fontColor: "#fff"
-                            }
-                        }]
-                    }
+
+        $(document).ready(function () {
+            GetAccountPaymentWiseStatus();
+            GetAccountPaymentWiseComparision();
+            GetAccountRecentPaymentStatus();
+        });
+
+        function GetAccountPaymentWiseComparision() {
+
+            $.ajax({
+                url: '@Url.Action("GetAccountPaymentWiseComparision", "Home")',
+                contentType: 'application/html; charset=utf-8',
+                 type: 'POST',
+                 dataType: 'html',
+                success: function (result) {
+                    $('#PaymentWiseComparision').html(result);
+                    $("#PaymentWiseComparision").next().remove();
                 }
             });
-        });
+        }
+        function GetAccountPaymentWiseStatus() {
 
-        $(function () {
-         var areaChartData = {
-                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.Month)))'),
-                datasets: [
-                    {
-                        label: 'Verified',
-                        backgroundColor: 'rgba(60,141,188,0.9)',
-                        borderColor: 'rgba(60,141,188,0.8)',
-                        pointRadius: false,
-                        pointColor: '#3b8bba',
-                        pointStrokeColor: 'rgba(60,141,188,1)',
-                        pointHighlightFill: '#fff',
-                        pointHighlightStroke: 'rgba(60,141,188,1)',
-                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.VerifiedPayment)))'),
-                    },
-                    {
-                        label: 'Unverified',
-                        backgroundColor: 'rgba(210, 214, 222, 1)',
-                        borderColor: 'rgba(210, 214, 222, 1)',
-                        pointRadius: false,
-                        pointColor: 'rgba(210, 214, 222, 1)',
-                        pointStrokeColor: '#c1c7d1',
-                        pointHighlightFill: '#fff',
-                        pointHighlightStroke: 'rgba(220,220,220,1)',
-                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseStatus.Select(e => e.UnverifiedPayment)))'),
-                    },
-                ]
-            }
-
-            var barChartCanvas = $('#barChart').get(0).getContext('2d')
-            var barChartData = jQuery.extend(true, {}, areaChartData)
-            var temp0 = areaChartData.datasets[0]
-            var temp1 = areaChartData.datasets[1]
-            barChartData.datasets[0] = temp1
-            barChartData.datasets[1] = temp0
-
-            var barChartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                datasetFill: false
-            }
-
-            var barChart = new Chart(barChartCanvas, {
-                type: 'bar',
-                data: barChartData,
-                options: barChartOptions
-            })
-        });
-
-        $(function () {
-            //var donutData = {
-            //    labels: ['Check ' + 50000, 'Online Transfer ' + 40000, 'RTGS ' + 60000, 'PO ' + 30000],
-            //    datasets: [
-            //        {
-            //            data: [50000, 40000, 60000, 30000],
-            //            backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef'],
-            //        }
-            //    ]
-            //}
-              var donutData = {
-                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.PaymentMode)))'),
-                datasets: [
-                    {
-                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.Amount)))'),
-                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
-                            '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
-                    }
-                ]
-            }
-            //-------------
-            //- PIE CHART -
-            //-------------
-            // Get context with jQuery - using jQuery's .get() method.
-            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-            var pieData = donutData;
-            var pieOptions = {
-                maintainAspectRatio: false,
-                responsive: true,
-            }
-            //Create pie or douhnut chart
-            // You can switch between pie and douhnut using the method below.
-            var pieChart = new Chart(pieChartCanvas, {
-                type: 'pie',
-                data: pieData,
-                options: pieOptions
-            })
-        })
-
-          $(function () {
-            'use strict'
-
-            var ticksStyle = {
-                fontColor: '#495057',
-                fontStyle: 'bold'
-            }
-
-            var mode = 'index'
-            var intersect = true
-
-              var $paymentsChart = $('#payments-chart')
-              var $paymentsChart = new Chart($paymentsChart, {
-          data: {
-                    labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.Month)))'),
-                    datasets: [
-                        {
-                            type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.CurrentYear)))'),
-                            backgroundColor: 'transparent',
-                            borderColor: '#007bff',
-                            pointBorderColor: '#007bff',
-                            pointBackgroundColor: '#007bff',
-                            fill: false
-                        },
-                        {
-                            type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseComparision.Select(e => e.LastYear)))'),
-                            backgroundColor: 'tansparent',
-                            borderColor: '#ced4da',
-                            pointBorderColor: '#ced4da',
-                            pointBackgroundColor: '#ced4da',
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    tooltips: {
-                        mode: mode,
-                        intersect: intersect
-                    },
-                    hover: {
-                        mode: mode,
-                        intersect: intersect
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            gridLines: {
-                                display: true,
-                                lineWidth: '4px',
-                                color: 'rgba(0, 0, 0, .2)',
-                                zeroLineColor: 'transparent'
-                            },
-                            ticks: $.extend({
-                                beginAtZero: true,
-                                //suggestedMax: 200
-                            }, ticksStyle)
-                        }],
-                        xAxes: [{
-                            display: true,
-                            gridLines: {
-                                display: false
-                            },
-                            ticks: ticksStyle
-                        }]
-                    }
+            $.ajax({
+                url: '@Url.Action("GetAccountPaymentWiseStatus", "Home")',
+                contentType: 'application/html; charset=utf-8',
+                 type: 'POST',
+                 dataType: 'html',
+                success: function (result) {
+                    $('#PaymentWiseStatus').html(result);
+                    $("#PaymentWiseStatus").next().remove();
                 }
-            })
-        })
+            });
+        }
+        function GetAccountRecentPaymentStatus() {
+
+            $.ajax({
+                url: '@Url.Action("GetAccountRecentPaymentStatus", "Home")',
+                contentType: 'application/html; charset=utf-8',
+                 type: 'POST',
+                 dataType: 'html',
+                success: function (result) {
+                    $('#RecentPaymentStatus').html(result);
+                    $("#RecentPaymentStatus").next().remove();
+                }
+            });
+        }
 
     </script>
 }

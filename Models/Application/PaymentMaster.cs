@@ -19,9 +19,9 @@ namespace Models.Application
         public virtual Company Company { get; set; }
         public DateTime? DepositDate { get; set; }
         public DateTime? ValueClearingDate { get; set; }
-        [Required(ErrorMessage = "Depositor's Bank Name is required.")]
+        [Required(ErrorMessage = "Depositor Bank Name is required.")]
         public int DepositorBankName { get; set; }
-        [Required(ErrorMessage = "Depositor's Bank Code is required.")]
+        [Required(ErrorMessage = "Depositor Bank Code is required.")]
         public string DepositorBankCode { get; set; }
         [Required(ErrorMessage = "Company Bank Name is required.")]
         public int CompanyBankName { get; set; }
@@ -37,6 +37,8 @@ namespace Models.Application
         public virtual PaymentMode PaymentMode { get; set; }
         [Required(ErrorMessage = "Payment Mode No is required.")]
         public string PaymentModeNo { get; set; }
+        [StringLength(255)]
+        public string Remarks { get; set; }
         public PaymentStatus Status { get; set; }
         public string File { get; set; }
         [NotMapped]
@@ -46,6 +48,14 @@ namespace Models.Application
         [NotMapped]
         public SelectList CompanyList { get; set; }
         [NotMapped]
-        public SelectList BankList { get; set; }
+        public SelectList DepostitorBankList { get; set; }
+        [NotMapped]
+        public SelectList CompanyListBankList { get; set; }
+        [NotMapped]
+        public double SAMITotalPendingValue { get; set; }
+        [NotMapped]
+        public double HealthTekTotalPendingValue { get; set; }
+        [NotMapped]
+        public double PhytekTotalPendingValue { get; set; }
     }
 }

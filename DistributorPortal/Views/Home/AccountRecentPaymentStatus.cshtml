@@ -1,0 +1,102 @@
+﻿@model AccountRecentPaymentStatus
+
+<div class="col-md-6">
+    <div class="card">
+        <div class="card-header border-transparent">
+            <h3 class="card-title">Recent Payments</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th>Distributor Name</th>
+                            <th>Payment Mode</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.RecentPayment != null && Model.RecentPayment.Count() > 0)
+                            {
+                                foreach (var item in Model.RecentPayment)
+                                {
+                                    <tr>
+                                        <td>@item.DistributorName</td>
+                                        <td>@item.PaymentMode</td>
+                                        <td>@item.Amount</td>
+                                        <td>
+                                            @if (item.Status == PaymentStatus.Verified)
+                                            {
+                                                <span class="badge badge-success">@item.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">@item.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Payment" asp-action="Index" asp-route-id="@item.PaymentId" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer clearfix">
+            <a asp-controller="Payment" asp-action="Index" class="btn btn-sm btn-secondary float-right">View All Payments</a>
+        </div>
+    </div>
+</div>
+<div class="col-6">
+    <!-- PIE CHART -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Status wise payment</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+
+<script>
+
+           $(function () {
+              var donutData = {
+                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.PaymentMode)))'),
+                datasets: [
+                    {
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.Amount)))'),
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
+                            '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
+                    }
+                ]
+            }
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = donutData;
+            var pieOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            })
+           })
+
+</script>

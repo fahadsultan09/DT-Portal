@@ -1,9 +1,12 @@
 ﻿
+var Toast;
+var a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen '];
+var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
 $(document).ready(function () {
     $('#Spinner').hide();
 });
 
-var Toast;
 $(function () {
 
     Toast = Swal.mixin({
@@ -39,7 +42,6 @@ function OnSuccess(data) {
     }
     Ladda.create($("button[type=submit]", this)[0]).stop();
 }
-
 
 function Complete() {
     $('#Spinner').hide('slow');
@@ -93,8 +95,9 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 //Approve
 function UpdateStatus(e, controllerName, actionName, id) {
 
-    if (e.value == "Resolved") {
+    if (e.value == "Resolved" || e.value == "Reject") {
         Swal.fire({
+            type: "warning",
             title: 'Enter Remarks',
             input: 'text',
             inputLabel: 'Remarks',
@@ -104,13 +107,20 @@ function UpdateStatus(e, controllerName, actionName, id) {
                 if (!value) {
                     return 'You need to write something!'
                 }
+                if (value.length > 255) {
+                    return 'You have exceeded 255 characters';
+                } 
             }
         }).then(function (result) {
 
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: result.value }, function (data) {
                     if (data) {
-                        Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        if (e.value == "Resolved") {
+                            Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        } else if (e.value == "Reject") {
+                            Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+                        }
                         setTimeout(function () {
                             window.location.reload();
                         }, 1000);
@@ -146,4 +156,17 @@ function UpdateStatus(e, controllerName, actionName, id) {
             }
         });
     }
+}
+
+function inWords(num) {
+    debugger
+    if ((num = num.toString()).length > 9) return 'overflow';
+    n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    if (!n) return; var str = '';
+    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+    str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
+    return str;
 }

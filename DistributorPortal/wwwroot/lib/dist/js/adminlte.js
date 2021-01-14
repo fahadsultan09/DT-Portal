@@ -1471,9 +1471,9 @@
       _proto._init = function _init(card) {
         var _this = this;
 
-        $(this).find(this._settings.trigger).on('click', function () {
-          _this.load();
-        });
+        //$(this).find(this._settings.trigger).on('click', function () {
+        //  _this.load();
+        //});
 
         if (this._settings.loadOnInit) {
           this.load();
@@ -1506,13 +1506,13 @@
      */
 
 
-    $(document).on('click', Selector.DATA_REFRESH, function (event) {
-      if (event) {
-        event.preventDefault();
-      }
+    //$(document).on('click', Selector.DATA_REFRESH, function (event) {
+    //  if (event) {
+    //    event.preventDefault();
+    //  }
 
-      CardRefresh._jQueryInterface.call($(this), 'load');
-    });
+    //  CardRefresh._jQueryInterface.call($(this), 'load');
+    //});
     $(document).ready(function () {
       $(Selector.DATA_REFRESH).each(function () {
         CardRefresh._jQueryInterface.call($(this));

@@ -24,12 +24,14 @@ namespace DistributorPortal.Controllers
     public class PaymentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
         private readonly IConfiguration _IConfiguration;
         public PaymentController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
+            _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _IConfiguration = configuration;
         }
         // GET: Payment
@@ -97,10 +99,10 @@ namespace DistributorPortal.Controllers
                     model.Status = PaymentStatus.Unverified;
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _PaymentBLL.Add(model);
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = NotificationMessage.PaymentSaved;
                 }
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "SaveEdit", "End Click on Save Button of ");
-                jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.PaymentSaved;
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 return Json(new { data = jsonResponse });
             }
@@ -125,12 +127,31 @@ namespace DistributorPortal.Controllers
             }
             model.Distributor = SessionHelper.LoginUser.Distributor;
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
-            model.BankList = new BankBLL(_unitOfWork).DropDownBankList();
             model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList();
+            model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
+            model.CompanyListBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.CompanyBankName);
+            model.SAMITotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
+                                            join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                            where od.ProductId == p.ProductMasterId && p.CompanyId == 1
+                                            group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                            let Amount = odp.Sum(m => m.od.Amount)
+                                            select Amount).Sum(x => x);
+            model.HealthTekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
+                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 3
+                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                           let Amount = odp.Sum(m => m.od.Amount)
+                                           select Amount).Sum(x => x);
+            model.PhytekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
+                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 2
+                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                           let Amount = odp.Sum(m => m.od.Amount)
+                                           select Amount).Sum(x => x);
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, PaymentStatus Status)
+        public JsonResult UpdateStatus(int id, PaymentStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -139,7 +160,7 @@ namespace DistributorPortal.Controllers
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {
-                    _PaymentBLL.UpdateStatus(model, Status);
+                    _PaymentBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "UpdateStatus", "End Click on Approve Button of ");

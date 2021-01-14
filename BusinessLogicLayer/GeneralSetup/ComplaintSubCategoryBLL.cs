@@ -90,6 +90,17 @@ namespace BusinessLogicLayer.GeneralSetup
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
 
+        public SelectList DropDownComplaintSubCategoryList(int? ComplaintCategoryId, int? SelectedValue)
+        {
+            var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true && x.ComplaintCategoryId == ComplaintCategoryId).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ComplaintSubCategoryName.ToString()
+            });
+
+            return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
+
         public MultiSelectList DropDownComplaintSubCategoryMultiList(int[] SelectedValue)
         {
             var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true).Select(x => new

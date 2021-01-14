@@ -29,7 +29,7 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-4 col-form-label">Module Name<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.ApplicationModuleId, Model.ApplicationModuleList, "Please Select", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.DropDownListFor(e => e.ApplicationModuleId, Model.ApplicationModuleList, "--Please Select--", htmlAttributes: new { @class = "form-control" })
                                                         <span asp-validation-for="ApplicationModuleId" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -96,7 +96,7 @@
                                                     <label class="col-lg-4 col-form-label">Page Action<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-8">
                                                         <select asp-for="ApplicationActionsId" asp-items="@(new MultiSelectList(Model.ApplicationActionsList,"Value","Text"))" class="select2" multiple="multiple" data-placeholder="Select a State" style="width: 100%;">
-                                                            <option readonly disabled>Please select one</option>
+                                                            <option readonly disabled>--Please Select--</option>
                                                         </select>
                                                         <span asp-validation-for="ApplicationActionsId" class="text-danger"></span>
 
