@@ -3,7 +3,7 @@
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
     {
-        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+        <div class="alert alert-info alert-dismissable" id="alertmessage">
             <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
             @viewdata <a class="alert-link" href="#"></a>.
         </div>

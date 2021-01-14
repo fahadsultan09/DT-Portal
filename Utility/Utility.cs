@@ -89,4 +89,16 @@ namespace Utility
         Pending = 1,
         Resolved = 2
     }
+
+    public enum LicenseStatus
+    {
+        Submit = 1,
+        Verified = 2
+    }
+
+    public enum LicenseType
+    {
+        License = 1,
+        Challan = 2
+    }
 }

@@ -190,6 +190,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Status = false;
                 jsonResponse.Message = "Product Already Exists";
                 jsonResponse.RedirectURL = string.Empty;
+                jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber).ToList());
             }
             return Json(new { data = jsonResponse });
         }
