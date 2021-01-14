@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,12 +29,14 @@ namespace DistributorPortal.Controllers
         private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
         private readonly IConfiguration _IConfiguration;
-        public PaymentController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private readonly Configuration _Configuration;
+        public PaymentController(IUnitOfWork unitOfWork, IConfiguration _iconfiguration, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
-            _IConfiguration = configuration;
+            _IConfiguration = _iconfiguration;
+            _Configuration = _configuration;
         }
         // GET: Payment
         public ActionResult Index()
@@ -131,32 +135,55 @@ namespace DistributorPortal.Controllers
             model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
             model.CompanyListBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.CompanyBankName);
             model.SAMITotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                            join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                            where od.ProductId == p.ProductMasterId && p.CompanyId == 1
-                                            group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                            let Amount = odp.Sum(m => m.od.Amount)
-                                            select Amount).Sum(x => x);
+                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 1
+                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                           let Amount = odp.Sum(m => m.od.Amount)
+                                           select Amount).Sum(x => x);
             model.HealthTekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 3
-                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                           let Amount = odp.Sum(m => m.od.Amount)
-                                           select Amount).Sum(x => x);
+                                                join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                                where od.ProductId == p.ProductMasterId && p.CompanyId == 3
+                                                group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                let Amount = odp.Sum(m => m.od.Amount)
+                                                select Amount).Sum(x => x);
             model.PhytekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 2
-                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                           let Amount = odp.Sum(m => m.od.Amount)
-                                           select Amount).Sum(x => x);
+                                             join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
+                                             where od.ProductId == p.ProductMasterId && p.CompanyId == 2
+                                             group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                             let Amount = odp.Sum(m => m.od.Amount)
+                                             select Amount).Sum(x => x);
             return model;
         }
         [HttpPost]
         public JsonResult UpdateStatus(int id, PaymentStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            bool result = false;
             try
             {
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "UpdateStatus", "Start Click on Approve Button of ");
+                if (Status == PaymentStatus.Verified)
+                {
+                    var Client = new RestClient(_Configuration.PostPayment);
+                    var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
+                    IRestResponse restResponse = Client.Execute(request);
+                    var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
+                    var payment = _PaymentBLL.Where(e => e.Id == id).FirstOrDefault();
+
+                    if (payment != null)
+                    {
+                        payment.SAPCompanyCode = SAPPaymentStatus.SAPCompanyCode;
+                        payment.SAPDocumentNumber = SAPPaymentStatus.SAPDocumentNumber;
+                        payment.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
+                        payment.Status = PaymentStatus.Verified;
+                        result = _PaymentBLL.Update(payment);
+                    }
+
+                    jsonResponse.Status = result;
+                    jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    return Json(new { data = jsonResponse });
+                }
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {

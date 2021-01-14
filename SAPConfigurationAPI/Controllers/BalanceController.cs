@@ -11,7 +11,7 @@ namespace SAPConfigurationAPI.Controllers
 {
     public class BalanceController : ApiController
     {
-        private SAPConnectivity connectivity;
+        private readonly SAPConnectivity connectivity;
         public BalanceController()
         {
             connectivity = new SAPConnectivity();

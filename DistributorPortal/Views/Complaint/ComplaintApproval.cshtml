@@ -37,6 +37,21 @@
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Complaint</h3>
+                        @if (Model.Id > 0)
+                        {
+                            @if (Model.Status == ComplaintStatus.Resolved)
+                            {
+                                <span class="badge badge-success pull-right" style="margin-left:5px;">@Model.Status</span>
+                            }
+                            else if (Model.Status == ComplaintStatus.Pending)
+                            {
+                                <span class="badge badge-warning float-left" style="margin-left:5px;">@Model.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
+                            }
+                        }
                     </div>
                     <div class="card-body">
                         <div class=" row">

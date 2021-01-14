@@ -112,6 +112,7 @@ namespace DistributorPortal.Controllers
             }
             catch (Exception ex)
             {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 throw;
             }
         }
@@ -157,13 +158,6 @@ namespace DistributorPortal.Controllers
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(jsonResponse);
             }
-        }
-
-        [HttpGet]
-        public IActionResult PaymentApproval(int id)
-        {
-            SessionHelper.AddProduct = new List<ProductDetail>();
-            return PartialView("PaymentApproval", BindOrderMaster(id));
         }
         public JsonResult AddProduct(int Quantity, int Product)
         {

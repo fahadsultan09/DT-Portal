@@ -12,5 +12,6 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter your company name.")]
         [StringLength(255)]
         public string CompanyName { get; set; }
+        public string SAPCompanyCode { get; set; }
     }
 }

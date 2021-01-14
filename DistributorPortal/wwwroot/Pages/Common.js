@@ -98,6 +98,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
     if (e.value == "Resolved" || e.value == "Reject") {
         Swal.fire({
             type: "warning",
+            confirmButtonText: "Yes",
             title: 'Enter Remarks',
             input: 'text',
             inputLabel: 'Remarks',
@@ -136,6 +137,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
         Swal.fire({
             title: "Are you sure you want to continue?",
             type: "warning",
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes",

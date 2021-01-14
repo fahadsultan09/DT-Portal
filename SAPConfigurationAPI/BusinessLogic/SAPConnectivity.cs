@@ -7,6 +7,7 @@ using System.Web;
 using System.Configuration;
 using System.Text;
 using SAPConfigurationAPI.Models;
+using SAPConfigurationAPI.ViewModel;
 
 namespace SAPConfigurationAPI.BusinessLogic
 {
@@ -113,6 +114,43 @@ namespace SAPConfigurationAPI.BusinessLogic
                 companyBapi.SetValue("ORDERS", tableimport);
                 companyBapi.Invoke(rfcDest);
                 return companyBapi.GetTable("CREATED");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+            }
+        }
+        public SAPPaymentStatus AddPaymentToSAP(string Function, string TableName, SAPPaymentViewModel Table) 
+        {
+            SAPSystemConnect sapCfg = new SAPSystemConnect();
+            try
+            {
+                RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
+                RfcDestination rfcDest = null;
+                rfcDest = RfcDestinationManager.GetDestination(SystemId);
+                RfcRepository repo = rfcDest.Repository;
+                IRfcFunction companyBapi = repo.CreateFunction(Function);
+                companyBapi.SetValue("PAY_ID", Table.PAY_ID);
+                companyBapi.SetValue("REF", Table.REF);
+                companyBapi.SetValue("COMPANY", Table.COMPANY);
+                companyBapi.SetValue("DISTRIBUTOR", Table.DISTRIBUTOR);
+                companyBapi.SetValue("AMOUNT", Table.AMOUNT);
+                companyBapi.SetValue("B_CODE", Table.B_CODE);
+                companyBapi.Invoke(rfcDest);
+                var DOCUMENT = companyBapi.GetValue("DOCUMENT");
+                var COMPANY = companyBapi.GetValue("COMPANY");
+                var FISCAL = companyBapi.GetValue("FISCAL");
+                return new SAPPaymentStatus
+                {
+                    SAPDocumentNumber = DOCUMENT.ToString(),
+                    SAPCompanyCode = COMPANY.ToString(),
+                    SAPFiscalYear = FISCAL.ToString(),
+                };
+
             }
             catch (Exception ex)
             {

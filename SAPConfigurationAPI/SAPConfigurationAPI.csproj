@@ -110,6 +110,8 @@
     <Compile Include="Models\OrderStatusViewModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\SAPOrderStatus.cs" />
+    <Compile Include="Models\SAPPaymentStatus.cs" />
+    <Compile Include="Models\SAPPaymentViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

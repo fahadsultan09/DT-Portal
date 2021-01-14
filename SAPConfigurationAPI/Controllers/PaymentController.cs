@@ -1,9 +1,5 @@
 ﻿using SAPConfigurationAPI.BusinessLogic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using SAPConfigurationAPI.ViewModel;
 using System.Web.Http;
 
 namespace SAPConfigurationAPI.Controllers
@@ -11,5 +7,15 @@ namespace SAPConfigurationAPI.Controllers
     public class PaymentController : ApiController
     {
         SAPConnectivity _SAPConnectivity;
+        public PaymentController()
+        {
+            _SAPConnectivity = new SAPConnectivity();
+        }
+        [HttpPost]
+        public SAPPaymentStatus Get(SAPPaymentViewModel Table) 
+        {
+            var data = _SAPConnectivity.AddPaymentToSAP("ZWAS_PAYMENT_BAPI_DP", "ZWAS_PAYMENT_BAPI_DP", Table);
+            return data;
+        }
     }
 }

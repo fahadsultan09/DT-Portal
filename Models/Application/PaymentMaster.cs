@@ -40,6 +40,9 @@ namespace Models.Application
         [StringLength(255)]
         public string Remarks { get; set; }
         public PaymentStatus Status { get; set; }
+        public string SAPCompanyCode { get; set; }
+        public string SAPFiscalYear { get; set; }
+        public string SAPDocumentNumber { get; set; }
         public string File { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }

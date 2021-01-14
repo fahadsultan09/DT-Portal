@@ -11,7 +11,7 @@ namespace DistributorPortal.BusinessLogicLayer.ApplicationSetup
     public class AuditTrailBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        private IGenericRepository<AuditTrail> repository;
+        private readonly IGenericRepository<AuditTrail> repository;
         public AuditTrailBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -37,10 +37,12 @@ namespace DistributorPortal.BusinessLogicLayer.ApplicationSetup
 
         public void AddAuditTrail(string PageName, string ActionName, string Description)
         {
-            AuditTrail module = new AuditTrail();
-            module.PageName = PageName;
-            module.ActionName = ActionName;
-            module.Description = Description;
+            AuditTrail module = new AuditTrail
+            {
+                PageName = PageName,
+                ActionName = ActionName,
+                Description = Description
+            };
             AddAuditTrail(module);
         }
     }
