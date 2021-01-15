@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-target="#DepositDate" class="form-control" />
+                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-target="#DepositDate" class="form-control datetimepicker-input" />
                                         <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -113,7 +113,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-target="#ValueClearingDate" class="form-control" />
+                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
                                         <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -256,7 +256,8 @@
         $('.date').datetimepicker({
             format: 'L',
             todayHighlight: true,
-            maxDate: moment()
+            format: 'DD/MM/YYYY',
+            maxDate: moment(),
         });
 
         $('body').on('keyup', '#Amount', function () {
