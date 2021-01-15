@@ -1,6 +1,10 @@
-﻿using DataAccessLayer.WorkProcess;
+﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
+using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
+using Models.UserRights;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,33 +12,71 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class CompanyBLL
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private IUnitOfWork _unitOfWork;
+        private IGenericRepository<Company> repository;
         public CompanyBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            repository = _unitOfWork.GenericRepository<Company>();
         }
-
+        public bool AddCompany(Company module)
+        {
+            module.CompanyName.Trim();
+            module.CreatedBy = SessionHelper.LoginUser.Id;
+            module.IsDeleted = false;
+            module.CreatedDate = DateTime.Now;
+            repository.Insert(module);
+            return _unitOfWork.Save() > 0;
+        }
+        public bool UpdateCompany(Company module)
+        {
+            var item = repository.GetById(module.Id);
+            item.CompanyName = module.CompanyName.Trim();
+            item.SAPCompanyCode = module.SAPCompanyCode;
+            item.IsPaymentAllowed = module.IsPaymentAllowed;
+            item.IsReturnOrderAllowed = module.IsReturnOrderAllowed;
+            item.IsActive = module.IsActive;
+            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedDate = DateTime.Now;
+            repository.Update(item);
+            return _unitOfWork.Save() > 0;
+        }
+        public bool DeleteCompany(int id)
+        {
+            var item = repository.GetById(id);
+            item.IsDeleted = true;
+            repository.Delete(item);
+            return _unitOfWork.Save() > 0;
+        }
+        public Company GetCompanyById(int id)
+        {
+            return repository.GetById(id);
+        }
         public List<Company> GetAllCompany()
         {
-            return _unitOfWork.GenericRepository<Company>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-        public SelectList DropDownCompanyList()
+        public bool CheckCompanyName(int Id, string ModuleName)
         {
-            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            int? DosageFormId = Id == 0 ? null : (int?)Id;
+            var model = _unitOfWork.GenericRepository<Company>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.CompanyName == ModuleName && x.Id != DosageFormId || (DosageFormId == null && x.Id == null)).FirstOrDefault();
+            if (model != null)
             {
-                Value = x.Id.ToString(),
-                Text = x.CompanyName.Trim()
-            });
-
-            return new SelectList(selectList, "Value", "Text");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         public SelectList DropDownCompanyList(int SelectedValue)
         {
-            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsActive == true && x.IsPaymentAllowed == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()
             });
+
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
     }
