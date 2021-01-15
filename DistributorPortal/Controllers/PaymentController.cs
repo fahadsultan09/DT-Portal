@@ -177,12 +177,19 @@ namespace DistributorPortal.Controllers
                         payment.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
                         payment.Status = PaymentStatus.Verified;
                         result = _PaymentBLL.Update(payment);
-                    }
 
-                    jsonResponse.Status = result;
-                    jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
-                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                    return Json(new { data = jsonResponse });
+                        jsonResponse.Status = result;
+                        jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
+                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        return Json(new { data = jsonResponse });
+                    }
+                    else
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Unable to verfied payment.";
+                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        return Json(new { data = jsonResponse });
+                    }
                 }
                 PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
