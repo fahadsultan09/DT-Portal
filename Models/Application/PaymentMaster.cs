@@ -53,7 +53,7 @@ namespace Models.Application
         [NotMapped]
         public SelectList DepostitorBankList { get; set; }
         [NotMapped]
-        public SelectList CompanyListBankList { get; set; }
+        public SelectList CompanyBankList { get; set; }
         [NotMapped]
         public double SAMITotalPendingValue { get; set; }
         [NotMapped]

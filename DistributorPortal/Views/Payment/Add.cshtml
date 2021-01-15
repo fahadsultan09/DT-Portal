@@ -180,7 +180,7 @@
                                     <h6>Company Bank Name<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyListBankList, "Value", "Text"))" class="form-control select2 ddlCompanyBank">
+                                    <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyBankList, "Value", "Text"))" class="form-control select2 ddlCompanyBank">
                                         <option value="">--Select option--</option>
                                     </select><br />
                                     <span asp-validation-for="CompanyBankName" class="text-danger"></span>

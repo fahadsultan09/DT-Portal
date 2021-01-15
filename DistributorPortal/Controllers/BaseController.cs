@@ -10,15 +10,6 @@ namespace DistributorPortal.Controllers
         {            
             var context = filterContext.HttpContext;
 
-            //if (Request.IsAjaxRequest())
-            //{
-            //    var b = true;
-            //    //filterContext.HttpContext.Response.StatusCode = 403;
-            //    //filterContext.Result = new RedirectResult("~/Login/Index");
-            //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index" }));
-            //}
-
-
             if (context.Session != null)
             {
                 if (SessionHelper.LoginUser != null)

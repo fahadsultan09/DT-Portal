@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Internal;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Models.Common;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,12 @@ namespace Models.Application
         public int LicenseId { get; set; }
         [ForeignKey("LicenseId")]
         public virtual LicenseControl LicenseControl { get; set; }
-        public int Type { get; set; }
+        public LicenseType Type { get; set; }
         public string Attachment { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime Expiry { get; set; }
         public LicenseStatus Status { get; set; }
         [NotMapped]
-        public FormFile File { get; set; }
+        public IFormFile File { get; set; }
     }
 }
