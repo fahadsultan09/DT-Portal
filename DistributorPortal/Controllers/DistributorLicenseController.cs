@@ -49,12 +49,20 @@ namespace DistributorPortal.Controllers
         {
             var licenseControl = _licenseControlBLL.GetAllLicenseControl();
             var model = new List<DistributorLicense>();
+            var License = _DistributorLicenseBLL.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+            if (License.Count > 0)
+            {
+                model.AddRange(License);
+            }
             foreach (var item in licenseControl)
             {
-                model.Add(new DistributorLicense()
+                if (!model.Any(e => e.LicenseId == item.Id))
                 {
-                    LicenseControl = item
-                });
+                    model.Add(new DistributorLicense()
+                    {
+                        LicenseControl = item
+                    });
+                }                
             }
             return View(model);
         }
@@ -85,7 +93,7 @@ namespace DistributorPortal.Controllers
                     _DistributorLicenseBLL.Add(item);                    
                 }
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.PaymentSaved;                
+                jsonResponse.Message = NotificationMessage.AddLicense;                
                 jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
                 return Json(new { data = jsonResponse });
             }

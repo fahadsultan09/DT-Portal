@@ -76,9 +76,12 @@
                                             </thead>
                                             <tbody>
                                                 @for (int i = 0; i < Model.Count; i++)
-                                                {
+                                                {                                                
                                                     <tr>
-                                                        <td width="20%">@Model[i].LicenseControl.LicenseName</td>
+                                                        <td width="20%">
+                                                            <input type="hidden" asp-for="@Model[i].LicenseId" value="@Model[i].LicenseControl.Id" />
+                                                            @Model[i].LicenseControl.LicenseName
+                                                        </td>
                                                         <td width="20%">
                                                             <select class="form-control select2" asp-for="@Model[i].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
                                                                 <option value="">--Select option--</option>
