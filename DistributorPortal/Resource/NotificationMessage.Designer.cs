@@ -61,6 +61,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to License Added Successfully.
+        /// </summary>
+        public static string AddLicense {
+            get {
+                return ResourceManager.GetString("AddLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted successfully..
         /// </summary>
         public static string DeletedSuccessfully {

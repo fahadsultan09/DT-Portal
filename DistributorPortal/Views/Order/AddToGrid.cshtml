@@ -1,20 +1,21 @@
 ﻿@model IEnumerable<ProductDetail>
+
 <div class="table-responsive-sm">
     <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
         <thead>
             <tr>
-                <th>Code</th>
-                <th>Product Name</th>
-                <th>Pack Size</th>
-                <th>Quantity</th>
-                <th>Carton Size</th>
-                <th>Rate</th>
-                <th>Discount</th>
-                <th>Quantity in Packs</th>
-                <th>Quantity in Cartons</th>
-                <th>Total</th>
-                <th>Supplies</th>
-                <th>Company</th>
+                <th width="8%">Code</th>
+                <th width="15%">Product Name</th>
+                <th width="12%">Pack Size</th>
+                <th width="5%">Quantity</th>
+                <th width="12%">Carton Size</th>
+                <th width="5%">Rate</th>
+                <th width="5%">Discount</th>
+                <th width="20%">Quantity in Packs</th>
+                <th width="20%">Quantity in Cartons</th>
+                <th width="5%">Total</th>
+                <th width="10%">Supplies</th>
+                <th width="10%">Company</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -56,6 +57,8 @@
             "responsive": true,
             "autoWidth": false,
             "order": [],
+            "scrollX": true,
+            "sScrollXInner": "130%",
         });
     });
 </script>

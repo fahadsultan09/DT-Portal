@@ -19,6 +19,10 @@
     .card-header {
         padding: 5px 15px 0px 15px
     }
+
+    .swal-modal .swal-text {
+        text-align: center;
+    }
 </style>
 
 
@@ -26,7 +30,6 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-md-12">
                     <form asp-controller="Order"
@@ -144,9 +147,9 @@
                     </form>
                     <div class="row">
                         <div class="col-12">
-                            <div class="card card-primary">
+                            <div class="card card-primary grid">
                                 <div class="card-header">
-                                    <h3 class="card-title">Add Products</h3>
+                                    <h3 class="card-title">Add Products</h3>                                    
                                 </div>
                                 <div class="card-body">
                                     <form asp-controller="Order"
@@ -164,7 +167,7 @@
                                                 <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single" name="Product">
                                                     <option value="">--Select Product--</option>
                                                 </select>
-                                                <span id="ErrorProductName" class="text-danger">@ViewBag.Error</span>
+                                                <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
                                                 <h6>Quantity</h6>
@@ -184,28 +187,32 @@
                                         </div>
                                     </form>
                                     <div class="scrollmenu" id="addToGrid">
-                                        <partial name="AddToGrid" model="Model.productDetails" />
+                                       @* <partial name="AddToGrid" model="Model.productDetails" />*@
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>            
         </div>
     </section>
 </div>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
 
-        $('.custom-file-input').on("change", function () {
-            $('#Attachment').val($(this).val().split("\\").pop());
-        });
+    $('.custom-file-input').on("change", function () {
+        $('#Attachment').val($(this).val().split("\\").pop());
+    });
 
-        var ProductArr = [];
-        var response = [];
-        function CheckQuantity() {
-            $('#ErrorQuantity').empty();
-            var qty = $('#Quantity').val();
+    var ProductArr = [];
+    var response = [];
+    function CheckQuantity() {
+        $('#ErrorQuantity').empty();
+        $('#ErrorProductName').empty();
+        var qty = $('#Quantity').val();
+        var ddlproduct = $('select').val();
+        if (ddlproduct != "") {
             if (qty > 0) {
                 return true;
             }
@@ -214,64 +221,75 @@
                 return false;
             }
         }
-
-        function CalculateTotal() {
-            debugger;
-            var sami = $('#SAMITotalOrderValues').text();
-            var HealthTek = $('#HealthTekTotalOrderValues').text();
-            var Phytek = $('#PhytekTotalOrderValues').text();
-            var total = parseInt(sami) + parseInt(HealthTek) + parseInt(Phytek);
-            $('#TotalValue').text(total);
-        }
-
-        function SubmitForm() {
-            debugger;
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to place the order!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Order Place!'
-            }).then((result) => {
-                if (result.value == true) {
-                    $('#frmOrderMaster').submit();
-                }
-            })
+        else {
+            $('#ErrorProductName').text('Select Product');
             return false;
         }
+    }
 
-        function LaddaBegin() {
-            Ladda.create($("#btnOrderNow", this)[0]).start();
-            Ladda.create($("#btnDraft", this)[0]).start();
-        }
-        $(document).ready(function () {
-            $('.js-example-basic-single').select2();
-            bsCustomFileInput.init();
+    function CalculateTotal() {
+        debugger;
+        var sami = $('#SAMITotalOrderValues').text();
+        var HealthTek = $('#HealthTekTotalOrderValues').text();
+        var Phytek = $('#PhytekTotalOrderValues').text();
+        var total = parseInt(sami) + parseInt(HealthTek) + parseInt(Phytek);
+        $('#TotalValue').text(total);
+    }
+
+    function SubmitForm() {
+        debugger;
+        Swal.fire({
+            title: 'Are you sure?',
+            html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Order Place!'
+        }).then((result) => {
+            if (result.value == true) {
+                $('#frmOrderMaster').submit();
+            }
+        })
+        return false;
+    }
+
+    function LaddaBegin() {
+        Ladda.create($("#btnOrderNow", this)[0]).start();
+        Ladda.create($("#btnDraft", this)[0]).start();
+    }
+    $(document).ready(function () {
+        $('#DI').click();
+        $('#OV').click();
+        $('.js-example-basic-single').select2();
+        bsCustomFileInput.init();
+        $('#AP').click(function () {
+            $('#DI').click();
+            $('#OV').click();
         });
+    });
 
-        function UpdateOrderValue() {
-            $('#frmUpdateOrderValue').click();
-        }
+    function UpdateOrderValue() {
+        $('#frmUpdateOrderValue').click();
+    }
 
-        function GetResponse(data) {
-            debugger;
-            if (data.data.HtmlString != null) {
-                $("#addToGrid").html(data.data.HtmlString.Result);
-            }
-            if (data.data.Status) {
-                Toast.fire({
-                    icon: 'success',
-                    title: data.data.Message
-                })
-            }
-            else {
-                Toast.fire({
-                    icon: 'error',
-                    title: data.data.Message
-                })
-            }
+    function GetResponse(data) {
+        debugger;
+        if (data.data.HtmlString != null) {
+            $("#addToGrid").html(data.data.HtmlString.Result);
         }
-    </script>
+        if (data.data.Status) {
+            Toast.fire({
+                icon: 'success',
+                title: data.data.Message
+            })
+        }
+        else {
+            Toast.fire({
+                icon: 'error',
+                title: data.data.Message
+            })
+        }
+    }
+</script>
 

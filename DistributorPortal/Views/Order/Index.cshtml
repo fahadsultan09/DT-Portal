@@ -1,5 +1,10 @@
 ﻿@model List<OrderMaster>
-@{ ViewBag.Title = "Order | Product Development Unit"; }
+@inject IUnitOfWork iUnitOfWork
+@{ 
+    ViewBag.Title = "Order | Distributor Portal";
+    var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
+    var search = new OrderSearch() { DistributorList = distributor };
+}
 
 <style type="text/css">
     div.scrollmenu {
@@ -26,6 +31,7 @@
             </div>
         </div><!-- /.container-fluid -->
     </section>
+    <partial name="Search" model="@search" />
     <section class="content">
         <div class="container-fluid scrollmenu" id="divform">
             <partial name="List" model="Model" />
