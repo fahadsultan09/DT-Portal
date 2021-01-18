@@ -25,7 +25,7 @@
                                     {
                                         <tr>
                                             <td>@item.OrderNo</td>
-                                            <td>@item.Amount</td>
+                                            <td>@String.Format("{0:N}", item.Amount)</td>
                                             <td>@item.Status</td>
                                             <td>
                                                 <a asp-controller="Order" asp-action="Index" asp-route-id="@item.OrderNo" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
@@ -69,7 +69,7 @@
                                         <tr>
                                             <td>@item.PaymentId</td>
                                             <td>@item.PaymentMode</td>
-                                            <td>@item.Amount</td>
+                                            <td>@String.Format("{0:N}", item.Amount)</td>
                                             <td>
                                                 @if (item.Status == PaymentStatus.Verified)
                                                 {
@@ -124,7 +124,7 @@
                                     <tr>
                                         <td>@(i++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@item.CurrentPrice</td>
+                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
                                         <td>@item.Quantity</td>
                                     </tr>
                                 }
@@ -161,7 +161,7 @@
                                     <tr>
                                         <td>@(j++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@item.CurrentPrice</td>
+                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
                                         <td>@item.OrderCount</td>
                                     </tr>
                                 }

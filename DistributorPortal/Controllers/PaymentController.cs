@@ -124,6 +124,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _PaymentBLL.GetById(Id);
+                SessionHelper.DistributorBalance = GetDistributorBalance();
             }
             else
             {
@@ -230,6 +231,31 @@ namespace DistributorPortal.Controllers
         {
             var list = _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
             return list;
+        }
+
+        public DistributorBalance GetDistributorBalance()
+        {
+            try
+            {
+
+                var Client = new RestClient(_Configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
+                if (resp == null)
+                {
+                    return new DistributorBalance();
+                }
+                else
+                {
+                    return resp;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new DistributorBalance();
+            }
         }
     }
 }

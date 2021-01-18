@@ -61,7 +61,7 @@
                                     <tr>
                                         <td>@(j++)</td>
                                         <td>@item.DistributorName</td>
-                                        <td>@item.Payment</td>
+                                        <td>@String.Format("{0:N}", item.Payment)</td>
                                     </tr>
                                 }
                             }
@@ -99,7 +99,7 @@
                                     <tr>
                                         <td>@(k++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@item.CurrentPrice</td>
+                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
                                         <td>@item.OrderCount</td>
                                     </tr>
                                 }
@@ -136,7 +136,7 @@
                                     <tr>
                                         <td>@(l++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@item.CurrentPrice</td>
+                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
                                         <td>@item.Quantity</td>
                                     </tr>
                                 }
