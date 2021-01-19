@@ -90,7 +90,16 @@ namespace DistributorPortal.Controllers
                     }
                     item.Status = LicenseStatus.Submit;
                     item.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                    _DistributorLicenseBLL.Add(item);                    
+                    item.IsActive = true;
+                    item.IsDeleted = false;
+                    if (item.Id > 0)
+                    {
+                        _DistributorLicenseBLL.Update(item);
+                    }
+                    else
+                    {
+                        _DistributorLicenseBLL.Add(item);
+                    }                                      
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;                

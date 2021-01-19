@@ -61,7 +61,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to License Added Successfully.
+        ///   Looks up a localized string similar to License Uploaded Successfully.
         /// </summary>
         public static string AddLicense {
             get {
