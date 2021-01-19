@@ -33,6 +33,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly OrderValueBLL _OrderValueBLL;
         private readonly ProductDetailBLL _productDetailBLL;
+        private readonly DistributorLicenseBLL _DistributorLicenseBLL;
         private readonly IConfiguration _IConfiguration;
         private ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
@@ -44,6 +45,7 @@ namespace DistributorPortal.Controllers
             _productDetailBLL = new ProductDetailBLL(_unitOfWork);
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _OrderValueBLL = new OrderValueBLL(_unitOfWork);
+            _DistributorLicenseBLL = new DistributorLicenseBLL(_unitOfWork);
             _IConfiguration = configuration;
             _viewEngine = viewEngine;
             _Configuration = _configuration;
@@ -90,7 +92,7 @@ namespace DistributorPortal.Controllers
             catch (Exception)
             {
                 throw;
-            }            
+            }
         }
 
         public IActionResult Reject(int id, string Comments)
@@ -126,7 +128,7 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
-            {                
+            {
                 var Client = new RestClient(_Configuration.PostOrder);
                 var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
                 IRestResponse response = Client.Execute(request);
@@ -177,7 +179,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Product Added Successfully";
                     jsonResponse.RedirectURL = string.Empty;
                     jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber).ToList());
-                }                                
+                }
             }
             else
             {
@@ -204,7 +206,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public JsonResult SaveEdit(OrderMaster model, SubmitStatus btnSubmit)
         {
-            JsonResponse jsonResponse = new JsonResponse();            
+            JsonResponse jsonResponse = new JsonResponse();
             try
             {
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "SaveEdit", "Start Click on SaveEdit Button of ");
@@ -274,7 +276,7 @@ namespace DistributorPortal.Controllers
             ViewData.Model = model;
             using (var sw = new StringWriter())
             {
-                var viewResult = _viewEngine.FindView(ControllerContext,viewName, false);
+                var viewResult = _viewEngine.FindView(ControllerContext, viewName, false);
                 var viewContext = new ViewContext(ControllerContext, viewResult.View,
                                              ViewData, TempData, sw, new HtmlHelperOptions());
                 await viewResult.View.RenderAsync(viewContext);
@@ -290,6 +292,33 @@ namespace DistributorPortal.Controllers
             else
             {
                 return _OrderBLL.GetAllOrderMaster().OrderByDescending(x => x.Id).ToList();
+            }
+        }
+        public JsonResult CheckProductLicense(int ProductMasterId)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                ProductDetail productDetail = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).FirstOrDefault();
+                if (productDetail != null && productDetail.LicenseControlId != null && !_DistributorLicenseBLL.GetAllDistributorLicense().Select(x => x.LicenseId.ToString()).Contains(productDetail.LicenseControlId.ToString()))
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Narcotics license required for selected product.";
+                    return Json(new { data = jsonResponse });
+                }
+                else
+                {
+                    jsonResponse.Status = true;
+                    return Json(new { data = jsonResponse });
+                }
+            }
+            catch (Exception ex)
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = ex.Message;
+                jsonResponse.RedirectURL = string.Empty;
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return Json(new { data = jsonResponse });
             }
         }
     }

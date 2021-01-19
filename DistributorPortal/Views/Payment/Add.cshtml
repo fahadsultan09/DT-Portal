@@ -52,19 +52,31 @@
                                     <h6>SAMI Balance:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@SessionHelper.DistributorBalance.SAMI</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.SAMI)
+                                        </strong>
+                                    </span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Healthtek Balance:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@SessionHelper.DistributorBalance.HealthTek</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.HealthTek)
+                                        </strong>
+                                    </span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Phytek Balance:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@SessionHelper.DistributorBalance.PhyTek</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.PhyTek)
+                                        </strong>
+                                    </span>
                                 </div>
                             </div>
                             <div class="row">
@@ -72,19 +84,31 @@
                                     <h6>Total Pending Value:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.SAMITotalPendingValue</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", Model.SAMITotalPendingValue)
+                                        </strong>
+                                    </span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Total Pending Value:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.HealthTekTotalPendingValue</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", Model.HealthTekTotalPendingValue)
+                                        </strong>
+                                    </span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Total Pending Value:</h6>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.PhytekTotalPendingValue</strong></span>
+                                    <span>
+                                        <strong>
+                                            @String.Format("{0:N}", Model.PhytekTotalPendingValue)
+                                        </strong>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +126,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-target="#DepositDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy"))" data-target="#DepositDate" class="form-control datetimepicker-input" />
                                         <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -113,7 +137,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy"))" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
                                         <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -264,7 +288,7 @@
         });
 
         $('body').on('change', '#ddlCompany', function () {
-            
+
             var ddlCompany = $('#ddlCompany :selected');
             var text = $(ddlCompany).text();
             var value = $(ddlCompany).val();
@@ -288,7 +312,7 @@
                 url: "/Bank/GetBranchCode",
                 contentType: "application/json",
                 dataType: "json",
-                data: { Id: $(".ddlDepostitorBank").val()},
+                data: { Id: $(".ddlDepostitorBank").val() },
                 async: false,
                 success: function (response) {
                     $('#DepositorBankCode').val(response[0]);

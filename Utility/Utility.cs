@@ -93,7 +93,7 @@ namespace Utility
 
     public enum LicenseStatus
     {
-        Submit = 1,
+        Submitted = 1,
         Verified = 2,
         Rejected = 3
     }
@@ -102,5 +102,10 @@ namespace Utility
     {
         License = 1,
         Challan = 2
+    }
+    public enum OrderReturnStatus
+    {
+        Submitted = 1,
+        Received = 2
     }
 }

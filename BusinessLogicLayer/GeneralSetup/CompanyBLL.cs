@@ -79,5 +79,15 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
+        public SelectList DropDownCompanyList()
+        {
+            var selectList = GetAllCompany().Where(x => x.IsActive == true && x.IsPaymentAllowed == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.CompanyName.ToString()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
+        }
     }
 }

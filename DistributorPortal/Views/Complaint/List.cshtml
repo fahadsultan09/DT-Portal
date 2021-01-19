@@ -45,8 +45,7 @@
                                         <span class="badge badge-danger">@item.Status</span>
                                     }
                                 </td>
-
-                                <td>@item.CreatedDate</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy hh:mm:ss")</td>
                                 <td>
                                     <a data-ajax-update="#divform"
                                        data-ajax="true"

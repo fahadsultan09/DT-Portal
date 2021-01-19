@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card card-primary defaultColor">
+                <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Distributor Information</h3>
                     </div>
@@ -32,26 +32,97 @@
                         </div>
                     </div>
                 </div>
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Distributor Current Balance and Total Pending Value of Orders</h3>
+                    </div>
+                    <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>SAMI Balance:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.SAMI)
+                                    </strong>
+                                </span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Healthtek Balance:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.HealthTek)
+                                    </strong>
+                                </span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Phytek Balance:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.PhyTek)
+                                    </strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Total Pending Value:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", Model.SAMITotalPendingValue)
+                                    </strong>
+                                </span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Total Pending Value:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", Model.HealthTekTotalPendingValue)
+                                    </strong>
+                                </span>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <h6>Total Pending Value:</h6>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <span>
+                                    <strong>
+                                        @String.Format("{0:N}", Model.PhytekTotalPendingValue)
+                                    </strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-12 ">
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Payment Value</h3>
                         @if (Model.Id > 0)
+                        {
+                            @if (Model.Status == PaymentStatus.Verified)
                             {
-                        @if (Model.Status == PaymentStatus.Verified)
-                                {
-                        <span class="badge badge-success pull-right" style="margin-left:5px;">@Model.Status</span>
-                                }
-                                else if (Model.Status == PaymentStatus.Unverified)
-                                {
-                        <span class="badge badge-warning float-left" style="margin-left:5px;">@Model.Status</span>
-                                }
-                                else
-                                {
-                        <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
-                                }
+                                <span class="badge badge-success pull-right" style="margin-left:5px;">@Model.Status</span>
                             }
+                            else if (Model.Status == PaymentStatus.Unverified)
+                            {
+                                <span class="badge badge-warning float-left" style="margin-left:5px;">@Model.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
+                            }
+                        }
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -60,7 +131,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.DepositDate).ToShortDateString())" data-target="#DepositDate" class="form-control" />
+                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy"))" data-target="#DepositDate" class="form-control" />
                                     <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -71,7 +142,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToShortDateString() : Convert.ToDateTime(Model.ValueClearingDate).ToShortDateString())" data-target="#ValueClearingDate" class="form-control" />
+                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy"))" data-target="#ValueClearingDate" class="form-control" />
                                     <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -156,39 +227,33 @@
                                 <h6>Attachment</h6>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                <div class="form-group">
-                                    <div class="custom-file">
-                                        <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
-                                        <label class="custom-file-label" for="customFile">Choose file</label>
-                                    </div>
-                                </div>
                                 <span class="caption">
                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
                                 </span>
                             </div>
                             @if (!string.IsNullOrEmpty(Model.Remarks))
-                                {
-                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                <h6>Remarks</h6>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                <textarea asp-for="Remarks" class="form-control"></textarea>
-                            </div>
-                                }
+                            {
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <h6>Remarks</h6>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <textarea asp-for="Remarks" class="form-control"></textarea>
+                                </div>
+                            }
                         </div>
                         <div class="row">
                             <div class="col-6">
                             </div>
                             <div class="col-6 pull-right">
                                 @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 16))
-                                    {
-                                <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
-                                    Verify
-                                </button>
-                                <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Reject" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
-                                    Reject
-                                </button>
-                                    }
+                                {
+                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
+                                        Verify
+                                    </button>
+                                    <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Reject" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
+                                        Reject
+                                    </button>
+                                }
                                 <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
                                     Back
                                 </a>
@@ -200,7 +265,9 @@
         </div>
     </div>
 </section>
+
 <script>
+
     $(document).ready(function () {
         $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
         $('.select2').select2();
@@ -235,4 +302,5 @@
             }
         });
     }
+
 </script>

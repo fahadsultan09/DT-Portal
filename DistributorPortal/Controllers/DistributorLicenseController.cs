@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
-using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
@@ -44,7 +43,6 @@ namespace DistributorPortal.Controllers
             var model = _DistributorLicenseBLL.GetAllDistributorLicense();
             return View(model);
         }
-
         public IActionResult Add()
         {
             var licenseControl = _licenseControlBLL.GetAllLicenseControl();
@@ -62,11 +60,10 @@ namespace DistributorPortal.Controllers
                     {
                         LicenseControl = item
                     });
-                }                
+                }
             }
             return View(model);
         }
-
         public IActionResult SaveEdit(List<DistributorLicense> model)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -88,7 +85,7 @@ namespace DistributorPortal.Controllers
                             }
                         }
                     }
-                    item.Status = LicenseStatus.Submit;
+                    item.Status = LicenseStatus.Submitted;
                     item.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     item.IsActive = true;
                     item.IsDeleted = false;
@@ -102,7 +99,7 @@ namespace DistributorPortal.Controllers
                     }                                      
                 }
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.AddLicense;                
+                jsonResponse.Message = NotificationMessage.AddLicense;
                 jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
                 return Json(new { data = jsonResponse });
             }
@@ -114,5 +111,44 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+        [HttpPost]
+        public JsonResult UpdateStatus(int Id, LicenseStatus Status, string Remarks)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "Start Click on Approve Button of ");
+
+                DistributorLicense model = _DistributorLicenseBLL.GetById(Id);
+                if (model != null)
+                {
+                    _DistributorLicenseBLL.UpdateStatus(model, Status, Remarks);
+                }
+
+                if (Status == LicenseStatus.Verified)
+                {
+                    jsonResponse.Message = "License approved successfully.";
+                }
+                else
+                {
+                    jsonResponse.Message = "License has been rejected.";
+                }
+
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "End Click on Approve Button of ");
+                _unitOfWork.Save();
+
+                jsonResponse.Status = true;
+                jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
+        }
+
     }
 }

@@ -28,6 +28,7 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
+        private readonly DistributorBLL _DistributorBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
         public PaymentController(IUnitOfWork unitOfWork, IConfiguration _iconfiguration, Configuration _configuration)
@@ -35,6 +36,7 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _DistributorBLL = new DistributorBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
         }
@@ -124,12 +126,15 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _PaymentBLL.GetById(Id);
+                SessionHelper.DistributorBalance = GetDistributorBalance(model.Distributor.DistributorSAPCode);
+                model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
+
             }
             else
             {
+                model.Distributor = SessionHelper.LoginUser.Distributor;
 
             }
-            model.Distributor = SessionHelper.LoginUser.Distributor;
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
             model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId);
             model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
@@ -230,6 +235,31 @@ namespace DistributorPortal.Controllers
         {
             var list = _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
             return list;
+        }
+
+        public DistributorBalance GetDistributorBalance(string DistributorSAPCode)
+        {
+            try
+            {
+
+                var Client = new RestClient(_Configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + DistributorSAPCode);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
+                if (resp == null)
+                {
+                    return new DistributorBalance();
+                }
+                else
+                {
+                    return resp;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new DistributorBalance();
+            }
         }
     }
 }

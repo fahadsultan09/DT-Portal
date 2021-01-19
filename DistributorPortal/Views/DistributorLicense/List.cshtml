@@ -4,7 +4,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">License List</h2>                
+                <h2 class="card-title">License List</h2>
             </div>
             <div class="card-body scrollmenu">
                 <table id="example1" class="table table-bordered table-striped">
@@ -17,20 +17,40 @@
                             <th>Issue</th>
                             <th>Expiry</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                        <tr>
-                            <td>@item.Distributor.DistributorName</td>
-                            <td>@item.LicenseControl.LicenseName</td>
-                            <td>@item.Type</td>
-                            <td>@item.Attachment</td>
-                            <td>@item.IssueDate</td>
-                            <td>@item.Expiry</td>
-                            <td>@item.Status</td>
-                        </tr>
+                            <tr>
+                                <td>@item.Distributor.DistributorName</td>
+                                <td>@item.LicenseControl.LicenseName</td>
+                                <td>@item.Type</td>
+                                <td>
+                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ? item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
+                                </td>
+                                <td>@item.IssueDate.ToString("dd/MM/yyyy")</td>
+                                <td>@item.Expiry.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.Status == LicenseStatus.Verified)
+                                    {
+                                        <span class="badge badge-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == LicenseStatus.Submitted)
+                                    {
+                                        <span class="badge badge-warning">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <select asp-for="@item.Status" asp-items="Html.GetEnumSelectList<LicenseStatus>()" value="(this.options[this.selectedIndex].text" onchange="UpdateStatus(this.options[this.selectedIndex].text, 'DistributorLicense', 'UpdateStatus', @item.Id);" disabled="@(item.Status != LicenseStatus.Submitted)" class="form-control">
+                                    </select>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>
@@ -47,7 +67,6 @@
             "responsive": true,
             "autoWidth": false,
             "order": [],
-
         });
 
         $('.select2').select2();

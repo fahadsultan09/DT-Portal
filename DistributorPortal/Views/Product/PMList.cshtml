@@ -4,6 +4,7 @@
 @{
     Layout = null;
     List<Company> companyList = new CompanyBLL(unitOfWork).GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
+    List<LicenseControl> licenseControlList = new LicenseControlBLL(unitOfWork).GetAllLicenseControl().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
 }
 <style type="text/css">
     th, td {
@@ -15,6 +16,7 @@
         margin: 0 auto;
     }
 </style>
+
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -48,6 +50,7 @@
                             <th>Sales Item Category </th>
                             <th>Return Item Category </th>
                             <th>Is Tax Applicable</th>
+                            <th>License Type</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -80,7 +83,12 @@
                                 <td><input type="text" asp-for="@item.ProductDetail.R_StorageLocation" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.SalesItemCategory" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.ReturnItemCategory" class="form-control" /></td>
-                                <td style=" vertical-align: middle;"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
+                                <td style="vertical-align: middle;"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
+                                <td>
+                                    <select asp-for="@item.ProductDetail.LicenseControlId" asp-items="@(new SelectList(licenseControlList, "Id", "LicenseName", item.ProductDetail.LicenseControlId))" class="form-control">
+                                        <option>--Select option--</option>
+                                    </select>
+                                </td>
                                 <td><button type="submit" id="btnSubmit" name="btnSubmit" class="ladda-button btn btn-success">Save</button></td>
                             </tr>
                         }
@@ -93,6 +101,7 @@
 <script>
 
     $(document).ready(function () {
+
         $("#example1").DataTable({
             scrollY: "350px",
             scrollX: true,
@@ -130,19 +139,20 @@
             SalesItemCategory: $(this).closest("tr").find("td:eq(19)").find(":input").val(),
             ReturnItemCategory: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
             IsTaxApplicable: $(this).closest("tr").find("td:eq(21)").find(":input").val(),
+            LicenseControlId: $(this).closest("tr").find("td:eq(22)").find(":input").val(),
         };
 
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },
             function (data) {
-                    if (data) {
-                        Toast.fire({ icon: 'success', title: '@NotificationMessage.SaveSuccessfully' });
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
-                    } else {
-                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
-                    }
-                });
+                if (data) {
+                    Toast.fire({ icon: 'success', title: '@NotificationMessage.SaveSuccessfully' });
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
+                }
+            });
 
     });
 

@@ -15,6 +15,9 @@ namespace Models.Application
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
+        public int? LicenseControlId { get; set; }
+        [ForeignKey("LicenseControlId")]
+        public virtual LicenseControl LicenseControl { get; set; }
         public ProductVisibility ProductVisibilityId { get; set; }
         public string PlantLocation { get; set; }
         public string WTaxRate { get; set; }

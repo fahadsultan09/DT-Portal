@@ -22,6 +22,7 @@ namespace Models.Application
         public DateTime IssueDate { get; set; }
         public DateTime Expiry { get; set; }
         public LicenseStatus Status { get; set; }
+        public string Remarks { get; set; }
         [NotMapped]
         public IFormFile File { get; set; }
     }

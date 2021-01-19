@@ -94,8 +94,14 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 
 //Approve
 function UpdateStatus(e, controllerName, actionName, id) {
-
-    if (e.value == "Resolved" || e.value == "Reject") {
+    var val = '';
+    if (e.value == undefined) {
+        val = e;
+    }
+    else {
+        val = e.value;
+    }
+    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected") {
         Swal.fire({
             type: "warning",
             confirmButtonText: "Yes",
@@ -115,7 +121,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
         }).then(function (result) {
 
             if (result.value) {
-                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: result.value }, function (data) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
                     if (data) {
                         if (e.value == "Resolved") {
                             Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
@@ -145,7 +151,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value }, function (data) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val }, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: 'Verified successfully.' });
                         setTimeout(function () {
@@ -161,7 +167,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
 }
 
 function inWords(num) {
-    debugger
+    
     if ((num = num.toString()).length > 9) return 'overflow';
     n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
     if (!n) return; var str = '';
@@ -170,5 +176,5 @@ function inWords(num) {
     str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
     str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
     str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
-    return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
