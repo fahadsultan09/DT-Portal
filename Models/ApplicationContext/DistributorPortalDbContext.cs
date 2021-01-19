@@ -50,5 +50,7 @@ namespace Models.ApplicationContext
         public DbSet<AuditTrail> AuditTrail { get; set; }
         public DbSet<LicenseControl> LicenseControl { get; set; }
         public DbSet<DistributorLicense> DistributorLicense { get; set; }
+        public DbSet<DistributorLicense> OrderReturnMaster { get; set; }
+        public DbSet<OrderReturnDetail> OrderReturnDetail { get; set; }
     }
 }

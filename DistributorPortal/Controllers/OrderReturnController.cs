@@ -1,6 +1,7 @@
 ﻿
 
 using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
@@ -25,7 +26,11 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Index", " Form");
+            OrderReturnViewModel model = new OrderReturnViewModel();
+            model.OrderReturnMaster = GetOrderReturnList();
+            model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
+            return View(model);
         }
         public OrderReturnViewModel List(OrderReturnViewModel model)
         {
@@ -35,7 +40,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                //model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+                model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             }
             return model;
         }
@@ -43,7 +48,7 @@ namespace DistributorPortal.Controllers
         public IActionResult Add(int id)
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Add", "Click on Add  Button of ");
-            return View("AddDetail", BindOrderReturnMaster(id));
+            return View("Add", BindOrderReturnMaster(id));
         }
         [HttpPost]
         public IActionResult Search(OrderReturnViewModel model, string Search)
@@ -70,11 +75,13 @@ namespace DistributorPortal.Controllers
             OrderReturnMaster model = new OrderReturnMaster();
             if (Id > 0)
             {
-                //model = _OrderReturnBLL.GetById(Id);
+                model = _OrderReturnBLL.GetById(Id);
+                model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
             }
             else
             {
-
+                model.OrderReturnDetail = new List<OrderReturnDetail>();
+                model.Distributor = SessionHelper.LoginUser.Distributor;
             }
             return model;
         }

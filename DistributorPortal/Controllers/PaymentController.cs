@@ -127,9 +127,12 @@ namespace DistributorPortal.Controllers
             {
                 model = _PaymentBLL.GetById(Id);
                 SessionHelper.DistributorBalance = GetDistributorBalance(model.Distributor.DistributorSAPCode);
+                model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
+
             }
             else
             {
+                model.Distributor = SessionHelper.LoginUser.Distributor;
 
             }
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();

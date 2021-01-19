@@ -1,0 +1,63 @@
+﻿@model IEnumerable<OrderReturnDetail>
+
+<div class="table-responsive-sm">
+    <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
+        <thead>
+            <tr>
+                <th width="8%">S.No.</th>
+                <th width="15%">Product Name</th>
+                <th width="12%">Batch No</th>
+                <th width="5%">MRP</th>
+                <th width="12%">T.P.</th>
+                <th width="5%">Quantity</th>
+                <th width="5%">Discount</th>
+                <th width="20%">Net Amount</th>
+                <th width="20%">Manufactured </th>
+                <th width="5%">Expiry Date</th>
+                <th width="10%">Invoice No</th>
+                <th width="10%">Invoice Date</th>
+                <th width="10%">Company</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.ProductMaster.ProductName</td>
+                <td>@item.BatchNo</td>
+                <td>@item.MRP</td>
+                <td>@item.TP</td>
+                <td>@item.Quantity</td>
+                <td>@item.Discount %</td>
+                <td>@item.NetAmount</td>
+                <td>@item.ManufactureDate</td>
+                <td>@item.ExpiryDate</td>
+                <td>@item.InvoiceNo</td>
+                <td>@item.InvoiceDate</td>
+                <td>@item.IntimationDate</td>
+                <td>@item.Company.CompanyName</td>
+                <td>
+                    <a asp-action="Delete"
+                       asp-controller="Order"
+                       asp-route-Id="@item.ProductMaster.Id"
+                       class="btn btn-danger"
+                       data-ajax="true"
+                       data-ajax-complete="UpdateOrderValue"
+                       data-ajax-update="#addToGrid"
+                       data-ajax-method="POST">Delete</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#example1").DataTable({
+        });
+    });
+</script>
+
+
