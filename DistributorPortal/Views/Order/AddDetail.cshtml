@@ -164,7 +164,7 @@
                                                 <h6>Product</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
-                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single" name="Product">
+                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single" name="Product" id="ddlProduct">
                                                     <option value="">--Select Product--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
@@ -203,6 +203,32 @@
 
     $('.custom-file-input').on("change", function () {
         $('#Attachment').val($(this).val().split("\\").pop());
+    });
+
+    $('body').on('change', '#ddlProduct', function () {
+
+        if ($('#ddlProduct').val() != "") {
+
+            $.ajax({
+                type: "GET",
+                url: "/Order/CheckProductLicense",
+                contentType: "application/json",
+                dataType: "json",
+                data: { ProductMasterId: $("#ddlProduct").val() },
+                async: false,
+                success: function (response) {
+                    if (response.data.Status == false) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.Message
+                        })
+                        $('#ddlProduct').val('');
+                        $('#ddlProduct').change();
+                    }
+                },
+            });
+        }
     });
 
     var ProductArr = [];

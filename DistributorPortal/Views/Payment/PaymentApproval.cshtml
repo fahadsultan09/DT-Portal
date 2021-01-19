@@ -32,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                @*<div class="card card-primary">
+                <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Distributor Current Balance and Total Pending Value of Orders</h3>
                     </div>
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                     </div>
-                </div>*@
+                </div>
             </div>
             <div class="col-12 ">
                 <div class="card card-primary">
@@ -131,7 +131,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.DepositDate).ToString("MM/dd/yyyy"))" data-target="#DepositDate" class="form-control" />
+                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy"))" data-target="#DepositDate" class="form-control" />
                                     <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -142,7 +142,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.ValueClearingDate).ToString("MM/dd/yyyy"))" data-target="#ValueClearingDate" class="form-control" />
+                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy"))" data-target="#ValueClearingDate" class="form-control" />
                                     <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -209,7 +209,7 @@
                                 <h6>Company Bank Name<span class="text-danger"> * </span></h6>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyListBankList, "Value", "Text"))" class="form-control select2">
+                                <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyBankList, "Value", "Text"))" class="form-control select2">
                                     <option value="">--Select option--</option>
                                 </select><br />
                                 <span asp-validation-for="CompanyBankName" class="text-danger"></span>

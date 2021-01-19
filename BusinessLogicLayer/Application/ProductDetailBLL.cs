@@ -45,6 +45,7 @@ namespace BusinessLogicLayer.Application
             item.SalesItemCategory = module.SalesItemCategory;
             item.ReturnItemCategory = module.ReturnItemCategory;
             item.IsTaxApplicable = module.IsTaxApplicable;
+            item.LicenseControlId = module.LicenseControlId;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<ProductDetail>().Update(item);

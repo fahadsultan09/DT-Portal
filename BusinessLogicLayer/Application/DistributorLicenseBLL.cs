@@ -26,7 +26,7 @@ namespace BusinessLogicLayer.Application
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
-            module.Status = LicenseStatus.Submit;
+            module.Status = LicenseStatus.Submitted;
             _repository.Insert(module);
             return _unitOfWork.Save();
         }
@@ -51,7 +51,14 @@ namespace BusinessLogicLayer.Application
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
-
+        public void UpdateStatus(DistributorLicense model, LicenseStatus licenseStatus, string Remarks)
+        {
+            model.Remarks = Remarks;
+            model.Status = licenseStatus;
+            model.UpdatedBy = SessionHelper.LoginUser.Id;
+            model.UpdatedDate = DateTime.Now;
+            _repository.Update(model);
+        }
         public DistributorLicense GetById(int id)
         {
             return _repository.GetById(id);

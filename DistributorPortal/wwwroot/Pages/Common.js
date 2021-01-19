@@ -94,8 +94,14 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 
 //Approve
 function UpdateStatus(e, controllerName, actionName, id) {
-
-    if (e.value == "Resolved" || e.value == "Reject") {
+    var val = '';
+    if (e.value == undefined) {
+        val = e;
+    }
+    else {
+        val = e.value;
+    }
+    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected") {
         Swal.fire({
             type: "warning",
             confirmButtonText: "Yes",
@@ -115,7 +121,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
         }).then(function (result) {
 
             if (result.value) {
-                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: result.value }, function (data) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
                     if (data) {
                         if (e.value == "Resolved") {
                             Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
@@ -145,7 +151,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value }, function (data) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val }, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: 'Verified successfully.' });
                         setTimeout(function () {
