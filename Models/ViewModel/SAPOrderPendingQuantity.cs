@@ -7,6 +7,7 @@ namespace Models.ViewModel
 {
     public class SAPOrderPendingQuantity
     {
+        public int Id { get; set; }
         public string ProductCode { get; set; }
         public string OrderQuantity { get; set; }
         public string DispatchQuantity { get; set; }

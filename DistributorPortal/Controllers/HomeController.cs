@@ -428,6 +428,7 @@ namespace DistributorPortal.Controllers
             var request = new RestRequest(Method.GET);
             IRestResponse response = Client.Execute(request);
             var SAPDistributor = JsonConvert.DeserializeObject<List<SAPOrderPendingQuantity>>(response.Content);
+            SAPDistributor.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id);
             SAPDistributor.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription);
             SessionHelper.SAPOrderPendingQuantity = SAPDistributor.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
             return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);

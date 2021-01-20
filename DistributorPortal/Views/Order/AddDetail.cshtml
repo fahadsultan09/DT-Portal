@@ -149,7 +149,7 @@
                         <div class="col-12">
                             <div class="card card-primary grid">
                                 <div class="card-header">
-                                    <h3 class="card-title">Add Products</h3>                                    
+                                    <h3 class="card-title">Add Products</h3>
                                 </div>
                                 <div class="card-body">
                                     <form asp-controller="Order"
@@ -170,9 +170,18 @@
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Pending Quantity</h6>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <div class="col-lg-12">
+                                                    <input type="text" name="PendingQuantity" id="PendingQuantity" class="form-control" readonly="readonly" />
+                                                    <span id="ErrorQuantity" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
                                                 <h6>Quantity</h6>
                                             </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <div class="col-lg-12">
                                                     <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" style="height: calc(2.25rem + -4px)" class="form-control" />
                                                     <span id="ErrorQuantity" class="text-danger"></span>
@@ -187,19 +196,31 @@
                                         </div>
                                     </form>
                                     <div class="scrollmenu" id="addToGrid">
-                                       @* <partial name="AddToGrid" model="Model.productDetails" />*@
+                                        @* <partial name="AddToGrid" model="Model.productDetails" />*@
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
     </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+
+    var SAPOrderPendingQuantity = [];
+
+    function obj(Id, PendingQuantity) {
+        this.Id = Id;
+        this.PendingQuantity = PendingQuantity;
+    }
+
+    @foreach (var d in SessionHelper.SAPOrderPendingQuantity)
+    {
+        @:SAPOrderPendingQuantity.push(new obj("@d.Id", "@d.PendingQuantity"));
+    }
 
     $('.custom-file-input').on("change", function () {
         $('#Attachment').val($(this).val().split("\\").pop());
@@ -208,7 +229,7 @@
     $('body').on('change', '#ddlProduct', function () {
 
         if ($('#ddlProduct').val() != "") {
-
+            $('#ErrorProductName').empty();
             $.ajax({
                 type: "GET",
                 url: "/Order/CheckProductLicense",
@@ -218,13 +239,17 @@
                 async: false,
                 success: function (response) {
                     if (response.data.Status == false) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: response.data.Message
-                        })
+                        $('#PendingQuantity').val('');
+                        $('#ErrorProductName').text(response.data.Message);
                         $('#ddlProduct').val('');
                         $('#ddlProduct').change();
+                    } else {
+
+                        if (SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()) == undefined) {
+                            $('#PendingQuantity').val('0');
+                        } else {
+                            $('#PendingQuantity').val(Math.ceil(SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()).PendingQuantity));
+                        }
                     }
                 },
             });
@@ -233,6 +258,7 @@
 
     var ProductArr = [];
     var response = [];
+
     function CheckQuantity() {
         $('#ErrorQuantity').empty();
         $('#ErrorProductName').empty();

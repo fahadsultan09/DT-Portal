@@ -164,7 +164,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Status = result > 0;
                 jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
-                return Json(jsonResponse);
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
@@ -172,7 +172,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Message = ex.Message;
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return Json(jsonResponse);
+                return Json(new { data = jsonResponse });
             }
         }
         public JsonResult AddProduct(int Quantity, int Product)
@@ -325,14 +325,14 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        jsonResponse.Status = true;                        
+                        jsonResponse.Status = true;
                     }
                 }
                 else
                 {
 
                 }
-                if (productDetail != null && productDetail.LicenseControlId != null && !_DistributorLicenseBLL.GetAllDistributorLicense().Select(x => x.LicenseId.ToString()).Contains(productDetail.LicenseControlId.ToString()))
+                if (productDetail != null && productDetail.LicenseControlId != null && !_DistributorLicenseBLL.GetAllDistributorLicense().Where(e => e.Status == LicenseStatus.Verified).Select(x => x.LicenseId.ToString()).Contains(productDetail.LicenseControlId.ToString()))
                 {
                     jsonResponse.Status = false;
                     jsonResponse.Message = "Narcotics license required for selected product.";
