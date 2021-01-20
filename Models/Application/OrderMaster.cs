@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
 using Models.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Utility;
@@ -20,7 +21,14 @@ namespace Models.Application
         public IFormFile AttachmentFormFile { get; set; }
         public double TotalValue { get; set; }
         public OrderStatus Status { get; set; }
-        public string Comments { get; set; }
+        public int? OnHoldBy { get; set; }
+        public DateTime? OnHoldDate { get; set; }
+        public string OnHoldComment { get; set; }
+        public int? RejectedBy { get; set; }
+        public DateTime? RejectedDate { get; set; }
+        public string RejectedComment { get; set; }
+        public int? ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }        
         [NotMapped]
         public List<OrderDetail> OrderDetail { get; set; }
         [NotMapped]

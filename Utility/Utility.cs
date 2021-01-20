@@ -95,7 +95,8 @@ namespace Utility
     {
         Submitted = 1,
         Verified = 2,
-        Rejected = 3
+        Rejected = 3,
+        Apply = 0
     }
 
     public enum LicenseType

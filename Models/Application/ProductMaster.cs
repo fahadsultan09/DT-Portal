@@ -29,6 +29,8 @@ namespace Models.Application
         [NotMapped]
         public int Quantity { get; set; }
         [NotMapped]
+        public int ApprovedQuantity { get; set; }
+        [NotMapped]
         public SelectList ProductList { get; set; }
     }
 }
