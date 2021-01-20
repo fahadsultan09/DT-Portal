@@ -34,6 +34,10 @@
                                             {
                                                 <span class="badge badge-success">@item.Status</span>
                                             }
+                                            else if (item.Status == PaymentStatus.Unverified)
+                                            {
+                                                <span class="badge badge-warning">@item.Status</span>
+                                            }
                                             else
                                             {
                                                 <span class="badge badge-danger">@item.Status</span>
@@ -64,41 +68,38 @@
         <div class="card-body">
             <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
         </div>
-        <!-- /.card-body -->
     </div>
-    <!-- /.card -->
 </div>
 
 <script>
 
-           $(function () {
-              var donutData = {
-                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.PaymentMode)))'),
-                datasets: [
-                    {
-                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.Amount)))'),
-                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
-                            '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
-                    }
-                ]
-            }
-            //-------------
-            //- PIE CHART -
-            //-------------
-            // Get context with jQuery - using jQuery's .get() method.
-            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-            var pieData = donutData;
-            var pieOptions = {
-                maintainAspectRatio: false,
-                responsive: true,
-            }
-            //Create pie or douhnut chart
-            // You can switch between pie and douhnut using the method below.
-            var pieChart = new Chart(pieChartCanvas, {
-                type: 'pie',
-                data: pieData,
-                options: pieOptions
-            })
-           })
+    $(function () {
+        var donutData =
+        {
+            labels: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.PaymentMode)))'),
+            datasets:
+                [{
+                    data: JSON.parse('@Html.Raw(Json.Serialize(Model.PaymentWiseAmount.Select(e => e.Amount)))'),
+                    backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#84fc03', '#31fc03', '#03fc84', '#03e7fc', '#0303fc', '#fc03f4'],
+                }]
+        }
+        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+        var pieData = donutData;
+        var pieOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+        }
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.
+        var pieChart = new Chart(pieChartCanvas, {
+            type: 'pie',
+            data: pieData,
+            options: pieOptions
+        })
+    });
 
 </script>

@@ -53,21 +53,58 @@ namespace ProductPortal.Controllers
                 var SAPProduct = JsonConvert.DeserializeObject<List<ProductMaster>>(response.Content);
                 var allproduct = _ProductMasterBLL.GetAllProductMaster();
                 var addProduct = SAPProduct.Where(e => !allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
-                addProduct.ForEach(e =>
+                var updateProduct = SAPProduct.Where(e => allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
+                if (addProduct != null && addProduct.Count() > 0)
                 {
-                    e.CreatedBy = SessionHelper.LoginUser.Id;
-                    e.IsDeleted = false;
-                    e.IsActive = true; 
-                    e.CreatedDate = DateTime.Now;
-                });
-                _ProductMasterBLL.AddRange(addProduct);
+                    addProduct.ForEach(e =>
+                    {
+                        e.CreatedBy = SessionHelper.LoginUser.Id;
+                        e.IsDeleted = false;
+                        e.IsActive = true;
+                        e.CreatedDate = DateTime.Now;
+                    });
+                    _ProductMasterBLL.AddRange(addProduct);
+                }
+                else
+                {
+                    List<ProductMaster> list = new List<ProductMaster>();
+                    addProduct.ForEach(e =>
+                    {
+                        var item = _unitOfWork.GenericRepository<ProductMaster>().FirstOrDefault(x => x.SAPProductCode == e.SAPProductCode);
+                        item.ProductName = e.ProductName;
+                        item.PackCode = e.PackCode;
+                        item.SAPProductCode = e.SAPProductCode;
+                        item.Discount = e.Discount;
+                        item.Rate = e.Rate;
+                        item.TradePrice = e.TradePrice;
+                        item.SFSize = e.SFSize;
+                        item.CartonSize = e.CartonSize;
+                        item.Strength = e.Strength;
+                        item.PackSize = e.PackSize;
+                        item.ProductOrigin = e.ProductOrigin;
+                        item.ProductPrice = e.ProductPrice;
+                        item.ProductDescription = e.ProductDescription;
+                        item.IsActive = e.IsActive;
+                        item.UpdatedBy = SessionHelper.LoginUser.Id;
+                        item.UpdatedDate = DateTime.Now;
+                        list.Add(item);
+                    });
+                    _ProductMasterBLL.UpdateRange(list);
+                }
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "Sync", "End Click on Sync Button of ");
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.SyncedSuccessfully;
+                jsonResponse.RedirectURL = Url.Action("Index", "Product");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                jsonResponse.RedirectURL = Url.Action("Index", "Product");
+                return Json(new { data = jsonResponse });
             }
-            return PartialView("List", _ProductMasterBLL.GetAllProductMaster());
         }
         [HttpGet]
         public IActionResult ProductMapping()
@@ -75,7 +112,7 @@ namespace ProductPortal.Controllers
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "ProductMapping", "Get Prodct Mapping ");
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
             List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
-            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y=>y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             return View("ProductMapping", productMasters);
         }
         [HttpPost]

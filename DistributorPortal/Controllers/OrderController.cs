@@ -79,7 +79,6 @@ namespace DistributorPortal.Controllers
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Onhold;
-                order.Comments = Comments;
                 var result = _OrderBLL.Update(order);
                 if (result > 0)
                 {
@@ -102,7 +101,6 @@ namespace DistributorPortal.Controllers
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Reject;
-                order.Comments = Comments;
                 var result = _OrderBLL.Update(order);
                 if (result > 0)
                 {

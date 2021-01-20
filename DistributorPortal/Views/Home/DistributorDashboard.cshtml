@@ -193,6 +193,17 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Pending Products</h3>
+                        </div>
+                        <div class="card-body" id="DistributorPendingQuantity" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="DistributorRecentPaymentOrderStatus">
             </div>
         </div>
@@ -212,6 +223,7 @@
               GetDistributorOrderWiseComparision();
               GetDistributorPaymentWiseStatus();
               GetDistributorRecentPaymentStatus();
+              GetDistributorPendingQuantity();
         });
 
         function GetDistributorPaymentWiseComparision() {
@@ -264,6 +276,20 @@
                 success: function (result) {
                     $('#DistributorRecentPaymentOrderStatus').html(result);
                     $("#DistributorRecentPaymentOrderStatus").next().remove();
+                }
+            });
+        }
+        function GetDistributorPendingQuantity() {
+
+            $.ajax({
+                url: '@Url.Action("GetDistributorPendingQuantity", "Home")',
+                contentType: 'application/html; charset=utf-8',
+                type: 'POST',
+                 dataType: 'html',
+                success: function (result) {
+                    debugger
+                    $('#DistributorPendingQuantity').html(result);
+                    $("#DistributorPendingQuantity").next().remove();
                 }
             });
         }

@@ -11,6 +11,7 @@ namespace Utility.HelperClasses
         public string SyncDistributorBalanceURL { get; set; }
         public string PostOrder { get; set; }
         public string PostPayment { get; set; }
+        public string GetPendingQuantity { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -20,6 +21,7 @@ namespace Utility.HelperClasses
             SyncDistributorBalanceURL = configuration["AppSettings:SyncDistributorBalanceURL"];
             PostOrder = configuration["AppSettings:PostOrder"];
             PostPayment = configuration["AppSettings:PostPayment"];
+            GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
         }
     }
 }

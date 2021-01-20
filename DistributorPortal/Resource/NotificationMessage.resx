@@ -171,6 +171,9 @@
   <data name="Success" xml:space="preserve">
     <value>success</value>
   </data>
+  <data name="SyncedSuccessfully" xml:space="preserve">
+    <value>Synced Successfully</value>
+  </data>
   <data name="UpdateSuccessfully" xml:space="preserve">
     <value>Data updated successfully.</value>
   </data>

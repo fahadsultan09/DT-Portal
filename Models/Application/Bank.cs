@@ -30,6 +30,8 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter IBAN No name.")]
         [StringLength(30)]
         public string IBANNo { get; set; }
+        [StringLength(10)]
+        public string GLAccount { get; set; }
         [NotMapped]
         public SelectList CompanyList { get; set; }
     }

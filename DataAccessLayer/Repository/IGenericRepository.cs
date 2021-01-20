@@ -12,6 +12,7 @@ namespace DataAccessLayer.Repository
         void Update(T obj);
         void Delete(T obj);
         void AddRange(List<T> obj);
+        void UpdateRange(List<T> obj);
         List<T> Where(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
         void DeleteRange(IEnumerable<T> List);
         T FirstOrDefault(Expression<Func<T, bool>> predicate);

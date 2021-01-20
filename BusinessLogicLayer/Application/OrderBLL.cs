@@ -52,7 +52,6 @@ namespace BusinessLogicLayer.Application
             item.Remarks = module.Remarks;
             item.Status = module.Status;
             item.Attachment = module.Attachment;
-            item.Comments = module.Comments;            
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

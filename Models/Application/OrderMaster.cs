@@ -20,7 +20,6 @@ namespace Models.Application
         public IFormFile AttachmentFormFile { get; set; }
         public double TotalValue { get; set; }
         public OrderStatus Status { get; set; }
-        public string Comments { get; set; }
         [NotMapped]
         public List<OrderDetail> OrderDetail { get; set; }
         [NotMapped]

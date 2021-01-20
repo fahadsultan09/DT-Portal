@@ -6,6 +6,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace BusinessLogicLayer.Application
@@ -27,7 +28,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-
         public bool AddRange(List<ProductMaster> ProductMaster)
         {            
             repository.AddRange(ProductMaster);
@@ -55,6 +55,11 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductMaster>().Update(item);
             return _unitOfWork.Save();
         }
+        public int UpdateRange(List<ProductMaster> module)
+       {
+            repository.UpdateRange(module);
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<ProductMaster>().GetById(id);
@@ -69,6 +74,14 @@ namespace BusinessLogicLayer.Application
         public List<ProductMaster> GetAllProductMaster()
         {
             return _unitOfWork.GenericRepository<ProductMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+        }
+        public List<ProductMaster> Where(Expression<Func<ProductMaster, bool>> predicate)
+        {
+            return repository.Where(predicate);
+        }
+        public ProductMaster FirstOrDefault(Expression<Func<ProductMaster, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
         }
         public SelectList DropDownProductList()
         {

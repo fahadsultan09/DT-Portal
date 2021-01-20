@@ -19,23 +19,25 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<User>("LoginUser");
             set => _httpContextAccessor.HttpContext.Session.Set("LoginUser", value);
         }
-
         public static List<RolePermission> NavigationMenu
         {
             get => _httpContextAccessor.HttpContext.Session.Get<List<RolePermission>>("NavigationMenu");
             set => _httpContextAccessor.HttpContext.Session.Set("NavigationMenu", value);
         }
-
         public static List<ProductDetail> AddProduct
         {
             get => _httpContextAccessor.HttpContext.Session.Get<List<ProductDetail>>("AddProduct");
             set => _httpContextAccessor.HttpContext.Session.Set("AddProduct", value);
         }
-
         public static DistributorBalance DistributorBalance
         {
             get => _httpContextAccessor.HttpContext.Session.Get<DistributorBalance>("DistributorBalance");
             set => _httpContextAccessor.HttpContext.Session.Set("DistributorBalance", value);
+        }
+        public static List<SAPOrderPendingQuantity> SAPOrderPendingQuantity
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<SAPOrderPendingQuantity>>("SAPOrderPendingQuantity");
+            set => _httpContextAccessor.HttpContext.Session.Set("SAPOrderPendingQuantity", value);
         }
     }
 }

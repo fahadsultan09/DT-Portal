@@ -75,6 +75,10 @@
                                                 {
                                                     <span class="badge badge-success">@item.Status</span>
                                                 }
+                                                else if (item.Status == PaymentStatus.Unverified)
+                                                {
+                                                    <span class="badge badge-warning">@item.Status</span>
+                                                }
                                                 else
                                                 {
                                                     <span class="badge badge-danger">@item.Status</span>

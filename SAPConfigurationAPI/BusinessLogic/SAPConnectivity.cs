@@ -67,7 +67,6 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
-
         public IRfcTable PostOrdertoSAP(string Function, string TableName, List<OrderStatusViewModel> Table)
         {
             SAPSystemConnect sapCfg = new SAPSystemConnect();
@@ -124,7 +123,7 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
-        public SAPPaymentStatus AddPaymentToSAP(string Function, string TableName, SAPPaymentViewModel Table) 
+        public SAPPaymentStatus AddPaymentToSAP(string Function, SAPPaymentViewModel Table) 
         {
             SAPSystemConnect sapCfg = new SAPSystemConnect();
             try
@@ -151,6 +150,29 @@ namespace SAPConfigurationAPI.BusinessLogic
                     SAPFiscalYear = FISCAL.ToString(),
                 };
 
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+            }
+        }
+        public IRfcTable GetOrderPendingQuantity(string Function, string DistributorId) 
+        {
+            SAPSystemConnect sapCfg = new SAPSystemConnect();
+            try
+            {
+                RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
+                RfcDestination rfcDest = null;
+                rfcDest = RfcDestinationManager.GetDestination(SystemId);
+                RfcRepository repo = rfcDest.Repository;
+                IRfcFunction companyBapi = repo.CreateFunction(Function);
+                companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                companyBapi.Invoke(rfcDest);
+                return companyBapi.GetTable("PENDING");
             }
             catch (Exception ex)
             {

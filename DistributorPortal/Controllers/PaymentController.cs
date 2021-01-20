@@ -28,7 +28,6 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
-        private readonly DistributorBLL _DistributorBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
         public PaymentController(IUnitOfWork unitOfWork, IConfiguration _iconfiguration, Configuration _configuration)
@@ -36,7 +35,6 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
-            _DistributorBLL = new DistributorBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
         }
@@ -65,13 +63,13 @@ namespace DistributorPortal.Controllers
         public IActionResult Add(int id)
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "Add", "Click on Add  Button of ");
-            return PartialView("Add", BindPaymentMaster(id));
+            return View("Add", BindPaymentMaster(id));
         }
         [HttpGet]
         public IActionResult PaymentApproval(int id)
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Payment", "PaymentApproval", "Click on Approval Button of ");
-            return PartialView("PaymentApproval", BindPaymentMaster(id));
+            return View("PaymentApproval", BindPaymentMaster(id));
         }
         [HttpPost]
         public JsonResult SaveEdit(PaymentMaster model)

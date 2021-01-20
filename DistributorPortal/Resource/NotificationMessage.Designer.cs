@@ -223,6 +223,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Synced Successfully.
+        /// </summary>
+        public static string SyncedSuccessfully {
+            get {
+                return ResourceManager.GetString("SyncedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data updated successfully..
         /// </summary>
         public static string UpdateSuccessfully {

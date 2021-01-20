@@ -1,0 +1,44 @@
+﻿@model IEnumerable<SAPOrderPendingQuantity>
+
+<div class="card-body table-responsive p-0" style="height: 370px;">
+    <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>S. No.</th>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Total Order Quantity</th>
+                <th>Pending Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@item.ProductCode</td>
+                        <td>@item.ProductName</td>
+                        <td>@(Math.Round(Convert.ToDouble(item.OrderQuantity), 0))</td>
+                        <td>@(Math.Round(Convert.ToDouble(item.PendingQuantity), 0))</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [],
+
+        });
+    });
+
+</script>

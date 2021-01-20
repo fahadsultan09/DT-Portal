@@ -9,12 +9,15 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using Utility;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -33,7 +36,8 @@ namespace DistributorPortal.Controllers
         private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
         private List<Distributor> _Distributor;
-        public HomeController(IUnitOfWork unitOfWork)
+        private readonly Configuration _configuration;
+        public HomeController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
@@ -48,6 +52,7 @@ namespace DistributorPortal.Controllers
             _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
             _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             _Distributor = _DistributorBLL.GetAllDistributor().ToList();
+            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -172,7 +177,7 @@ namespace DistributorPortal.Controllers
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
 
             model.DistributorViewModelOrder = new List<DistributorViewModel>();
-            model.DistributorViewModelOrder = _OrderMaster.GroupBy(x =>  x.DistributorId ).Select(y => new DistributorViewModel
+            model.DistributorViewModelOrder = _OrderMaster.GroupBy(x => x.DistributorId).Select(y => new DistributorViewModel
             {
                 DistributorName = _Distributor.FirstOrDefault(x => x.Id == y.Key).DistributorName,
                 OrderCount = y.Count()
@@ -416,6 +421,16 @@ namespace DistributorPortal.Controllers
             }).Take(5).ToList();
 
             return PartialView("DistributorRecentPaymentStatus", model);
+        }
+        public IActionResult GetDistributorPendingQuantity()
+        {
+            var Client = new RestClient(_configuration.GetPendingQuantity + "?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
+            var request = new RestRequest(Method.GET);
+            IRestResponse response = Client.Execute(request);
+            var SAPDistributor = JsonConvert.DeserializeObject<List<SAPOrderPendingQuantity>>(response.Content);
+            SAPDistributor.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription);
+            SessionHelper.SAPOrderPendingQuantity = SAPDistributor.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
+            return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);
         }
         #endregion
         public IActionResult GetFile(string filepath)

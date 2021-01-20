@@ -17,6 +17,8 @@
                       asp-action="Sync"
                       id="frmAdd"
                       data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="Complete"
                       data-ajax-update="#divform"
                       data-ajax="true"
                       data-ajax-method="GET"
@@ -48,22 +50,22 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.ProductName</td>
-                            <td>@item.ProductDescription</td>
-                            <td>@item.PackCode</td>
-                            <td>@item.SAPProductCode</td>
-                            <td>@item.Discount</td>
-                            <td>@item.Rate</td>
-                            <td>@item.TradePrice</td>
-                            <td>@item.SFSize</td>
-                            <td>@item.CartonSize</td>
-                            <td>@item.Strength</td>
-                            <td>@item.PackSize</td>
-                            <td>@item.ProductOrigin</td>
-                            <td>@item.ProductPrice</td>
-                        </tr>
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.ProductName</td>
+                                <td>@item.ProductDescription</td>
+                                <td>@item.PackCode</td>
+                                <td>@item.SAPProductCode</td>
+                                <td>@item.Discount</td>
+                                <td>@item.Rate</td>
+                                <td>@item.TradePrice</td>
+                                <td>@item.SFSize</td>
+                                <td>@item.CartonSize</td>
+                                <td>@item.Strength</td>
+                                <td>@item.PackSize</td>
+                                <td>@item.ProductOrigin</td>
+                                <td>@item.ProductPrice</td>
+                            </tr>
                         }
                     </tbody>
                 </table>

@@ -14,7 +14,7 @@ namespace SAPConfigurationAPI.Controllers
         [HttpPost]
         public SAPPaymentStatus Get(SAPPaymentViewModel Table) 
         {
-            var data = _SAPConnectivity.AddPaymentToSAP("ZWAS_PAYMENT_BAPI_DP", "ZWAS_PAYMENT_BAPI_DP", Table);
+            var data = _SAPConnectivity.AddPaymentToSAP("ZWAS_PAYMENT_BAPI_DP", Table);
             return data;
         }
     }

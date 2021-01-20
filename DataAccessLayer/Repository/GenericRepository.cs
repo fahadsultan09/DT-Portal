@@ -65,6 +65,14 @@ namespace DataAccessLayer.Repository
         {
             _context.Set<T>().AddRange(obj);
         }
+        public void UpdateRange(List<T> obj)
+        {
+            DbSet.AttachRange(obj);
+            obj.ToList().ForEach(e =>
+            {
+                _context.Entry(e).State = EntityState.Modified;
+            });
+        }
 
         public List<T> Where(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
         {
@@ -97,9 +105,9 @@ namespace DataAccessLayer.Repository
         }
 
         public bool Any(Expression<Func<T, bool>> predicate)
-        {            
+        {
             var query = _context.Set<T>().AsQueryable();
-            return query.Any(predicate);            
+            return query.Any(predicate);
         }
     }
 }

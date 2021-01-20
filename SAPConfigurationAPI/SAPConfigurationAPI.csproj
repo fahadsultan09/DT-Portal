@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Models\Distributor.cs" />
     <Compile Include="Models\DistributorBalance.cs" />
+    <Compile Include="Models\OrderPendingQuantity.cs" />
     <Compile Include="Models\OrderStatusViewModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\SAPOrderStatus.cs" />
