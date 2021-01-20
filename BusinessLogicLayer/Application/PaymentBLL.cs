@@ -122,7 +122,7 @@ namespace BusinessLogicLayer.Application
                 COMPANY = _CompanyBLL.GetAllCompany().FirstOrDefault(x=>x.Id == payment.CompanyId).SAPCompanyCode,
                 AMOUNT = payment.Amount.ToString(),
                 DISTRIBUTOR = payment.Distributor.DistributorSAPCode,
-                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode).GLAccount,
+                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode && x.CompanyId == GetById(PaymentId).CompanyId).GLAccount,
 
             };
             return model;
