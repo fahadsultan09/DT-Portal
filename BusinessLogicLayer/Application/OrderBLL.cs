@@ -52,6 +52,14 @@ namespace BusinessLogicLayer.Application
             item.Remarks = module.Remarks;
             item.Status = module.Status;
             item.Attachment = module.Attachment;
+            item.OnHoldBy = module.OnHoldBy;
+            item.OnHoldDate = module.OnHoldDate;
+            item.RejectedBy = module.RejectedBy; ;
+            item.RejectedDate = module.RejectedDate;
+            item.RejectedComment = module.RejectedComment;
+            item.ApprovedBy = module.ApprovedBy;
+            item.ApprovedDate = module.ApprovedDate;
+            item.OnHoldComment = module.OnHoldComment;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
@@ -328,7 +336,7 @@ namespace BusinessLogicLayer.Application
                     STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
                     BATCH = "",
                     ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
-                    REQ_QTY = item.Quantity.ToString()
+                    REQ_QTY = item.ApprovedQuantity.ToString()
                 });
             }
             return model;

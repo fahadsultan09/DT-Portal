@@ -79,6 +79,9 @@ namespace DistributorPortal.Controllers
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Onhold;
+                order.OnHoldComment = Comments;
+                order.OnHoldBy = SessionHelper.LoginUser.Id;
+                order.OnHoldDate = DateTime.Now;
                 var result = _OrderBLL.Update(order);
                 if (result > 0)
                 {
@@ -101,6 +104,9 @@ namespace DistributorPortal.Controllers
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Reject;
+                order.RejectedComment = Comments;
+                order.RejectedBy = SessionHelper.LoginUser.Id;
+                order.RejectedDate = DateTime.Now;
                 var result = _OrderBLL.Update(order);
                 if (result > 0)
                 {
@@ -121,17 +127,25 @@ namespace DistributorPortal.Controllers
             return View(BindOrderMaster(id));
         }
 
-        [HttpGet]
-        public IActionResult ApproveOrder(int id)
+        [HttpPost]
+        public IActionResult ApproveOrder(List<ProductDetail> model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                var OrderId = model.First().OrderNumber;
+                var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
+                foreach (var item in model)
+                {
+                    var Detail = OrderDetail.First(e => e.ProductId == item.ProductMasterId);
+                    Detail.ApprovedQuantity = item.ProductMaster.ApprovedQuantity;
+                    _orderDetailBLL.Update(Detail);
+                }
                 var Client = new RestClient(_Configuration.PostOrder);
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
+                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
                 IRestResponse response = Client.Execute(request);
                 var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                var detail = _orderDetailBLL.Where(e => e.OrderId == id).ToList();
+                var detail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 foreach (var item in SAPProduct)
                 {
                     var product = detail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
@@ -142,8 +156,10 @@ namespace DistributorPortal.Controllers
                         _orderDetailBLL.Update(product);
                     }
                 }
-                var order = _OrderBLL.GetOrderMasterById(id);
+                var order = _OrderBLL.GetOrderMasterById(OrderId);
                 order.Status = OrderStatus.InProcess;
+                order.ApprovedBy = SessionHelper.LoginUser.Id;
+                order.ApprovedDate = DateTime.Now;
                 var result = _OrderBLL.Update(order);
                 jsonResponse.Status = result > 0;
                 jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
@@ -252,6 +268,7 @@ namespace DistributorPortal.Controllers
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
                 model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray(), Id);
+                model.productDetails.ForEach(e => e.OrderNumber = Id);
                 model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
                 SessionHelper.AddProduct = model.productDetails;
             }
@@ -297,7 +314,24 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                ProductDetail productDetail = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).FirstOrDefault();
+                ProductDetail productDetail = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
+                var license = _DistributorLicenseBLL.FirstOrDefault(e => e.LicenseId == productDetail.LicenseControlId && e.Status == LicenseStatus.Verified);
+                if (license != null)
+                {
+                    if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Your license has been expired. Please renew the license";
+                    }
+                    else
+                    {
+                        jsonResponse.Status = true;                        
+                    }
+                }
+                else
+                {
+
+                }
                 if (productDetail != null && productDetail.LicenseControlId != null && !_DistributorLicenseBLL.GetAllDistributorLicense().Select(x => x.LicenseId.ToString()).Contains(productDetail.LicenseControlId.ToString()))
                 {
                     jsonResponse.Status = false;

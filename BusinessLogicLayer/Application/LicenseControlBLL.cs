@@ -20,7 +20,7 @@ namespace BusinessLogicLayer.Application
         }
         public bool AddLicenseControl(LicenseControl module)
         {
-            module.LicenseName.Trim();
+            module.LicenseName.Trim();            
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
             module.CreatedDate = DateTime.Now;
@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Application
             var item = repository.GetById(module.Id);
             item.LicenseName = module.LicenseName.Trim();
             item.LicenseAcceptanceInDay = module.LicenseAcceptanceInDay;
+            item.IsMandatory = module.IsMandatory;
             item.IsActive = module.IsActive;
             item.IsDeleted = module.IsDeleted;
             repository.Update(item);

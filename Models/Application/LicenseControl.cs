@@ -9,5 +9,6 @@ namespace Models.Application
     {
         public string LicenseName { get; set; }
         public int LicenseAcceptanceInDay { get; set; }
+        public bool IsMandatory { get; set; }
     }
 }

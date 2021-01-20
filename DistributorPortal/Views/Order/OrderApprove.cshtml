@@ -229,8 +229,11 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, Approve it!'
             }).then((result) => {
+                debugger;
                 if (result.value) {
-                    $.ajax({
+                    debugger;
+                    $('#frmApproveOrder').submit();
+                    @*$.ajax({
                         type: "GET",
                         url: '@Url.Action("ApproveOrder", "Order")',
                         data: { 'Id': Id },
@@ -245,7 +248,7 @@
                         complete: function (response) {
                             Ladda.create($("#Approve", this)[0]).stop();
                         }
-                    })
+                    })*@
                 }
             })
         }

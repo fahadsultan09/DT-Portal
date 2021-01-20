@@ -1,199 +1,230 @@
 ﻿@model List<DistributorLicense>
-    <div class="content-wrapper">
-        <section class="content-header">
+@{ 
+    var j = 0;
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Distributor License</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">License</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <form asp-controller="DistributorLicense"
+          asp-action="SaveEdit"
+          id="frmDistributorLicense"
+          data-ajax-begin="Begin"
+          data-ajax-success="OnSuccess"
+          data-ajax-complete="Complete"
+          data-ajax="true"
+          data-ajax-method="POST"
+          enctype="multipart/form-data">
+        <section class="content">
             <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>Distributor License</h1>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Distributor Information</h3>
+                            </div>
+                            <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                                <div class="row">
+                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                        <h6>Name:</h6>
+                                    </div>
+                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                        <span><strong>@SessionHelper.LoginUser.Distributor.DistributorName</strong></span>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                        <h6>City:</h6>
+                                    </div>
+                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                        <span><strong>@SessionHelper.LoginUser.Distributor.City</strong></span>
+                                    </div>
+
+                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                        <h6>Code:</h6>
+                                    </div>
+                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                        <span><strong>@SessionHelper.LoginUser.Distributor.DistributorSAPCode</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">License</li>
-                        </ol>
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">License</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive-sm">
+                                    <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>License</th>
+                                                <th>Type</th>
+                                                <th>Attachment</th>
+                                                <th>Issue Date</th>
+                                                <th>Expiry</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i < Model.Count; i++)
+                                            {
+                                            <tr>
+                                                @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].Type == LicenseType.Challan)
+                                                {
+                                                    <td width="20%">
+                                                        <input type="hidden" asp-for="@Model[j].LicenseId" value="@Model[i].LicenseControl.Id" />
+                                                        <input type="hidden" asp-for="@Model[j].Id" value="@Model[i].Id" />
+                                                        @Model[i].LicenseControl.LicenseName
+                                                    </td>
+                                                    <td width="20%">
+                                                        <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
+                                                            <option value="">--Select option--</option>
+                                                        </select>
+                                                    </td>
+                                                    <td width="25%">
+                                                        <div class="form-group">
+                                                            <div class="custom-file">
+                                                                <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
+                                                                <label class="custom-file-label" for="customFile">Choose file</label>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
+                                                            <input type="text" asp-for="@Model[j].IssueDate" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                                            <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
+                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
+                                                            <input type="text" asp-for="@Model[j].Expiry" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                                            <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
+                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>@Model[i].Status</td>
+                                                    j++;
+                                                }
+                                                else
+                                                {
+                                                    <td width="20%">
+                                                        @Model[i].LicenseControl.LicenseName
+                                                    </td>
+                                                    <td width="20%">
+                                                        @Model[i].Type
+                                                    </td>
+                                                    <td width="25%">
+                                                        <a href="#">View File</a>
+                                                    </td>
+                                                    <td>
+                                                        @Model[i].IssueDate.ToShortDateString()
+                                                    </td>
+                                                    <td>
+                                                        @Model[i].Expiry.ToShortDateString()
+                                                    </td>
+                                                    <td>
+                                                        @Model[i].Status
+                                                    </td>
+                                                }
+                                            </tr>
+                                            }
+                                            <tr>
+                                                <td colspan="6"><button class="btn btn-info fa-pull-right" type="submit">Save</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-        <form asp-controller="DistributorLicense"
-              asp-action="SaveEdit"
-              id="frmDistributorLicense"
-              data-ajax-begin="Begin"
-              data-ajax-success="OnSuccess"
-              data-ajax-complete="Complete"
-              data-ajax="true"
-              data-ajax-method="POST"
-              enctype="multipart/form-data">
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">Distributor Information</h3>
-                                </div>
-                                <div class="card-body" style="padding: 10px 0px 0px 20px;">
-                                    <div class="row">
-                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                            <h6>Name:</h6>
-                                        </div>
-                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                            <span><strong>@SessionHelper.LoginUser.Distributor.DistributorName</strong></span>
-                                        </div>
-                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                            <h6>City:</h6>
-                                        </div>
-                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                            <span><strong>@SessionHelper.LoginUser.Distributor.City</strong></span>
-                                        </div>
+    </form>
+</div>
+<script>
+    $('.custom-file-input').on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
 
-                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                            <h6>Code:</h6>
-                                        </div>
-                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                            <span><strong>@SessionHelper.LoginUser.Distributor.DistributorSAPCode</strong></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">License</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive-sm">
-                                        <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>License</th>
-                                                    <th>Type</th>
-                                                    <th>Attachment</th>
-                                                    <th>Issue Date</th>
-                                                    <th>Expiry</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @for (int i = 0; i < Model.Count; i++)
-                                                {                                                
-                                                    <tr>
-                                                        <td width="20%">
-                                                            <input type="hidden" asp-for="@Model[i].LicenseId" value="@Model[i].LicenseControl.Id" />
-                                                            @Model[i].LicenseControl.LicenseName
-                                                        </td>
-                                                        <td width="20%">
-                                                            <select class="form-control select2" asp-for="@Model[i].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
-                                                                <option value="">--Select option--</option>
-                                                            </select>
-                                                        </td>
-                                                        <td width="30%">
-                                                            <div class="form-group">
-                                                                <div class="custom-file">
-                                                                    <input type="file" asp-for="@Model[i].File" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
-                                                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[i].IssueDate" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
-                                                                <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
-                                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[i].Expiry" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
-                                                                <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
-                                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                                <tr>
-                                                    <td colspan="5"><button class="btn btn-info fa-pull-right" type="submit">Save</button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </form>
-    </div>
-    <script>
-        $('.custom-file-input').on("change", function () {
-            var fileName = $(this).val().split("\\").pop();
-            $(this).next('.custom-file-label').html(fileName);
+    $(document).ready(function () {
+
+        $('.select2').select2();
+
+        //Date range picker
+        $('.date').datetimepicker({
+            format: 'L',
+            todayHighlight: true
         });
 
-        $(document).ready(function () {
-
-            $('.select2').select2();
-
-            //Date range picker
-            $('.date').datetimepicker({
-                format: 'L',
-                todayHighlight: true
-            });
-
-            $('body').on('keyup', '#Amount', function () {
-                $('#AmountInWords').html(inWords($('#Amount').val()));
-            });
-
-            $('body').on('change', '#ddlCompany', function () {
-
-                var ddlCompany = $('#ddlCompany :selected');
-                var text = $(ddlCompany).text();
-                var value = $(ddlCompany).val();
-                var params = {
-                    ComplaintCategoryId: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
-                }
-                $(".ddlDepostitorBank option").remove();
-                var ddlDepostitorBank = $(".ddlDepostitorBank");
-                bindDropDownList(ddlDepostitorBank, "/Bank/DropDownBankList", params, "0");
-                $('.ddlDepostitorBank').change();
-
-                $(".ddlCompanyBank option").remove();
-                var ddlCompanyBank = $(".ddlCompanyBank");
-                bindDropDownList(ddlCompanyBank, "/Bank/DropDownBankList", params, "0");
-                $('.ddlCompanyBank').change();
-            });
-
-            $('body').on('change', '.ddlDepostitorBank', function () {
-                $.ajax({
-                    type: "GET",
-                    url: "/Bank/GetBranchCode",
-                    contentType: "application/json",
-                    dataType: "json",
-                    data: { Id: $(".ddlDepostitorBank").val() },
-                    async: false,
-                    success: function (response) {
-                        $('#DepositorBankCode').val(response[0]);
-                    },
-                });
-            });
-
-            $('body').on('change', '.ddlCompanyBank', function () {
-                $.ajax({
-                    type: "GET",
-                    url: "/Bank/GetBranchCode",
-                    contentType: "application/json",
-                    dataType: "json",
-                    data: { Id: $(".ddlCompanyBank").val() },
-                    async: false,
-                    success: function (response) {
-                        $('#CompanyBankCode').val(response[0]);
-                    },
-                });
-            });
-
+        $('body').on('keyup', '#Amount', function () {
+            $('#AmountInWords').html(inWords($('#Amount').val()));
         });
 
-    </script>
+        $('body').on('change', '#ddlCompany', function () {
+
+            var ddlCompany = $('#ddlCompany :selected');
+            var text = $(ddlCompany).text();
+            var value = $(ddlCompany).val();
+            var params = {
+                ComplaintCategoryId: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
+            }
+            $(".ddlDepostitorBank option").remove();
+            var ddlDepostitorBank = $(".ddlDepostitorBank");
+            bindDropDownList(ddlDepostitorBank, "/Bank/DropDownBankList", params, "0");
+            $('.ddlDepostitorBank').change();
+
+            $(".ddlCompanyBank option").remove();
+            var ddlCompanyBank = $(".ddlCompanyBank");
+            bindDropDownList(ddlCompanyBank, "/Bank/DropDownBankList", params, "0");
+            $('.ddlCompanyBank').change();
+        });
+
+        $('body').on('change', '.ddlDepostitorBank', function () {
+            $.ajax({
+                type: "GET",
+                url: "/Bank/GetBranchCode",
+                contentType: "application/json",
+                dataType: "json",
+                data: { Id: $(".ddlDepostitorBank").val() },
+                async: false,
+                success: function (response) {
+                    $('#DepositorBankCode').val(response[0]);
+                },
+            });
+        });
+
+        $('body').on('change', '.ddlCompanyBank', function () {
+            $.ajax({
+                type: "GET",
+                url: "/Bank/GetBranchCode",
+                contentType: "application/json",
+                dataType: "json",
+                data: { Id: $(".ddlCompanyBank").val() },
+                async: false,
+                success: function (response) {
+                    $('#CompanyBankCode').val(response[0]);
+                },
+            });
+        });
+
+    });
+
+</script>
