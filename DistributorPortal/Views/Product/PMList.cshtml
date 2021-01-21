@@ -5,6 +5,7 @@
     Layout = null;
     List<Company> companyList = new CompanyBLL(unitOfWork).GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
     List<LicenseControl> licenseControlList = new LicenseControlBLL(unitOfWork).GetAllLicenseControl().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
+    var plantLocationList = new PlantLocationBLL(unitOfWork).DropDownPlantLocationList();
 }
 <style type="text/css">
     th, td {
@@ -63,8 +64,15 @@
                                 <td>@item.SAPProductCode</td>
                                 <td>@item.ProductName</td>
                                 <td>@item.PackSize</td>
-                                <td>@(Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId))<input type="text" asp-for="@item.ProductDetail.Id" class="form-control d-none" /></td>
-                                <td><input type="text" asp-for="@item.ProductDetail.PlantLocation" class="form-control" /></td>
+                                <td>
+                                    @(Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId))
+                                    <input type="text" asp-for="@item.ProductDetail.ProductVisibilityId" class="form-control d-none" />
+                                </td>
+                                <td>
+                                    <select asp-for="@item.ProductDetail.PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control">
+                                        <option disabled="disabled" readonly>--Select option--</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <select asp-for="@item.ProductDetail.CompanyId" asp-items="@(new SelectList(companyList, "Id", "CompanyName", item.ProductDetail.CompanyId))" class="form-control">
                                         <option disabled="disabled" readonly>--Select option--</option>
@@ -122,8 +130,8 @@
         var obj = {
             ProductMasterId: $(this).closest("tr").find("td:eq(0)").find(":input").val(),
             Id: $(this).closest("tr").find("td:eq(1)").find(":input").val(),
-            Visibility: $(this).closest("tr").find("td:eq(5)").find(":input").val(),
-            PlantLocation: $(this).closest("tr").find("td:eq(6)").find(":input").val(),
+            //ProductVisibilityId: $(this).closest("tr").find("td:eq(5)").find(":input").val(),
+            PlantLocationId: $(this).closest("tr").find("td:eq(6)").find(":input").val(),
             CompanyId: $(this).closest("tr").find("td:eq(7)").find(":input").val(),
             WTaxRate: $(this).closest("tr").find("td:eq(8)").find(":input").val(),
             Factor: $(this).closest("tr").find("td:eq(9)").find(":input").val(),

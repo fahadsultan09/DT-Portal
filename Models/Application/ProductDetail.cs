@@ -19,7 +19,9 @@ namespace Models.Application
         [ForeignKey("LicenseControlId")]
         public virtual LicenseControl LicenseControl { get; set; }
         public ProductVisibility ProductVisibilityId { get; set; }
-        public string PlantLocation { get; set; }
+        public int PlantLocationId { get; set; }
+        [ForeignKey("PlantLocationId")]
+        public virtual PlantLocation PlantLocation { get; set; }
         public string WTaxRate { get; set; }
         public int Factor { get; set; }
         public string ParentDistributor { get; set; }

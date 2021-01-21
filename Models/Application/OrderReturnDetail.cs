@@ -15,11 +15,14 @@ namespace Models.Application
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public virtual ProductMaster ProductMaster { get; set; }
+        public int PlantLocationId { get; set; }
+        [ForeignKey("PlantLocationId")]
+        public virtual PlantLocation PlantLocation { get; set; }
         public int Quantity { get; set; }
         public double MRP { get; set; }
         public string BatchNo { get; set; }
         public string InvoiceNo { get; set; }
-        public string InvoiceDate { get; set; }
+        public DateTime InvoiceDate { get; set; }
         public DateTime ExpiryDate { get; set; }
         public DateTime ManufactureDate { get; set; }
         public DateTime IntimationDate { get; set; }
@@ -27,8 +30,10 @@ namespace Models.Application
         [NotMapped]
         public string TP { get; set; }
         [NotMapped]
-        public Double Discount { get; set; }
+        public double Discount { get; set; }
         [NotMapped]
         public double NetAmount { get; set; }
+        [NotMapped]
+        public int OrderReturnNumber { get; set; }
     }
 }

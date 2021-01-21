@@ -106,7 +106,8 @@ namespace Utility
     }
     public enum OrderReturnStatus
     {
-        Submitted = 1,
-        Received = 2
+        Draft = 1,
+        Submitted = 2,
+        Received = 3
     }
 }

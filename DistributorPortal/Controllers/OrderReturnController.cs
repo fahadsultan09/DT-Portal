@@ -2,14 +2,26 @@
 
 using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
+using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
+using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Utility;
+using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
@@ -18,11 +30,15 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderReturnBLL _OrderReturnBLL;
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
-        public OrderReturnController(IUnitOfWork unitOfWork)
+        private readonly ProductMasterBLL _ProductMasterBLL;
+        private ICompositeViewEngine _viewEngine;
+        public OrderReturnController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine)
         {
             _unitOfWork = unitOfWork;
             _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
+            _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
+            _viewEngine = viewEngine;
         }
         public IActionResult Index()
         {
@@ -48,7 +64,92 @@ namespace DistributorPortal.Controllers
         public IActionResult Add(int id)
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Add", "Click on Add  Button of ");
+            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
+        }
+        [HttpPost]
+        public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "Start Click on SaveEdit Button of ");
+                ModelState.Remove("Id");
+                if (!ModelState.IsValid)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
+                }
+                else
+                {
+                    if (SessionHelper.AddReturnProduct.Count > 0)
+                    {
+                        if (btnSubmit == SubmitStatus.Draft)
+                        {
+                            model.Status = OrderReturnStatus.Draft;
+                        }
+                        else
+                        {
+                            model.Status = OrderReturnStatus.Submitted;
+                        }
+                        _OrderReturnBLL.Add(model);
+                    }
+                    else
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = OrderContant.OrderItem;
+                    }
+                }
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "End Click on Save Button of ");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
+        }
+        public JsonResult AddProduct(OrderReturnDetail model)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                if (!SessionHelper.AddReturnProduct.Any(e => e.ProductId == model.ProductId))
+                {
+                    ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(model.ProductId);
+                    if (productMaster != null)
+                    {
+                        var list = SessionHelper.AddReturnProduct;
+                        model.ProductMaster = productMaster;
+                        model.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == model.PlantLocationId).FirstOrDefault();
+                        model.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
+                        model.NetAmount = model.Quantity * model.MRP;
+                        list.Add(model);
+                        SessionHelper.AddReturnProduct = list;
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = "Product Added Successfully";
+                        jsonResponse.RedirectURL = string.Empty;
+                        jsonResponse.HtmlString = RenderRazorViewToString("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber).ToList());
+                    }
+                }
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Product Already Exists";
+                    jsonResponse.RedirectURL = string.Empty;
+                    jsonResponse.HtmlString = RenderRazorViewToString("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber).ToList());
+                }
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
         }
         [HttpPost]
         public IActionResult Search(OrderReturnViewModel model, string Search)
@@ -84,6 +185,17 @@ namespace DistributorPortal.Controllers
                 model.Distributor = SessionHelper.LoginUser.Distributor;
             }
             return model;
+        }
+        public async Task<string> RenderRazorViewToString(string viewName, object model)
+        {
+            ViewData.Model = model;
+            using (var sw = new StringWriter())
+            {
+                var viewResult = _viewEngine.FindView(ControllerContext, viewName, false);
+                var viewContext = new ViewContext(ControllerContext, viewResult.View, ViewData, TempData, sw, new HtmlHelperOptions());
+                await viewResult.View.RenderAsync(viewContext);
+                return sw.GetStringBuilder().ToString();
+            }
         }
     }
 }

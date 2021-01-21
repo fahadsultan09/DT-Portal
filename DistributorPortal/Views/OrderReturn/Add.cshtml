@@ -2,8 +2,9 @@
 @inject IUnitOfWork iUnitOfWork
 @{
     var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
-    var CompanyBankList = new CompanyBLL(iUnitOfWork).DropDownCompanyList();
-    ViewData["Title"] = "Return Claim";
+    var plantLocationList = new PlantLocationBLL(iUnitOfWork).DropDownPlantLocationList();
+    var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
+    ViewData["Title"] = "Return Order";
 }
 
 <style type="text/css">
@@ -16,12 +17,15 @@
         -webkit-user-select: none;
         width: 100%;
     }
+
     select2 select2-container {
         width: 100%;
     }
+
     .card-header {
         padding: 5px 15px 0px 15px
     }
+
     .swal-modal .swal-text {
         text-align: center;
     }
@@ -36,12 +40,11 @@
                     <form asp-controller="OrderReturn"
                           asp-action="SaveEdit"
                           id="frmOrderReturnMaster"
-                          data-ajax-begin="LaddaBegin"
+                          data-ajax-begin=""
                           data-ajax-success="OnSuccess"
                           data-ajax-complete="Complete"
                           data-ajax="true"
-                          data-ajax-method="POST"
-                          enctype="multipart/form-data">
+                          data-ajax-method="POST">
                         <input asp-for="Id" type="hidden" />
                         <div class="row">
                             <div class="col-12">
@@ -75,17 +78,19 @@
                                 </div>
                                 <div class="card card-primary">
                                     <div class="card-header">
-                                        <h3 class="card-title">Provide Details For Return Claim</h3>
+                                        <h3 class="card-title">Return Order Details</h3>
                                     </div>
                                     <div class="card-body" style="padding: 10px 15px 0px 15px;">
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Transporter:</h6>
                                                 <input type="text" asp-for="Transporter" placeholder="Enter Transporter" id="Transporter" class="form-control" />
+                                                <span asp-validation-for="Transporter" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Number:</h6>
                                                 <input type="text" asp-for="TRNo" placeholder="Enter TR Number" id="TRNo" class="form-control" />
+                                                <span asp-validation-for="TRNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Date:</h6>
@@ -95,10 +100,12 @@
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span asp-validation-for="TRDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note No:</h6>
                                                 <input type="text" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
+                                                <span asp-validation-for="DebitNoteNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note Date:</h6>
@@ -108,11 +115,14 @@
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span asp-validation-for="DebitNoteDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Return Reason:</h6>
-                                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<LicenseStatus>()" class="form-control">
+                                                <select asp-for="OrderReturnReasonId" asp-items="@(new SelectList(returnReasonList, "Value", "Text"))" class="form-control select2" id="ddlReturnReson">
+                                                    <option value="">--Select option--</option>
                                                 </select>
+                                                <span asp-validation-for="OrderReturnReasonId" class="text-danger"></span>
                                             </div>
                                         </div><br />
                                         <div class="row">
@@ -145,22 +155,22 @@
                                           id="frmOrderDetails"
                                           data-ajax="true"
                                           data-ajax-success="GetResponse"
-                                          data-ajax-complete="UpdateOrderValue"
+                                          data-ajax-complete=""
                                           data-ajax-method="POST">
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Product Name:</h6>
                                                 <select name="ProductId" asp-items="@(new SelectList(product, "Value", "Text"))" class="form-control select2" id="ddlProduct">
-                                                    <option value="">--Select Product--</option>
+                                                    <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Company:</h6>
-                                                <select name="CompanyBankName" asp-items="@(new SelectList(CompanyBankList, "Value", "Text"))" class="form-control select2" id="ddlCompanyBank">
+                                                <h6>Location:</h6>
+                                                <select name="PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control select2" id="ddlPlantLocation">
                                                     <option value="">--Select option--</option>
                                                 </select>
-                                                <span id="ErrorCompanyBankName" class="text-danger"></span>
+                                                <span id="ErrorPlantLocationName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:</h6>
@@ -192,6 +202,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice No:</h6>
                                                 <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
+                                                <span id="ErrorInvoiceNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice Date:</h6>
@@ -205,7 +216,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Expiry Date:</h6>
                                                 <div class="input-group date" id="ExpiryDate" data-target-input="nearest">
-                                                    <input type="text" name="IntimationDate" value="" data-target="#ExpiryDate" class="form-control datetimepicker-input" />
+                                                    <input type="text" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datetimepicker-input" />
                                                     <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -223,17 +234,18 @@
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                                 <h6>Remarks:</h6>
                                                 <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
+                                                <span id="ErrorRemarks" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                                                 <h6></h6>
-                                                <button type="submit" id="AddProducts" onclick="return CheckQuantity();" class="ladda-button btn btn-primary float-right" style="margin-top: 20px;">
+                                                <button type="submit" id="AddProducts" onclick="return AddToGrid();" class="ladda-button btn btn-primary float-right" style="margin-top: 20px;">
                                                     Add
                                                 </button>
                                             </div>
                                         </div>
                                     </form><br />
-                                    <div class="scrollmenu" id="addToGrid">
-                                         <partial name="ProductGrid" model="Model.OrderReturnDetail" />
+                                    <div class="scrollmenu" id="ProductGrid">
+                                        @*<partial name="ProductGrid" model="Model.OrderReturnDetail" />*@
                                     </div>
                                 </div>
                             </div>
@@ -256,6 +268,98 @@
             todayHighlight: true,
             maxDate: moment(),
         });
+
+        $('.datetimepicker-input').keypress(function (e) {
+            e.preventDefault();
+        });
+
+
     });
+
+    function LaddaBegin() {
+        Ladda.create($("#btnOrderNow", this)[0]).start();
+        Ladda.create($("#btnDraft", this)[0]).start();
+    }
+
+    function AddToGrid() {
+
+        $(".text-danger").empty();
+
+        var ddlProduct = $("#ddlProduct option:selected").text();
+        var ddlPlantLocation = $("#ddlPlantLocation option:selected").text();
+        var Quantity = $("#Quantity").val().trim();
+        var MRP = $("#MRP").val().trim();
+        var BatchNo = $("#BatchNo").val().trim();
+        var InvoiceNo = $("#InvoiceNo").val().trim();
+        var Remarks = $("#Remarks").val().trim();
+
+        if (ddlProduct === '--Select option--') {
+            $("#ErrorProductName").text('Product Name is required');
+            return false;
+        }
+        if (ddlPlantLocation === '--Select option--') {
+            $("#ErrorPlantLocationName").text('Plant Location is required');
+            return false;
+        }
+        if (Quantity === '') {
+            $("#ErrorQuantity").text('Quantity is required');
+            return false;
+        }
+        if (MRP === '') {
+            $("#ErrorMRP").text('MRP is required');
+            return false;
+        }
+        if (BatchNo === '') {
+            $("#ErrorBatchNo").text('Batch No is required');
+            return false;
+        }
+        if (InvoiceNo === '') {
+            $("#ErrorInvoiceNo").text('Invoice No is required');
+            return false;
+        }
+        if (Remarks === '') {
+            $("#ErrorRemarks").text('Remarks is required');
+            return false;
+        }
+    }
+
+    function SubmitForm() {
+        debugger;
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Order Place!'
+        }).then((result) => {
+            if (result.value == true) {
+                $('#frmOrderMaster').submit();
+            }
+        })
+        return false;
+    }
+
+    function GetResponse(data) {
+
+        if (data.data.HtmlString != null) {
+            $("#ProductGrid").html(data.data.HtmlString.Result);
+        }
+        if (data.data.Status) {
+            Toast.fire({
+                icon: 'success',
+                title: data.data.Message
+            });
+
+            $('#TotalValue').text(total);
+        }
+        else {
+            Toast.fire({
+                icon: 'error',
+                title: data.data.Message
+            });
+        }
+    }
+
 </script>
 

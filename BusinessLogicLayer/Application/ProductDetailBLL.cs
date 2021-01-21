@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateProductDetail(ProductDetail module)
         {
             var item = _unitOfWork.GenericRepository<ProductDetail>().GetById(module.Id);
-            item.PlantLocation = module.PlantLocation;
+            item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.WTaxRate = module.WTaxRate;
             item.Factor = module.Factor;
