@@ -11,19 +11,19 @@
         <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
             <thead>
                 <tr>
-                    <th width="6%">Code</th>
-                    <th width="20%">Product Name</th>
-                    <th width="9%">Pack Size</th>
-                    <th width="5%">Quantity</th>
-                    <th width="8%">Approved Quantity</th>
-                    <th width="10%">Carton Size</th>
-                    <th width="5%">Rate</th>
-                    <th width="5%">Discount</th>
-                    <th width="15%">Quantity in Packs</th>
-                    <th width="17%">Quantity in Cartons</th>
-                    <th width="10%">Total</th>
-                    <th width="10%">Supplies</th>
-                    <th width="10%">Company</th>
+                    <th>Code</th>
+                    <th>Product Name</th>
+                    <th>Pack Size</th>
+                    <th>Quantity</th>
+                    <th>Approved Qty</th>
+                    <th>Carton Size</th>
+                    <th>Rate</th>
+                    <th>Discount</th>
+                    <th>Quantity in Packs</th>
+                    <th>Quantity in Cartons</th>
+                    <th>Total</th>
+                    <th>Supplies</th>
+                    <th>Company</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,7 +39,17 @@
                         <td>@Model[i].ProductMaster.ProductName @Model[i].ProductMaster.ProductDescription</td>
                         <td>@Model[i].ProductMaster.PackSize</td>
                         <td>@Model[i].ProductMaster.Quantity</td>
-                        <td><input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" /></td>
+                        <td>
+                            @if (ViewBag.View == true)
+                            {
+                                @Model[i].ProductMaster.ApprovedQuantity
+                            }
+                            else
+                            {
+                                <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity numeric" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
+
+                            }
+                        </td>
                         <td>Carton Size</td>
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>
@@ -54,7 +64,7 @@
         </table>
     </div>
 </form>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#example2").DataTable({
@@ -63,7 +73,37 @@
             "autoWidth": false,
             "order": [],
             "scrollX": true,
-            "sScrollXInner": "130%",
+            "sScrollXInner": "200%",
+        });
+        $('.numeric').mask('000,000,000,000,000.00', { reverse: true });
+        
+        $('.ApproveQuantity').bind('keyup mouseup',function (data) {
+            debugger;
+            var intmaxvalue = @Int32.MaxValue;
+            var Quantity = data.currentTarget.value;
+            var Product = data.currentTarget.getAttribute("_ProductId");
+            var Order = data.currentTarget.getAttribute("_OrderId");
+            if (Quantity > intmaxvalue) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "Quantity cannot be greater than " + intmaxvalue
+                });
+            }
+            else {
+                    $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ApprovedOrderValue", "Order")',
+                    data: { 'Quantity': Quantity, 'Product': Product, 'Order': Order },
+                    cache: false,
+                    success: function (response) {
+                        debugger;
+                        $("#UpdateOrderValueId").html(response);
+                    },
+                    complete: function (response) {
+
+                    }
+                })
+            }
         });
     });
 </script>

@@ -2,9 +2,8 @@
 @inject IUnitOfWork iUnitOfWork
 @{
     var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
-    ViewData["Title"] = "AddDetail";
+    ViewData["Title"] = "Approve Order";
 }
-
 
 <style type="text/css">
     .select2-container .select2-selection--single {
@@ -93,17 +92,17 @@
                                                 <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
                                             <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-primary float-right" id="Approve">
+                                                <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-success float-right" id="Approve">
                                                     Approve
                                                 </button>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="OnHold(@Model.Id);" class="btn btn-success float-right">
+                                                <button onclick="OnHold(@Model.Id);" class="btn btn-warning float-right">
                                                     On Hold
                                                 </button>
                                             </div>
                                             <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Reject(@Model.Id);" class="btn btn-danger float-right">
+                                                <button onclick="Reject(@Model.Id);" class="btn btn-primary float-right">
                                                     Reject
                                                 </button>
                                             </div>
@@ -122,7 +121,7 @@
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                     </div>
                                 </div>
-                                <div class="card-body p-0">
+                                <div class="card-body p-0" id="UpdateOrderValueId">
                                     <partial name="OrderValue" model="Model.OrderValueViewModel" />
                                 </div>
                             </div>

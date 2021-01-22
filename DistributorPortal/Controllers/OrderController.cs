@@ -62,8 +62,7 @@ namespace DistributorPortal.Controllers
         }
         [HttpGet]
         public IActionResult Add(int id)
-        {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Add", "Click on Add  Button of ");
+        {            
             SessionHelper.AddProduct = new List<ProductDetail>();
             return View("AddDetail", BindOrderMaster(id));
         }
@@ -124,6 +123,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult OrderView(int id)
         {
+            ViewBag.View = true;
             return View(BindOrderMaster(id));
         }
 
@@ -283,6 +283,15 @@ namespace DistributorPortal.Controllers
         }
         public ActionResult UpdateOrderValue()
         {
+            var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
+            return PartialView("OrderValue", OrderVal);
+        }
+
+        public ActionResult ApprovedOrderValue(int Product, int Quantity, int Order)
+        {            
+            var list = SessionHelper.AddProduct;
+            list.First(e => e.ProductMasterId == Product).ProductMaster.Quantity = Quantity;
+            SessionHelper.AddProduct = list;
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
         }

@@ -4,16 +4,16 @@
     <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
         <thead>
             <tr>
-                <th width="8%">Code</th>
+                <th width="8%" >Code</th>
                 <th width="15%">Product Name</th>
                 <th width="12%">Pack Size</th>
-                <th width="5%">Quantity</th>
+                <th width="5%" >Quantity</th>
                 <th width="12%">Carton Size</th>
-                <th width="5%">Rate</th>
-                <th width="5%">Discount</th>
+                <th width="5%" >Rate</th>
+                <th width="5%" >Discount</th>
                 <th width="20%">Quantity in Packs</th>
                 <th width="20%">Quantity in Cartons</th>
-                <th width="5%">Total</th>
+                <th width="5%" >Total</th>
                 <th width="10%">Supplies</th>
                 <th width="10%">Company</th>
                 <th>Action</th>
@@ -23,19 +23,19 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.ProductMaster.SAPProductCode</td>
-                    <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
-                    <td>@item.ProductMaster.PackSize</td>
-                    <td>@item.ProductMaster.Quantity</td>
-                    <td>Carton Size</td>
-                    <td>@item.ProductMaster.Rate</td>
-                    <td>@item.ProductMaster.Discount %</td>
-                    <td>Quantity in Packs</td>
-                    <td>Quantity in Cartons</td>
-                    <td>@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
-                    <td>@item.WTaxRate %</td>
-                    <td>@item.Company.CompanyName</td>
-                    <td>
+                    <td width="8%" >@item.ProductMaster.SAPProductCode</td>
+                    <td width="15%">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
+                    <td width="12%">@item.ProductMaster.PackSize</td>
+                    <td width="5%" >@item.ProductMaster.Quantity</td>
+                    <td width="12%">Carton Size</td>
+                    <td width="5%" >@item.ProductMaster.Rate</td>
+                    <td width="5%" >@item.ProductMaster.Discount %</td>
+                    <td width="20%">Quantity in Packs</td>
+                    <td width="20%">Quantity in Cartons</td>
+                    <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
+                    <td width="10%">@item.WTaxRate %</td>
+                    <td width="10%">@item.Company.CompanyName</td>
+                    <td >
                         <a asp-action="Delete"
                            asp-controller="Order"
                            asp-route-Id="@item.ProductMaster.Id"
@@ -58,8 +58,9 @@
             "autoWidth": false,
             "order": [],
             "scrollX": true,
-            "sScrollXInner": "130%",
-        });
+            "scrollY": true,
+            "sScrollXInner": "130%"
+        });        
     });
 </script>
 
