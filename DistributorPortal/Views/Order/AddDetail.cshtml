@@ -164,9 +164,10 @@
                                                 <h6>Product</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
-                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single" name="Product" id="ddlProduct">
+                                                <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single form-control" name="Product" id="ddlProduct">
                                                     <option value="">--Select Product--</option>
                                                 </select>
+                                                <br />
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">

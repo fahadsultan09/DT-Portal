@@ -34,6 +34,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderValueBLL _OrderValueBLL;
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly DistributorLicenseBLL _DistributorLicenseBLL;
+        private readonly LicenseControlBLL _licenseControlBLL;
         private readonly IConfiguration _IConfiguration;
         private ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
@@ -46,6 +47,7 @@ namespace DistributorPortal.Controllers
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _OrderValueBLL = new OrderValueBLL(_unitOfWork);
             _DistributorLicenseBLL = new DistributorLicenseBLL(_unitOfWork);
+            _licenseControlBLL = new LicenseControlBLL(_unitOfWork);
             _IConfiguration = configuration;
             _viewEngine = viewEngine;
             _Configuration = _configuration;
@@ -324,34 +326,37 @@ namespace DistributorPortal.Controllers
             try
             {
                 ProductDetail productDetail = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
-                var license = _DistributorLicenseBLL.FirstOrDefault(e => e.LicenseId == productDetail.LicenseControlId && e.Status == LicenseStatus.Verified);
-                if (license != null)
+                var licenseControl = _licenseControlBLL.Where(e => e.IsMandatory == true && e.IsActive == true && e.IsDeleted == false).ToList();
+                if (productDetail.LicenseControlId != null)
                 {
-                    if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+                    licenseControl.Add(productDetail.LicenseControl);
+                }                
+                var distributorLicense = _DistributorLicenseBLL.Where(e => e.Status == LicenseStatus.Verified);
+                jsonResponse.Status = true;
+                foreach (var item in licenseControl)
+                {
+                    var license = distributorLicense.FirstOrDefault(e => e.LicenseId == item.Id);
+                    if (license != null)
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Your license has been expired. Please renew the license";
+                        if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Your "+ license.LicenseControl.LicenseName + " license has been expired. Please renew the license";
+                            return Json(new { data = jsonResponse });
+                        }
+                        else
+                        {
+                            jsonResponse.Status = true;
+                        }
                     }
                     else
                     {
-                        jsonResponse.Status = true;
-                    }
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = item.LicenseName + " license required for selected product";
+                        return Json(new { data = jsonResponse });
+                    }    
                 }
-                else
-                {
-
-                }
-                if (productDetail != null && productDetail.LicenseControlId != null && !_DistributorLicenseBLL.GetAllDistributorLicense().Where(e => e.Status == LicenseStatus.Verified).Select(x => x.LicenseId.ToString()).Contains(productDetail.LicenseControlId.ToString()))
-                {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = "Narcotics license required for selected product.";
-                    return Json(new { data = jsonResponse });
-                }
-                else
-                {
-                    jsonResponse.Status = true;
-                    return Json(new { data = jsonResponse });
-                }
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
@@ -361,6 +366,11 @@ namespace DistributorPortal.Controllers
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(new { data = jsonResponse });
             }
+        }
+
+        public IActionResult Search(OrderSearch orderSearch)
+        {
+            return Json("");
         }
     }
 }

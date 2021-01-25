@@ -6,6 +6,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Application
 {
@@ -76,6 +77,11 @@ namespace BusinessLogicLayer.Application
             });
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
+
+        public List<LicenseControl> Where(Expression<Func<LicenseControl, bool>> predicate)
+        {
+            return repository.Where(predicate);
         }
     }
 }
