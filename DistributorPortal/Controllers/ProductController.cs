@@ -3,6 +3,7 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
+using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -17,7 +18,7 @@ using Utility.HelperClasses;
 
 namespace ProductPortal.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ProductMasterBLL _ProductMasterBLL;

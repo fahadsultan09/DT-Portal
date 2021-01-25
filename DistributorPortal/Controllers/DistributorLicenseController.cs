@@ -20,7 +20,7 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class DistributorLicenseController : Controller
+    public class DistributorLicenseController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DistributorLicenseBLL _DistributorLicenseBLL;

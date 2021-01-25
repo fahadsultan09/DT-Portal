@@ -23,7 +23,7 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class PaymentController : Controller
+    public class PaymentController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderDetailBLL _OrderDetailBLL;

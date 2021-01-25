@@ -21,7 +21,7 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class ComplaintController : Controller
+    public class ComplaintController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ComplaintBLL _ComplaintBLL;

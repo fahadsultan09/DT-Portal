@@ -1,5 +1,4 @@
 ﻿
-
 using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
@@ -25,7 +24,7 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class OrderReturnController : Controller
+    public class OrderReturnController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderReturnBLL _OrderReturnBLL;

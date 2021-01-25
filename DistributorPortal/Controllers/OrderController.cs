@@ -26,7 +26,7 @@ using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class OrderController : Controller
+    public class OrderController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;

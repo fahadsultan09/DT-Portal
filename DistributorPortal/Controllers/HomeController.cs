@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
@@ -292,6 +293,7 @@ namespace DistributorPortal.Controllers
             return PartialView("AccountRecentPaymentStatus", model);
         }
         #endregion
+
         #region Distributor
         public IActionResult DistributorDashboard()
         {
@@ -461,5 +463,29 @@ namespace DistributorPortal.Controllers
             }
 
         }
+
+        #region Handle error
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View("~/Views/Shared/Error.cshtml", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult InternalServerError()
+        {
+            return View("~/Views/Shared/InternalServerError.cshtml", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult AccessDenied()
+        {
+            return View("~/Views/Shared/AccessDenied.cshtml", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [Route("/Home/HandleError/{code:int}")]
+        public IActionResult HandleError(int code)
+        {
+            ViewData["ErrorMessage"] = $"Error occurred. The ErrorCode is: {code}";
+            return View("~/Views/Shared/Error.cshtml");
+        }
+        #endregion
     }
 }

@@ -35,6 +35,16 @@ namespace DistributorPortal
                 option.Cookie.IsEssential = true;
             });
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.LoginPath = "/Login/Index";
+                options.AccessDeniedPath = "/Login/Index";
+                options.Cookie.Name = "DistributorPortalSessionExpire";
+            });
+
             services.AddDbContextPool<DistributorPortalDbContext>(option => option.UseLazyLoadingProxies().UseMySQL(Configuration.GetConnectionString("DistributorPortalDbContext")));
             services.AddMvc(option => option.EnableEndpointRouting = false).AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
 
@@ -58,9 +68,11 @@ namespace DistributorPortal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Home/Error");
             }
             else
             {
@@ -68,6 +80,32 @@ namespace DistributorPortal
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseStatusCodePages();
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/Home/Error";
+                    await next();
+                }
+                else if (context.Response.StatusCode == 500)
+                {
+                    context.Request.Path = "/Home/InternalServerError";
+                    await next();
+                }
+                else if (context.Response.StatusCode == 403)
+                {
+                    context.Request.Path = "/Home/AccessDenied";
+                    await next();
+                }
+                else if (context.Response.StatusCode == 302 || context.Response.StatusCode == 304)
+                {
+                    context.Request.Path = "/Login/Index";
+                    await next();
+                }
+            });
+
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
