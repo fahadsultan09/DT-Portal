@@ -1,5 +1,5 @@
 ﻿@model OrderSearch
-
+    
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -10,8 +10,8 @@
                     </div>
                     <form data-ajax-update="#divform"
                           data-ajax="true"
-                          data-ajax-method="POST"
-                          asp-controller="Payment"
+                          data-ajax-method="GET"
+                          asp-controller="Order"
                           asp-action="Search"
                           id="frmPayment">
                         <div class="card-body">
@@ -19,8 +19,8 @@
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">From Date</label>
-                                        <div class="input-group date" id="FromDate" data-target-input="nearest">
-                                            <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control" />
+                                        <div class="input-group date" data-target-input="nearest">
+                                            <input type="text" readonly="readonly" asp-for="FromDate" id="FromDate" class="form-control datepicker" />
                                             <div class="input-group-append" data-target="#FromDate" data-toggle="datetimepicker">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
@@ -30,8 +30,8 @@
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">To Date</label>
-                                        <div class="input-group date" id="ToDate" data-target-input="nearest">
-                                            <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control" />
+                                        <div class="input-group date" data-target-input="nearest">
+                                            <input type="text" name="ToDate" readonly="readonly" id="ToDate" class="form-control datepicker" />
                                             <div class="input-group-append" data-target="#ToDate" data-toggle="datetimepicker">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>

@@ -67,7 +67,7 @@ namespace DistributorPortal.Controllers
             return View("Add", BindOrderReturnMaster(id));
         }
         [HttpPost]
-        public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit)
+        public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit) 
         {
             JsonResponse jsonResponse = new JsonResponse();
             try

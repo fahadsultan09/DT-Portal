@@ -17,6 +17,10 @@
     {
       "library": "Ladda@1.0.6",
       "destination": "wwwroot/lib/Ladda/"
+    },
+    {
+      "library": "bootstrap-datepicker@1.9.0",
+      "destination": "wwwroot/lib/"
     }
   ]
 }
