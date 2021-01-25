@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DistributorPortal</title>
     <partial name="Head" />
+
+    <style type="text/css">
+
+        div.scrollmenu {
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        .select2-container .select2-selection--single {
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            height: 50px;
+            user-select: none;
+            -webkit-user-select: none;
+            width: 100%;
+        }
+
+        select2 select2-container {
+            width: 100%;
+        }
+        .text-sm .select2-container--default .select2-selection--single, select.form-control-sm ~ .select2-container--default .select2-selection--single {
+            height: calc(2.2rem + 2px);
+        }
+
+    </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed text-sm">
     <div class="wrapper">

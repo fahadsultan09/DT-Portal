@@ -25,6 +25,7 @@ namespace BusinessLogicLayer.Application
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly OrderValueBLL _orderValueBLL;
         private readonly ProductDetailBLL ProductDetailBLL;
+        private readonly UserBLL _UserBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -33,6 +34,7 @@ namespace BusinessLogicLayer.Application
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _orderValueBLL = new OrderValueBLL(_unitOfWork);
             ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
+            _UserBLL = new UserBLL(_unitOfWork);
         }
         public int Add(OrderMaster module)
         {
@@ -340,6 +342,62 @@ namespace BusinessLogicLayer.Application
                 });
             }
             return model;
+        }
+        public List<OrderMaster> Search(OrderSearch model)
+        {
+            var LamdaId = (Expression<Func<OrderMaster, bool>>)(x => x.IsDeleted == false);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.OrderNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.Id == model.OrderNo);
+            }
+            if (model.Status != null)
+            {
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
+            }
+            if (model.FromDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
+            }
+            if (model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            if (model.FromDate != null && model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date || e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         join u in _UserBLL.GetAllUser().ToList()
+                              on x.CreatedBy equals u.Id
+                         join ua in _UserBLL.GetAllUser().ToList()
+                              on x.ApprovedBy equals ua.Id into approvedGroup
+                         from a1 in approvedGroup.DefaultIfEmpty()
+                         join ur in _UserBLL.GetAllUser().ToList()
+                              on x.RejectedBy equals ur.Id into rejectedGroup
+                         from a2 in rejectedGroup.DefaultIfEmpty()
+                         select new OrderMaster
+                         {
+                             Id = x.Id,
+                             Distributor = x.Distributor,
+                             Status = x.Status,
+                             DistributorId = x.DistributorId,
+                             CreatedBy = x.CreatedBy,
+                             CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
+                             CreatedDate = x.CreatedDate,
+                             ApprovedBy = x.ApprovedBy,
+                             ApprovedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
+                             ApprovedDate = x.ApprovedDate,
+                             RejectedBy = x.RejectedBy,
+                             RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
+                             RejectedDate = x.RejectedDate
+                         }).ToList();
+
+            return query.OrderByDescending(x => x.Id).ToList();
         }
     }
 }

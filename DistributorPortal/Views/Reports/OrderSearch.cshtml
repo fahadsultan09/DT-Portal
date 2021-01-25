@@ -8,19 +8,21 @@
                     <div class="card-header">
                         <h2 class="card-title">Search</h2>
                     </div>
-                    <form data-ajax-update="#divform"
-                          data-ajax="true"
-                          data-ajax-method="POST"
-                          asp-controller="Payment"
+                    <form asp-controller="Reports"
                           asp-action="Search"
-                          id="frmPayment">
+                          id="frmOrderSearch"
+                          data-ajax-begin="Begin"
+                          data-ajax-complete="Complete"
+                          data-ajax-update="#divform"
+                          data-ajax="true"
+                          data-ajax-method="POST">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">From Date</label>
                                         <div class="input-group date" id="FromDate" data-target-input="nearest">
-                                            <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control" />
+                                            <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control datetimepicker-input" />
                                             <div class="input-group-append" data-target="#FromDate" data-toggle="datetimepicker">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
@@ -31,7 +33,7 @@
                                     <div class="form-group">
                                         <label class="control-label">To Date</label>
                                         <div class="input-group date" id="ToDate" data-target-input="nearest">
-                                            <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control" />
+                                            <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control datetimepicker-input" />
                                             <div class="input-group-append" data-target="#ToDate" data-toggle="datetimepicker">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
@@ -47,8 +49,13 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Order No</label>
+                                        <input type="text" asp-for="OrderNo" class="form-control" />
+                                    </div>
+                                </div>
                                 @if (!SessionHelper.LoginUser.IsDistributor)
                                 {
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
@@ -60,7 +67,12 @@
                                         </div>
                                     </div>
                                 }
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                else
+                                {
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                    </div>
+                                }
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                     <div class="form-group">
                                         <label class="col-form-label font-weight-bold" for="Search"></label>
                                         <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
@@ -68,10 +80,10 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                     <div class="form-group">
                                         <label class="col-form-label font-weight-bold" for="Clear"></label>
-                                        <button type="submit" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
+                                        <button type="button" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
                                             Clear
                                         </button>
                                     </div>
@@ -84,3 +96,19 @@
         </div>
     </div>
 </section>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.select2').select2();
+    });
+
+    $('#btnClear').on('click', function () {
+
+        $('.form-control').val('');
+        $('.select2').val('');
+        $('.select2').trigger('change');
+    });
+
+</script>

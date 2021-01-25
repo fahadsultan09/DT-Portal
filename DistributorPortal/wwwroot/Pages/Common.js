@@ -4,7 +4,13 @@ var a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eigh
 var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
 
 $(document).ready(function () {
+
     $('#Spinner').hide();
+
+    $('.datetimepicker-input').keypress(function (e) {
+        e.preventDefault();
+    });
+
 });
 
 $(function () {

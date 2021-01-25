@@ -39,5 +39,11 @@ namespace Models.Application
         public OrderValueViewModel OrderValueViewModel { get; set; }
         [NotMapped]
         public List<ProductDetail> productDetails { get; set; }
+        [NotMapped]
+        public string CreatedName { get; set; }
+        [NotMapped]
+        public string ApprovedName { get; set; }
+        [NotMapped]
+        public string RejectedName { get; set; }
     }
 }

@@ -285,10 +285,6 @@
             maxDate: moment(),
         });
 
-        $('.datetimepicker-input').keypress(function (e) {
-            e.preventDefault();
-        });
-
         $('body').on('keyup', '#Amount', function () {
             $('#AmountInWords').html(inWords($('#Amount').val()));
         });

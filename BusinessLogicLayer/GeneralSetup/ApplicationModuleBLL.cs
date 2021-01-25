@@ -34,6 +34,7 @@ namespace BusinessLogicLayer.GeneralSetup
             var item = repository.GetById(module.Id);
             item.ModuleName = module.ModuleName.Trim();
             item.ModuleIcon = module.ModuleIcon.Trim();
+            item.Sort = module.Sort;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

@@ -1,17 +1,10 @@
 ﻿@model List<OrderMaster>
 @inject IUnitOfWork iUnitOfWork
-@{ 
+@{
     ViewBag.Title = "Order | Distributor Portal";
     var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
     var search = new OrderSearch() { DistributorList = distributor };
 }
-
-<style type="text/css">
-    div.scrollmenu {
-        overflow: auto;
-        white-space: nowrap;
-    }
-</style>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
