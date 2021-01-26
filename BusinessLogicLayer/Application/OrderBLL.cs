@@ -1,10 +1,13 @@
-﻿using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -398,6 +401,31 @@ namespace BusinessLogicLayer.Application
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
+        }
+
+        public DistributorBalance GetBalance(string DistributorCode, Configuration configuration)
+        {
+            try
+            {
+
+                var Client = new RestClient(configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + DistributorCode);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
+                if (resp == null)
+                {
+                    return new DistributorBalance();
+                }
+                else
+                {
+                    return resp;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new DistributorBalance();
+            }
         }
     }
 }

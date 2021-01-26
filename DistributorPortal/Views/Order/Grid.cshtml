@@ -19,7 +19,6 @@
                     <th>Carton Size</th>
                     <th>Rate</th>
                     <th>Discount</th>
-                    <th>Quantity in Packs</th>
                     <th>Quantity in Cartons</th>
                     <th>Total</th>
                     <th>Supplies</th>
@@ -38,23 +37,21 @@
                         </td>
                         <td>@Model[i].ProductMaster.ProductName @Model[i].ProductMaster.ProductDescription</td>
                         <td>@Model[i].ProductMaster.PackSize</td>
-                        <td>@Model[i].ProductMaster.Quantity</td>
+                        <td>@Model[i].ProductMaster.Quantity.ToString("#,##0")</td>
                         <td>
                             @if (ViewBag.View == true)
                             {
-                                @Model[i].ProductMaster.ApprovedQuantity
+                                @Model[i].ProductMaster.ApprovedQuantity.ToString("#,##0")
                             }
                             else
                             {
                                 <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity numeric" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
-
                             }
                         </td>
-                        <td>Carton Size</td>
+                        <td><span id="CurtonSize">@Model[i].ProductMaster.CartonSize</span></td>
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>
-                        <td>Quantity in Packs</td>
-                        <td>Quantity in Cartons</td>
+                        <td><span id="CurtonQty">@(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize)</span></td>
                         <td>@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</td>
                         <td>@Model[i].WTaxRate %</td>
                         <td>@Model[i].Company.CompanyName</td>
@@ -75,8 +72,8 @@
             "scrollX": true,
             "sScrollXInner": "200%",
         });
-        $('.numeric').mask('000,000,000,000,000', { reverse: true });
-        
+        //$('.numeric').mask('000,000,000,000');
+
         $('.ApproveQuantity').bind('keyup mouseup',function (data) {
             debugger;
             var intmaxvalue = @Int32.MaxValue;
@@ -90,6 +87,14 @@
                 });
             }
             else {
+                var size = parseInt($(this).parent('td').parent('tr').find('#CurtonSize').text());
+                if (Quantity != "" && Quantity != undefined) {
+                    $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = (parseInt(Quantity) / size).toString();
+
+                }
+                else {
+                    $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
+                }
                     $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "Order")',

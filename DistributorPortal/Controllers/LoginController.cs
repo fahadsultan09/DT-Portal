@@ -30,6 +30,7 @@ namespace DistributorPortal.Controllers
         private readonly UserBLL _UserBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _configuration;
+        private readonly OrderBLL orderBLL;
 
         public LoginController(IUnitOfWork unitOfWork, IHttpContextAccessor HhttpContextAccessor, IConfiguration IConfiguration, Configuration configuration)
         {
@@ -40,6 +41,7 @@ namespace DistributorPortal.Controllers
             _UserBLL = new UserBLL(_unitOfWork);
             _IConfiguration = IConfiguration;
             _configuration = configuration;
+            orderBLL = new OrderBLL(_unitOfWork);
         }
         public IActionResult Index()
         {
@@ -61,7 +63,7 @@ namespace DistributorPortal.Controllers
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "Start Click on Login Button of ");
-                SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? GetDistributorBalance() : null;
+                SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
@@ -97,7 +99,7 @@ namespace DistributorPortal.Controllers
                 {
                     if (SessionHelper.LoginUser.IsDistributor)
                     {
-                        SessionHelper.DistributorBalance = GetDistributorBalance();
+                        SessionHelper.DistributorBalance = orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
                     }
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Login Successfully";
@@ -123,30 +125,6 @@ namespace DistributorPortal.Controllers
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
-        }
-        public DistributorBalance GetDistributorBalance()
-        {
-            try
-            {
-                
-                var Client = new RestClient(_configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
-                var request = new RestRequest(Method.GET);
-                IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
-                if (resp == null)
-                {
-                    return new DistributorBalance();
-                }
-                else
-                {
-                    return resp;
-                }
-            }
-            catch (Exception ex)
-            {                
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return new DistributorBalance();
-            }
-        }
+        }        
     }
 }
