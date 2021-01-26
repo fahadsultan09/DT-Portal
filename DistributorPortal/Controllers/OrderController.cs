@@ -71,7 +71,9 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Approve(int id)
         {
-            return View("OrderApprove", BindOrderMaster(id));
+            var order = BindOrderMaster(id);
+            SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
+            return View("OrderApprove", order);
         }
         public IActionResult OnHold(int id, string Comments)
         {

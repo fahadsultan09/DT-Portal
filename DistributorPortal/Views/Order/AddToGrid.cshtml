@@ -11,7 +11,6 @@
                 <th width="12%">Carton Size</th>
                 <th width="5%" >Rate</th>
                 <th width="5%" >Discount</th>
-                <th width="20%">Quantity in Packs</th>
                 <th width="20%">Quantity in Cartons</th>
                 <th width="5%" >Total</th>
                 <th width="10%">Supplies</th>
@@ -27,11 +26,10 @@
                     <td width="15%">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
                     <td width="12%">@item.ProductMaster.PackSize</td>
                     <td width="5%" >@item.ProductMaster.Quantity</td>
-                    <td width="12%">Carton Size</td>
+                    <td width="12%">@item.ProductMaster.CartonSize</td>
                     <td width="5%" >@item.ProductMaster.Rate</td>
                     <td width="5%" >@item.ProductMaster.Discount %</td>
-                    <td width="20%">Quantity in Packs</td>
-                    <td width="20%">Quantity in Cartons</td>
+                    <td width="20%">@(item.ProductMaster.CartonSize / item.ProductMaster.Quantity)</td>
                     <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
                     <td width="10%">@item.WTaxRate %</td>
                     <td width="10%">@item.Company.CompanyName</td>
