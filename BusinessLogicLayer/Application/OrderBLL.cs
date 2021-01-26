@@ -366,10 +366,10 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
             }
-            if (model.FromDate != null && model.ToDate != null)
-            {
-                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date || e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
-            }
+            //if (model.FromDate != null && model.ToDate != null)
+            //{
+            //    LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date || e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            //}
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
                          join u in _UserBLL.GetAllUser().ToList()

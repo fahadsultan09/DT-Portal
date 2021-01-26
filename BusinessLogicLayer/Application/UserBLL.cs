@@ -44,6 +44,7 @@ namespace BusinessLogicLayer.Application
             item.DistributorId = module.IsDistributor ? module.DistributorId : null;
             item.IsDistributor = module.IsDistributor;
             item.RoleId = module.RoleId;
+            item.RegisteredAddress = module.RegisteredAddress;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

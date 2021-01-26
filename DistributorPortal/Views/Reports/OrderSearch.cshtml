@@ -9,7 +9,7 @@
                         <h2 class="card-title">Search</h2>
                     </div>
                     <form asp-controller="Reports"
-                          asp-action="Search"
+                          asp-action="OrderSearch"
                           id="frmOrderSearch"
                           data-ajax-begin="Begin"
                           data-ajax-complete="Complete"
@@ -53,7 +53,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">Order No</label>
-                                        <input type="text" asp-for="OrderNo" class="form-control" />
+                                        <input type="text" asp-for="OrderNo" autocomplete="off" class="form-control" />
                                     </div>
                                 </div>
                                 @if (!SessionHelper.LoginUser.IsDistributor)

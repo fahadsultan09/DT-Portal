@@ -56,7 +56,7 @@ namespace BusinessLogicLayer.Application
         }
         public List<OrderDetail> GetOrderDetailByIdByGatePassMasterId(int OrderId)
         {
-            return _repository.GetAllList().Where(x => x.OrderId == OrderId).ToList();
+            return _repository.Where(x => x.OrderId == OrderId).ToList();
         }
         public List<OrderDetail> GetAllOrderDetail()
         {
