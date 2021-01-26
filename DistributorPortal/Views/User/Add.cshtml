@@ -17,7 +17,8 @@
                       data-ajax-complete="Complete"
                       data-ajax="true"
                       data-ajax-method="POST"
-                      method="post">
+                      method="post"
+                      autocomplete="off">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="ibox ">
@@ -160,6 +161,7 @@
                                                     <div class="col-lg-8" disabled="true">
                                                         @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "DistributorId" })
                                                         <span class="text-danger" id="errorDistributorId"></span>
+                                                        <input asp-for="DistributorId" type="hidden" />
                                                     </div>
                                                 </div>
                                             </div>

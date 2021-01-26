@@ -36,7 +36,7 @@ namespace DistributorPortal.Controllers
             return list;
         }
         [HttpPost]
-        public IActionResult Search(OrderSearch model, string Search)
+        public IActionResult OrderSearch(OrderSearch model, string Search)
         {
             if (Search == "Search")
             {
@@ -49,6 +49,33 @@ namespace DistributorPortal.Controllers
         }
         [HttpGet]
         public ActionResult GetOrderDetailList(int OrderId)
+        {
+            var Detail = _orderDetailBLL.GetOrderDetailByIdByGatePassMasterId(OrderId);
+            return PartialView("OrderDetailList", Detail);
+        }
+        public ActionResult OrderReturn()
+        {
+            return View();
+        }
+        public List<OrderMaster> GetOrderReturnList(OrderSearch model)
+        {
+            List<OrderMaster> list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            return list;
+        }
+        [HttpPost]
+        public IActionResult OrderReturnSearch(OrderSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("OrderList", GetOrderList(model));
+            }
+            else
+            {
+                return PartialView("OrderList", new OrderMaster());
+            }
+        }
+        [HttpGet]
+        public ActionResult GetOrderReturnDetailList(int OrderId)
         {
             var Detail = _orderDetailBLL.GetOrderDetailByIdByGatePassMasterId(OrderId);
             return PartialView("OrderDetailList", Detail);
