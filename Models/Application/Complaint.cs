@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -35,11 +36,21 @@ namespace Models.Application
         public ComplaintStatus Status { get; set; }
         [StringLength(255)]
         public string File { get; set; }
+        public int? RejectedBy { get; set; }
+        public DateTime? RejectedDate { get; set; }
+        public int? ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }
         [NotMapped]
         public SelectList ComplaintCategoryList { get; set; }
         [NotMapped]
         public SelectList ComplaintSubCategoryList { get; set; }
+        [NotMapped]
+        public string CreatedName { get; set; }
+        [NotMapped]
+        public string ApprovedName { get; set; }
+        [NotMapped]
+        public string RejectedName { get; set; }
     }
 }

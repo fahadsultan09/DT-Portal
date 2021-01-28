@@ -1,4 +1,4 @@
-﻿@model IEnumerable<OrderMaster>
+﻿@model IEnumerable<OrderReturnMaster>
 
 <style type="text/css">
     td.details-control {
@@ -15,25 +15,25 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Order List</h2>
+                <h2 class="card-title">Order Return List</h2>
             </div>
             <div class="card-body scrollmenu">
                 <table id="example1" class="table table-striped table-hover" style="width:100%">
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Order No</th>
+                            <th>Order Return No</th>
                             @if (!SessionHelper.LoginUser.IsDistributor)
                             {
                                 <th>Distributor Name</th>
                             }
                             <th>Status</th>
-                            <th>Order By</th>
-                            <th>Order Date</th>
-                            <th>Approved By</th>
-                            <th>Approved Date</th>
-                            <th>Rejected By</th>
-                            <th>Rejected Date</th>
+                            <th>Order Return By</th>
+                            <th>Order Return Date</th>
+                            @*<th>Approved By</th>
+                                <th>Approved Date</th>
+                                <th>Rejected By</th>
+                                <th>Rejected Date</th>*@
                             <th>Action</th>
                         </tr>
                     <tbody>
@@ -51,12 +51,12 @@
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.CreatedName</td>
                                     <td>@item.CreatedDate</td>
-                                    <td>@item.ApprovedName</td>
-                                    <td>@item.ApprovedDate</td>
-                                    <td>@item.RejectedName</td>
-                                    <td>@item.RejectedDate</td>
+                                    @*<td>@item.ApprovedName</td>
+                                        <td>@item.ApprovedDate</td>
+                                        <td>@item.RejectedName</td>
+                                        <td>@item.RejectedDate</td>*@
                                     <td>
-                                        <a asp-controller="Order" asp-action="OrderView" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                        <a asp-controller="OrderReturn" asp-action="OrderView" asp-route-id="@item.Id" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>
@@ -74,7 +74,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Order Detail</h4>
+                <h4 class="modal-title">Order Return Detail</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -101,11 +101,11 @@
 
             var tr = $(this).closest('tr');
             var row = table.row(tr);
-            var OrderId = $(row.data()[0]).val();
+            var OrderReturnId = $(row.data()[0]).val();
             $.ajax({
                 type: 'GET',
-                url: '/Reports/GetOrderDetailList',
-                data: { OrderId: OrderId },
+                url: '/Reports/GetOrderReturnDetailList',
+                data: { OrderReturnId: OrderReturnId },
                 async: false,
                 success: function (response) {
                     $('#modal-detail').html(response);

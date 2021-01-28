@@ -52,6 +52,10 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<OrderReturnDetail>().GetById(id);
         }
+        public List<OrderReturnDetail> GetOrderDetailByIdByMasterId(int OrderReturnId)
+        {
+            return _repository.Where(x => x.OrderReturnId == OrderReturnId).ToList();
+        }
         public List<OrderReturnDetail> GetAllOrderReturnDetail()
         {
             return _unitOfWork.GenericRepository<OrderReturnDetail>().GetAllList().ToList();

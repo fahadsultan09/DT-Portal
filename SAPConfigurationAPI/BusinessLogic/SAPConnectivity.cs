@@ -77,13 +77,13 @@ namespace SAPConfigurationAPI.BusinessLogic
                 rfcDest = RfcDestinationManager.GetDestination(SystemId);
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
-                
+
                 var dt1 = Table.ToDataTable();
                 IRfcTable tableimport = companyBapi.GetTable("ORDERS");
                 for (int i = 0; i < dt1.Rows.Count; i++)
                 {
                     IRfcStructure structInputs = rfcDest.Repository.GetStructureMetadata(TableName).CreateStructure();
-                    
+
                     structInputs.SetValue("SNO", dt1.Rows[i]["SNO"].ToString());
                     structInputs.SetValue("ITEMNO", dt1.Rows[i]["ITEMNO"].ToString());
                     structInputs.SetValue("PARTN_NUMB", dt1.Rows[i]["PARTN_NUMB"].ToString());
@@ -95,7 +95,7 @@ namespace SAPConfigurationAPI.BusinessLogic
                     //      structInputs.SetValue("PURCH_DATE", Convert.ToDateTime(dt1.Rows[i]["PURCH_DATE"].ToString()).ToShortDateString());
                     structInputs.SetValue("PURCH_DATE", (PURCH_DATE.Year.ToString() + string.Format("{0:00}", PURCH_DATE.Month) + string.Format("{0:00}", PURCH_DATE.Day)).ToString());
                     structInputs.SetValue("PRICE_DATE", (PRICE_DATE.Year.ToString() + string.Format("{0:00}", PRICE_DATE.Month) + string.Format("{0:00}", PRICE_DATE.Day)).ToString());
-                    structInputs.SetValue("ST_PARTN",  dt1.Rows[i]["ST_PARTN"].ToString());
+                    structInputs.SetValue("ST_PARTN", dt1.Rows[i]["ST_PARTN"].ToString());
                     structInputs.SetValue("MATERIAL", dt1.Rows[i]["MATERIAL"].ToString());
                     structInputs.SetValue("REQ_QTY", dt1.Rows[i]["REQ_QTY"].ToString());
                     structInputs.SetValue("PLANT", dt1.Rows[i]["PLANT"].ToString());
@@ -123,7 +123,7 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
-        public SAPPaymentStatus AddPaymentToSAP(string Function, SAPPaymentViewModel Table) 
+        public SAPPaymentStatus AddPaymentToSAP(string Function, SAPPaymentViewModel Table)
         {
             SAPSystemConnect sapCfg = new SAPSystemConnect();
             try
@@ -160,7 +160,7 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
-        public IRfcTable GetOrderPendingQuantity(string Function, string DistributorId) 
+        public IRfcTable GetOrderPendingQuantity(string Function, string DistributorId)
         {
             SAPSystemConnect sapCfg = new SAPSystemConnect();
             try
@@ -173,6 +173,45 @@ namespace SAPConfigurationAPI.BusinessLogic
                 companyBapi.SetValue("DISTRIBUTOR", DistributorId);
                 companyBapi.Invoke(rfcDest);
                 return companyBapi.GetTable("PENDING");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+            }
+        }
+        public IRfcTable GetPendingOrderStatus(string Function, string TableName, List<SAPOrderStatus> OrderNoList)
+        {
+            SAPSystemConnect sapCfg = new SAPSystemConnect();
+            try
+            {
+                //Get destination
+                RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
+                RfcDestination rfcDest = null;
+                rfcDest = RfcDestinationManager.GetDestination(SystemId);
+                //Get SAP Repository
+                RfcRepository repo = rfcDest.Repository;
+                //Set function
+                IRfcFunction companyBapi = repo.CreateFunction(Function);
+                //Get reference to table object
+                IRfcTable tableimport = companyBapi.GetTable("ORDERS");
+                //Convert list to datatable
+                var dt1 = OrderNoList.ToDataTable();
+
+                for (int i = 0; i < dt1.Rows.Count; i++)
+                {
+                    IRfcStructure structInputs = rfcDest.Repository.GetStructureMetadata(TableName).CreateStructure();
+                    ////Populate current MATNRSELECTION row with data from list
+                    structInputs.SetValue("VBELN", dt1.Rows[i]["SAPOrderNo"].ToString());
+                    ////Create new MATNRSELECTION row
+                    tableimport.Append(structInputs);
+                }
+                companyBapi.SetValue("ORDERS", tableimport);
+                companyBapi.Invoke(rfcDest);
+                return companyBapi.GetTable("STATUSES");
             }
             catch (Exception ex)
             {

@@ -16,10 +16,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<OrderReturnMaster> _repository;
+        private readonly UserBLL _UserBLL;
         public OrderReturnBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<OrderReturnMaster>();
+            _UserBLL = new UserBLL(_unitOfWork);
         }
         public int Add(OrderReturnMaster module)
         {
@@ -98,6 +100,46 @@ namespace BusinessLogicLayer.Application
                              Id = x.Id,
                              Distributor = x.Distributor,
                              DistributorId = x.DistributorId,
+                             CreatedDate = x.CreatedDate,
+                         }).ToList();
+
+            return query.OrderByDescending(x => x.Id).ToList();
+        }
+        public List<OrderReturnMaster> SearchReport(OrderReturnSearch model)
+        {
+            var LamdaId = (Expression<Func<OrderReturnMaster, bool>>)(x => x.IsDeleted == false);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.OrderReturnNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.Id == model.OrderReturnNo);
+            }
+            if (model.Status != null)
+            {
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
+            }
+            if (model.FromDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
+            }
+            if (model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         join u in _UserBLL.GetAllUser().ToList()
+                              on x.CreatedBy equals u.Id
+                         select new OrderReturnMaster
+                         {
+                             Id = x.Id,
+                             Distributor = x.Distributor,
+                             Status = x.Status,
+                             DistributorId = x.DistributorId,
+                             CreatedBy = x.CreatedBy,
+                             CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,
                          }).ToList();
 

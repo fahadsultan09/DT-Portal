@@ -16,23 +16,31 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
-        private readonly OrderDetailBLL _orderDetailBLL;
-        private readonly ProductDetailBLL _productDetailBLL;
+        private readonly OrderDetailBLL _OrderDetailBLL;
+        private readonly OrderReturnBLL _OrderReturnBLL;
+        private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
+        private readonly PaymentBLL _PaymentBLL;
+        private readonly ComplaintBLL _ComplaintBLL;
         public ReportsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
-            _productDetailBLL = new ProductDetailBLL(_unitOfWork);
-            _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
+            _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
+            _PaymentBLL = new PaymentBLL(_unitOfWork);
+            _ComplaintBLL = new ComplaintBLL(_unitOfWork);
 
         }
+
+        #region Order
         public ActionResult Order()
         {
             return View();
         }
         public List<OrderMaster> GetOrderList(OrderSearch model)
         {
-            List<OrderMaster>  list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            List<OrderMaster> list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             return list;
         }
         [HttpPost]
@@ -50,35 +58,87 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public ActionResult GetOrderDetailList(int OrderId)
         {
-            var Detail = _orderDetailBLL.GetOrderDetailByIdByGatePassMasterId(OrderId);
+            var Detail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(OrderId);
             return PartialView("OrderDetailList", Detail);
         }
+        #endregion
+
+        #region OrderReturn
         public ActionResult OrderReturn()
         {
             return View();
         }
-        public List<OrderMaster> GetOrderReturnList(OrderSearch model)
+        public List<OrderReturnMaster> GetOrderReturnList(OrderReturnSearch model)
         {
-            List<OrderMaster> list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            List<OrderReturnMaster> list = _OrderReturnBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             return list;
         }
         [HttpPost]
-        public IActionResult OrderReturnSearch(OrderSearch model, string Search)
+        public IActionResult OrderReturnSearch(OrderReturnSearch model, string Search)
         {
             if (Search == "Search")
             {
-                return PartialView("OrderList", GetOrderList(model));
+                return PartialView("OrderReturnList", GetOrderReturnList(model));
             }
             else
             {
-                return PartialView("OrderList", new OrderMaster());
+                return PartialView("OrderReturnList", new OrderMaster());
             }
         }
         [HttpGet]
         public ActionResult GetOrderReturnDetailList(int OrderId)
         {
-            var Detail = _orderDetailBLL.GetOrderDetailByIdByGatePassMasterId(OrderId);
-            return PartialView("OrderDetailList", Detail);
+            var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(OrderId);
+            return PartialView("OrderReturnDetailList", Detail);
         }
+        #endregion
+
+        #region Payment
+        public ActionResult Payment()
+        {
+            return View();
+        }
+        public List<PaymentMaster> GetPaymentList(PaymentSearch model)
+        {
+            List<PaymentMaster> list = _PaymentBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            return list;
+        }
+        [HttpPost]
+        public IActionResult PaymentSearch(PaymentSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("PaymentList", GetPaymentList(model));
+            }
+            else
+            {
+                return PartialView("PaymentList", new PaymentMaster());
+            }
+        }
+        #endregion
+
+        #region Complain
+        public ActionResult Complaint()
+        {
+            return View();
+        }
+        public List<Complaint> GetComplaintList(ComplaintSearch model)
+        {
+            List<Complaint> list = _ComplaintBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            return list;
+        }
+        [HttpPost]
+        public IActionResult ComplaintSearch(ComplaintSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("ComplaintList", GetComplaintList(model));
+            }
+            else
+            {
+                return PartialView("ComplaintList", new Complaint());
+            }
+        }
+        #endregion
     }
 }
