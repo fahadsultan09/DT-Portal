@@ -7,6 +7,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.ApplicationSetup
 {
@@ -131,6 +132,11 @@ namespace BusinessLogicLayer.ApplicationSetup
             });
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+        }
+
+        public List<Distributor> Where(Expression<Func<Distributor, bool>> predicate)
+        {
+            return repository.Where(predicate);
         }
     }
 }

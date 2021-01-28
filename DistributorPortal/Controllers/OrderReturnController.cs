@@ -61,8 +61,7 @@ namespace DistributorPortal.Controllers
         }
         [HttpGet]
         public IActionResult Add(int id)
-        {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Add", "Click on Add  Button of ");
+        {            
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
         }
@@ -72,34 +71,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "Start Click on SaveEdit Button of ");
-                ModelState.Remove("Id");
-                if (!ModelState.IsValid)
-                {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
-                }
-                else
-                {
-                    if (SessionHelper.AddReturnProduct.Count > 0)
-                    {
-                        if (btnSubmit == SubmitStatus.Draft)
-                        {
-                            model.Status = OrderReturnStatus.Draft;
-                        }
-                        else
-                        {
-                            model.Status = OrderReturnStatus.Submitted;
-                        }
-                        _OrderReturnBLL.Add(model);
-                    }
-                    else
-                    {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = OrderContant.OrderItem;
-                    }
-                }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "End Click on Save Button of ");
+                jsonResponse = _OrderReturnBLL.UpdateOrderReturn(model, btnSubmit, Url);                
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -176,7 +148,23 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderReturnBLL.GetById(Id);
-                model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
+                model.Distributor = new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).FirstOrDefault();
+                model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id).ToList();
+                OrderReturnDetail detail = new OrderReturnDetail();
+                foreach (var item in model.OrderReturnDetail)
+                {
+                    ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(item.ProductId);
+                    if (productMaster != null)
+                    {
+                        var list = SessionHelper.AddReturnProduct;
+                        detail.ProductMaster = productMaster;
+                        detail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == item.PlantLocationId).FirstOrDefault();
+                        detail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
+                        detail.NetAmount = detail.Quantity * detail.MRP;
+                        list.Add(detail);
+                        SessionHelper.AddReturnProduct = list;                       
+                    }
+                }               
             }
             else
             {
@@ -195,6 +183,18 @@ namespace DistributorPortal.Controllers
                 await viewResult.View.RenderAsync(viewContext);
                 return sw.GetStringBuilder().ToString();
             }
+        }
+        public IActionResult Delete(int Id)
+        {
+            var list = SessionHelper.AddReturnProduct;
+            var item = list.FirstOrDefault(e => e.ProductId == Id);
+            if (item != null)
+            {
+                list.Remove(item);
+            }
+            SessionHelper.AddReturnProduct = list;
+            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "End Click on Delete Button of ");
+            return PartialView("AddToGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
         }
     }
 }

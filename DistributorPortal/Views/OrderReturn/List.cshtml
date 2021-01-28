@@ -31,18 +31,18 @@
                                 <td>@item.Status</td>
                                 <td>@item.CreatedDate</td>
                                 <td>
-                                    <a asp-controller="Order" asp-action="OrderView" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                    <a asp-controller="OrderReturn" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     @if (item.Status == OrderReturnStatus.Received)
                                     {
-                                        <a asp-controller="Order" asp-action="Add" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        <a asp-controller="OrderReturn" asp-action="Add" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     }
                                     @if (item.Status == OrderReturnStatus.Submitted)
                                     {
-                                        <a asp-controller="Order" asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success btn-sm">
+                                        <a asp-controller="OrderReturn" asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success btn-sm">
                                             <i class="fas fa-thumbs-up"></i>
                                         </a>
                                     }

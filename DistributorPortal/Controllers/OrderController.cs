@@ -209,8 +209,7 @@ namespace DistributorPortal.Controllers
             return Json(new { data = jsonResponse });
         }
         public IActionResult Delete(int Id)
-        {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "Start Click on Delete Button of ");
+        {            
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == Id);
             if (item != null)

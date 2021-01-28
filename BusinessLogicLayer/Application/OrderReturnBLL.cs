@@ -1,6 +1,9 @@
-﻿using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
+using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
 using System;
@@ -9,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Utility;
+using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
 {
@@ -16,10 +20,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<OrderReturnMaster> _repository;
+        private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         public OrderReturnBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<OrderReturnMaster>();
+            _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
         }
         public int Add(OrderReturnMaster module)
         {
@@ -102,6 +108,72 @@ namespace BusinessLogicLayer.Application
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
+        }
+
+        public JsonResponse UpdateOrderReturn(OrderReturnMaster model, SubmitStatus btnSubmit, IUrlHelper Url)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                _unitOfWork.Begin();                
+                if (SessionHelper.AddReturnProduct.Count > 0)
+                {
+                    if (btnSubmit == SubmitStatus.Draft)
+                    {
+                        model.Status = OrderReturnStatus.Draft;
+                        jsonResponse.Message = OrderContant.OrderDraft;                        
+                    }
+                    else
+                    {
+                        model.Status = OrderReturnStatus.Submitted;
+                        jsonResponse.Message = OrderContant.OrderSubmit;
+                        jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
+                    }
+                    if (model.Id == 0)
+                    {
+                        model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        var detail = SessionHelper.AddReturnProduct;
+                        Add(model);
+                        detail.ForEach(e => e.OrderReturnId = model.Id);
+                        detail.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
+                        detail.ForEach(e => e.CreatedDate = DateTime.Now);
+                        detail.ForEach(e => e.ProductMaster = null);
+                        detail.ForEach(e => e.PlantLocation = null);
+                        _OrderReturnDetailBLL.AddRange(detail);
+                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { id = model.Id }) : Url.Action("Index", "OrderReturn");
+                    }
+                    else
+                    {
+                        model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        var detail = SessionHelper.AddReturnProduct;
+                        Update(model);
+                        var list = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id).ToList();
+                        _OrderReturnDetailBLL.DeleteRange(list);
+                        detail.ForEach(e => e.OrderReturnId = model.Id);
+                        detail.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
+                        detail.ForEach(e => e.CreatedDate = DateTime.Now);
+                        detail.ForEach(e => e.ProductMaster = null);
+                        detail.ForEach(e => e.PlantLocation = null);
+                        _OrderReturnDetailBLL.AddRange(detail);
+                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { id = model.Id }) : Url.Action("Index", "OrderReturn");
+                    }
+                    jsonResponse.Status = true;
+                }
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = OrderContant.OrderItem;
+                }
+                _unitOfWork.Commit();
+                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "End Click on Save Button of ");
+                return jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                throw ex;
+            }
+            
         }
     }
 }

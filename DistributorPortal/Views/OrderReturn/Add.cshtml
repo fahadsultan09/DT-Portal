@@ -91,7 +91,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note No:</h6>
-                                                <input type="text" readonly="readonly" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
+                                                <input type="text" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
                                                 <span asp-validation-for="DebitNoteNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
@@ -117,7 +117,7 @@
                                                 <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" onclick="return SubmitForm();" name="btnSubmit" value="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
+                                                <button type="button" onclick="return SubmitForm();" name="btnSubmit" value="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success mr-1 float-right">
                                                     Submit
                                                 </button>
                                                 <button type="submit" name="btnSubmit" value="@SubmitStatus.Draft" class="ladda-button btn btn-info float-right mr-3" id="btnDraft">
@@ -177,7 +177,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Earlier Intimation:</h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
-                                                    <input type="text" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -194,7 +194,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice Date:</h6>
                                                 <div class="input-group date" id="InvoiceDate" data-target-input="nearest">
-                                                    <input type="text" name="InvoiceDate" value="" data-target="#InvoiceDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" name="InvoiceDate" value="" data-target="#InvoiceDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -203,7 +203,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Expiry Date:</h6>
                                                 <div class="input-group date" id="ExpiryDate" data-target-input="nearest">
-                                                    <input type="text" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -212,7 +212,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Manufacture Date:</h6>
                                                 <div class="input-group date" id="ManufactureDate" data-target-input="nearest">
-                                                    <input type="text" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -231,9 +231,13 @@
                                             </div>
                                         </div>
                                     </form><br />
-                                    <div class="scrollmenu" id="ProductGrid">
-                                        @*<partial name="ProductGrid" model="Model.OrderReturnDetail" />*@
-                                    </div>
+                                           <div class="scrollmenu" id="ProductGrid">
+                                               @if (Model.OrderReturnDetail.Count > 0)
+                                               {
+                                                   <partial name="ProductGrid" model="Model.OrderReturnDetail" />
+                                               }
+                                              
+                                           </div>
                                 </div>
                             </div>
                         </div>
@@ -316,7 +320,7 @@
             confirmButtonText: 'Yes, Order Place!'
         }).then((result) => {
             if (result.value == true) {
-                $('#frmOrderMaster').submit();
+                $('#frmOrderReturnMaster').submit();
             }
         })
         return false;

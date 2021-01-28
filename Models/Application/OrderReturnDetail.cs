@@ -5,10 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Models.Application
 {
     public class OrderReturnDetail : CreatedEntity
-    {
-        public int CompanyId { get; set; }
-        [ForeignKey("CompanyId")]
-        public virtual Company Company { get; set; }
+    {        
         public int OrderReturnId { get; set; }
         [ForeignKey("OrderReturnId")]
         public virtual OrderReturnMaster OrderReturnMaster { get; set; }
@@ -28,7 +25,7 @@ namespace Models.Application
         public DateTime IntimationDate { get; set; }
         public string Remarks { get; set; }
         [NotMapped]
-        public string TP { get; set; }
+        public double TotalPrice { get; set; }
         [NotMapped]
         public double Discount { get; set; }
         [NotMapped]
