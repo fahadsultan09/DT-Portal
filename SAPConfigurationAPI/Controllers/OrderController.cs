@@ -49,5 +49,21 @@ namespace SAPConfigurationAPI.Controllers
             }
             return list;
         }
+        [HttpPost]
+        [Route("api/Order/GetInProcessOrderStatus")]
+        public List<SAPOrderStatus> GetPendingOrderStatus(List<SAPOrderStatus> OrderNoList)
+        {
+            var Data = connectivity.GetPendingOrderStatus("ZWAS_IT_DP_ORDER_STATUS_BAPI", "VBAK", OrderNoList);
+            List<SAPOrderStatus> list = new List<SAPOrderStatus>();
+            for (int i = 0; i < Data.RowCount; i++)
+            {
+                list.Add(new SAPOrderStatus()
+                {
+                    SAPOrderNo = Data[i].GetString("VBELN"),
+                    OrderStatus = Data[i].GetString("GBSTK"),
+                });
+            }
+            return list;
+        }
     }
 }

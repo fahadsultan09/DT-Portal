@@ -43,6 +43,10 @@ namespace Models.Application
         public string SAPCompanyCode { get; set; }
         public string SAPFiscalYear { get; set; }
         public string SAPDocumentNumber { get; set; }
+        public int? RejectedBy { get; set; }
+        public DateTime? RejectedDate { get; set; }
+        public int? ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
         public string File { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }
@@ -60,5 +64,11 @@ namespace Models.Application
         public double HealthTekTotalPendingValue { get; set; }
         [NotMapped]
         public double PhytekTotalPendingValue { get; set; }
+        [NotMapped]
+        public string CreatedName { get; set; }
+        [NotMapped]
+        public string ApprovedName { get; set; }
+        [NotMapped]
+        public string RejectedName { get; set; }
     }
 }

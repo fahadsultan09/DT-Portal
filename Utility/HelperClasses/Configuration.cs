@@ -12,16 +12,22 @@ namespace Utility.HelperClasses
         public string PostOrder { get; set; }
         public string PostPayment { get; set; }
         public string GetPendingQuantity { get; set; }
+        public string GetInProcessOrderStatus { get; set; }
+        public string ConnectionString { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
-            ResetPassword = configuration["AppSettings:ResetPassword"];
-            SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
-            SyncProductURL = configuration["AppSettings:SyncProductURL"];
-            SyncDistributorBalanceURL = configuration["AppSettings:SyncDistributorBalanceURL"];
-            PostOrder = configuration["AppSettings:PostOrder"];
-            PostPayment = configuration["AppSettings:PostPayment"];
-            GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
+            if (configuration != null)
+            {
+                ResetPassword = configuration["AppSettings:ResetPassword"];
+                SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
+                SyncProductURL = configuration["AppSettings:SyncProductURL"];
+                SyncDistributorBalanceURL = configuration["AppSettings:SyncDistributorBalanceURL"];
+                PostOrder = configuration["AppSettings:PostOrder"];
+                PostPayment = configuration["AppSettings:PostPayment"];
+                GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
+                GetInProcessOrderStatus = configuration["AppSettings:GetInProcessOrderStatus"];
+            }            
         }
     }
 }

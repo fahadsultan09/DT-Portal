@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SAPConfigurationAPI.ViewModel
+namespace SAPConfigurationAPI.Models
 {
     public class SAPPaymentStatus
     {

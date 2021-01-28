@@ -15,10 +15,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<Complaint> _repository;
+        private readonly UserBLL _UserBLL;
         public ComplaintBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<Complaint>();
+            _UserBLL = new UserBLL(_unitOfWork);
         }
         public int Add(Complaint module)
         {
@@ -44,7 +46,6 @@ namespace BusinessLogicLayer.Application
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
-
         public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus, string Remarks)
         {
             model.Status = ComplaintStatus;
@@ -68,6 +69,60 @@ namespace BusinessLogicLayer.Application
         public Complaint FirstOrDefault(Expression<Func<Complaint, bool>> predicate)
         {
             return _repository.FirstOrDefault(predicate);
+        }
+        public List<Complaint> SearchReport(ComplaintSearch model)
+        {
+            var LamdaId = (Expression<Func<Complaint, bool>>)(x => x.IsDeleted == false);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.ComplaintNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.Id == model.ComplaintNo);
+            }
+            if (model.Status != null)
+            {
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
+            }
+            if (model.FromDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
+            }
+            if (model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         join u in _UserBLL.GetAllUser().ToList()
+                              on x.CreatedBy equals u.Id
+                         join ua in _UserBLL.GetAllUser().ToList()
+                              on x.ApprovedBy equals ua.Id into approvedGroup
+                         from a1 in approvedGroup.DefaultIfEmpty()
+                         join ur in _UserBLL.GetAllUser().ToList()
+                              on x.RejectedBy equals ur.Id into rejectedGroup
+                         from a2 in rejectedGroup.DefaultIfEmpty()
+                         select new Complaint
+                         {
+                             Id = x.Id,
+                             Distributor = x.Distributor,
+                             ComplaintCategory = x.ComplaintCategory,
+                             ComplaintSubCategory = x.ComplaintSubCategory,
+                             Status = x.Status,
+                             DistributorId = x.DistributorId,
+                             CreatedBy = x.CreatedBy,
+                             CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
+                             CreatedDate = x.CreatedDate,
+                             ApprovedBy = x.ApprovedBy,
+                             ApprovedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
+                             ApprovedDate = x.ApprovedDate,
+                             RejectedBy = x.RejectedBy,
+                             RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
+                             RejectedDate = x.RejectedDate
+                         }).ToList();
+
+            return query.OrderByDescending(x => x.Id).ToList();
         }
     }
 }

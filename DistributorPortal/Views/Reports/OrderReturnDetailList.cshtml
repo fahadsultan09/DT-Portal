@@ -1,0 +1,33 @@
+﻿@model IEnumerable<OrderReturnDetail>
+
+<div class="row">
+    <div class="col-12 p-0" style="height: 300px;">
+        <div class="card">
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-valign-middle">
+                    <thead>
+                        <tr>
+
+                            <th>Product Name</th>
+                            <th>Ordered Quantity</th>
+                            @*<th>Approved Quantity</th>
+                            <th>SAP Order Number</th>
+                            <th>SAP Order Status</th>*@
+                        </tr>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ProductMaster.ProductName</td>
+                                <td>@item.Quantity</td>
+                                @*<td>@item.ApprovedQuantity</td>
+                                <td>@item.SAPOrderNumber</td>
+                                <td>@Html.DisplayFor(x => item.OrderProductStatus)</td>*@
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
