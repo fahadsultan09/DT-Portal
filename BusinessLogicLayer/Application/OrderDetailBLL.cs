@@ -2,11 +2,12 @@
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Utility;
 
 namespace BusinessLogicLayer.Application
 {
@@ -54,7 +55,7 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<OrderDetail>().GetById(id);
         }
-        public List<OrderDetail> GetOrderDetailByIdByGatePassMasterId(int OrderId)
+        public List<OrderDetail> GetOrderDetailByIdByMasterId(int OrderId)
         {
             return _repository.Where(x => x.OrderId == OrderId).ToList();
         }
@@ -69,6 +70,11 @@ namespace BusinessLogicLayer.Application
         public OrderDetail FirstOrDefault(Expression<Func<OrderDetail, bool>> predicate)
         {
             return _repository.FirstOrDefault(predicate);
+        }
+        public List<SAPOrderStatus> GetInProcessOrderStatus()
+        {
+            List<SAPOrderStatus> list = _repository.Where(x => x.OrderProductStatus == OrderStatus.NotYetProcess || x.OrderProductStatus == OrderStatus.PartiallyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.SAPOrderNumber }).ToList();
+            return list;
         }
     }
 }

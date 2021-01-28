@@ -11,7 +11,5 @@ namespace SAPConfigurationAPI.Models
         public string OrderQuantity { get; set; }
         public string DispatchQuantity { get; set; }
         public string PendingQuantity { get; set; }
-
-
     }
 }

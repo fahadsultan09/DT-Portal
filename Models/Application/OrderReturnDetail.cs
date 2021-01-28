@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Models.Application
 {
     public class OrderReturnDetail : CreatedEntity
-    {        
+    {
         public int OrderReturnId { get; set; }
         [ForeignKey("OrderReturnId")]
         public virtual OrderReturnMaster OrderReturnMaster { get; set; }
