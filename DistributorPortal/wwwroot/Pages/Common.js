@@ -11,6 +11,11 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
+    $('body').on('click', '#disclaimer', function () {
+        $('#modal-disclaimer').modal('toggle');
+        $('#modal-disclaimer').modal('show');
+    });
+
 });
 
 $(function () {

@@ -1,4 +1,8 @@
 ﻿@model List<ProductDetail>
+@inject IUnitOfWork unitOfWork
+@{
+    MultiSelectList companyList = new CompanyBLL(unitOfWork).DropDownCompanyList(Model.Where(x => x.IsProductSelected == true).Select(x => x.CompanyId).ToArray(), false);
+}
 
 <form asp-controller="Order"
       asp-action="ApproveOrder"
@@ -11,6 +15,15 @@
         <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
             <thead>
                 <tr>
+                    <th colspan="2" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                        Company:
+                        <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies" style="width: 85%;">
+                            <option disabled>--Select company--</option>
+                        </select>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
                     <th>Code</th>
                     <th>Product Name</th>
                     <th>Pack Size</th>
@@ -29,6 +42,13 @@
                 @for (int i = 0; i < Model.Count(); i++)
                 {
                     <tr>
+                        <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                            <div class="icheck-success d-inline">
+                                <input type="checkbox" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)">
+                                <label for="checkbox@(Model[i].Id)">
+                                </label>
+                            </div>
+                        </td>
                         <td>
                             <input type="hidden" asp-for="@Model[i].Id" />
                             <input type="hidden" asp-for="@Model[i].ProductMasterId" />
@@ -64,6 +84,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
         $("#example2").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
@@ -111,6 +135,14 @@
             }
         });
     });
+
+    $('body').on('change', ':checkbox', function () {
+
+        $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+        });
+
+    });
+
 </script>
 
 

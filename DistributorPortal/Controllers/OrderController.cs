@@ -64,7 +64,7 @@ namespace DistributorPortal.Controllers
         }
         [HttpGet]
         public IActionResult Add(int id)
-        {            
+        {
             SessionHelper.AddProduct = new List<ProductDetail>();
             return View("AddDetail", BindOrderMaster(id));
         }
@@ -73,6 +73,7 @@ namespace DistributorPortal.Controllers
         {
             var order = BindOrderMaster(id);
             SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
+            ViewBag.Status = order.Status;
             return View("OrderApprove", order);
         }
         public IActionResult OnHold(int id, string Comments)
@@ -132,17 +133,27 @@ namespace DistributorPortal.Controllers
         }
 
         [HttpPost]
-        public IActionResult ApproveOrder(List<ProductDetail> model)
+        public IActionResult ApproveOrder(List<ProductDetail> model, int[] companyId)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            object products = (dynamic)null;
             try
             {
                 var OrderId = model.First().OrderNumber;
                 var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
+                if (companyId.Count() > 0)
+                {
+                    products = SessionHelper.AddProduct.Where(x => companyId.Contains(x.CompanyId)).ToList();
+                }
+                else
+                {
+                    products = SessionHelper.AddProduct.ToList();
+                }
                 foreach (var item in model)
                 {
                     var Detail = OrderDetail.First(e => e.ProductId == item.ProductMasterId);
                     Detail.ApprovedQuantity = item.ProductMaster.ApprovedQuantity;
+                    Detail.IsProductSelected = SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
                 var Client = new RestClient(_Configuration.PostOrder);
@@ -209,7 +220,7 @@ namespace DistributorPortal.Controllers
             return Json(new { data = jsonResponse });
         }
         public IActionResult Delete(int Id)
-        {            
+        {
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == Id);
             if (item != null)
@@ -270,9 +281,18 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
+                List<OrderDetail> orderDetail = _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
                 model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray(), Id);
                 model.productDetails.ForEach(e => e.OrderNumber = Id);
                 model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
+                if (model.Status == OrderStatus.PendingApproval)
+                {
+                    model.productDetails.ForEach(x => x.IsProductSelected = true);
+                }
+                else
+                {
+                    model.productDetails.ForEach(x => x.IsProductSelected = orderDetail.First(y => y.ProductId == x.ProductMasterId).IsProductSelected);
+                }
                 SessionHelper.AddProduct = model.productDetails;
             }
             else
@@ -291,7 +311,7 @@ namespace DistributorPortal.Controllers
         }
 
         public ActionResult ApprovedOrderValue(int Product, int Quantity, int Order)
-        {            
+        {
             var list = SessionHelper.AddProduct;
             list.First(e => e.ProductMasterId == Product).ProductMaster.Quantity = Quantity;
             SessionHelper.AddProduct = list;
@@ -331,7 +351,7 @@ namespace DistributorPortal.Controllers
                 if (productDetail.LicenseControlId != null)
                 {
                     licenseControl.Add(productDetail.LicenseControl);
-                }                
+                }
                 var distributorLicense = _DistributorLicenseBLL.Where(e => e.Status == LicenseStatus.Verified);
                 jsonResponse.Status = true;
                 foreach (var item in licenseControl)
@@ -342,7 +362,7 @@ namespace DistributorPortal.Controllers
                         if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "Your "+ license.LicenseControl.LicenseName + " license has been expired. Please renew the license";
+                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired. Please renew the license";
                             return Json(new { data = jsonResponse });
                         }
                         else
@@ -355,7 +375,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Status = false;
                         jsonResponse.Message = item.LicenseName + " license required for selected product";
                         return Json(new { data = jsonResponse });
-                    }    
+                    }
                 }
                 return Json(new { data = jsonResponse });
             }
@@ -372,6 +392,42 @@ namespace DistributorPortal.Controllers
         public IActionResult Search(OrderSearch orderSearch)
         {
             return Json("");
+        }
+        public IActionResult GetCompanyProduct(int[] companyId, int OrderId)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            object list = (dynamic)null;
+
+            var order = BindOrderMaster(OrderId);
+            ViewBag.Status = order.Status;
+            if (companyId.Count() > 0)
+
+            {
+                list = SessionHelper.AddProduct.Where(x => companyId.Contains(x.CompanyId)).ToList();
+            }
+            else
+            {
+                list = SessionHelper.AddProduct.ToList();
+            }
+            jsonResponse.HtmlString = RenderRazorViewToString("Grid", list);
+            return Json(new { data = jsonResponse, companyId = companyId });
+        }
+        public void SelectProduct(int Id)
+        {
+            var list = SessionHelper.AddProduct;
+            var product = list.FirstOrDefault(e => e.ProductMasterId == Id);
+            if (product != null)
+            {
+                if (product.IsProductSelected)
+                {
+                    list.FirstOrDefault(e => e.ProductMasterId == Id).IsProductSelected = false;
+                }
+                else
+                {
+                    list.FirstOrDefault(e => e.ProductMasterId == Id).IsProductSelected = true;
+                }
+            }
+            SessionHelper.AddProduct = list;
         }
     }
 }

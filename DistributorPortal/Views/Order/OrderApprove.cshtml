@@ -91,23 +91,23 @@
                                             <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                                                 <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
-                                             @if (!SessionHelper.LoginUser.IsDistributor)
+                                            @if (!SessionHelper.LoginUser.IsDistributor)
                                             {
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-success float-right" id="Approve">
-                                                    Approve
-                                                </button>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="OnHold(@Model.Id);" class="btn btn-warning float-right">
-                                                    On Hold
-                                                </button>
-                                            </div>
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                <button onclick="Reject(@Model.Id);" class="btn btn-primary float-right">
-                                                    Reject
-                                                </button>
-                                            </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                    <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-success float-right" id="Approve">
+                                                        Approve
+                                                    </button>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                    <button onclick="OnHold(@Model.Id);" class="btn btn-warning float-right">
+                                                        On Hold
+                                                    </button>
+                                                </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                    <button onclick="Reject(@Model.Id);" class="btn btn-primary float-right">
+                                                        Reject
+                                                    </button>
+                                                </div>
                                             }
                                         </div>
                                     </div>
@@ -137,7 +137,7 @@
                                     <h3 class="card-title">Add Products</h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="scrollmenu">
+                                    <div class="scrollmenu" id="approveGrid">
                                         <partial name="Grid" model="Model.productDetails" />
                                     </div>
                                 </div>
@@ -254,6 +254,18 @@
                 }
             })
         }
+
+
+    $('body').on('change', '#ddlCompany', function () {
+
+        $.post(window.location.origin + "/Order/GetCompanyProduct", { companyId: $('#ddlCompany').val().map(i => Number(i)), OrderId: '@Model.Id' }, function (response) {
+
+            if (response.data.HtmlString != null) {
+                $("#approveGrid").html(response.data.HtmlString.Result);
+                $('#ddlCompany').val(response.companyId);
+            }
+        });
+    });
 
 </script>
 

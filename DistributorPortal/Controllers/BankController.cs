@@ -114,7 +114,7 @@ namespace DistributorPortal.Controllers
             {
                 model.IsActive = true;
             }
-            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId);
+            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId, true);
             return model;
         }
         public JsonResult GetBankList()

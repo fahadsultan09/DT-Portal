@@ -134,7 +134,7 @@ namespace DistributorPortal.Controllers
 
             }
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
-            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId);
+            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId, true);
             model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
             model.CompanyBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.CompanyBankName);
             model.SAMITotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()

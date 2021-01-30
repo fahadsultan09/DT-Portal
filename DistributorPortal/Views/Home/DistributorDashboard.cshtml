@@ -218,7 +218,19 @@
 
     <script type="text/javascript">
 
-          $(document).ready(function () {
+        $(document).ready(function () {
+
+            var value = localStorage.getItem('disclaimer');
+
+            if (value == "false" || value == null) {
+
+                $('#modal-disclaimer').modal('toggle');
+                $('#modal-disclaimer').modal('show');
+
+                localStorage.clear();
+                localStorage.setItem('disclaimer', "true");
+            }
+
               GetDistributorPaymentWiseComparision();
               GetDistributorOrderWiseComparision();
               GetDistributorPaymentWiseStatus();
@@ -287,7 +299,6 @@
                 type: 'POST',
                  dataType: 'html',
                 success: function (result) {
-                    debugger
                     $('#DistributorPendingQuantity').html(result);
                     $("#DistributorPendingQuantity").next().remove();
                 }

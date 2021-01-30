@@ -40,5 +40,7 @@ namespace Models.Application
         public bool IsTaxApplicable { get; set; }
         [NotMapped]
         public int OrderNumber { get; set; }
+        [NotMapped]
+        public bool IsProductSelected { get; set; }
     }
 }

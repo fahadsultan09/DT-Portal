@@ -69,9 +69,9 @@ namespace BusinessLogicLayer.GeneralSetup
                 return true;
             }
         }
-        public SelectList DropDownCompanyList(int SelectedValue)
+        public SelectList DropDownCompanyList(int SelectedValue, bool IsPaymentAllowed)
         {
-            var selectList = GetAllCompany().Where(x => x.IsActive == true && x.IsPaymentAllowed == true).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && x.IsPaymentAllowed == IsPaymentAllowed).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()
@@ -79,9 +79,19 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
-        public SelectList DropDownCompanyList()
+        public MultiSelectList DropDownCompanyList(int[] SelectedValue, bool IsPaymentAllowed)
         {
-            var selectList = GetAllCompany().Where(x => x.IsActive == true && x.IsPaymentAllowed == true).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && (IsPaymentAllowed == true ? x.IsPaymentAllowed == IsPaymentAllowed : true)).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.CompanyName.ToString()
+            });
+
+            return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+        }
+        public SelectList DropDownCompanyList(bool IsPaymentAllowed)
+        {
+            var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && x.IsPaymentAllowed == IsPaymentAllowed).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()
