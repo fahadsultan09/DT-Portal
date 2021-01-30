@@ -222,6 +222,10 @@
     }
     function Approve(Id) {
        // Ladda.create($("#Approve", this)[0]).start();
+        $('#example2').dataTable().fnDestroy();
+        $("#example2").DataTable({
+            "lengthMenu": [[-1], ["All"]]
+        });
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You want to approve this order!",

@@ -136,24 +136,19 @@ namespace DistributorPortal.Controllers
         public IActionResult ApproveOrder(List<ProductDetail> model, int[] companyId)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            object products = (dynamic)null;
             try
             {
                 var OrderId = model.First().OrderNumber;
                 var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (companyId.Count() > 0)
                 {
-                    products = SessionHelper.AddProduct.Where(x => companyId.Contains(x.CompanyId)).ToList();
-                }
-                else
-                {
-                    products = SessionHelper.AddProduct.ToList();
+                    model = model.Where(x => companyId.Contains(x.Company.Id)).ToList();
                 }
                 foreach (var item in model)
                 {
                     var Detail = OrderDetail.First(e => e.ProductId == item.ProductMasterId);
                     Detail.ApprovedQuantity = item.ProductMaster.ApprovedQuantity;
-                    Detail.IsProductSelected = SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
+                    Detail.IsProductSelected = Detail.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
                 var Client = new RestClient(_Configuration.PostOrder);

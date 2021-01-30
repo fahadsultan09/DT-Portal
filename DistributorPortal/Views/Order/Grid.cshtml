@@ -74,7 +74,10 @@
                         <td><span id="CurtonQty">@(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize)</span></td>
                         <td>@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</td>
                         <td>@Model[i].WTaxRate %</td>
-                        <td>@Model[i].Company.CompanyName</td>
+                        <td>
+                            @Model[i].Company.CompanyName
+                            <input type="text" asp-for="@Model[i].Company.Id" value="@Model[i].Company.Id" class="form-control d-none" />
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -119,6 +122,12 @@
                 else {
                     $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
                 }
+                if (Quantity == "" || Quantity == "0") {
+                    $(this).parent('td').parent('tr').find(':checkbox')[0].checked = false;
+                }
+                else {
+                    $(this).parent('td').parent('tr').find(':checkbox')[0].checked = true;
+                }
                     $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "Order")',
@@ -136,9 +145,14 @@
         });
 
         $("input[type='checkbox']").change(function (e) {
-            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
-        });
 
+            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+            });
+            if ($(this).is(':checked') == false) {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+            } else {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+            }
         });
 
     });
