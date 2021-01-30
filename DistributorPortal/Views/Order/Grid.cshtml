@@ -44,7 +44,7 @@
                     <tr>
                         <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)">
+                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" />
                                 <label for="checkbox@(Model[i].Id)">
                                 </label>
                             </div>
@@ -134,11 +134,11 @@
                 })
             }
         });
-    });
 
-    $('body').on('change', ':checkbox', function () {
+        $("input[type='checkbox']").change(function (e) {
+            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+        });
 
-        $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
         });
 
     });
