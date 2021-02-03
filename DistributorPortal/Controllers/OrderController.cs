@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
@@ -287,7 +288,10 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     model.productDetails.ForEach(x => x.IsProductSelected = orderDetail.First(y => y.ProductId == x.ProductMasterId).IsProductSelected);
+                    model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = (int)orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
+                List<SAPOrderPendingQuantity> _SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                model.productDetails.ForEach(x => x.PendingQuantity = _SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? _SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity : "0");
                 SessionHelper.AddProduct = model.productDetails;
             }
             else
@@ -295,7 +299,7 @@ namespace DistributorPortal.Controllers
                 model.productDetails = new List<ProductDetail>();
                 model.OrderValueViewModel = new OrderValueViewModel();
             }
-            model.Distributor = SessionHelper.LoginUser.Distributor;
+            model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x=>x.Id == model.DistributorId).First();
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
             return model;
         }

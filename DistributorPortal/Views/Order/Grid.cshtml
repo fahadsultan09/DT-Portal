@@ -29,6 +29,7 @@
                     <th>Pack Size</th>
                     <th>Quantity</th>
                     <th>Approved Qty</th>
+                    <th>Pending Qty</th>
                     <th>Carton Size</th>
                     <th>Rate</th>
                     <th>Discount</th>
@@ -68,6 +69,7 @@
                                 <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity numeric" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
                             }
                         </td>
+                        <td>@Model[i].PendingQuantity</td>
                         <td><span id="CurtonSize">@Model[i].ProductMaster.CartonSize</span></td>
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>

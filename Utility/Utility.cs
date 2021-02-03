@@ -115,6 +115,7 @@ namespace Utility
     {
         Draft = 1,
         Submitted = 2,
-        Received = 3
+        Received = 3,
+        CompletelyProcessed = 4,
     }
 }
