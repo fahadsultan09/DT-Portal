@@ -42,5 +42,7 @@ namespace Models.Application
         public int OrderNumber { get; set; }
         [NotMapped]
         public bool IsProductSelected { get; set; }
+        [NotMapped]
+        public string PendingQuantity { get; set; }
     }
 }

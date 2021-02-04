@@ -29,6 +29,7 @@
                     <th>Pack Size</th>
                     <th>Quantity</th>
                     <th>Approved Qty</th>
+                    <th>Pending Qty</th>
                     <th>Carton Size</th>
                     <th>Rate</th>
                     <th>Discount</th>
@@ -44,7 +45,7 @@
                     <tr>
                         <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)">
+                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" />
                                 <label for="checkbox@(Model[i].Id)">
                                 </label>
                             </div>
@@ -68,13 +69,17 @@
                                 <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity numeric" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
                             }
                         </td>
+                        <td>@Model[i].PendingQuantity</td>
                         <td><span id="CurtonSize">@Model[i].ProductMaster.CartonSize</span></td>
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>
                         <td><span id="CurtonQty">@(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize)</span></td>
                         <td>@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</td>
                         <td>@Model[i].WTaxRate %</td>
-                        <td>@Model[i].Company.CompanyName</td>
+                        <td>
+                            @Model[i].Company.CompanyName
+                            <input type="text" asp-for="@Model[i].Company.Id" value="@Model[i].Company.Id" class="form-control d-none" />
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -119,6 +124,12 @@
                 else {
                     $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
                 }
+                if (Quantity == "" || Quantity == "0") {
+                    $(this).parent('td').parent('tr').find(':checkbox')[0].checked = false;
+                }
+                else {
+                    $(this).parent('td').parent('tr').find(':checkbox')[0].checked = true;
+                }
                     $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "Order")',
@@ -134,11 +145,16 @@
                 })
             }
         });
-    });
 
-    $('body').on('change', ':checkbox', function () {
+        $("input[type='checkbox']").change(function (e) {
 
-        $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+            });
+            if ($(this).is(':checked') == false) {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+            } else {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+            }
         });
 
     });

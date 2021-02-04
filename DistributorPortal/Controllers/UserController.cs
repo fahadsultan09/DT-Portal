@@ -128,6 +128,8 @@ namespace UserPortal.Controllers
             model.RoleList = new RoleBLL(_unitOfWork).DropDownRoleList(model.RoleId);
             model.DesignationList = new DesignationBLL(_unitOfWork).DropDownDesignationList(Convert.ToInt32(model.DesignationId));
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
+            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(Convert.ToInt32(model.CompanyId), false);
+            model.PlantLocationList = new PlantLocationBLL(_unitOfWork).DropDownPlantLocationList(Convert.ToInt32(model.PlantLocationId));
             model.CityList = new CityBLL(_unitOfWork).DropDownCityList(Convert.ToInt32(model.CityId));
             return model;
         }

@@ -15,11 +15,13 @@ namespace Scheduler.SAPBAPIIntegration
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderDetailBLL _OrderDetailBLL;
+        private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly Configuration _Configuration;
         public OrderBAPI(IUnitOfWork unitOfWork, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _Configuration = _configuration;
         }
 
@@ -32,6 +34,30 @@ namespace Scheduler.SAPBAPIIntegration
                 var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
                 IRestResponse response = Client.Execute(request);
                 var resp = JsonConvert.DeserializeObject<List<OrderDetail>>(response.Content);
+                if (resp == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return false;
+            }
+        }
+        public bool GetInProcessOrderReturnStatus()
+        {
+            try
+            {
+                var a = _OrderReturnDetailBLL.GetInProcessOrderReturnStatus();
+                var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
+                var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
+                IRestResponse response = Client.Execute(request);
+                var resp = JsonConvert.DeserializeObject<List<OrderReturnDetail>>(response.Content);
                 if (resp == null)
                 {
                     return true;

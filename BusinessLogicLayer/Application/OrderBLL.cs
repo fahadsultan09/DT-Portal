@@ -29,6 +29,7 @@ namespace BusinessLogicLayer.Application
         private readonly OrderValueBLL _orderValueBLL;
         private readonly ProductDetailBLL ProductDetailBLL;
         private readonly UserBLL _UserBLL;
+        private readonly PaymentBLL _PaymentBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -38,6 +39,7 @@ namespace BusinessLogicLayer.Application
             _orderValueBLL = new OrderValueBLL(_unitOfWork);
             ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
+            _PaymentBLL = new PaymentBLL(_unitOfWork);
         }
         public int Add(OrderMaster module)
         {
@@ -142,7 +144,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
                 viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
                 viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
-                viewModel.SAMIUnConfirmedPayment = SAMIproductDetails.UnConfirmedPayment;
+                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == SAMIproductDetails.CompanyId && x.DistributorId == SAMIproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
             }
             var HealthTekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == HealthTek);
@@ -154,7 +156,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.TotalOrderValues;
                 viewModel.HealthTekPendingOrderValues = HealthTekproductDetails.PendingOrderValues;
                 viewModel.HealthTekCurrentBalance = HealthTekproductDetails.CurrentBalance;
-                viewModel.HealthTekUnConfirmedPayment = HealthTekproductDetails.UnConfirmedPayment;
+                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTekproductDetails.CompanyId && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.HealthTekNetPayable = HealthTekproductDetails.NetPayable;
             }
             var PhytekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == Phytek);
@@ -166,7 +168,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekTotalOrderValues = PhytekproductDetails.TotalOrderValues;
                 viewModel.PhytekPendingOrderValues = PhytekproductDetails.PendingOrderValues;
                 viewModel.PhytekCurrentBalance = PhytekproductDetails.CurrentBalance;
-                viewModel.PhytekUnConfirmedPayment = PhytekproductDetails.UnConfirmedPayment;
+                viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == PhytekproductDetails.CompanyId && x.DistributorId == PhytekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.PhytekNetPayable = PhytekproductDetails.NetPayable;
             }            
             return viewModel;
@@ -319,7 +321,7 @@ namespace BusinessLogicLayer.Application
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
-            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0).ToList();
             var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
@@ -425,6 +427,29 @@ namespace BusinessLogicLayer.Application
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return new DistributorBalance();
+            }
+        }
+        public List<SAPOrderPendingQuantity> GetDistributorPendingQuantity(string DistributorCode, Configuration _configuration)
+        {
+            try
+            {
+                var Client = new RestClient(_configuration.GetPendingQuantity + "?DistributorId=" + DistributorCode);
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = Client.Execute(request);
+                var SAPDistributor = JsonConvert.DeserializeObject<List<SAPOrderPendingQuantity>>(response.Content);
+                if (SAPDistributor == null)
+                {
+                    return new List<SAPOrderPendingQuantity>();
+                }
+                else
+                {
+                    return SAPDistributor;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new List<SAPOrderPendingQuantity>();
             }
         }
     }

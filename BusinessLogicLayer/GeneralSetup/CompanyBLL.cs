@@ -71,7 +71,7 @@ namespace BusinessLogicLayer.GeneralSetup
         }
         public SelectList DropDownCompanyList(int SelectedValue, bool IsPaymentAllowed)
         {
-            var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && x.IsPaymentAllowed == IsPaymentAllowed).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && (IsPaymentAllowed == true ? x.IsPaymentAllowed == IsPaymentAllowed : true)).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()

@@ -37,6 +37,7 @@ namespace Scheduler
             IUnitOfWork unitOfWork = new UnitOfWork(_appDbContext);
             OrderBAPI orderBAPI = new OrderBAPI(unitOfWork, config);
             orderBAPI.GetInProcessOrderStatus();
+            orderBAPI.GetInProcessOrderReturnStatus();
         }
     }
 }

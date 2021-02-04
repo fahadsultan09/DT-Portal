@@ -2,6 +2,7 @@
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ namespace BusinessLogicLayer.Application
         public OrderReturnDetail FirstOrDefault(Expression<Func<OrderReturnDetail, bool>> predicate)
         {
             return _repository.FirstOrDefault(predicate);
+        }
+        public List<SAPOrderStatus> GetInProcessOrderReturnStatus()
+        {
+            List<SAPOrderStatus> list = _repository.GetAllList().Select(x => new SAPOrderStatus { SAPOrderNo = x.OrderReturnNumber.ToString() }).ToList();
+            return list;
         }
     }
 }

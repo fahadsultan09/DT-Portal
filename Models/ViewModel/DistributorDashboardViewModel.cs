@@ -12,7 +12,6 @@ namespace Models.ViewModel
         public int ReturnOrder { get; set; }
         public int Complaint { get; set; }
         public double VerifiedPayment { get; set; }
-        public double OutstandingBalance { get; set; }
         public int PendingApproval { get; set; }
         public int InProcess { get; set; }
         public int PartiallyProcessed { get; set; }

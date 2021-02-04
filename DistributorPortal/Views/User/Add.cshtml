@@ -46,141 +46,173 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">First Name<span class="text-danger"> * </span></label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="FirstName" type="text" placeholder="First Name" class="form-control" />
-                                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">First Name<span class="text-danger"> * </span></label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="FirstName" type="text" placeholder="First Name" class="form-control" />
+                                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Last Name<span class="text-danger"> * </span></label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="LastName" type="text" placeholder="Last Name" class="form-control" />
-                                                        <span asp-validation-for="LastName" class="text-danger"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 @(Model.Id == 0 ? "d-none" : null)">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Password</label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="Password" type="password" disabled class="form-control" />
-                                                        <span asp-validation-for="Password" class="text-danger"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Reset Password</label>
-                                                    <div class="col-lg-8">
-                                                        <a onclick="ResetPassword(this);" id="@Model.Id" class="btn btn-danger btn-sm">
-                                                            <strong>Reset Password</strong>
-                                                        </a>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Last Name<span class="text-danger"> * </span></label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="LastName" type="text" placeholder="Last Name" class="form-control" />
+                                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">City</label>
-                                                    <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.CityId, Model.CityList, "--Select option--", htmlAttributes: new { @class = "form-control select2" })
-                                                        <span asp-validation-for="CityId" class="text-danger"></span>
+                                        <div class="col-md-12 @(Model.Id == 0 ? "d-none" : null)">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Password</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="Password" type="password" disabled class="form-control" />
+                                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Designation</label>
-                                                    <div class="col-lg-8">
-                                                        @Html.DropDownListFor(e => e.DesignationId, Model.DesignationList, "--Select option--", htmlAttributes: new { @class = "form-control  select2" })
-                                                        <br />
-                                                        <span asp-validation-for="DesignationId" class="text-danger"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Mobile No</label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="MobileNumber" type="text" placeholder="Mobile No" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
-                                                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Email</label>
-                                                    <div class="col-lg-8">
-                                                        <input asp-for="Email" type="text" placeholder="Email" class="form-control" />
-                                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Reset Password</label>
+                                                        <div class="col-lg-8">
+                                                            <a onclick="ResetPassword(this);" id="@Model.Id" class="btn btn-danger btn-sm">
+                                                                <strong>Reset Password</strong>
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Is Active</label>
-                                                    <div class="col-lg-8">
-                                                        <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">City</label>
+                                                        <div class="col-lg-8">
+                                                            @Html.DropDownListFor(e => e.CityId, Model.CityList, "--Select option--", htmlAttributes: new { @class = "form-control select2" })
+                                                            <span asp-validation-for="CityId" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-6 col-form-label">Is Distributor</label>
-                                                    <div class="col-lg-6">
-                                                        <input style="margin-top: 13px" asp-for="IsDistributor" type="checkbox" id="IsDistributor"><i></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-4 col-form-label">Distributor</label>
-                                                    <div class="col-lg-8" disabled="true">
-                                                        @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "DistributorId" })
-                                                        <span class="text-danger" id="errorDistributorId"></span>
-                                                        <input asp-for="DistributorId" type="hidden" />
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Designation</label>
+                                                        <div class="col-lg-8">
+                                                            @Html.DropDownListFor(e => e.DesignationId, Model.DesignationList, "--Select option--", htmlAttributes: new { @class = "form-control  select2" })
+                                                            <br />
+                                                            <span asp-validation-for="DesignationId" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">                                            
-                                            <div class="col-md-12">
-                                                <div class="form-group row">
-                                                    <label class="col-lg-2 col-form-label">Registered Address</label>
-                                                    <div class="col-lg-10">
-                                                        <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
-                                                        <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Mobile No</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="MobileNumber" type="text" placeholder="Mobile No" class="form-control" data-inputmask="'mask': '9999-9999999'" data-mask />
+                                                            <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Email</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="Email" type="text" placeholder="Email" class="form-control" />
+                                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Is Distributor</label>
+                                                        <div class="col-lg-6">
+                                                            <input style="margin-top: 13px" asp-for="IsDistributor" type="checkbox" id="IsDistributor"><i></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Distributor</label>
+                                                        <div class="col-lg-8" disabled="true">
+                                                            @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "DistributorId" })
+                                                            <span class="text-danger" id="errorDistributorId"></span>
+                                                            <input asp-for="DistributorId" type="hidden" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Is Active</label>
+                                                        <div class="col-lg-6">
+                                                            <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Is Store Keeper</label>
+                                                        <div class="col-lg-6">
+                                                            <input style="margin-top: 13px" asp-for="IsStoreKeeper" type="checkbox" id="IsStoreKeeper"><i></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Company</label>
+                                                        <div class="col-lg-8">
+                                                            @Html.DropDownListFor(e => e.CompanyId, Model.CompanyList, "--Select option--", htmlAttributes: new { @class = "form-control select2", @id = "CompanyId" })
+                                                            <span class="text-danger" id="errorCompanyId"></span>
+                                                            <input asp-for="CompanyId" type="hidden" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Plant Location</label>
+                                                        <div class="col-lg-8">
+                                                            @Html.DropDownListFor(e => e.PlantLocationId, Model.PlantLocationList, "--Select option--", htmlAttributes: new { @class = "form-control  select2", @id = "PlantLocationId" })
+                                                            <br />
+                                                            <span class="text-danger" id="errorPlantLocationId"></span>
+                                                            <input asp-for="PlantLocationId" type="hidden" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group row">
+                                                <label class="col-lg-2 col-form-label">Registered Address</label>
+                                                <div class="col-lg-10">
+                                                    <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
+                                                    <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="col-lg-12 ">
                                             <button class="btn btn-sm btn-success float-right" type="submit" onclick="Submit(); return false;">
                                                 @(Model.Id > 0 ? "Update" : "Add")
@@ -208,12 +240,15 @@
 
         $('.select2').select2();
         $('#DistributorId').attr("disabled", true);
-
+        $('#CompanyId').attr("disabled", true);
+        $('#PlantLocationId').attr("disabled", true);
 
         $('[data-mask]').inputmask();
 
         $('#IsDistributor').on('change', function() {
-            
+
+            $('#IsDistributor').attr("disabled", false);
+            $('#IsStoreKeeper').attr("disabled", true);
             if ($('#IsDistributor').is(':checked')) {
                 $('#DistributorId').attr("disabled", false);
             }
@@ -223,7 +258,24 @@
                 $('#DistributorId').trigger('change');
             }
         });
+        $('#IsStoreKeeper').on('change', function () {
 
+            $('#IsStoreKeeper').attr("disabled", false);
+            $('#IsDistributor').attr("disabled", true);
+            if ($('#IsStoreKeeper').is(':checked')) {
+                $('#CompanyId').attr("disabled", false);
+                $('#PlantLocationId').attr("disabled", false);
+                $('#IsStoreKeeper').attr("disabled", false);
+            }
+            else {
+                $('#CompanyId').attr("disabled", true);
+                $('#CompanyId').val('');
+                $('#CompanyId').trigger('change');
+                $('#PlantLocationId').attr("disabled", true);
+                $('#PlantLocationId').val('');
+                $('#PlantLocationId').trigger('change');
+            }
+        });
     });
 
     function ResetPassword(e) {
@@ -250,7 +302,7 @@
 
     //Submit
     function Submit() {
-    
+
         var form = event.target.form;
 
         $(form).each(function () {

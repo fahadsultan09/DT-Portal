@@ -27,6 +27,8 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
         private readonly OrderDetailBLL _OrderDetailBLL;
+        private readonly OrderReturnBLL _OrderReturnBLL;
+        private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
         private readonly ComplaintBLL _ComplaintBLL;
         private readonly ProductMasterBLL _ProductMasterBLL;
@@ -34,9 +36,11 @@ namespace DistributorPortal.Controllers
         private List<PaymentMaster> _PaymentMaster;
         private List<OrderMaster> _OrderMaster;
         private List<OrderDetail> _OrderDetail;
+        private List<OrderReturnMaster> _OrderReturnMaster;
+        private List<OrderReturnDetail> _OrderReturnDetail;
         private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
-        private List<Distributor> _Distributor;
+        private List<Distributor> _Distributor; 
         private readonly Configuration _configuration;
         public HomeController(IUnitOfWork unitOfWork, Configuration configuration)
         {
@@ -47,9 +51,13 @@ namespace DistributorPortal.Controllers
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
             _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
             _DistributorBLL = new DistributorBLL(_unitOfWork);
+            _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
+            _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
             _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
+            _OrderReturnMaster = _OrderReturnBLL.GetAllOrderReturn().ToList();
+            _OrderReturnDetail = _OrderReturnDetailBLL.GetAllOrderReturnDetail().ToList();
             _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
             _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             _Distributor = _DistributorBLL.GetAllDistributor().ToList();
@@ -70,6 +78,10 @@ namespace DistributorPortal.Controllers
             else if (SessionHelper.LoginUser.Role.Id == 2)
             {
                 return RedirectToAction("AccountDashboard");
+            }
+            else if (SessionHelper.LoginUser.Role.Id == 6)
+            {
+                return RedirectToAction("StoreKeeperDashboard");
             }
             else
             {
@@ -426,14 +438,33 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorPendingQuantity()
         {
-            var Client = new RestClient(_configuration.GetPendingQuantity + "?DistributorId=" + SessionHelper.LoginUser.Distributor.DistributorSAPCode);
-            var request = new RestRequest(Method.GET);
-            IRestResponse response = Client.Execute(request);
-            var SAPDistributor = JsonConvert.DeserializeObject<List<SAPOrderPendingQuantity>>(response.Content);
-            SAPDistributor.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id);
-            SAPDistributor.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription);
-            SessionHelper.SAPOrderPendingQuantity = SAPDistributor.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
+            SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
+            var pendingQuantity = SessionHelper.SAPOrderPendingQuantity;
+            pendingQuantity.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id);
+            SessionHelper.SAPOrderPendingQuantity = pendingQuantity;
+            SessionHelper.SAPOrderPendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription);
+            SessionHelper.SAPOrderPendingQuantity = SessionHelper.SAPOrderPendingQuantity.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
             return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);
+        }
+        #endregion
+        #region Distributor
+        public IActionResult StoreKeeperDashboard()
+        {
+            try
+            {
+                StoreKeeperDashboard model = new StoreKeeperDashboard();
+
+                model.Submitted = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.Submitted).Count();
+                model.Received = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.Received).Count();
+                model.Completed = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.CompletelyProcessed).Count();
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return View();
+            }
         }
         #endregion
         public IActionResult GetFile(string filepath)

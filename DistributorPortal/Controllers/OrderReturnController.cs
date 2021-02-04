@@ -33,6 +33,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderReturnBLL _OrderReturnBLL;
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly ProductMasterBLL _ProductMasterBLL;
+        private readonly ProductDetailBLL _ProductDetailBLL;
         private ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
         public OrderReturnController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration _configuration)
@@ -41,6 +42,7 @@ namespace DistributorPortal.Controllers
             _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
+            _ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
             _viewEngine = viewEngine;
             _Configuration = _configuration;
         }
@@ -66,7 +68,7 @@ namespace DistributorPortal.Controllers
         }
         [HttpGet]
         public IActionResult Add(int id)
-        {            
+        {
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
         }
@@ -77,12 +79,12 @@ namespace DistributorPortal.Controllers
             return View("View", BindOrderReturnMaster(id));
         }
         [HttpPost]
-        public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit) 
+        public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                jsonResponse = _OrderReturnBLL.UpdateOrderReturn(model, btnSubmit, Url);                
+                jsonResponse = _OrderReturnBLL.UpdateOrderReturn(model, btnSubmit, Url);
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -209,7 +211,23 @@ namespace DistributorPortal.Controllers
         }
         public List<OrderReturnMaster> GetOrderReturnList()
         {
-            var list = _OrderReturnBLL.GetAllOrderReturn().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            List<OrderReturnMaster> list = new List<OrderReturnMaster>();
+            if (SessionHelper.LoginUser.IsStoreKeeper)
+            {
+                List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Where(x => x.CompanyId == SessionHelper.LoginUser.CompanyId).Select(x=>x.ProductMasterId).ToList();
+                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).Select(x=> new OrderReturnMaster 
+                {
+                    Id = x.OrderReturnMaster.Id,
+                    Distributor = x.OrderReturnMaster.Distributor,
+                    Status = x.OrderReturnMaster.Status,
+                    CreatedBy = x.OrderReturnMaster.CreatedBy,
+                    CreatedDate = x.OrderReturnMaster.CreatedDate
+                }).OrderByDescending(x => x.Id).ToList();
+            }
+            else
+            {
+                list = _OrderReturnBLL.GetAllOrderReturn().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            }
             return list;
         }
         private OrderReturnMaster BindOrderReturnMaster(int Id)
@@ -247,9 +265,9 @@ namespace DistributorPortal.Controllers
                         detail.OrderReturnId = item.OrderReturnId;
                         detail.PlantLocationId = item.PlantLocationId;                        
                         list.Add(detail);
-                        SessionHelper.AddReturnProduct = list;                       
+                        SessionHelper.AddReturnProduct = list;
                     }
-                }               
+                }
             }
             else
             {

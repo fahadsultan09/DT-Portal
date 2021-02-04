@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
@@ -136,24 +137,19 @@ namespace DistributorPortal.Controllers
         public IActionResult ApproveOrder(List<ProductDetail> model, int[] companyId)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            object products = (dynamic)null;
             try
             {
                 var OrderId = model.First().OrderNumber;
                 var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (companyId.Count() > 0)
                 {
-                    products = SessionHelper.AddProduct.Where(x => companyId.Contains(x.CompanyId)).ToList();
-                }
-                else
-                {
-                    products = SessionHelper.AddProduct.ToList();
+                    model = model.Where(x => companyId.Contains(x.Company.Id)).ToList();
                 }
                 foreach (var item in model)
                 {
                     var Detail = OrderDetail.First(e => e.ProductId == item.ProductMasterId);
                     Detail.ApprovedQuantity = item.ProductMaster.ApprovedQuantity;
-                    Detail.IsProductSelected = SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
+                    Detail.IsProductSelected = Detail.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
                 var Client = new RestClient(_Configuration.PostOrder);
@@ -292,7 +288,10 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     model.productDetails.ForEach(x => x.IsProductSelected = orderDetail.First(y => y.ProductId == x.ProductMasterId).IsProductSelected);
+                    model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = (int)orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
+                List<SAPOrderPendingQuantity> _SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                model.productDetails.ForEach(x => x.PendingQuantity = _SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? _SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity : "0");
                 SessionHelper.AddProduct = model.productDetails;
             }
             else
@@ -300,7 +299,7 @@ namespace DistributorPortal.Controllers
                 model.productDetails = new List<ProductDetail>();
                 model.OrderValueViewModel = new OrderValueViewModel();
             }
-            model.Distributor = SessionHelper.LoginUser.Distributor;
+            model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x=>x.Id == model.DistributorId).First();
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
             return model;
         }
