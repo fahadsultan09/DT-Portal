@@ -129,6 +129,9 @@
   <data name="ErrorOccurred" xml:space="preserve">
     <value>Error occurred while saving changes.</value>
   </data>
+  <data name="FailedReturn" xml:space="preserve">
+    <value>Unable to received return</value>
+  </data>
   <data name="FileSizeAllowed" xml:space="preserve">
     <value>File size should not be greater than 5mb.</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="PaymentVerified" xml:space="preserve">
     <value>Payment Verified Successfully.</value>
+  </data>
+  <data name="ReceivedReturn" xml:space="preserve">
+    <value>Successfully received return product </value>
   </data>
   <data name="RequiredFieldsValidation" xml:space="preserve">
     <value>Please fill in the information below. The field labels marked with * are required input fields.</value>

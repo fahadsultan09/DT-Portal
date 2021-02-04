@@ -1,0 +1,174 @@
+﻿@model OrderReturnMaster
+@inject IUnitOfWork iUnitOfWork
+@{
+    var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
+    var plantLocationList = new PlantLocationBLL(iUnitOfWork).DropDownPlantLocationList();
+    var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
+    ViewData["Title"] = "View";
+    ViewBag.IsView = true;
+}
+
+<style type="text/css">
+
+    .card-header {
+        padding: 5px 15px 0px 15px
+    }
+
+    .swal-modal .swal-text {
+        text-align: center;
+    }
+</style>
+
+<!-- Main content -->
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Distributor Information</h3>
+                                </div>
+                                <div class="card-body" style="padding: 10px 15px 0px 15px;">
+                                    <div class="row">
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                            <h6>Name:</h6>
+                                        </div>
+                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <span><strong>@Model.Distributor.DistributorName</strong></span>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                            <h6>City:</h6>
+                                        </div>
+                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <span><strong>@Model.Distributor.City</strong></span>
+                                        </div>
+
+                                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                            <h6>Code:</h6>
+                                        </div>
+                                        <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Return Order Details</h3>
+                                </div>
+                                <div class="card-body" style="padding: 10px 15px 0px 15px;">
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>Transporter:</h6>
+                                            <span asp-for="Transporter" class="form-control">@Model.Transporter</span>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>TR Number:</h6>
+                                            <span asp-for="TRNo" class="form-control">@Model.TRNo</span>                                            
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>TR Date:</h6>
+                                            <span asp-for="TRDate" class="form-control">@Model.TRDate.ToShortDateString()</span>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>Debit Note No:</h6>
+                                            <span asp-for="DebitNoteNo" class="form-control">@Model.DebitNoteNo</span>                                            
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>Debit Note Date:</h6>
+                                            <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToShortDateString()</span>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>Return Reason:</h6>
+                                            <span asp-for="OrderReturnReason.ReasonName" class="form-control">@Model.OrderReturnReason.ReasonName</span>
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary grid">
+                                <div class="card-header">
+                                    <h3 class="card-title">Return Products</h3>
+                                </div>
+                                <div class="card-body">
+                                    <br />
+                                    <div class="scrollmenu" id="ProductGrid">
+                                        @if (Model.OrderReturnDetail.Count > 0)
+                                        {
+                                            <div class="table-responsive-sm">
+                                                <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+                                                            <th>Product Name</th>
+                                                            <th>Batch No</th>
+                                                            <th>MRP</th>
+                                                            <th>Total Price</th>
+                                                            <th>Quantity</th>
+                                                            <th>Approve Qty</th>
+                                                            <th>Discount</th>
+                                                            <th>Net Amount</th>
+                                                            <th>Manufacture Date</th>
+                                                            <th>Expiry Date</th>
+                                                            <th>Invoice No</th>
+                                                            <th>Invoice Date</th>
+                                                            <th>Intimation Date</th>
+                                                            <th>Location</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Model.OrderReturnDetail)
+                                                        {
+                                                        <tr>
+                                                            <td>@item.Id</td>
+                                                            <td>@item.ProductMaster.ProductName</td>
+                                                            <td>@item.BatchNo</td>
+                                                            <td>@item.MRP</td>
+                                                            <td>@item.NetAmount</td>
+                                                            <td>@item.Quantity</td>
+                                                            <td>@item.ReceivedQty</td>
+                                                            <td>@item.ProductMaster.Discount %</td>
+                                                            <td>@item.NetAmount</td>
+                                                            <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
+                                                            <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                                                            <td>@item.InvoiceNo</td>
+                                                            <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                                                            <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                                                            <td>@item.PlantLocation.PlantLocationName</td>
+                                                        </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    $("#example").DataTable({
+                                                    });
+                                                });
+                                            </script>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+

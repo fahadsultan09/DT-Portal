@@ -22,12 +22,14 @@ namespace BusinessLogicLayer.Application
         private readonly IGenericRepository<OrderReturnMaster> _repository;
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly UserBLL _UserBLL;
+        private readonly ProductDetailBLL productDetailBLL;
         public OrderReturnBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<OrderReturnMaster>();
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
+            productDetailBLL = new ProductDetailBLL(_unitOfWork);
         }
         public int Add(OrderReturnMaster module)
         {
@@ -35,12 +37,21 @@ namespace BusinessLogicLayer.Application
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderReturnMaster>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public bool Update(OrderReturnMaster module)
         {
-            var item = _unitOfWork.GenericRepository<OrderReturnMaster>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
+            item.Status = module.Status;
+            item.DebitNoteDate = module.DebitNoteDate;
+            item.DebitNoteNo = module.DebitNoteNo;
+            item.DistributorId = module.DistributorId;
+            item.OrderReturnReasonId = module.OrderReturnReasonId;
+            item.TotalValue = module.TotalValue;
+            item.Transporter = module.Transporter;
+            item.TRDate = module.TRDate;
+            item.TRNo = module.TRNo;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<OrderReturnMaster>().Update(item);
@@ -216,6 +227,37 @@ namespace BusinessLogicLayer.Application
                 throw ex;
             }
             
+        }
+
+        public List<OrderStatusViewModel> PlaceReturnOrderToSAP(int OrderReturnId)
+        {
+            List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
+            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId).ToList();
+            var ProductDetail = productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new OrderStatusViewModel()
+                {
+                    SNO = string.Format("{0:0000000000}", item.OrderReturnId),
+                    ITEMNO = "",
+                    PARTN_NUMB = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderReturnMaster.TRNo,
+                    PURCH_DATE = DateTime.Now,
+                    PRICE_DATE = DateTime.Now,
+                    ST_PARTN = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_StorageLocation,
+                    BATCH = "",
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ReturnItemCategory,
+                    REQ_QTY = item.ReceivedQty.ToString()
+                });
+            }
+            return model;
         }
     }
 }

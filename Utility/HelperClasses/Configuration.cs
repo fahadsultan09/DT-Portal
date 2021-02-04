@@ -14,6 +14,7 @@ namespace Utility.HelperClasses
         public string GetPendingQuantity { get; set; }
         public string GetInProcessOrderStatus { get; set; }
         public string ConnectionString { get; set; }
+        public string PostReturnOrder { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -27,6 +28,7 @@ namespace Utility.HelperClasses
                 PostPayment = configuration["AppSettings:PostPayment"];
                 GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
                 GetInProcessOrderStatus = configuration["AppSettings:GetInProcessOrderStatus"];
+                PostReturnOrder = configuration["AppSettings:PostReturnOrder"];
             }            
         }
     }

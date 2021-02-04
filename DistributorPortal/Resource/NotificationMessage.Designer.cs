@@ -97,6 +97,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to received return.
+        /// </summary>
+        public static string FailedReturn {
+            get {
+                return ResourceManager.GetString("FailedReturn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File size should not be greater than 5mb..
         /// </summary>
         public static string FileSizeAllowed {
@@ -174,6 +183,15 @@ namespace DistributorPortal.Resource {
         public static string PaymentVerified {
             get {
                 return ResourceManager.GetString("PaymentVerified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully received return product .
+        /// </summary>
+        public static string ReceivedReturn {
+            get {
+                return ResourceManager.GetString("ReceivedReturn", resourceCulture);
             }
         }
         

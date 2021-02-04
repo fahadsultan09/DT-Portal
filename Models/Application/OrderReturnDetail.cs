@@ -1,6 +1,7 @@
 ﻿using Models.Common;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Utility;
 
 namespace Models.Application
 {
@@ -16,6 +17,9 @@ namespace Models.Application
         [ForeignKey("PlantLocationId")]
         public virtual PlantLocation PlantLocation { get; set; }
         public int Quantity { get; set; }
+        public int ReceivedQty { get; set; }
+        public int? ReceivedBy { get; set; }
+        public DateTime? ReceivedDate { get; set; }
         public double MRP { get; set; }
         public string BatchNo { get; set; }
         public string InvoiceNo { get; set; }
@@ -24,6 +28,8 @@ namespace Models.Application
         public DateTime ManufactureDate { get; set; }
         public DateTime IntimationDate { get; set; }
         public string Remarks { get; set; }
+        public string ReturnOrderNumber { get; set; }
+        public OrderStatus ReturnOrderStatus { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
         [NotMapped]

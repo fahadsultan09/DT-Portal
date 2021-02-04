@@ -14,12 +14,15 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Utility;
+using Utility.HelperClasses;
 using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
@@ -31,13 +34,15 @@ namespace DistributorPortal.Controllers
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly ProductMasterBLL _ProductMasterBLL;
         private ICompositeViewEngine _viewEngine;
-        public OrderReturnController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine)
+        private readonly Configuration _Configuration;
+        public OrderReturnController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
             _viewEngine = viewEngine;
+            _Configuration = _configuration;
         }
         public IActionResult Index()
         {
@@ -64,6 +69,12 @@ namespace DistributorPortal.Controllers
         {            
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
+        }
+        [HttpGet]
+        public IActionResult View(int id)
+        {
+            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+            return View("View", BindOrderReturnMaster(id));
         }
         [HttpPost]
         public JsonResult SaveEdit(OrderReturnMaster model, SubmitStatus btnSubmit) 
@@ -122,6 +133,65 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+        public IActionResult Approve(int id)
+        {
+            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+            return View("Approve", BindOrderReturnMaster(id));
+        }
+
+        [HttpPost]
+        public JsonResult ApprovedQuantity(OrderReturnMaster model)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                _unitOfWork.Begin();
+                var ProductIds = model.OrderReturnDetail.Select(e => e.ProductId).ToList();
+                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => ProductIds.Contains(e.ProductId)).ToList();
+                var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
+                if (master != null)
+                {
+                    master.Status = OrderReturnStatus.Received;
+                    _OrderReturnBLL.Update(master);
+                }
+                foreach (var item in model.OrderReturnDetail)
+                {
+                    var product = OrderreturnProduct.First(e => e.ProductId == item.ProductId);
+                    product.ReceivedQty = item.ReceivedQty;
+                    product.ReceivedBy = SessionHelper.LoginUser.Id;
+                    product.ReceivedDate = DateTime.Now;
+                    _OrderReturnDetailBLL.Update(product);
+                }
+                var Client = new RestClient(_Configuration.PostReturnOrder);
+                var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderToSAP(model.Id), "json");
+                IRestResponse response = Client.Execute(request);
+                var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                if (SAPProduct != null)
+                {
+                    foreach (var item in SAPProduct)
+                    {
+                        var product = OrderreturnProduct.First(e => e.ProductMaster.SAPProductCode == item.ProductCode);
+                        product.ReturnOrderNumber = item.SAPOrderNo;
+                        product.ReturnOrderStatus = OrderStatus.NotYetProcess;
+                        product.ReceivedBy = SessionHelper.LoginUser.Id;
+                        product.ReceivedDate = DateTime.Now;
+                        _OrderReturnDetailBLL.Update(product);
+                    }
+                }
+                _unitOfWork.Commit();
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.ReceivedReturn;
+                jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.FailedReturn;
+                return Json(new { data = jsonResponse });
+            }
+        }
         [HttpPost]
         public IActionResult Search(OrderReturnViewModel model, string Search)
         {
@@ -148,7 +218,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _OrderReturnBLL.GetById(Id);
-                model.Distributor = new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).FirstOrDefault();
+                model.Distributor = model.Distributor;
                 model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id).ToList();
                 OrderReturnDetail detail = new OrderReturnDetail();
                 foreach (var item in model.OrderReturnDetail)
@@ -156,11 +226,26 @@ namespace DistributorPortal.Controllers
                     ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(item.ProductId);
                     if (productMaster != null)
                     {
+                        
                         var list = SessionHelper.AddReturnProduct;
+                        detail.BatchNo = item.BatchNo;
+                        detail.MRP = item.MRP;
+                        detail.TotalPrice = item.TotalPrice;
+                        detail.Discount = item.Discount;
+                        detail.Quantity = item.Quantity;
+                        detail.Discount = item.Discount;
+                        detail.ManufactureDate = item.ManufactureDate;
+                        detail.ExpiryDate = item.ExpiryDate;
+                        detail.InvoiceNo = item.InvoiceNo;
+                        detail.InvoiceDate = item.InvoiceDate;
                         detail.ProductMaster = productMaster;
-                        detail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == item.PlantLocationId).FirstOrDefault();
+                        detail.PlantLocation = item.PlantLocation;
                         detail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
                         detail.NetAmount = detail.Quantity * detail.MRP;
+                        detail.Remarks = item.Remarks;
+                        detail.ProductId = item.ProductId;
+                        detail.OrderReturnId = item.OrderReturnId;
+                        detail.PlantLocationId = item.PlantLocationId;                        
                         list.Add(detail);
                         SessionHelper.AddReturnProduct = list;                       
                     }

@@ -24,39 +24,39 @@
         <tbody>
             @foreach (var item in Model)
             {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.ProductMaster.ProductName</td>
-                <td>@item.BatchNo</td>
-                <td>@item.MRP</td>
-                <td>@item.NetAmount</td>
-                <td>@item.Quantity</td>
-                <td>@item.ProductMaster.Discount %</td>
-                <td>@item.NetAmount</td>
-                <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.InvoiceNo</td>
-                <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.PlantLocation.PlantLocationName</td>
-                <td>
-                    <a asp-action="Delete"
-                       asp-controller="OrderReturn"
-                       asp-route-Id="@item.ProductMaster.Id"
-                       class="btn btn-danger"
-                       data-ajax="true"
-                       data-ajax-complete="UpdateOrderValue"
-                       data-ajax-update="#ProductGrid"
-                       data-ajax-method="POST">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.ProductMaster.ProductName</td>
+                    <td>@item.BatchNo</td>
+                    <td>@item.MRP</td>
+                    <td>@item.NetAmount</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.ProductMaster.Discount %</td>
+                    <td>@item.NetAmount</td>
+                    <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.InvoiceNo</td>
+                    <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.PlantLocation.PlantLocationName</td>
+                    <td>
+                        <a asp-action="Delete"
+                           asp-controller="OrderReturn"
+                           asp-route-Id="@item.ProductMaster.Id"
+                           class="btn btn-danger"
+                           data-ajax="true"
+                           data-ajax-complete="UpdateOrderValue"
+                           data-ajax-update="#ProductGrid"
+                           data-ajax-method="POST">Delete</a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#example1").DataTable({
+        $("#example").DataTable({
         });
     });
 </script>
