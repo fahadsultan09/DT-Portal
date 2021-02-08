@@ -24,7 +24,7 @@ namespace Models.Application
         public string EmailAddress { get; set; }
         public string MobileNumber { get; set; }
         public string CustomerGroup { get; set; }
-        public bool IsRegistered { get; set; }
+        public bool IsFiler { get; set; }
         public DistributorStatus Status { get; set; }
         [NotMapped]
         public SelectList RegionList { get; set; }

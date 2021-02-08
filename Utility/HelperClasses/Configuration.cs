@@ -15,6 +15,8 @@ namespace Utility.HelperClasses
         public string GetInProcessOrderStatus { get; set; }
         public string ConnectionString { get; set; }
         public string PostReturnOrder { get; set; }
+        public int DistributorFiler { get; set; }
+        public int DistributorNonFiler { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -29,6 +31,8 @@ namespace Utility.HelperClasses
                 GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
                 GetInProcessOrderStatus = configuration["AppSettings:GetInProcessOrderStatus"];
                 PostReturnOrder = configuration["AppSettings:PostReturnOrder"];
+                DistributorFiler= configuration["Distributor:Filer"].ParseToInt32();
+                DistributorNonFiler = configuration["Distributor:NonFiler"].ParseToInt32();
             }            
         }
     }

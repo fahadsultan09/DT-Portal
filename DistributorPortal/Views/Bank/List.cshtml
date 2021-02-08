@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Bank>
 @{
+    int Sno = 1;
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
     {
@@ -30,22 +31,22 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>S.No</th>
-                            <th>Company Name</th>
-                            <th>Name</th>
-                            <th>Branch</th>
-                            <th>Branch Code</th>
-                            <th>Accoun tNo</th>
-                            <th>IBAN No</th>
-                            <th>Active</th>
-                            <th>Action</th>
+                            <th width="5%">S.No</th>
+                            <th width="12%">Company Name</th>
+                            <th width="15%">Name</th>
+                            <th width="10%">Branch</th>
+                            <th width="15%">Branch Code</th>
+                            <th width="10%">Accoun tNo</th>
+                            <th width="10%">IBAN No</th>
+                            <th width="10%">Active</th>
+                            <th width="10%">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.Id</td>
+                                <td>@Sno</td>
                                 <td>@item.Company.CompanyName</td>
                                 <td>@item.BankName</td>
                                 <td>@item.Branch</td>
@@ -70,6 +71,7 @@
                                     </a>
                                 </td>
                             </tr>
+                            Sno++;
                         }
                     </tbody>
                 </table>

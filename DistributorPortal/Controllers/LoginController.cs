@@ -119,12 +119,13 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Logout()
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
-        }        
+        }
     }
 }

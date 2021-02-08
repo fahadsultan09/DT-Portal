@@ -5,13 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using Utility;
+using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
-    public class BaseController : Controller
+    public class BaseController : Controller 
     {
+        private string[] CommonUrls = { "/Home/Index" };
         public override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
+        {            
             // our code before action executes
             var context = filterContext.HttpContext;
             if (context.Session != null)
@@ -23,10 +25,18 @@ namespace DistributorPortal.Controllers
                         string Controller = (string)filterContext.RouteData.Values["Controller"];
                         string Action = (string)filterContext.RouteData.Values["Action"];
                         string URL = "/" + Controller + "/" + Action;
-                        if (!SessionHelper.NavigationMenu.Select(e => e.ApplicationPage.PageURL).Contains(URL))
+                        if (CommonUrls.Contains(URL))
+                        {
+
+                        }
+                        else if (SessionHelper.NavigationMenu.Select(e => e.ApplicationPage.PageURL).Contains(URL))
+                        {
+                            
+                        }
+                        else
                         {
                             filterContext.HttpContext.Response.StatusCode = 403;
-                            filterContext.Result = new RedirectResult("~/Login/Index");
+                            filterContext.Result = new RedirectResult("~/Home/Index");
                         }
                     }
                 }

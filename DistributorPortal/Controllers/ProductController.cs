@@ -69,7 +69,7 @@ namespace ProductPortal.Controllers
                 else
                 {
                     List<ProductMaster> list = new List<ProductMaster>();
-                    addProduct.ForEach(e =>
+                    updateProduct.ForEach(e =>
                     {
                         var item = _unitOfWork.GenericRepository<ProductMaster>().FirstOrDefault(x => x.SAPProductCode == e.SAPProductCode);
                         item.ProductName = e.ProductName;

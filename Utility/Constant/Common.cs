@@ -20,6 +20,11 @@
             public const string OrderSubmit = "Order Submitted Successfully";
             public const string OrderItem = "Please add atleast one product";
         }
+
+        public class AcceptURLs
+        {
+            public const string Home = "/Home/Index";
+        }
     }
     public class LastYearMonth
     {
