@@ -34,6 +34,7 @@ namespace Models.UserRights
         [DisplayName("Sort")]
         [Required(ErrorMessage = "Enter your sort.")]
         public int Sort { get; set; }
+        public bool IsShowOnNavigation { get; set; }
         [NotMapped]
         public SelectList ApplicationModuleList { get; set; }
         [NotMapped]

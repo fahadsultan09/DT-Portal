@@ -53,7 +53,7 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
-            if (login.CheckUserPassword(model, password))
+            if (model.Password.Equals(password) && login.CheckUserPassword(model, password))
             {
                 jsonResponse.Status = false;
                 jsonResponse.Message = "Please change default password.";
