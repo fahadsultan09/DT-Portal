@@ -10,9 +10,9 @@
 
                             <th>Product Name</th>
                             <th>Ordered Quantity</th>
-                            @*<th>Approved Quantity</th>
+                            <th>Received Quantity</th>
                             <th>SAP Order Number</th>
-                            <th>SAP Order Status</th>*@
+                            <th>SAP Order Status</th>
                         </tr>
                     <tbody>
                         @foreach (var item in Model)
@@ -20,9 +20,9 @@
                             <tr>
                                 <td>@item.ProductMaster.ProductName</td>
                                 <td>@item.Quantity</td>
-                                @*<td>@item.ApprovedQuantity</td>
-                                <td>@item.SAPOrderNumber</td>
-                                <td>@Html.DisplayFor(x => item.OrderProductStatus)</td>*@
+                                <td>@item.ReceivedQty</td>
+                                <td>@item.ReturnOrderNumber</td>
+                                <td>@Html.DisplayFor(x => item.ReturnOrderStatus)</td>
                             </tr>
                         }
                     </tbody>

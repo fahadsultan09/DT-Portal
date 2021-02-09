@@ -17,6 +17,7 @@ namespace Utility.HelperClasses
         public string PostReturnOrder { get; set; }
         public int DistributorFiler { get; set; }
         public int DistributorNonFiler { get; set; }
+        public string GetPendingOrderValue { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -33,6 +34,7 @@ namespace Utility.HelperClasses
                 PostReturnOrder = configuration["AppSettings:PostReturnOrder"];
                 DistributorFiler= configuration["Distributor:Filer"].ParseToInt32();
                 DistributorNonFiler = configuration["Distributor:NonFiler"].ParseToInt32();
+                GetPendingOrderValue = configuration["AppSettings:GetPendingOrderValue"];
             }            
         }
     }
