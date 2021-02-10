@@ -99,7 +99,11 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        _DistributorLicenseBLL.Add(item);
+                        if (item.Attachment != null)
+                        {
+                            _DistributorLicenseBLL.Add(item);
+                        }
+                       
                     }
                 }
                 jsonResponse.Status = true;
