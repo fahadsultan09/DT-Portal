@@ -299,7 +299,13 @@ namespace DistributorPortal.Controllers
                 model.productDetails = new List<ProductDetail>();
                 model.OrderValueViewModel = new OrderValueViewModel();
             }
-            model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x=>x.Id == model.DistributorId).First();
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+            }
+
+            model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First();
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
             return model;
         }

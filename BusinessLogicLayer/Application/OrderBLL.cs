@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
@@ -91,6 +92,8 @@ namespace BusinessLogicLayer.Application
 
         public OrderValueViewModel GetOrderValueModel(List<ProductDetail> productDetails)
         {
+            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
+
             OrderValueViewModel viewModel = new OrderValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
@@ -101,9 +104,19 @@ namespace BusinessLogicLayer.Application
             viewModel.SAMISupplies1 = SAMIproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.SAMISupplies4 = SAMIproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.TotalPrice);
-            viewModel.SAMIPendingOrderValues = 0;
+            if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
+            {
+                viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
+            }
             viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
-            viewModel.SAMIUnConfirmedPayment = 0;
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
+            else
+            {
+                //viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == SAMIproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
             viewModel.SAMINetPayable = (viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI) > 0 ? viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI : 0;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
@@ -111,9 +124,19 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.TotalPrice);
-            viewModel.HealthTekPendingOrderValues = 0;
+            if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
+            {
+                viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
+            }
             viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
-            viewModel.HealthTekUnConfirmedPayment = 0;
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
+            else
+            {
+                //viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
             viewModel.HealthTekNetPayable = (viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek) > 0 ? viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek : 0;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
@@ -121,9 +144,19 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
             viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.TotalPrice);
-            viewModel.PhytekPendingOrderValues = 0;
+            if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
+            {
+                viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
+            }
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
-            viewModel.PhytekUnConfirmedPayment = 0;
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
+            else
+            {
+                //viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);tor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
             viewModel.PhytekNetPayable = (viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek) > 0 ? viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek : 0;
             return viewModel;
         }
@@ -170,7 +203,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekCurrentBalance = PhytekproductDetails.CurrentBalance;
                 viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == PhytekproductDetails.CompanyId && x.DistributorId == PhytekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.PhytekNetPayable = PhytekproductDetails.NetPayable;
-            }            
+            }
             return viewModel;
         }
         public List<OrderValue> GetValues(OrderValueViewModel orderValueViewModel, int OrderId)
@@ -450,6 +483,29 @@ namespace BusinessLogicLayer.Application
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return new List<SAPOrderPendingQuantity>();
+            }
+        }
+        public List<SAPOrderPendingValue> GetPendingOrderValue(string DistributorCode, Configuration _configuration)
+        {
+            try
+            {
+                var Client = new RestClient(_configuration.GetPendingOrderValue + "?DistributorId=" + DistributorCode);
+                var request = new RestRequest(Method.POST);
+                IRestResponse response = Client.Execute(request);
+                var SAPOrderPendingValue = JsonConvert.DeserializeObject<List<SAPOrderPendingValue>>(response.Content);
+                if (SAPOrderPendingValue == null)
+                {
+                    return new List<SAPOrderPendingValue>();
+                }
+                else
+                {
+                    return SAPOrderPendingValue;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new List<SAPOrderPendingValue>();
             }
         }
     }

@@ -65,5 +65,21 @@ namespace SAPConfigurationAPI.Controllers
             }
             return list;
         }
+        [HttpPost]
+        [Route("api/Order/GetPendingOrderValue")]
+        public List<OrderPendingValue> GetPendingOrderValue(string DistributorId)
+        {
+            var Data = connectivity.GetPendingOrderValue("ZWAS_BI_SALES_QUERY_BAPI", DistributorId);
+            List<OrderPendingValue> list = new List<OrderPendingValue>();
+            for (int i = 0; i < Data.RowCount; i++)
+            {
+                list.Add(new OrderPendingValue()
+                {
+                    CompanyCode = Data[i].GetString("VKORG"),
+                    PendingValue = Data[i].GetString("NETWR"),
+                });
+            }
+            return list;
+        }
     }
 }

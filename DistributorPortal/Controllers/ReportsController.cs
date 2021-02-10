@@ -86,9 +86,9 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpGet]
-        public ActionResult GetOrderReturnDetailList(int OrderId)
+        public ActionResult GetOrderReturnDetailList(int OrderReturnId)
         {
-            var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(OrderId);
+            var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(OrderReturnId);
             return PartialView("OrderReturnDetailList", Detail);
         }
         #endregion
