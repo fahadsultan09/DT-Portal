@@ -66,10 +66,9 @@ namespace DistributorPortal.Controllers
         public IActionResult Index()
         {
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "Index", " Form");
-            if (SessionHelper.LoginUser.Role.Id == 4)
+            if (SessionHelper.LoginUser.Role.Id == 4 || SessionHelper.LoginUser.Role.Id == 7)
             {
                 return RedirectToAction("AdminDashboard");
-
             }
             else if (SessionHelper.LoginUser.Role.Id == 3)
             {
