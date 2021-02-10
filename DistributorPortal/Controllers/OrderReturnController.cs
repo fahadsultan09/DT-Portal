@@ -172,12 +172,15 @@ namespace DistributorPortal.Controllers
                 {
                     foreach (var item in SAPProduct)
                     {
-                        var product = OrderreturnProduct.First(e => e.ProductMaster.SAPProductCode == item.ProductCode);
-                        product.ReturnOrderNumber = item.SAPOrderNo;
-                        product.ReturnOrderStatus = OrderStatus.NotYetProcess;
-                        product.ReceivedBy = SessionHelper.LoginUser.Id;
-                        product.ReceivedDate = DateTime.Now;
-                        _OrderReturnDetailBLL.Update(product);
+                        var product = OrderreturnProduct.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
+                        if (product != null)
+                        {
+                            product.ReturnOrderNumber = item.SAPOrderNo;
+                            product.ReturnOrderStatus = OrderStatus.NotYetProcess;
+                            product.ReceivedBy = SessionHelper.LoginUser.Id;
+                            product.ReceivedDate = DateTime.Now;
+                            _OrderReturnDetailBLL.Update(product);
+                        }                        
                     }
                 }
                 _unitOfWork.Commit();
@@ -238,10 +241,13 @@ namespace DistributorPortal.Controllers
                 model = _OrderReturnBLL.GetById(Id);
                 model.Distributor = model.Distributor;
                 model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id).ToList();
+                var allproducts = _ProductMasterBLL.GetAllProductMaster();
+                var allproductDetail = _ProductDetailBLL.GetAllProductDetail();
                 OrderReturnDetail detail = new OrderReturnDetail();
                 foreach (var item in model.OrderReturnDetail)
                 {
-                    ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(item.ProductId);
+                    ProductMaster productMaster = allproducts.FirstOrDefault(e => e.Id == item.ProductId);
+                    ProductDetail productDetail = allproductDetail.FirstOrDefault(e => e.ProductMasterId == item.ProductId);
                     if (productMaster != null)
                     {
                         
@@ -263,11 +269,13 @@ namespace DistributorPortal.Controllers
                         detail.Remarks = item.Remarks;
                         detail.ProductId = item.ProductId;
                         detail.OrderReturnId = item.OrderReturnId;
-                        detail.PlantLocationId = item.PlantLocationId;                        
+                        detail.PlantLocationId = item.PlantLocationId;
+                        detail.Company = productDetail.Company;
                         list.Add(detail);
                         SessionHelper.AddReturnProduct = list;
                     }
                 }
+                model.OrderReturnDetail = SessionHelper.AddReturnProduct;
             }
             else
             {
@@ -297,7 +305,7 @@ namespace DistributorPortal.Controllers
             }
             SessionHelper.AddReturnProduct = list;
             new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "End Click on Delete Button of ");
-            return PartialView("AddToGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
+            return PartialView("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
         }
     }
 }

@@ -37,6 +37,8 @@ namespace Models.Application
         [NotMapped]
         public double NetAmount { get; set; }
         [NotMapped]
-        public int OrderReturnNumber { get; set; }
+        public int OrderReturnNumber { get; set; }        
+        [NotMapped]
+        public Company Company { get; set; }
     }
 }

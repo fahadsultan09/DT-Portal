@@ -64,6 +64,7 @@ namespace DistributorPortal.Controllers
             }
             return View(model);
         }
+        [HttpPost]
         public IActionResult SaveEdit(List<DistributorLicense> model)
         {
             JsonResponse jsonResponse = new JsonResponse();
