@@ -92,12 +92,15 @@ namespace DistributorPortal.Controllers
                     item.IsDeleted = false;
                     if (item.Id > 0)
                     {
-                        _DistributorLicenseBLL.Update(item);
+                        if (item.Attachment != null)
+                        {
+                            _DistributorLicenseBLL.Update(item);
+                        }
                     }
                     else
                     {
                         _DistributorLicenseBLL.Add(item);
-                    }                                      
+                    }
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;

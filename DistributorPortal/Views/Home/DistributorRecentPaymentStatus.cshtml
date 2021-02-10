@@ -24,7 +24,7 @@
                                     foreach (var item in Model.RecentOrder)
                                     {
                                         <tr>
-                                            <td>@item.OrderNo</td>
+                                            <td>@String.Format("{0:0000000000}", item.OrderNo)</td>
                                             <td>@String.Format("{0:N}", item.Amount)</td>
                                             <td>@item.Status</td>
                                             <td>
@@ -67,7 +67,7 @@
                                     foreach (var item in Model.RecentPayment)
                                     {
                                         <tr>
-                                            <td>@item.PaymentId</td>
+                                            <td>@string.Format("{0:0000000000}", item.PaymentId)</td>
                                             <td>@item.PaymentMode</td>
                                             <td>@String.Format("{0:N}", item.Amount)</td>
                                             <td>
