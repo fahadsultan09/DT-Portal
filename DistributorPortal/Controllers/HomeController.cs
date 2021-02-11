@@ -104,7 +104,7 @@ namespace DistributorPortal.Controllers
                 model.PendingOrder = model.PendingApproval + model.InProcess + model.PartiallyProcessed;
                 model.VerifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount);
                 model.UnverifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
-
+                model.ReturnOrder = _OrderReturnBLL.GetAllOrderReturn().Count();
                 return View(model);
             }
             catch (Exception ex)
