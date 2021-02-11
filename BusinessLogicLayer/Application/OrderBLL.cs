@@ -360,7 +360,7 @@ namespace BusinessLogicLayer.Application
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:0000000000}", item.OrderId),
+                    SNO = string.Format("{0:1000000000}", item.OrderId),
                     ITEMNO = "",
                     PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
                     DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,

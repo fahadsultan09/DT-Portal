@@ -32,7 +32,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@string.Format("{0:0000000000}", item.Id)</td>
+                                <td>@string.Format("{0:1000000000}", item.Id)</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.PaymentMode.PaymentName</td>
                                 <td>

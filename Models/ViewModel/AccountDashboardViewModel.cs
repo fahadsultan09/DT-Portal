@@ -6,6 +6,7 @@ namespace Models.ViewModel
 {
     public class AccountDashboardViewModel
     {
+        public int UnverifiedPaymentCount { get; set; }
         public string UnverifiedPayment { get; set; }
         public string VerifiedPayment { get; set; }
         public string TodayVerifiedPayment { get; set; }

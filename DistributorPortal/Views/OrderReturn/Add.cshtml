@@ -145,20 +145,20 @@
                                           data-ajax-complete=""
                                           data-ajax-method="POST">
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <h6>Product Name:</h6>
                                                 <select name="ProductId" asp-items="@(new SelectList(product, "Value", "Text"))" class="form-control select2" id="ddlProduct">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            @*<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Location:</h6>
                                                 <select name="PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control select2" id="ddlPlantLocation">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorPlantLocationName" class="text-danger"></span>
-                                            </div>
+                                            </div>*@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:</h6>
                                                 <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />

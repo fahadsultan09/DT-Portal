@@ -5,6 +5,7 @@ using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Linq;
 
@@ -38,6 +39,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult SaveEdit(ComplaintSubCategory model)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
             {
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "Start Click on SaveEdit Button of ");
@@ -54,29 +56,34 @@ namespace DistributorPortal.Controllers
                         if (model.Id > 0)
                         {
                             _ComplaintSubCategoryBLL.UpdateComplaintSubCategory(model);
-                            TempData["Message"] = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                         }
                         else
                         {
                             _ComplaintSubCategoryBLL.AddComplaintSubCategory(model);
-                            TempData["Message"] = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                         }
                     }
                     else
                     {
                         new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "End Click on Save Button of ");
-                        TempData["Message"] = "Complaint Sub Category name already exist";
-                        return PartialView("Add", model);
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Complaint Sub Category name already exist";
                     }
                 }
                 new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintSubCategory", "SaveEdit", "End Click on Save Button of ");
-                return RedirectToAction("List");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                TempData["Message"] = NotificationMessage.ErrorOccurred;
-                return RedirectToAction("List");
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
             }
         }
         [HttpPost]

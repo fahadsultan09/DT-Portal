@@ -199,7 +199,7 @@
                                                 <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="DepositorBankCode" id="DepositorBankCode" class="form-control" readonly="readonly" />
+                                                <input type="text" asp-for="DepositorBankCode" id="DepositorBankCode" class="form-control" />
                                                 <span asp-validation-for="DepositorBankCode" class="text-danger"></span>
                                             </div>
                                         </div><br />
@@ -309,19 +309,19 @@
             $('.ddlCompanyBank').change();
         });
 
-        $('body').on('change', '.ddlDepostitorBank', function () {
-            $.ajax({
-                type: "GET",
-                url: "/Bank/GetBranchCode",
-                contentType: "application/json",
-                dataType: "json",
-                data: { Id: $(".ddlDepostitorBank").val() },
-                async: false,
-                success: function (response) {
-                    $('#DepositorBankCode').val(response[0]);
-                },
-            });
-        });
+        //$('body').on('change', '.ddlDepostitorBank', function () {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: "/Bank/GetBranchCode",
+        //        contentType: "application/json",
+        //        dataType: "json",
+        //        data: { Id: $(".ddlDepostitorBank").val() },
+        //        async: false,
+        //        success: function (response) {
+        //            $('#DepositorBankCode').val(response[0]);
+        //        },
+        //    });
+        //});
 
         $('body').on('change', '.ddlCompanyBank', function () {
             $.ajax({
