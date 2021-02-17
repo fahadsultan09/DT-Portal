@@ -1,11 +1,10 @@
-﻿using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
-using Models.UserRights;
 using Models.ViewModel;
 using System;
 using System.Linq;
@@ -24,7 +23,7 @@ namespace DistributorPortal.Controllers
         // GET: Bank
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Index", " Form");
             return View(_BankBLL.GetAllBank());
         }
         public IActionResult List()
@@ -34,7 +33,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindBank(id));
         }
         [HttpPost]
@@ -43,7 +42,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -75,7 +74,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Bank name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -91,9 +90,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Delete", "Start Click on Delete Button of ");
                 _BankBLL.DeleteBank(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Bank", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

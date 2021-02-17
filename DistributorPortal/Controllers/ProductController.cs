@@ -2,7 +2,6 @@
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,6 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Utility.HelperClasses;
 
 namespace ProductPortal.Controllers
@@ -34,7 +32,7 @@ namespace ProductPortal.Controllers
         // GET: Product
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Index", " Form");
             return View(_ProductMasterBLL.GetAllProductMaster());
         }
         public IActionResult List()
@@ -47,7 +45,7 @@ namespace ProductPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "Sync", "Start Click on Sync Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Sync", "Start Click on Sync Button of ");
                 var Client = new RestClient(_configuration.SyncProductURL);
                 var request = new RestRequest(Method.GET);
                 IRestResponse response = Client.Execute(request);
@@ -92,7 +90,7 @@ namespace ProductPortal.Controllers
                     });
                     _ProductMasterBLL.UpdateRange(list);
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "Sync", "End Click on Sync Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Sync", "End Click on Sync Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SyncedSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("Index", "Product");
@@ -110,7 +108,7 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public IActionResult ProductMapping()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "ProductMapping", "Get Prodct Mapping ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "ProductMapping", "Get Prodct Mapping ");
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
             List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
@@ -122,7 +120,7 @@ namespace ProductPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "UpdateProductDetail", "Start Click on UpdateProductDetail Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "UpdateProductDetail", "Start Click on UpdateProductDetail Button of ");
                 if (model.Id > 0)
                 {
                     _ProductDetailBLL.UpdateProductDetail(model);
@@ -132,7 +130,7 @@ namespace ProductPortal.Controllers
                     _ProductDetailBLL.AddProductDetail(model);
                 }
 
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "UpdateProductDetail", "End Click on UpdateProductDetail Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "UpdateProductDetail", "End Click on UpdateProductDetail Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
@@ -150,7 +148,7 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public JsonResult GetProduct(int Id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Product", "GetProduct", "Get Product ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "GetProduct", "Get Product ");
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(Id);
             return Json(new { productMaster });
         }

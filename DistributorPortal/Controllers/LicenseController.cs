@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -22,7 +21,7 @@ namespace DistributorPortal.Controllers
         // GET: LicenseControl
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "Index", " Form");
             return View(_LicenseControlBLL.GetAllLicenseControl());
         }
         public IActionResult List()
@@ -32,7 +31,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindLicenseControl(id));
         }
         [HttpPost]
@@ -40,7 +39,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,12 +63,12 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "End Click on Save Button of ");
+                        new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "LicenseControl name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -84,9 +83,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "Delete", "Start Click on Delete Button of ");
                 _LicenseControlBLL.DeleteLicenseControl(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("LicenseControl", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

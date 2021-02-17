@@ -23,6 +23,8 @@ namespace Models.ViewModel
         public double UnConfirmedPayment { get; set; }
         [Display(Name = "Net Payable")]
         public double NetPayable { get; set; }
+        [Display(Name = "Unapproved Order Values")]
+        public double TotalUnapprovedOrderValues { get; set; }
 
         public double SAMISupplies0 { get; set; }
         public double SAMISupplies1 { get; set; }
@@ -32,6 +34,7 @@ namespace Models.ViewModel
         public double SAMICurrentBalance { get; set; }
         public double SAMIUnConfirmedPayment { get; set; }
         public double SAMINetPayable { get; set; }
+        public double SAMITotalUnapprovedOrderValues { get; set; }
 
         public double HealthTekSupplies0 { get; set; }
         public double HealthTekSupplies1 { get; set; }
@@ -41,6 +44,7 @@ namespace Models.ViewModel
         public double HealthTekCurrentBalance { get; set; }
         public double HealthTekUnConfirmedPayment { get; set; }
         public double HealthTekNetPayable { get; set; }
+        public double HealthTekTotalUnapprovedOrderValues { get; set; }
 
         public double PhytekSupplies0 { get; set; }
         public double PhytekSupplies1 { get; set; }
@@ -50,5 +54,6 @@ namespace Models.ViewModel
         public double PhytekCurrentBalance { get; set; }
         public double PhytekUnConfirmedPayment { get; set; }
         public double PhytekNetPayable { get; set; }
+        public double PhytekTotalUnapprovedOrderValues { get; set; }
     }
 }

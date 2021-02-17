@@ -5,13 +5,11 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
@@ -23,7 +21,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
-using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
@@ -48,7 +45,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Index", " Form");
             OrderReturnViewModel model = new OrderReturnViewModel();
             model.OrderReturnMaster = GetOrderReturnList();
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
@@ -200,7 +197,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult Search(OrderReturnViewModel model, string Search)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Search", "Start Click on Search Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Search", "Start Click on Search Button of ");
             if (!string.IsNullOrEmpty(Search))
             {
                 model = List(model);
@@ -209,7 +206,7 @@ namespace DistributorPortal.Controllers
             {
                 model.OrderReturnMaster = GetOrderReturnList();
             }
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturn", "Search", "End Click on Search Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Search", "End Click on Search Button of ");
             return PartialView("List", model.OrderReturnMaster);
         }
         public List<OrderReturnMaster> GetOrderReturnList()
@@ -304,7 +301,7 @@ namespace DistributorPortal.Controllers
                 list.Remove(item);
             }
             SessionHelper.AddReturnProduct = list;
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderMaster", "Delete", "End Click on Delete Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "Delete", "End Click on Delete Button of ");
             return PartialView("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
         }
     }

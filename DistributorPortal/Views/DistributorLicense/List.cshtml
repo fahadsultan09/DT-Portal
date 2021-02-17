@@ -13,6 +13,7 @@
                             <th>Distributor</th>
                             <th>License</th>
                             <th>Type</th>
+                            <th>RequestType</th>
                             <th>Attachment</th>
                             <th>Issue</th>
                             <th>Expiry</th>
@@ -27,6 +28,7 @@
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.LicenseControl.LicenseName</td>
                                 <td>@item.Type</td>
+                                <td>@item.RequestType</td>
                                 <td>
                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ? item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
                                 </td>

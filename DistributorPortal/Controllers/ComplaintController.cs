@@ -1,10 +1,8 @@
 ﻿using BusinessLogicLayer.Application;
-using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +33,7 @@ namespace DistributorPortal.Controllers
         // GET: Complaint
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "Index", " Form");
             return View(GetComplaintList());
         }
         public IActionResult List()
@@ -45,13 +43,13 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "Add", "Click on Add  Button of ");
-            return PartialView("Add", BindComplaint(id));
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "Add", "Click on Add  Button of ");
+            return View("Add", BindComplaint(id));
         }
         [HttpGet]
         public IActionResult ComplaintApproval(int id)
         {
-            return PartialView("ComplaintApproval", BindComplaint(id));
+            return View("ComplaintApproval", BindComplaint(id));
         }
         [HttpPost]
         public JsonResult SaveEdit(Complaint model)
@@ -60,7 +58,7 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -86,7 +84,7 @@ namespace DistributorPortal.Controllers
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _ComplaintBLL.Add(model);
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "SaveEdit", "End Click on Save Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");
@@ -122,14 +120,14 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "UpdateStatus", "Start Click on Resolve Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "UpdateStatus", "Start Click on Resolve Button of ");
                 Complaint model = _ComplaintBLL.GetById(id);
                 if (model != null)
                 {
                     _ComplaintBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "UpdateStatus", "End Click on Resolve Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Complaint", "UpdateStatus", "End Click on Resolve Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.Resolved;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");

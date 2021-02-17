@@ -1,14 +1,11 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DistributorPortal.Controllers
 {

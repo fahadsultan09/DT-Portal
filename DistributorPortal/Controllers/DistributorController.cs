@@ -3,7 +3,6 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -31,7 +30,7 @@ namespace DistributorPortal.Controllers
         // GET: Distributor
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "Index", " Form");
             return View(_DistributorBLL.GetAllDistributor());
         }
         public IActionResult List()
@@ -81,7 +80,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindDistributor(id));
         }
         [HttpPost]
@@ -90,7 +89,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -122,7 +121,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Distributor name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -138,9 +137,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "Delete", "Start Click on Delete Button of ");
                 _DistributorBLL.DeleteDistributor(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Distributor", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

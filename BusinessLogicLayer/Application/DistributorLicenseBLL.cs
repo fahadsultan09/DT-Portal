@@ -2,7 +2,6 @@
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
-using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +14,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<DistributorLicense> _repository;
+        private readonly AuditTrailBLL<DistributorLicense> _AuditTrailDistributorLicense;
         public DistributorLicenseBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<DistributorLicense>();
+            _AuditTrailDistributorLicense = new AuditTrailBLL<DistributorLicense>(_unitOfWork);
         }
         public int Add(DistributorLicense module)
         {
@@ -28,6 +29,8 @@ namespace BusinessLogicLayer.Application
             module.CreatedDate = DateTime.Now;
             module.Status = LicenseStatus.Submitted;
             _repository.Insert(module);
+            module.File = null;
+            _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Insert, module, "Save Distributor License", module.CreatedBy);
             return _unitOfWork.Save();
         }
         public int Update(DistributorLicense module)
@@ -40,9 +43,13 @@ namespace BusinessLogicLayer.Application
             item.Expiry = module.Expiry;
             item.IsActive = module.IsActive;
             item.Status = module.Status;
+            item.Type = module.Type;
+            item.RequestType = module.RequestType;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _repository.Update(item);
+            module.File = null;
+            _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Update, module, "Update Distributor License", (int)item.UpdatedBy);
             return _unitOfWork.Save();
         }
         public int Delete(int id)

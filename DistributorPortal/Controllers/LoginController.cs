@@ -3,19 +3,14 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using BusinessLogicLayer.Login;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
-using Newtonsoft.Json;
-using RestSharp;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
 
@@ -53,21 +48,21 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
-            if (model.Password.Equals(password) && login.CheckUserPassword(model, password))
+            if (model.Password != null && model.Password.Equals(password) && login.CheckUserPassword(model, password))
             {
                 jsonResponse.Status = false;
                 jsonResponse.Message = "Please change default password.";
                 jsonResponse.RedirectURL = string.Empty;
                 return Json(new { data = jsonResponse });
             }
-            if (login.CheckLogin(model) == LoginStatus.Success)
+            if (model.Password != null && login.CheckLogin(model) == LoginStatus.Success)
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "Start Click on Login Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Index", "Start Click on Login Button of ");
                 SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "End Click on Login Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Index", "End Click on Login Button of ");
                 return Json(new { data = jsonResponse });
             }
             else
@@ -123,7 +118,7 @@ namespace DistributorPortal.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Logout()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Logout", "Start Click on Logout Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
         }

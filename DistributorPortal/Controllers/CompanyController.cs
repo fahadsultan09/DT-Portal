@@ -1,11 +1,10 @@
-﻿using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
-using Models.UserRights;
 using System;
 using System.Linq;
 
@@ -23,7 +22,7 @@ namespace DistributorPortal.Controllers
         // GET: Company
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "Index", " Form");
             return View(_CompanyBLL.GetAllCompany());
         }
         public IActionResult List()
@@ -33,7 +32,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindCompany(id));
         }
         [HttpPost]
@@ -41,7 +40,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -65,12 +64,12 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "SaveEdit", "End Click on Save Button of ");
+                        new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "Application Module name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -85,9 +84,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "Delete", "Start Click on Delete Button of ");
                 _CompanyBLL.DeleteCompany(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Company", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Company", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

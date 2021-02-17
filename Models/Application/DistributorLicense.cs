@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Models.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Utility;
 
 namespace Models.Application
@@ -18,6 +15,7 @@ namespace Models.Application
         [ForeignKey("LicenseId")]
         public virtual LicenseControl LicenseControl { get; set; }
         public LicenseType Type { get; set; }
+        public LicenseRequestType RequestType { get; set; }
         public string Attachment { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime Expiry { get; set; }

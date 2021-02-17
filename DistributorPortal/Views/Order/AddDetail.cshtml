@@ -52,7 +52,7 @@
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                         </div>
                                     </div>
-                                    <div class="card-body" style="padding:10px;">
+                                    <div class="card-body" style="padding:23px;">
                                         <div class="form-group" disabled>
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -285,10 +285,10 @@
 
         function CalculateTotal() {
             debugger;
-            var sami = $('#SAMITotalOrderValues').text();
-            var HealthTek = $('#HealthTekTotalOrderValues').text();
-            var Phytek = $('#PhytekTotalOrderValues').text();
-            var total = parseInt(sami) + parseInt(HealthTek) + parseInt(Phytek);
+            var sami = $('#SAMITotalOrderValues').val();
+            var HealthTek = $('#HealthTekTotalOrderValues').val();
+            var Phytek = $('#PhytekTotalOrderValues').val();
+            var total = parseFloat(sami) + parseFloat(HealthTek) + parseFloat(Phytek);
         $('#TotalValue').text(total);
         }
 
@@ -330,7 +330,7 @@
     }
 
     function GetResponse(data) {
-        debugger;
+
         if (data.data.HtmlString != null) {
             $("#addToGrid").html(data.data.HtmlString.Result);
         }

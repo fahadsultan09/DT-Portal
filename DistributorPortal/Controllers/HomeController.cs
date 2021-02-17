@@ -3,18 +3,14 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Models.Application;
 using Models.ViewModel;
-using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Utility;
@@ -65,22 +61,12 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "Index", " Form");
-            if (SessionHelper.LoginUser.Role.Id == 4 || SessionHelper.LoginUser.Role.Id == 7)
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "Index", "Dashboard");
+
+            var dashboard = SessionHelper.NavigationMenu.FirstOrDefault(x => x.ApplicationPage.ControllerName == "Home" || x.ApplicationPage.ControllerName == "StoreKeeperDashboard");
+            if (dashboard != null)
             {
-                return RedirectToAction("AdminDashboard");
-            }
-            else if (SessionHelper.LoginUser.Role.Id == 3)
-            {
-                return RedirectToAction("DistributorDashboard");
-            }
-            else if (SessionHelper.LoginUser.Role.Id == 2)
-            {
-                return RedirectToAction("AccountDashboard");
-            }
-            else if (SessionHelper.LoginUser.Role.Id == 6)
-            {
-                return RedirectToAction("StoreKeeperDashboard");
+                return RedirectToAction(dashboard.ApplicationPage.PageURL.Split('/')[2]);
             }
             else
             {
@@ -124,8 +110,8 @@ namespace DistributorPortal.Controllers
             {
                 PaymentWiseComparision PWSCurrent = new PaymentWiseComparision();
                 PWSCurrent.Month = item.MonthName;
-                PWSCurrent.CurrentYear = _PaymentMaster.Where(x => x.CreatedDate.Year == item.Year && x.CreatedDate.Month == item.Month).Sum(x => x.Amount);
-                PWSCurrent.LastYear = _PaymentMaster.Where(x => x.CreatedDate.Year == item.LastYear && x.CreatedDate.Month == item.Month).Sum(x => x.Amount);
+                PWSCurrent.CurrentYear = _OrderMaster.Where(x => x.CreatedDate.Year == item.Year && x.CreatedDate.Month == item.Month).Sum(x => x.TotalValue);
+                PWSCurrent.LastYear = _OrderMaster.Where(x => x.CreatedDate.Year == item.LastYear && x.CreatedDate.Month == item.Month).Sum(x => x.TotalValue);
                 PaymentWiseComparision.Add(PWSCurrent);
             }
             return PartialView("AdminPaymentWiseComparision", PaymentWiseComparision);
@@ -317,7 +303,7 @@ namespace DistributorPortal.Controllers
                 _PaymentMaster = _PaymentMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 _Complaint = _Complaint.ToList();
 
-                model.UnverifiedPaymentAllCount = _PaymentMaster.Where(x => x.Status != PaymentStatus.Unverified).Count();
+                model.UnverifiedPaymentAllCount = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Count();
                 model.UnverifiedPaymentAll = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
 
                 model.InProcessOrderCount = _OrderMaster.Where(x => x.Status != OrderStatus.Draft && x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Reject).Count();
@@ -353,8 +339,8 @@ namespace DistributorPortal.Controllers
             {
                 PaymentWiseComparision PWSCurrent = new PaymentWiseComparision();
                 PWSCurrent.Month = item.MonthName;
-                PWSCurrent.CurrentYear = _PaymentMaster.Where(x => x.CreatedDate.Year == item.Year && x.CreatedDate.Month == item.Month).Sum(x => x.Amount);
-                PWSCurrent.LastYear = _PaymentMaster.Where(x => x.CreatedDate.Year == item.LastYear && x.CreatedDate.Month == item.Month).Sum(x => x.Amount);
+                PWSCurrent.CurrentYear = _OrderMaster.Where(x => x.CreatedDate.Year == item.Year && x.CreatedDate.Month == item.Month).Sum(x => x.TotalValue);
+                PWSCurrent.LastYear = _OrderMaster.Where(x => x.CreatedDate.Year == item.LastYear && x.CreatedDate.Month == item.Month).Sum(x => x.TotalValue);
                 PaymentWiseComparision.Add(PWSCurrent);
             }
             return PartialView("DistributorPaymentWise", PaymentWiseComparision);
@@ -450,7 +436,8 @@ namespace DistributorPortal.Controllers
             return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);
         }
         #endregion
-        #region Distributor
+
+        #region Store Keeper
         public IActionResult StoreKeeperDashboard()
         {
             try
@@ -474,7 +461,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " Start");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "GetFile", " Start");
                 string contenttype;
                 string filename = Path.GetFileName(filepath);
                 using (var provider = new PhysicalFileProvider(Path.GetDirectoryName(filepath)))
@@ -483,10 +470,10 @@ namespace DistributorPortal.Controllers
                     new FileExtensionContentTypeProvider().TryGetContentType(filename, out contenttype);
                     if (contenttype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " End");
+                        new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "GetFile", " End");
                         return File(stream, contenttype, filename.Split('_')[1]);
                     }
-                    new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " End");
+                    new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "GetFile", " End");
                     return File(stream, contenttype);
                 }
             }

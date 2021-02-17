@@ -3,12 +3,12 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +27,7 @@ namespace DistributorPortal.Controllers
         private readonly DistributorBLL _distributorBll;
         private readonly LicenseControlBLL _licenseControlBLL;
         private readonly IConfiguration _IConfiguration;
+        private readonly AuditTrailBLL<DistributorLicense> _AuditTrailDistributorLicense;
         public DistributorLicenseController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
@@ -34,6 +35,7 @@ namespace DistributorPortal.Controllers
             _distributorBll = new DistributorBLL(_unitOfWork);
             _licenseControlBLL = new LicenseControlBLL(_unitOfWork);
             _IConfiguration = configuration;
+            _AuditTrailDistributorLicense = new AuditTrailBLL<DistributorLicense>(_unitOfWork);
         }
         // GET: DistributorLicense
         public IActionResult Index()
@@ -47,6 +49,7 @@ namespace DistributorPortal.Controllers
         {
             var licenseControl = _licenseControlBLL.GetAllLicenseControl();
             var model = new List<DistributorLicense>();
+            List<DistributorLicense> distributorLicensesHistory = new List<DistributorLicense>();
             var License = _DistributorLicenseBLL.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             if (License.Count > 0)
             {
@@ -62,6 +65,14 @@ namespace DistributorPortal.Controllers
                     });
                 }
             }
+            List<AuditTrail> ATBLLDistributorLicense = _AuditTrailDistributorLicense.Where(x => x.PageId == (int)ApplicationPages.DistributorLicense && (x.ActionId == (int)ApplicationActions.Update || x.ActionId == (int)ApplicationActions.Insert));
+            foreach (var item in ATBLLDistributorLicense)
+            {
+                var license = JsonConvert.DeserializeObject<DistributorLicense>(item.JsonObject.ToString());
+                license.LicenseControl = new LicenseControl { LicenseName = licenseControl.FirstOrDefault(x => x.Id == license.LicenseId).LicenseName };
+                distributorLicensesHistory.Add(license);
+            }
+            ViewBag.distributorLicensesHistory = distributorLicensesHistory.ToList();
             return View(model);
         }
         [HttpPost]
@@ -71,9 +82,31 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("LicenseFolderPath").Value;
             try
             {
-                foreach (var item in model)
+                if (model.Where(x=>x.File is null).Count() == model.Count())
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Add license";
+                    return Json(new { data = jsonResponse });
+                }
+                for (int i = 0; i < model.Count(); i++)
+                {
+                    if (model[i].File is null)
+                    {
+                        ModelState.Remove("[" + i + "].Type");
+                        ModelState.Remove("[" + i + "].RequestType");
+                    }
+                }
+                if (!ModelState.IsValid)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                    return Json(new { data = jsonResponse });
+                }
+
+                foreach (var item in model.Where(x => x.File != null))
                 {
                     string[] permittedExtensions = Common.permittedExtensions;
+
                     if (item.File != null)
                     {
                         var ext = Path.GetExtension(item.File.FileName).ToLowerInvariant();
@@ -103,12 +136,12 @@ namespace DistributorPortal.Controllers
                         {
                             _DistributorLicenseBLL.Add(item);
                         }
-                       
+
                     }
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;
-                jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
+                jsonResponse.RedirectURL = Url.Action("Add", "DistributorLicense");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -125,7 +158,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "Start Click on Approve Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("DistributorLicense", "UpdateStatus", "Start Click on Approve Button of ");
 
                 DistributorLicense model = _DistributorLicenseBLL.GetById(Id);
                 if (model != null)
@@ -142,7 +175,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "License has been rejected.";
                 }
 
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "End Click on Approve Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("DistributorLicense", "UpdateStatus", "End Click on Approve Button of ");
                 _unitOfWork.Save();
 
                 jsonResponse.Status = true;

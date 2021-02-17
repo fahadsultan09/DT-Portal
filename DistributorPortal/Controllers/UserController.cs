@@ -4,7 +4,6 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +30,7 @@ namespace UserPortal.Controllers
         // GET: User
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Index", " Form");
             return View(_UserBLL.GetAllUser());
         }
         public IActionResult List()
@@ -41,7 +40,7 @@ namespace UserPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindUser(id));
         }
         [HttpPost]
@@ -51,7 +50,7 @@ namespace UserPortal.Controllers
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 ModelState.Remove("Password");
                 ModelState.Remove("ConfirmPassword");
@@ -86,7 +85,7 @@ namespace UserPortal.Controllers
                         jsonResponse.Message = "User name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -102,9 +101,9 @@ namespace UserPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Delete", "Start Click on Delete Button of ");
                 _UserBLL.DeleteUser(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -142,10 +141,10 @@ namespace UserPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "ResetPassword", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "ResetPassword", "Start Click on Delete Button of ");
                 string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
                 _UserBLL.ResetPassword(id, EncryptDecrypt.Encrypt(password));
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("User", "ResetPassword", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "ResetPassword", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

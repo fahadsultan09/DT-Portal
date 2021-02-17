@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -23,7 +22,7 @@ namespace DistributorPortal.Controllers
         // GET: SubRegion
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "Index", " Form");
             return View(_SubRegionBLL.GetAllSubRegion());
         }
         public IActionResult List()
@@ -33,7 +32,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(int id)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Add", "Click on Add  Button of ");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "Add", "Click on Add  Button of ");
             return PartialView("Add", BindSubRegion(id));
         }
         [HttpPost]
@@ -42,7 +41,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "SaveEdit", "Start Click on SaveEdit Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -77,7 +76,7 @@ namespace DistributorPortal.Controllers
 
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -93,9 +92,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Delete", "Start Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "Delete", "Start Click on Delete Button of ");
                 _SubRegionBLL.DeleteSubRegion(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Delete", "End Click on Delete Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("SubRegion", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

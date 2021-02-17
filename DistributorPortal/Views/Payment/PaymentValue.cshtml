@@ -1,36 +1,36 @@
-﻿@model OrderValueViewModel
+﻿@model PaymentValueViewModel
 @inject IUnitOfWork iUnitOfWork
 @{
     var Company = new CompanyBLL(iUnitOfWork).GetAllCompany();
 }
 
 <style>
-    .ordervalue > tbody > tr > td {
+    .paymentvalue > tbody > tr > td {
         text-align: center;
         vertical-align: middle;
         padding: 1px;
     }
 
-    .ordervalue > thead > tr > th {
+    .paymentvalue > thead > tr > th {
         text-align: center;
         vertical-align: middle;
         padding: 0;
     }
 
-    .ordervalue > tr {
+    .paymentvalue > tr {
         padding: 0;
     }
 </style>
 
-<a asp-controller="Order"
-   asp-action="UpdateOrderValue"
-   id="frmUpdateOrderValue"
-   data-ajax-update="#UpdateOrderValueId"
+<a asp-controller="Payment"
+   asp-action="UpdatePaymentValue"
+   id="frmUpdatePaymentValue"
+   data-ajax-update="#UpdatePaymentValueId"
    data-ajax="true"
    data-ajax-complete="CalculateTotal"
    data-ajax-method="POST"
    style="display: none"></a>
-<table id="example1" class="table table-bordered table-striped ordervalue" style="font-size: 13px; padding: 0;">
+<table id="example1" class="table table-bordered table-striped paymentvalue" style="font-size: 13px; padding: 0;">
     <thead>
         <tr>
             <th>Values</th>
@@ -40,39 +40,6 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>@Html.LabelFor(e => e.Supplies0)</td>
-            <td>@Convert.ToDecimal(Model.SAMISupplies0).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.HealthTekSupplies0).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.PhytekSupplies0).ToString("#,##0.00")</td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(e => e.Supplies1)</td>
-            <td>@Convert.ToDecimal(Model.SAMISupplies1).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.HealthTekSupplies1).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.PhytekSupplies1).ToString("#,##0.00")</td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(e => e.Supplies4)</td>
-            <td>@Convert.ToDecimal(Model.SAMISupplies4).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.HealthTekSupplies4).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.PhytekSupplies4).ToString("#,##0.00")</td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(e => e.TotalOrderValues)</td>
-            <td>
-                <span>@Convert.ToDecimal(Model.SAMITotalOrderValues).ToString("#,##0.00")</span>
-                <input type="hidden" value="@Model.SAMITotalOrderValues" id="SAMITotalOrderValues" />
-            </td>
-            <td>
-                <span>@Convert.ToDecimal(Model.HealthTekTotalOrderValues).ToString("#,##0.00")</span>
-                <input type="hidden" value="@Model.HealthTekTotalOrderValues" id="HealthTekTotalOrderValues" />
-            </td>
-            <td>
-                <span>@Convert.ToDecimal(Model.PhytekTotalOrderValues).ToString("#,##0.00")</span>
-                <input type="hidden" value="@Model.PhytekTotalOrderValues" id="PhytekTotalOrderValues" />
-            </td>
-        </tr>
         <tr>
             <td>@Html.LabelFor(e => e.TotalUnapprovedOrderValues)</td>
             <td><span>@Convert.ToDecimal(Model.SAMITotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>

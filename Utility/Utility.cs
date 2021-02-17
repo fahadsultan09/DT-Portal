@@ -111,11 +111,76 @@ namespace Utility
         License = 1,
         Challan = 2
     }
+    public enum LicenseRequestType
+    {
+        [Display(Name = "New Application")]
+        NewApplication = 1,
+        [Display(Name = "Renewal Of License")]
+        RenewalOfLicense = 2,
+        [Display(Name = "Change In Particular")]
+        ChangeInParticular = 3
+    }
     public enum OrderReturnStatus
     {
         Draft = 1,
         Submitted = 2,
         Received = 3,
         CompletelyProcessed = 4,
+    }
+    public enum ApplicationActions
+    {
+        View = 1,
+        Insert = 2,
+        Update = 3,
+        Delete = 4,
+        Approve = 5,
+        Reject = 6,
+        Onhold = 7,
+    }
+    public enum ApplicationPages
+    {
+        ApplicationModule = 1,
+        ApplicationPage = 4,
+        Role = 5,
+        Region = 6,
+        SubRegion = 7,
+        City = 8,
+        Designation = 9,
+        Distributor = 10,
+        User = 11,
+        AdminDashboard = 12,
+        AccountDashboard = 13,
+        DistributorDashboard = 14,
+        Order = 15,
+        Payment = 16,
+        ProductMapping = 17,
+        Product = 18,
+        ApplicationAction = 19,
+        ComplaintCategory = 20,
+        ComplaintSubCategory = 21,
+        Complaint = 22,
+        Bank = 23,
+        Company = 24,
+        License = 25,
+        DistributorLicense = 26,
+        OrderReturn = 27,
+        AddLicense = 28,
+        OrderReport = 30,
+        OrderReturnReport = 31,
+        PaymentReport = 32,
+        ComplaintReport = 33,
+        Dashboard = 34,
+        RolePermission = 35,
+        AddOrder = 36,
+        OrderView = 37,
+        OrderApprove = 38,
+        AddOrderReturn = 39,
+        AddPayment = 40,
+        ApprovePayment = 41,
+        ViewOrderReturn = 42,
+        ApproveOrderReturn = 43,
+        AddComplaint = 44,
+        GetFile = 45,
+        ApproveComplaint = 46,
     }
 }

@@ -59,7 +59,7 @@ namespace BusinessLogicLayer.FormLogic
             }
             permission.ModuleViewModels = list;
             permission.RoleId = RoleId;
-            //permission.RoleName = new RoleBLL(_unitOfWork).GetRoleById(RoleId).RoleName;
+            permission.RoleName = new RoleBLL(_unitOfWork).GetRoleById(RoleId).RoleName;
             return permission;
         }
 
