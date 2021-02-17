@@ -65,7 +65,6 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "Index", " Form");
             if (SessionHelper.LoginUser.Role.Id == 4 || SessionHelper.LoginUser.Role.Id == 7)
             {
                 return RedirectToAction("AdminDashboard");
@@ -93,7 +92,6 @@ namespace DistributorPortal.Controllers
             try
             {
                 AdminDashboardViewModel model = new AdminDashboardViewModel();
-
                 model.Complaint = _Complaint.Where(x => x.Status == ComplaintStatus.Pending).Count();
                 model.PendingApproval = _OrderMaster.Where(x => x.Status == OrderStatus.PendingApproval).Count();
                 model.InProcess = _OrderMaster.Where(x => x.Status == OrderStatus.InProcess).Count();
@@ -163,7 +161,6 @@ namespace DistributorPortal.Controllers
                 PWSCurrent.UnverifiedPayment = _PaymentMaster.Where(x => x.CreatedDate.Year == item.Year && x.CreatedDate.Month == item.Month && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 PaymentWiseStatus.Add(PWSCurrent);
             }
-
             return PartialView("AdminPaymentWiseStatus", PaymentWiseStatus);
         }
         public IActionResult GetAdminRegionWiseOrder()
@@ -452,11 +449,9 @@ namespace DistributorPortal.Controllers
             try
             {
                 StoreKeeperDashboard model = new StoreKeeperDashboard();
-
                 model.Submitted = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.Submitted).Count();
                 model.Received = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.Received).Count();
                 model.Completed = _OrderReturnBLL.Where(x => x.Status == OrderReturnStatus.CompletelyProcessed).Count();
-
                 return View(model);
             }
             catch (Exception ex)
@@ -470,7 +465,6 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " Start");
                 string contenttype;
                 string filename = Path.GetFileName(filepath);
                 using (var provider = new PhysicalFileProvider(Path.GetDirectoryName(filepath)))
@@ -479,10 +473,8 @@ namespace DistributorPortal.Controllers
                     new FileExtensionContentTypeProvider().TryGetContentType(filename, out contenttype);
                     if (contenttype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " End");
                         return File(stream, contenttype, filename.Split('_')[1]);
                     }
-                    new AuditTrailBLL(_unitOfWork).AddAuditTrail("Home", "GetFile", " End");
                     return File(stream, contenttype);
                 }
             }

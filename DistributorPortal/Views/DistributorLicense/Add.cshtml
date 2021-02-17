@@ -92,7 +92,7 @@
                                                         </td>
                                                         <td width="20%">
                                                             <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
-                                                                <option value="">--Select option--</option>
+                                                                <option value="0">--Select option--</option>
                                                             </select>
                                                         </td>
                                                         <td width="25%">

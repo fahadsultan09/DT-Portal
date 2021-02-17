@@ -47,7 +47,7 @@
                                     <td>@item.RejectedName</td>
                                     <td>@item.RejectedDate</td>
                                     <td>
-                                        <a asp-controller="Complaint" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                        <a asp-controller="Complaint" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>

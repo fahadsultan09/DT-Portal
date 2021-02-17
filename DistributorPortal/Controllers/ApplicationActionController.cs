@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.UserRights;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -22,7 +23,6 @@ namespace DistributorPortal.Controllers
         // GET: ApplicationAction
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Index", " Form");
             return View(_ApplicationActionBLL.GetAllApplicationAction());
         }
         public IActionResult List()
@@ -30,9 +30,10 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _ApplicationActionBLL.GetAllApplicationAction());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindApplicationAction(id));
         }
         [HttpPost]
@@ -40,7 +41,6 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,12 +64,10 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "ApplicationAction name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -80,13 +78,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ApplicationActionBLL.DeleteApplicationAction(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ApplicationAction", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -96,12 +94,12 @@ namespace DistributorPortal.Controllers
                 return RedirectToAction("List");
             }
         }
-        private ApplicationAction BindApplicationAction(int Id)
+        private ApplicationAction BindApplicationAction(int id)
         {
-            ApplicationAction model = new ApplicationAction();
-            if (Id > 0)
+            ApplicationAction model = new ApplicationAction();            
+            if (id > 0)
             {
-                model = _ApplicationActionBLL.GetApplicationActionById(Id);
+                model = _ApplicationActionBLL.GetApplicationActionById(id);
             }
             else
             {

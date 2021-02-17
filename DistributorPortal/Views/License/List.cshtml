@@ -33,6 +33,7 @@
                             <th>S.No</th>
                             <th>License Name</th>
                             <th>License Acceptance In Day(s)</th>
+                            <th>Day(s) Intimate Before Expiry</th>
                             <th>Mandatory</th>
                             <th>Active</th>
                             <th>Action</th>
@@ -45,6 +46,7 @@
                             <td>@item.Id</td>
                             <td>@item.LicenseName</td>
                             <td>@item.LicenseAcceptanceInDay</td>
+                            <td>@item.DaysIntimateBeforeExpiry</td>
                             <td>
                                 @if (item.IsMandatory)
                                 {<i class="fa fa-check text-navy"></i> }
@@ -61,10 +63,10 @@
                                 <a data-ajax-update="#divform"
                                    data-ajax="true"
                                    data-ajax-method="GET"
-                                   asp-controller="License" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                   asp-controller="License" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <a onclick="Delete(this);" id="@item.Id" class="btn btn-danger btn-sm">
+                                <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>
@@ -100,7 +102,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post('@Url.Action("Delete", "License")/' + e.id, null, function (data) {
+                $.post('@Url.Action("Delete", "License")?GPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
                         setTimeout(function () {

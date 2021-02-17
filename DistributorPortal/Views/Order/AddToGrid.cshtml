@@ -36,7 +36,7 @@
                     <td >
                         <a asp-action="Delete"
                            asp-controller="Order"
-                           asp-route-Id="@item.ProductMaster.Id"
+                           asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
                            class="btn btn-danger"
                            data-ajax="true"
                            data-ajax-complete="UpdateOrderValue"

@@ -35,7 +35,6 @@ namespace DistributorPortal.Controllers
         // GET: Complaint
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "Index", " Form");
             return View(GetComplaintList());
         }
         public IActionResult List()
@@ -43,14 +42,17 @@ namespace DistributorPortal.Controllers
             return PartialView("List", GetComplaintList());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindComplaint(id));
         }
         [HttpGet]
-        public IActionResult ComplaintApproval(int id)
+        public IActionResult ComplaintApproval(string DPID)
         {
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("ComplaintApproval", BindComplaint(id));
         }
         [HttpPost]
@@ -60,7 +62,6 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -86,7 +87,6 @@ namespace DistributorPortal.Controllers
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _ComplaintBLL.Add(model);
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "SaveEdit", "End Click on Save Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");
@@ -117,19 +117,19 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int id, ComplaintStatus Status, string Remarks)
+        public JsonResult UpdateStatus(string DPID, ComplaintStatus Status, string Remarks)
         {
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "UpdateStatus", "Start Click on Resolve Button of ");
                 Complaint model = _ComplaintBLL.GetById(id);
                 if (model != null)
                 {
                     _ComplaintBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Complaint", "UpdateStatus", "End Click on Resolve Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.Resolved;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");

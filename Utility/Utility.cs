@@ -45,7 +45,8 @@ namespace Utility
         Onhold = 9,
         Approved = 10,
         [Display(Name = "Not Yet Process")]
-        NotYetProcess = 11
+        NotYetProcess = 11,
+        Cancel = 12
 
     }
     public enum PaymentStatus

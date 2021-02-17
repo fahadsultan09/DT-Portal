@@ -8,7 +8,6 @@ namespace Utility.HelperClasses
 {
     public class EncryptDecrypt
     {
-
         static byte[] key1 = ASCIIEncoding.ASCII.GetBytes("everykey");
 
         public static string Encrypt(string originalString)

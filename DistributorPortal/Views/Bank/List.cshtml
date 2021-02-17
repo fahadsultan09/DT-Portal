@@ -63,10 +63,10 @@
                                     <a data-ajax-update="#divform"
                                        data-ajax="true"
                                        data-ajax-method="GET"
-                                       asp-controller="Bank" asp-action="Add" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                       asp-controller="Bank" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
-                                    <a onclick="Delete(this);" id="@item.Id" class="btn btn-danger btn-sm">
+                                    <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>
@@ -103,7 +103,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post('@Url.Action("Delete", "Bank")/' + e.id, null, function (data) {
+                $.post('@Url.Action("Delete", "Bank")?DPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
                         setTimeout(function () {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -22,7 +23,6 @@ namespace DistributorPortal.Controllers
         // GET: LicenseControl
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Index", " Form");
             return View(_LicenseControlBLL.GetAllLicenseControl());
         }
         public IActionResult List()
@@ -30,9 +30,10 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _LicenseControlBLL.GetAllLicenseControl());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindLicenseControl(id));
         }
         [HttpPost]
@@ -40,7 +41,6 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,12 +64,10 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "LicenseControl name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -80,13 +78,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _LicenseControlBLL.DeleteLicenseControl(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("LicenseControl", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

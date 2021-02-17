@@ -31,7 +31,6 @@ namespace DistributorPortal.Controllers
         // GET: Distributor
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Index", " Form");
             return View(_DistributorBLL.GetAllDistributor());
         }
         public IActionResult List()
@@ -79,9 +78,10 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindDistributor(id));
         }
         [HttpPost]
@@ -90,7 +90,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -122,7 +121,6 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Distributor name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -134,13 +132,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _DistributorBLL.DeleteDistributor(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Distributor", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

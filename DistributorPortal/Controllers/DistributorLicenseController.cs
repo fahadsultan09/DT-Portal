@@ -85,26 +85,27 @@ namespace DistributorPortal.Controllers
                                 item.Attachment = tuple.Item2;
                             }
                         }
-                    }
-                    item.Status = LicenseStatus.Submitted;
-                    item.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                    item.IsActive = true;
-                    item.IsDeleted = false;
-                    if (item.Id > 0)
-                    {
-                        if (item.Attachment != null)
+                        item.Status = LicenseStatus.Submitted;
+                        item.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        item.IsActive = true;
+                        item.IsDeleted = false;
+                        if (item.Id > 0)
                         {
-                            _DistributorLicenseBLL.Update(item);
+                            if (item.Attachment != null)
+                            {
+                                _DistributorLicenseBLL.Update(item);
+                            }
+                        }
+                        else
+                        {
+                            if (item.Attachment != null)
+                            {
+                                _DistributorLicenseBLL.Add(item);
+                            }
+
                         }
                     }
-                    else
-                    {
-                        if (item.Attachment != null)
-                        {
-                            _DistributorLicenseBLL.Add(item);
-                        }
-                       
-                    }
+                    
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;
@@ -125,8 +126,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "Start Click on Approve Button of ");
-
                 DistributorLicense model = _DistributorLicenseBLL.GetById(Id);
                 if (model != null)
                 {
@@ -141,8 +140,6 @@ namespace DistributorPortal.Controllers
                 {
                     jsonResponse.Message = "License has been rejected.";
                 }
-
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("DistributorLicense", "UpdateStatus", "End Click on Approve Button of ");
                 _unitOfWork.Save();
 
                 jsonResponse.Status = true;

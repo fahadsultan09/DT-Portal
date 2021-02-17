@@ -88,5 +88,11 @@
             <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
             <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
         </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.NetPayable)</td>
+            <td>@Convert.ToDecimal(Model.SAMINetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
+        </tr>
     </tbody>
 </table>

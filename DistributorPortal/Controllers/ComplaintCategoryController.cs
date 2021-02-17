@@ -5,8 +5,10 @@ using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -30,22 +32,23 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _ComplaintCategoryBLL.GetAllComplaintCategory());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindComplaintCategory(id));
         }
         [HttpPost]
         public IActionResult SaveEdit(ComplaintCategory model)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
-            {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "Start Click on SaveEdit Button of ");
+            {                
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
-                    TempData["Message"] = NotificationMessage.RequiredFieldsValidation;
-                    return PartialView("Add", model);
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
                 }
                 else
                 {
@@ -54,40 +57,43 @@ namespace DistributorPortal.Controllers
                         if (model.Id > 0)
                         {
                             _ComplaintCategoryBLL.UpdateComplaintCategory(model);
-                            TempData["Message"] = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintCategory");
                         }
                         else
                         {
                             _ComplaintCategoryBLL.AddComplaintCategory(model);
-                            TempData["Message"] = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintCategory");
                         }
                     }
                     else
                     {
-                        new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
-                        TempData["Message"] = "Complaint Category name already exist";
-                        return PartialView("Add", model);
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = "Complaint Category name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
-                return RedirectToAction("List");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                TempData["Message"] = NotificationMessage.ErrorOccurred;
-                return RedirectToAction("List");
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
             }
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ComplaintCategoryBLL.DeleteComplaintCategory(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

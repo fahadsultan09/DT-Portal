@@ -62,7 +62,6 @@ namespace DistributorPortal.Controllers
             }
             if (login.CheckLogin(model) == LoginStatus.Success)
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("Login", "Index", "Start Click on Login Button of ");
                 SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login Successfully";

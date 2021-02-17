@@ -6,10 +6,10 @@ using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
-using Models.UserRights;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -25,7 +25,6 @@ namespace DistributorPortal.Controllers
         // GET: City
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Index", " Form");
             return View(_CityBLL.GetAllCity());
         }
         public IActionResult List()
@@ -33,9 +32,10 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _CityBLL.GetAllCity());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindCity(id));
         }
         [HttpPost]
@@ -44,7 +44,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -76,7 +75,6 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "City name already exist";
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -88,13 +86,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _CityBLL.DeleteCity(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("City", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -122,9 +120,11 @@ namespace DistributorPortal.Controllers
         {
             return Json(_CityBLL.GetAllCity().ToList());
         }
-        public IActionResult DropDownCityList(int SubRegionId)
+        public IActionResult DropDownCityList(string DPID)
         {
-            return Json(_CityBLL.DropDownCityList(SubRegionId, 0));
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return Json(_CityBLL.DropDownCityList(id, 0));
         }
     }
 }

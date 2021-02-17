@@ -8,6 +8,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -23,7 +24,6 @@ namespace DistributorPortal.Controllers
         // GET: SubRegion
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Index", " Form");
             return View(_SubRegionBLL.GetAllSubRegion());
         }
         public IActionResult List()
@@ -31,9 +31,10 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _SubRegionBLL.GetAllSubRegion());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Add", "Click on Add  Button of ");
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("Add", BindSubRegion(id));
         }
         [HttpPost]
@@ -42,7 +43,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -77,7 +77,6 @@ namespace DistributorPortal.Controllers
 
                     }
                 }
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -89,13 +88,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Delete", "Start Click on Delete Button of ");
+                int id;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _SubRegionBLL.DeleteSubRegion(id);
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("SubRegion", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -123,9 +122,11 @@ namespace DistributorPortal.Controllers
         {
             return Json(_SubRegionBLL.GetAllSubRegion().ToList());
         }
-        public IActionResult DropDownSubRegionList(int RegionId)
+        public IActionResult DropDownSubRegionList(string DPID)
         {
-            return Json(_SubRegionBLL.DropDownSubRegionList(RegionId, 0));
+            int id;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return Json(_SubRegionBLL.DropDownSubRegionList(id, 0));
         }
     }
 }
