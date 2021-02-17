@@ -1,8 +1,6 @@
-﻿using BusinessLogicLayer.ErrorLog;
-using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
@@ -10,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Utility;
 using static Utility.Constant.Common;
 
@@ -218,7 +215,7 @@ namespace BusinessLogicLayer.Application
                     jsonResponse.Message = OrderContant.OrderItem;
                 }
                 _unitOfWork.Commit();
-                new AuditTrailBLL(_unitOfWork).AddAuditTrail("OrderReturnMaster", "SaveEdit", "End Click on Save Button of ");
+                new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturnMaster", "SaveEdit", "End Click on Save Button of ");
                 return jsonResponse;
             }
             catch (Exception ex)
@@ -238,7 +235,7 @@ namespace BusinessLogicLayer.Application
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:0000000000}", item.OrderReturnId),
+                    SNO = string.Format("{0:1000000000}", item.OrderReturnId),
                     ITEMNO = "",
                     PARTN_NUMB = item.OrderReturnMaster.Distributor.DistributorSAPCode,
                     DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,

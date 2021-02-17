@@ -1,0 +1,74 @@
+﻿@model PaymentValueViewModel
+@inject IUnitOfWork iUnitOfWork
+@{
+    var Company = new CompanyBLL(iUnitOfWork).GetAllCompany();
+}
+
+<style>
+    .paymentvalue > tbody > tr > td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 1px;
+    }
+
+    .paymentvalue > thead > tr > th {
+        text-align: center;
+        vertical-align: middle;
+        padding: 0;
+    }
+
+    .paymentvalue > tr {
+        padding: 0;
+    }
+</style>
+
+<a asp-controller="Payment"
+   asp-action="UpdatePaymentValue"
+   id="frmUpdatePaymentValue"
+   data-ajax-update="#UpdatePaymentValueId"
+   data-ajax="true"
+   data-ajax-complete="CalculateTotal"
+   data-ajax-method="POST"
+   style="display: none"></a>
+<table id="example1" class="table table-bordered table-striped paymentvalue" style="font-size: 13px; padding: 0;">
+    <thead>
+        <tr>
+            <th>Values</th>
+            <th>SAMI</th>
+            <th>HealthTek</th>
+            <th>PhyTek</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Html.LabelFor(e => e.TotalUnapprovedOrderValues)</td>
+            <td><span>@Convert.ToDecimal(Model.SAMITotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.HealthTekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.PhytekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.PendingOrderValues)</td>
+            <td>@Convert.ToDecimal(Model.SAMIPendingOrderValues).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekPendingOrderValues).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekPendingOrderValues).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.CurrentBalance)</td>
+            <td>@Convert.ToDecimal(Model.SAMICurrentBalance).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekCurrentBalance).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekCurrentBalance).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.UnConfirmedPayment)</td>
+            <td>@Convert.ToDecimal(Model.SAMIUnConfirmedPayment).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekUnConfirmedPayment).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekUnConfirmedPayment).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.NetPayable)</td>
+            <td>@Convert.ToDecimal(Model.SAMINetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
+        </tr>
+    </tbody>
+</table>

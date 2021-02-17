@@ -25,7 +25,7 @@
                       id="frmDosageForm"
                       data-ajax-update="#divform"
                       data-ajax-begin="Begin"
-                      data-ajax-success="Success"
+                      data-ajax-success="OnSuccess"
                       data-ajax-complete="MessageDisappear"
                       data-ajax="true"
                       data-ajax-method="POST">
@@ -35,17 +35,17 @@
                                 <input asp-for="Id" type="hidden" />
                                 <div class="ibox-content">
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Complaint Sub Category Name<span class="text-danger"> * </span></label>
-                                        <div class="col-lg-9">
-                                            <input asp-for="ComplaintSubCategoryName" type="text" placeholder="Name" class="form-control" />
-                                            <span asp-validation-for="ComplaintSubCategoryName" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">Category Name</label>
                                         <div class="col-lg-9">
                                             @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control" })
                                             <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Complaint Sub Category Name<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="ComplaintSubCategoryName" type="text" placeholder="Name" class="form-control" />
+                                            <span asp-validation-for="ComplaintSubCategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">

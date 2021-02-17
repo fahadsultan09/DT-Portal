@@ -1,107 +1,73 @@
 ﻿@model PaymentMaster
+@{ ViewBag.Title = "Approve Payment | Distributor Portal"; }
+
+<style type="text/css">
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 40px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .card-header {
+        padding: 5px 15px 0px 15px
+    }
+
+    .swal-modal .swal-text {
+        text-align: center;
+    }
+</style>
 
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-12">
+                <div class="col-4">
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Distributor Information</h3>
                         </div>
-                        <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                        <div class="card-body" style="height: 170px;">
                             <div class="row">
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                     <h6>Name:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                     <span><strong>@Model.Distributor.DistributorName</strong></span>
                                 </div>
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                     <h6>City:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                     <span><strong>@Model.Distributor.City</strong></span>
                                 </div>
-
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                     <h6>Code:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                     <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card card-primary">
+                </div>
+                <div class="col-8">
+                    <div class="card card-primary h-90">
                         <div class="card-header">
-                            <h3 class="card-title">Distributor Current Balance and Total Pending Value of Orders</h3>
+                            <h3 class="card-title">Pending Values</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                            </div>
                         </div>
-                        <div class="card-body" style="padding: 10px 0px 0px 20px;">
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>SAMI Balance:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.SAMI)
-                                        </strong>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Healthtek Balance:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.HealthTek)
-                                        </strong>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Phytek Balance:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", SessionHelper.DistributorBalance.PhyTek)
-                                        </strong>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Total Pending Value:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", Model.SAMITotalPendingValue)
-                                        </strong>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Total Pending Value:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", Model.HealthTekTotalPendingValue)
-                                        </strong>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Total Pending Value:</h6>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <span>
-                                        <strong>
-                                            @String.Format("{0:N}", Model.PhytekTotalPendingValue)
-                                        </strong>
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="card-body p-0" id="UpdateOrderValueId">
+                            <partial name="PaymentValue" model="Model.PaymentValueViewModel" />
                         </div>
                     </div>
                 </div>
@@ -124,6 +90,7 @@
                                     <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
                             }
+                            <span class="float-right"><strong>Payment No: @string.Format("{0:1000000000}", Model.Id)</strong></span>
                         </div>
                         <div class="card-body">
                             <div class="row">

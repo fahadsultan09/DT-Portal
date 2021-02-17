@@ -1,7 +1,7 @@
-﻿using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
@@ -24,7 +24,7 @@ namespace DistributorPortal.Controllers
         // GET: ComplaintCategory
         public IActionResult Index()
         {
-            new AuditTrailBLL(_unitOfWork).AddAuditTrail("ComplaintCategory", "Index", " Form");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "Index", " Form");
             return View(_ComplaintCategoryBLL.GetAllComplaintCategory());
         }
         public IActionResult List()

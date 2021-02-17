@@ -7,6 +7,7 @@ namespace Models.Application
     {
         [Required(ErrorMessage = "Enter your Complaint Category name.")]
         [StringLength(255)]
+        [MaxLength(255)]
         public string ComplaintCategoryName { get; set; }
     }
 }

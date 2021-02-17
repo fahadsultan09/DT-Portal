@@ -37,8 +37,8 @@
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                             <div class="form-group">
                                                 <label class="control-label">From Date</label>
-                                                <div class="input-group date" id="FromDate" data-target-input="nearest">
-                                                    <input type="text" asp-for="FromDate" data-target="#FromDate" class="form-control" />
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="FromDate" readonly="readonly" id="FromDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#FromDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -48,8 +48,8 @@
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                             <div class="form-group">
                                                 <label class="control-label">To Date</label>
-                                                <div class="input-group date" id="ToDate" data-target-input="nearest">
-                                                    <input type="text" asp-for="ToDate" data-target="#ToDate" class="form-control" />
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="ToDate" readonly="readonly" id="ToDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ToDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -67,6 +67,12 @@
                                     </div>
 
                                     <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Payment No</label>
+                                                <input type="text" asp-for="PaymentNo" autocomplete="off" class="form-control" />
+                                            </div>
+                                        </div>
                                         @if (!SessionHelper.LoginUser.IsDistributor)
                                         {
                                             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
@@ -78,7 +84,7 @@
                                                 </div>
                                             </div>
                                         }
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                             <div class="form-group">
                                                 <label class="col-form-label font-weight-bold" for="Search"></label>
                                                 <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
@@ -86,10 +92,10 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                             <div class="form-group">
                                                 <label class="col-form-label font-weight-bold" for="Clear"></label>
-                                                <button type="submit" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
+                                                <button type="button" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
                                                     Clear
                                                 </button>
                                             </div>

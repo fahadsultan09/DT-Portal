@@ -3,7 +3,6 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,12 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
-using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
@@ -229,6 +226,7 @@ namespace DistributorPortal.Controllers
                 {
                     master.ProductMaster.Quantity = Quantity;
                     master.TotalPrice = master.ProductMaster.Quantity * master.ProductMaster.Rate;
+                    master.Discount = master.ProductMaster.Discount;
                     var list = SessionHelper.AddProduct;
                     master.OrderNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderNumber) + 1;
                     list.Add(master);
@@ -336,7 +334,10 @@ namespace DistributorPortal.Controllers
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
             }
-
+            else
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+            }
             model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First();
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
             return model;

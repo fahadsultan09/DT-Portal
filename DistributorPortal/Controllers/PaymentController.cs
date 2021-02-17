@@ -4,7 +4,6 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,15 +25,15 @@ namespace DistributorPortal.Controllers
     public class PaymentController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
+        private readonly OrderBLL _OrderBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
         public PaymentController(IUnitOfWork unitOfWork, IConfiguration _iconfiguration, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
-            _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _OrderBLL = new OrderBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
         }
@@ -48,7 +47,7 @@ namespace DistributorPortal.Controllers
         }
         public PaymentViewModel List(PaymentViewModel model)
         {
-            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null)
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.PaymentNo is null)
             {
                 model.PaymentMaster = GetPaymentList();
             }
@@ -125,35 +124,25 @@ namespace DistributorPortal.Controllers
                 model = _PaymentBLL.GetById(Id);
                 SessionHelper.DistributorBalance = GetDistributorBalance(model.Distributor.DistributorSAPCode);
                 model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
-
             }
             else
             {
                 model.Distributor = SessionHelper.LoginUser.Distributor;
-
             }
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+            }
+            else
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+            }
+            model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel();
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
             model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId, true);
             model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
             model.CompanyBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.CompanyBankName);
-            model.SAMITotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                           join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 1
-                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                           let Amount = odp.Sum(m => m.od.Amount)
-                                           select Amount).Sum(x => x);
-            model.HealthTekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                                join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                                where od.ProductId == p.ProductMasterId && p.CompanyId == 3
-                                                group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                                let Amount = odp.Sum(m => m.od.Amount)
-                                                select Amount).Sum(x => x);
-            model.PhytekTotalPendingValue = (from od in _OrderDetailBLL.GetAllOrderDetail()
-                                             join p in new ProductDetailBLL(_unitOfWork).GetAllProductDetail() on od.ProductId equals p.ProductMasterId
-                                             where od.ProductId == p.ProductMasterId && p.CompanyId == 2
-                                             group new { od, p } by new { od.OrderId, p.CompanyId } into odp
-                                             let Amount = odp.Sum(m => m.od.Amount)
-                                             select Amount).Sum(x => x);
             return model;
         }
         [HttpPost]
@@ -229,7 +218,6 @@ namespace DistributorPortal.Controllers
             var list = _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
             return list;
         }
-
         public DistributorBalance GetDistributorBalance(string DistributorSAPCode)
         {
             try

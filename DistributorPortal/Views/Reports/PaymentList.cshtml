@@ -35,7 +35,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@string.Format("{0:0000000000}", item.Id)</td>
+                                    <td>@string.Format("{0:1000000000}", item.Id)</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <td>@item.Distributor.DistributorName</td>
@@ -71,8 +71,11 @@
 
     $(document).ready(function () {
 
-        var table = $('[Id$=example1]').DataTable({
+        $('[Id$=example1]').DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [],
         });
 
     });

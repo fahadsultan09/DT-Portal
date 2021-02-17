@@ -60,9 +60,24 @@
         </tr>
         <tr>
             <td>@Html.LabelFor(e => e.TotalOrderValues)</td>
-            <td><span id="SAMITotalOrderValues">@Convert.ToDecimal(Model.SAMITotalOrderValues).ToString("#,##0.00")</span></td>
-            <td><span id="HealthTekTotalOrderValues">@Convert.ToDecimal(Model.HealthTekTotalOrderValues).ToString("#,##0.00")</span></td>
-            <td><span id="PhytekTotalOrderValues">@Convert.ToDecimal(Model.PhytekTotalOrderValues).ToString("#,##0.00")</span></td>
+            <td>
+                <span>@Convert.ToDecimal(Model.SAMITotalOrderValues).ToString("#,##0.00")</span>
+                <input type="hidden" value="@Model.SAMITotalOrderValues" id="SAMITotalOrderValues" />
+            </td>
+            <td>
+                <span>@Convert.ToDecimal(Model.HealthTekTotalOrderValues).ToString("#,##0.00")</span>
+                <input type="hidden" value="@Model.HealthTekTotalOrderValues" id="HealthTekTotalOrderValues" />
+            </td>
+            <td>
+                <span>@Convert.ToDecimal(Model.PhytekTotalOrderValues).ToString("#,##0.00")</span>
+                <input type="hidden" value="@Model.PhytekTotalOrderValues" id="PhytekTotalOrderValues" />
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.TotalUnapprovedOrderValues)</td>
+            <td><span>@Convert.ToDecimal(Model.SAMITotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.HealthTekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.PhytekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
         </tr>
         <tr>
             <td>@Html.LabelFor(e => e.PendingOrderValues)</td>

@@ -43,7 +43,7 @@
                             {
                                 <tr>
                                     <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@item.Id.ToString()" /></td>
-                                    <td>@string.Format("{0:0000000000}", item.Id)</td>
+                                    <td>@string.Format("{0:1000000000}", item.Id)</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <td>@item.Distributor.DistributorName</td>
@@ -94,6 +94,9 @@
 
         var table = $('[Id$=example1]').DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [],
         });
 
         // Add event listener for opening and closing details

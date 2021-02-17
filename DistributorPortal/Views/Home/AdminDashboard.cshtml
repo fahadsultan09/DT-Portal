@@ -31,7 +31,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-4 col-6">
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>@Model.PendingOrder</h3>
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
+                @*<div class="col-lg-3 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>@ExtensionUtility.FormatNumberAmount(Model.UnverifiedPayment)</h3>
@@ -52,8 +52,8 @@
                             <i class="fas fa-money-bill-alt"></i>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-6">
+                </div>*@
+                <div class="col-lg-4 col-6">
                     <div class="small-box bg-gradient-secondary">
                         <div class="inner">
                             <h3>@Model.ReturnOrder</h3>
@@ -64,7 +64,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-4 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>@Model.Complaint</h3>
@@ -81,7 +81,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Payment Status - Last 12 Months</h3>
+                                <h3 class="card-title">Order Value Status - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="PaymentWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -94,7 +94,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Status - Last 12 Months</h3>
+                                <h3 class="card-title">Order Count Status - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="OrderWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -107,19 +107,20 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
-                            <button class="btn btn-outline-primary float-right">View All</button>
+                            <a asp-controller="Payment" asp-action="Index" class="btn btn-outline-primary float-right">View All</a>
+
                         </div>
                         <div class="card-body">
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.VerifiedPayment" title="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" title="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
                             </div>
@@ -130,7 +131,8 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="far fa-chart-bar"></i>Orders - @DateTime.Now.Year</h3>
-                            <button class="btn btn-outline-primary float-right">View All</button>
+                            <a asp-controller="Order" asp-action="Index" class="btn btn-outline-primary float-right">View All</a>
+
                         </div>
                         <div class="card-body">
                             <div class="row">

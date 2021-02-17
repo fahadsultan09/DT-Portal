@@ -6,6 +6,7 @@
     var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
     ViewData["Title"] = "View";
     ViewBag.IsView = true;
+    List<OrderReturnDetail> OrderReturnDetail = SessionHelper.LoginUser.IsDistributor ? Model.OrderReturnDetail : Model.OrderReturnDetail.Where(e => e.Company.Id == SessionHelper.LoginUser.CompanyId && e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).ToList();
 }
 
 <style type="text/css">
@@ -102,6 +103,7 @@
                             <div class="card card-primary grid">
                                 <div class="card-header">
                                     <h3 class="card-title">Return Products</h3>
+                                    <span class="float-right"><strong>Return Order No: @string.Format("{0:1000000000}", Model.Id)</strong></span>
                                 </div>
                                 <div class="card-body">
                                     <br />
@@ -130,10 +132,10 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach (var item in Model.OrderReturnDetail)
+                                                        @foreach (var item in OrderReturnDetail)
                                                         {
                                                         <tr>
-                                                            <td>@item.Id</td>
+                                                            <td>@string.Format("{0:1000000000}", item.Id)</td>
                                                             <td>@item.ProductMaster.ProductName</td>
                                                             <td>@item.BatchNo</td>
                                                             <td>@item.MRP</td>

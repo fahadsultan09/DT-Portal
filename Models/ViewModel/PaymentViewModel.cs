@@ -14,6 +14,7 @@ namespace Models.ViewModel
         public DateTime? ToDate { get; set; }
         public PaymentStatus? Status { get; set; }
         public int? DistributorId { get; set; }
+        public int? PaymentNo { get; set; }
         public SelectList DistributorList { get; set; }
     }
 }

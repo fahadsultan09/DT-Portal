@@ -95,6 +95,8 @@ namespace BusinessLogicLayer.Application
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
 
             OrderValueViewModel viewModel = new OrderValueViewModel();
+            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail();
+            List<ProductDetail> productDetailList= new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
@@ -103,7 +105,25 @@ namespace BusinessLogicLayer.Application
             viewModel.SAMISupplies0 = SAMIproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
             viewModel.SAMISupplies1 = SAMIproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.SAMISupplies4 = SAMIproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
-            viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.TotalPrice);
+            viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
+            viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
+                                                        join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                        where p.CompanyId == 1
+                                                        group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                        let Amount = odp.Sum(m => m.od.Amount)
+                                                        select Amount).Sum(x => x);
+            viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
+                                                             join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                             where p.CompanyId == 3
+                                                             group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                             let Amount = odp.Sum(m => m.od.Amount)
+                                                             select Amount).Sum(x => x);
+            viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
+                                                          join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                          where p.CompanyId == 2
+                                                          group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                          let Amount = odp.Sum(m => m.od.Amount)
+                                                          select Amount).Sum(x => x);
             if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
             {
                 viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
@@ -123,7 +143,7 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
             viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
-            viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.TotalPrice);
+            viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
             {
                 viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
@@ -143,7 +163,7 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
             viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice);
             viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice);
-            viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.TotalPrice);
+            viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
             {
                 viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
@@ -163,6 +183,8 @@ namespace BusinessLogicLayer.Application
 
         public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
         {
+            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail();
+            List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
             OrderValueViewModel viewModel = new OrderValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
@@ -179,6 +201,12 @@ namespace BusinessLogicLayer.Application
                 viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
                 viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == SAMIproductDetails.CompanyId && x.DistributorId == SAMIproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
+                viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
+                                                            join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                            where p.CompanyId == 1
+                                                            group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                            let Amount = odp.Sum(m => m.od.Amount)
+                                                            select Amount).Sum(x => x);
             }
             var HealthTekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == HealthTek);
             if (HealthTekproductDetails != null)
@@ -191,6 +219,12 @@ namespace BusinessLogicLayer.Application
                 viewModel.HealthTekCurrentBalance = HealthTekproductDetails.CurrentBalance;
                 viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTekproductDetails.CompanyId && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.HealthTekNetPayable = HealthTekproductDetails.NetPayable;
+                viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
+                                                                 join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                                 where p.CompanyId == 3
+                                                                 group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                                 let Amount = odp.Sum(m => m.od.Amount)
+                                                                 select Amount).Sum(x => x);
             }
             var PhytekproductDetails = OrderValue.FirstOrDefault(e => e.CompanyId == Phytek);
             if (PhytekproductDetails != null)
@@ -203,6 +237,12 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekCurrentBalance = PhytekproductDetails.CurrentBalance;
                 viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == PhytekproductDetails.CompanyId && x.DistributorId == PhytekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.PhytekNetPayable = PhytekproductDetails.NetPayable;
+                viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
+                                                              join p in productDetailList on od.ProductId equals p.ProductMasterId
+                                                              where p.CompanyId == 2
+                                                              group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                              let Amount = odp.Sum(m => m.od.Amount)
+                                                              select Amount).Sum(x => x);
             }
             return viewModel;
         }
@@ -360,7 +400,7 @@ namespace BusinessLogicLayer.Application
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:0000000000}", item.OrderId),
+                    SNO = string.Format("{0:1000000000}", item.OrderId),
                     ITEMNO = "",
                     PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
                     DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,

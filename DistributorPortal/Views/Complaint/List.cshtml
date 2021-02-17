@@ -8,9 +8,6 @@
                 <form asp-controller="Complaint"
                       asp-action="Add"
                       id="frmAdd"
-                      data-ajax-update="#divform"
-                      data-ajax="true"
-                      data-ajax-method="GET"
                       method="GET">
                     @if (SessionHelper.LoginUser.IsDistributor == true)
                     {
@@ -33,7 +30,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@string.Format("{0:0000000000}",item.Id)</td>
+                                <td>@string.Format("{0:1000000000}",item.Id)</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>
                                     @if (item.Status == ComplaintStatus.Resolved)

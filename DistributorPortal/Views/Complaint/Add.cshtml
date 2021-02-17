@@ -1,124 +1,128 @@
 ﻿@model Complaint
+@{ ViewBag.Title = "Add Complaint | Distributor Portal"; }
 
-<form asp-controller="Complaint"
-      asp-action="SaveEdit"
-      id="frmComplaint"
-      data-ajax-begin="Begin"
-      data-ajax-success="OnSuccess"
-      data-ajax-complete="Complete"
-      data-ajax="true"
-      data-ajax-method="POST"
-      enctype="multipart/form-data">
-    <input asp-for="Id" type="hidden" />
-    <section class="content" disabled>
+<!-- Main content -->
+<div class="content-wrapper">
+    <section class="content-header" disabled>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-12">
-                    <div class="card card-primary defaultColor">
-                        <div class="card-header">
-                            <h3 class="card-title">Distributor Information</h3>
-                        </div>
-                        <div class="card-body" style="padding: 10px 0px 0px 20px;">
-                            <div class="row">
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                    <h6>Name:</h6>
-                                </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.Distributor.DistributorName</strong></span>
-                                </div>
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                    <h6>City:</h6>
-                                </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.Distributor.City</strong></span>
-                                </div>
+                <div class="col-md-12">
+                    <form asp-controller="Complaint"
+                          asp-action="SaveEdit"
+                          id="frmComplaint"
+                          data-ajax-begin="Begin"
+                          data-ajax-success="OnSuccess"
+                          data-ajax-complete="Complete"
+                          data-ajax="true"
+                          data-ajax-method="POST"
+                          enctype="multipart/form-data">
+                        <input asp-for="Id" type="hidden" />
+                        <section class="content" disabled>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card card-primary defaultColor">
+                                            <div class="card-header">
+                                                <h3 class="card-title">Distributor Information</h3>
+                                            </div>
+                                            <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                        <h6>Name:</h6>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                        <span><strong>@Model.Distributor.DistributorName</strong></span>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                        <h6>City:</h6>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                        <span><strong>@Model.Distributor.City</strong></span>
+                                                    </div>
 
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                                    <h6>Code:</h6>
-                                </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-                                    <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Complaint</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class=" row">
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <h6>Complaint Category<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <h6>Complaint Sub Category<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <h6>Attachment</h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintCategory" })
-                                    <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    @Html.DropDownListFor(e => e.ComplaintSubCategoryId, Model.ComplaintSubCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintSubCategory" })
-                                    <span asp-validation-for="ComplaintSubCategoryId" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <div class="custom-file">
-                                            <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
-                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                        <h6>Code:</h6>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                        <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="caption">
-                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
-                                    </span>
+                                    <div class="col-12">
+                                        <div class="card card-primary">
+                                            <div class="card-header">
+                                                <h3 class="card-title">Complaint</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class=" row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        <h6>Complaint Category<span class="text-danger"> * </span></h6>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        <h6>Complaint Sub Category<span class="text-danger"> * </span></h6>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        <h6>Attachment</h6>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintCategory" })
+                                                        <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        @Html.DropDownListFor(e => e.ComplaintSubCategoryId, Model.ComplaintSubCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintSubCategory" })
+                                                        <span asp-validation-for="ComplaintSubCategoryId" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                        <div class="form-group">
+                                                            <div class="custom-file">
+                                                                <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
+                                                                <label class="custom-file-label" for="customFile">Choose file</label>
+                                                            </div>
+                                                        </div>
+                                                        <span class="caption">
+                                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                        <h6>Description<span class="text-danger"> * </span></h6>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                        <textarea asp-for="Description" class="form-control"></textarea>
+                                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                    </div>
+                                                    <div class="col-6 pull-right">
+                                                        <button type="submit" onclick="Save();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
+                                                            Submit
+                                                        </button>
+                                                        <a asp-controller="Complaint" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                                            Back
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <h6>Description<span class="text-danger"> * </span></h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <textarea asp-for="Description" class="form-control"></textarea>
-                                    <span asp-validation-for="Description" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                </div>
-                                <div class="col-6 pull-right">
-                                    <button type="submit" onclick="Save();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
-                                        Submit
-                                    </button>
-                                    <a data-ajax-update="#divform"
-                                       data-ajax="true"
-                                       data-ajax-method="GET"
-                                       asp-controller="Complaint" asp-action="List"
-                                       class="btn btn-secondary float-right mr-3">
-                                        Back
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        </section>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
-</form>
+</div>
 
 <script>
-
-    //$('.custom-file-input').on("change", function () {
-    //    $('#customFile').val($(this).val().split("\\").pop());
-    //});
 
     //File upload
     $('.custom-file-input').on("change", function () {

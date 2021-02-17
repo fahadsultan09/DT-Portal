@@ -44,5 +44,7 @@ namespace Models.Application
         public bool IsProductSelected { get; set; }
         [NotMapped]
         public string PendingQuantity { get; set; }
+        [NotMapped]
+        public double Discount { get; set; }
     }
 }

@@ -1,4 +1,25 @@
 ﻿@model PaymentMaster
+@{ ViewBag.Title = "Add Payment | Distributor Portal"; }
+
+<style type="text/css">
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 40px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .card-header {
+        padding: 5px 15px 0 15px
+    }
+
+    .swal-modal .swal-text {
+        text-align: center;
+    }
+</style>
+
 <!-- Main content -->
 <div class="content-wrapper">
     <section class="content-header" disabled>
@@ -17,104 +38,50 @@
                           enctype="multipart/form-data">
                         <input asp-for="Id" type="hidden" />
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-4">
                                 <div class="card card-primary">
                                     <div class="card-header">
                                         <h3 class="card-title">Distributor Information</h3>
                                     </div>
-                                    <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                                    <div class="card-body" style="height: 170px;">
                                         <div class="row">
-                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                            <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                                 <h6>Name:</h6>
                                             </div>
-                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                                 <span><strong>@Model.Distributor.DistributorName</strong></span>
                                             </div>
-                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                                 <h6>City:</h6>
                                             </div>
-                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                                 <span><strong>@Model.Distributor.City</strong></span>
                                             </div>
-
-                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-1 col-sm-12 col-xs-12">
                                                 <h6>Code:</h6>
                                             </div>
-                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-9 col-md-2 col-sm-12 col-xs-12">
                                                 <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card card-primary">
+                            </div>
+                            <div class="col-8">
+                                <div class="card card-primary h-90">
                                     <div class="card-header">
-                                        <h3 class="card-title">Distributor Current Balance and Total Pending Value of Orders</h3>
+                                        <h3 class="card-title">Pending Values</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                        </div>
                                     </div>
-                                    <div class="card-body" style="padding: 10px 0px 0px 20px;">
-                                        <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>SAMI Balance:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.SAMI)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Healthtek Balance:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.HealthTek)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Phytek Balance:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", SessionHelper.DistributorBalance.PhyTek)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Total Pending Value:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", Model.SAMITotalPendingValue)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Total Pending Value:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", Model.HealthTekTotalPendingValue)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Total Pending Value:</h6>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <span>
-                                                    <strong>
-                                                        @String.Format("{0:N}", Model.PhytekTotalPendingValue)
-                                                    </strong>
-                                                </span>
-                                            </div>
-                                        </div>
+                                    <div class="card-body p-0" id="UpdateOrderValueId">
+                                        <partial name="PaymentValue" model="Model.PaymentValueViewModel" />
                                     </div>
                                 </div>
                             </div>
@@ -129,8 +96,8 @@
                                                 <h6>Deposit Date</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" data-target="#DepositDate" class="form-control datetimepicker-input" />
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" readonly="readonly" id="DepositDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -140,8 +107,8 @@
                                                 <h6>Value Clearing Date</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" readonly="readonly" id="ValueClearingDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -199,7 +166,7 @@
                                                 <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="DepositorBankCode" id="DepositorBankCode" class="form-control" readonly="readonly" />
+                                                <input type="text" asp-for="DepositorBankCode" id="DepositorBankCode" class="form-control" />
                                                 <span asp-validation-for="DepositorBankCode" class="text-danger"></span>
                                             </div>
                                         </div><br />
@@ -239,13 +206,6 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6">
-                                                @*<button data-ajax-update="#divform"
-                                                        data-ajax="true"
-                                                        data-ajax-method="GET"
-                                                        asp-controller="Payment" asp-action="List"
-                                                        type="submit" class="btn btn-success">
-                                                        Submit & Add More Payment
-                                                    </button>*@
                                             </div>
                                             <div class="col-6 pull-right">
                                                 <button type="submit" onclick="Save();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
@@ -279,13 +239,6 @@
 
         $('.select2').select2();
 
-        //Date range picker
-        $('.date').datetimepicker({
-            format: 'L',
-            todayHighlight: true,
-            maxDate: moment(),
-        });
-
         $('body').on('keyup', '#Amount', function () {
             $('#AmountInWords').html(inWords($('#Amount').val()));
         });
@@ -309,19 +262,19 @@
             $('.ddlCompanyBank').change();
         });
 
-        $('body').on('change', '.ddlDepostitorBank', function () {
-            $.ajax({
-                type: "GET",
-                url: "/Bank/GetBranchCode",
-                contentType: "application/json",
-                dataType: "json",
-                data: { Id: $(".ddlDepostitorBank").val() },
-                async: false,
-                success: function (response) {
-                    $('#DepositorBankCode').val(response[0]);
-                },
-            });
-        });
+        //$('body').on('change', '.ddlDepostitorBank', function () {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: "/Bank/GetBranchCode",
+        //        contentType: "application/json",
+        //        dataType: "json",
+        //        data: { Id: $(".ddlDepostitorBank").val() },
+        //        async: false,
+        //        success: function (response) {
+        //            $('#DepositorBankCode').val(response[0]);
+        //        },
+        //    });
+        //});
 
         $('body').on('change', '.ddlCompanyBank', function () {
             $.ajax({

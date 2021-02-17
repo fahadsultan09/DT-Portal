@@ -1,7 +1,6 @@
-﻿using BusinessLogicLayer.FormLogic;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.FormLogic;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.BusinessLogicLayer.ApplicationSetup;
-using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModel;

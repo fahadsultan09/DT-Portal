@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
+using Models.ViewModel;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -59,16 +60,12 @@ namespace Models.Application
         [NotMapped]
         public SelectList CompanyBankList { get; set; }
         [NotMapped]
-        public double SAMITotalPendingValue { get; set; }
-        [NotMapped]
-        public double HealthTekTotalPendingValue { get; set; }
-        [NotMapped]
-        public double PhytekTotalPendingValue { get; set; }
-        [NotMapped]
         public string CreatedName { get; set; }
         [NotMapped]
         public string ApprovedName { get; set; }
         [NotMapped]
         public string RejectedName { get; set; }
+        [NotMapped]
+        public PaymentValueViewModel PaymentValueViewModel { get; set; }
     }
 }

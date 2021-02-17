@@ -1,28 +1,28 @@
 ﻿using Models.Common;
+using Models.UserRights;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models.Application
 {
     public class AuditTrail : BaseEntity
     {
-        [Required(ErrorMessage = "Enter page name.")]
-        [StringLength(50)]
-        public string PageName { get; set; }
-
-        [Required(ErrorMessage = "Enter action name.")]
-        [StringLength(50)]
-        public string ActionName { get; set; }
-
-        [Required(ErrorMessage = "Enter description.")]
-        [StringLength(200)]
-        public string Description { get; set; }
-
-        [Required(ErrorMessage = "Enter Created By.")]
-        [StringLength(10)]
-        public string CreatedBy { get; set; }
-
-        [Required(ErrorMessage = "Enter Created Date.")]
+        public int PageId { get; set; }
+        [ForeignKey("PageId")]
+        public virtual ApplicationPage ApplicationPage { get; set; }
+        public int ActionId { get; set; }
+        [ForeignKey("ActionId")]
+        public virtual ApplicationAction ApplicationAction { get; set; }
+        public string JsonObject { get; set; }
+        public string KeyValue { get; set; }
+        public string OldValue { get; set; }
+        public string NewValue { get; set; }
+        [StringLength(255)]
+        public string Remarks { get; set; }
+        public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
+        [NotMapped]
+        public object Oject { get; set; }
     }
 }
