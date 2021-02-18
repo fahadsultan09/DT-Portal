@@ -38,8 +38,11 @@ namespace UserPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindUser(id));
         }
         [HttpPost]
@@ -98,7 +101,7 @@ namespace UserPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _UserBLL.DeleteUser(id);
                 return Json(new { Result = true });
@@ -138,7 +141,7 @@ namespace UserPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
                 _UserBLL.ResetPassword(id, EncryptDecrypt.Encrypt(password));

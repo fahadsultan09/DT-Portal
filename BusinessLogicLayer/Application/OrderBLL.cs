@@ -353,7 +353,8 @@ namespace BusinessLogicLayer.Application
                         ProductId = item.ProductMasterId,
                         Quantity = item.ProductMaster.Quantity,
                         CreatedBy = SessionHelper.LoginUser.Id,
-                        CreatedDate = DateTime.Now
+                        CreatedDate = DateTime.Now,
+                        ApprovedQuantity = 0
                     });
                 }
                 _orderDetailBLL.AddRange(details);

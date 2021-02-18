@@ -62,16 +62,22 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             SessionHelper.AddProduct = new List<ProductDetail>();
             return View("AddDetail", BindOrderMaster(id));
         }
         [HttpGet]
         public IActionResult Approve(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             var order = BindOrderMaster(id);
             SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
             ViewBag.Status = order.Status;
@@ -81,7 +87,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -107,7 +113,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -135,7 +141,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -157,7 +163,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult OrderView(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ViewBag.View = true;
             return View(BindOrderMaster(id));
@@ -248,7 +254,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == id);
@@ -397,10 +403,16 @@ namespace DistributorPortal.Controllers
                     var license = distributorLicense.FirstOrDefault(e => e.LicenseId == item.Id);
                     if (license != null)
                     {
-                        if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+                        if (DateTime.Now > license.Expiry && DateTime.Now < license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = "Please Re-new your" + license.LicenseControl.LicenseName + " license as soon as possible";
+                            return Json(new { data = jsonResponse });
+                        }
+                        else if (DateTime.Now > license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired. Please renew the license";
+                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired.";
                             return Json(new { data = jsonResponse });
                         }
                         else
@@ -452,7 +464,7 @@ namespace DistributorPortal.Controllers
         }
         public void SelectProduct(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
             var product = list.FirstOrDefault(e => e.ProductMasterId == id);

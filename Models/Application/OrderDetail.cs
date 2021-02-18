@@ -19,7 +19,7 @@ namespace Models.Application
         public double Amount { get; set; }
         public string SAPOrderNumber { get; set; }
         public OrderStatus? OrderProductStatus { get; set; }
-        public int? ApprovedQuantity { get; set; }
+        public int ApprovedQuantity { get; set; }
         public bool IsProductSelected { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }

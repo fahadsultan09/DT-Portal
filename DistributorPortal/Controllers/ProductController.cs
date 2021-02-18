@@ -142,7 +142,7 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public JsonResult GetProduct(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });

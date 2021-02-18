@@ -22,13 +22,13 @@ namespace DistributorPortal.Controllers
         // GET: Role Permission
         public IActionResult Index(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return View(_rolePermissionLogic.GetPermissionList(id));
         }
         public IActionResult List(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView(_rolePermissionLogic.GetPermissionList(id));
         }

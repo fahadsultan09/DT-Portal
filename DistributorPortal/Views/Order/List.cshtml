@@ -49,7 +49,7 @@
                                     }
                                     @if (item.Status == OrderStatus.PendingApproval && SessionHelper.LoginUser.IsDistributor)
                                     {
-                                        <a onclick="Cancel(@EncryptDecrypt.Encrypt(item.Id.ToString()));" title="Cancel" class="btn btn-warning btn-sm">
+                                        <a onclick="Cancel('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Cancel" class="btn btn-warning btn-sm">
                                             <i class="fas fa-trash-restore"></i>
                                         </a>
                                     }

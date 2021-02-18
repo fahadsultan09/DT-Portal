@@ -42,14 +42,17 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindComplaint(id));
         }
         [HttpGet]
         public IActionResult ComplaintApproval(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return PartialView("ComplaintApproval", BindComplaint(id));
         }
@@ -117,7 +120,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public JsonResult UpdateStatus(string DPID, ComplaintStatus Status, string Remarks)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             JsonResponse jsonResponse = new JsonResponse();
             try

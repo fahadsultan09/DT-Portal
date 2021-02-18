@@ -87,8 +87,11 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public ActionResult GetOrderReturnDetailList(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id);
             return PartialView("OrderReturnDetailList", Detail);
         }

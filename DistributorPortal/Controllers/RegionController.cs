@@ -31,8 +31,11 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindRegion(id));
         }
         [HttpPost]
@@ -81,7 +84,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id;
+                int id=0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _RegionBLL.DeleteRegion(id);
                 return Json(new { Result = true });

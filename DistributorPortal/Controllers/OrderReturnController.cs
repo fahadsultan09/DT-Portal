@@ -65,15 +65,18 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
         }
         [HttpGet]
         public IActionResult View(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("View", BindOrderReturnMaster(id));
@@ -137,7 +140,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Approve(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Approve", BindOrderReturnMaster(id));
@@ -297,7 +300,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID)
         {
-            int id;
+            int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddReturnProduct;
             var item = list.FirstOrDefault(e => e.ProductId == id);
