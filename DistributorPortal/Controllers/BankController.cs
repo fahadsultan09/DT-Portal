@@ -8,6 +8,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -23,7 +24,6 @@ namespace DistributorPortal.Controllers
         // GET: Bank
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Index", " Form");
             return View(_BankBLL.GetAllBank());
         }
         public IActionResult List()
@@ -31,9 +31,13 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _BankBLL.GetAllBank());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindBank(id));
         }
         [HttpPost]
@@ -42,7 +46,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -74,7 +77,6 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Bank name already exist";
                     }
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -86,13 +88,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Delete", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _BankBLL.DeleteBank(id);
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Bank", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -124,9 +126,11 @@ namespace DistributorPortal.Controllers
         {
             return Json(_BankBLL.DropDownBankList(ComplaintCategoryId, 0));
         }
-        public JsonResult GetBranchCode(int Id)
+        public JsonResult GetBranchCode(string DPID)
         {
-            return Json(_BankBLL.GetAllBank().Where(x=>x.Id == Id).Select(x=>x.BranchCode));
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return Json(_BankBLL.GetAllBank().Where(x=>x.Id == id).Select(x=>x.BranchCode));
         }
 
     }

@@ -94,17 +94,17 @@
                                             @if (!SessionHelper.LoginUser.IsDistributor)
                                             {
                                                 <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="Approve(@Model.Id);" class="ladda-button btn btn-success float-right" id="Approve">
+                                                    <button onclick="Approve('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="ladda-button btn btn-success float-right" id="Approve">
                                                         Approve
                                                     </button>
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="OnHold(@Model.Id);" class="btn btn-warning float-right">
+                                                    <button onclick="OnHold('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-warning float-right">
                                                         On Hold
                                                     </button>
                                                 </div>
                                                 <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="Reject(@Model.Id);" class="btn btn-primary float-right">
+                                                    <button onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-primary float-right">
                                                         Reject
                                                     </button>
                                                 </div>
@@ -174,7 +174,7 @@
                     $.ajax({
                     type: "POST",
                     url: '@Url.Action("OnHold", "Order")',
-                    data: { 'Id': Id, 'Comments': result.value },
+                    data: { 'DPID': Id, 'Comments': result.value },
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
@@ -209,7 +209,7 @@
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Reject", "Order")',
-                    data: { 'Id': Id, 'Comments': result.value },
+                    data: { 'DPID': Id, 'Comments': result.value },
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
@@ -239,23 +239,7 @@
                 debugger;
                 if (result.value) {
                     debugger;
-                    $('#frmApproveOrder').submit();
-                    @*$.ajax({
-                        type: "GET",
-                        url: '@Url.Action("ApproveOrder", "Order")',
-                        data: { 'Id': Id },
-                        cache: false,
-                        success: function (response) {
-                            Swal.fire('Saved!', response.Message, 'success')
-                            Ladda.create($("#Approve", this)[0]).stop();
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 2000);
-                        },
-                        complete: function (response) {
-                            Ladda.create($("#Approve", this)[0]).stop();
-                        }
-                    })*@
+                    $('#frmApproveOrder').submit();                    
                 }
             })
         }

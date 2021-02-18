@@ -33,6 +33,7 @@ namespace BusinessLogicLayer.Application
             var item = repository.GetById(module.Id);
             item.LicenseName = module.LicenseName.Trim();
             item.LicenseAcceptanceInDay = module.LicenseAcceptanceInDay;
+            item.DaysIntimateBeforeExpiry = module.DaysIntimateBeforeExpiry;
             item.IsMandatory = module.IsMandatory;
             item.IsActive = module.IsActive;
             item.IsDeleted = module.IsDeleted;

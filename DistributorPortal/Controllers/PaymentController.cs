@@ -40,7 +40,6 @@ namespace DistributorPortal.Controllers
         // GET: Payment
         public ActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "Index", " Form");
             PaymentViewModel model = new PaymentViewModel();
             model.PaymentMaster = GetPaymentList();
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
@@ -59,15 +58,20 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return View("Add", BindPaymentMaster(id));
         }
         [HttpGet]
-        public IActionResult PaymentApproval(int id)
+        public IActionResult PaymentApproval(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "PaymentApproval", "Click on Approval Button of ");
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return View("PaymentApproval", BindPaymentMaster(id));
         }
         [HttpPost]
@@ -77,7 +81,6 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -105,7 +108,6 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = NotificationMessage.PaymentSaved;
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "SaveEdit", "End Click on Save Button of ");
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 return Json(new { data = jsonResponse });
             }
@@ -153,8 +155,7 @@ namespace DistributorPortal.Controllers
             bool result = false;
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "UpdateStatus", "Start Click on Approve Button of ");
-                if (Status == PaymentStatus.Verified)
+              if (Status == PaymentStatus.Verified)
                 {
                     var Client = new RestClient(_Configuration.PostPayment);
                     var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
@@ -189,7 +190,6 @@ namespace DistributorPortal.Controllers
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
                 }
                 _unitOfWork.Save();
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "UpdateStatus", "End Click on Approve Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.PaymentVerified;
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
@@ -206,7 +206,6 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult Search(PaymentViewModel model, string Search)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "Search", "Start Click on Search Button of ");
             if (!string.IsNullOrEmpty(Search))
             {
                 model = List(model);
@@ -215,7 +214,6 @@ namespace DistributorPortal.Controllers
             {
                 model.PaymentMaster = GetPaymentList();
             }
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Payment", "Search", "End Click on Search Button of ");
             return PartialView("List", model.PaymentMaster);
         }
         public List<PaymentMaster> GetPaymentList()

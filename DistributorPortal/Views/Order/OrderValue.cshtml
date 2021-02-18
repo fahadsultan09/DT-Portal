@@ -19,6 +19,7 @@
 
     .ordervalue > tr {
         padding: 0;
+        font-size:11px
     }
 </style>
 
@@ -39,7 +40,7 @@
             <th>PhyTek</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="font-size: 10.6px">
         <tr>
             <td>@Html.LabelFor(e => e.Supplies0)</td>
             <td>@Convert.ToDecimal(Model.SAMISupplies0).ToString("#,##0.00")</td>
@@ -96,6 +97,12 @@
             <td>@Convert.ToDecimal(Model.SAMIUnConfirmedPayment).ToString("#,##0.00")</td>
             <td>@Convert.ToDecimal(Model.HealthTekUnConfirmedPayment).ToString("#,##0.00")</td>
             <td>@Convert.ToDecimal(Model.PhytekUnConfirmedPayment).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(e => e.NetPayable)</td>
+            <td>@Convert.ToDecimal(Model.SAMINetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(e => e.NetPayable)</td>

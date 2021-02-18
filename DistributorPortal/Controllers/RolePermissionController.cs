@@ -5,6 +5,7 @@ using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModel;
 using System;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -19,15 +20,17 @@ namespace DistributorPortal.Controllers
         }
 
         // GET: Role Permission
-        public IActionResult Index(int Id)
+        public IActionResult Index(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("RolePermission", "Index", " Form");
-            return View(_rolePermissionLogic.GetPermissionList(Id));
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return View(_rolePermissionLogic.GetPermissionList(id));
         }
-        public IActionResult List(int Id)
+        public IActionResult List(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("RolePermission", "Add", "Click on Add  Button of ");
-            return PartialView(_rolePermissionLogic.GetPermissionList(Id));
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return PartialView(_rolePermissionLogic.GetPermissionList(id));
         }
 
         [HttpPost]
@@ -35,10 +38,8 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("RolePermission", "UpdatePermission", "Start Click on Delete Button of ");
                 var data = _rolePermissionLogic.UpdatePermission(models);
                 TempData["Message"] = NotificationMessage.UpdateSuccessfully;
-                new AuditLogBLL(_unitOfWork).AddAuditLog("RolePermission", "UpdatePermission", "End Click on Delete Button of ");
                 return PartialView("List", _rolePermissionLogic.GetPermissionList(models.RoleId));
             }
             catch (Exception ex)

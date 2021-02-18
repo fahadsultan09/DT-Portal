@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.UserRights;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -22,7 +23,6 @@ namespace DistributorPortal.Controllers
         // GET: ApplicationModule
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "Index", " Form");
             return View(_ApplicationModuleBLL.GetAllApplicationModule());
         }
         public IActionResult List()
@@ -30,9 +30,13 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _ApplicationModuleBLL.GetAllApplicationModule());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindApplicationModule(id));
         }
         [HttpPost]
@@ -40,7 +44,6 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -64,12 +67,10 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "SaveEdit", "End Click on Save Button of ");
                         TempData["Message"] = "Application Module name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "SaveEdit", "End Click on Save Button of ");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -80,13 +81,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "Delete", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ApplicationModuleBLL.DeleteApplicationModule(id);
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationModule", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

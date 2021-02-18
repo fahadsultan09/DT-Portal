@@ -6,6 +6,8 @@ using Models.Application;
 using Models.ViewModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -83,9 +85,14 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpGet]
-        public ActionResult GetOrderReturnDetailList(int OrderReturnId)
+        public ActionResult GetOrderReturnDetailList(string DPID)
         {
-            var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(OrderReturnId);
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
+            var Detail = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id);
             return PartialView("OrderReturnDetailList", Detail);
         }
         #endregion

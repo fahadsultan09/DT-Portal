@@ -9,6 +9,7 @@ using Models.UserRights;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -26,7 +27,6 @@ namespace DistributorPortal.Controllers
         // GET: ApplicationPage
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "Index", " Form");
             return View(_ApplicationPageBLL.GetAllApplicationPage());
         }
         public IActionResult List()
@@ -34,9 +34,13 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _ApplicationPageBLL.GetAllApplicationPage());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindApplicationPage(id));
         }
         [HttpPost]
@@ -45,7 +49,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -90,12 +93,10 @@ namespace DistributorPortal.Controllers
                                 _ApplicationPageActionBLL.AddApplicationPageAction(ApplicationPageAction);
                             }
                         }
-                        new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "SaveEdit", "End Click on Save Button of ");
                         return Json(new { data = jsonResponse });
                     }
                     else
                     {
-                        new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "SaveEdit", "End Click on Save Button of ");
                         jsonResponse.Status = false;
                         jsonResponse.Message = "Application page name already exist";
                         return Json(new { data = jsonResponse });
@@ -111,13 +112,13 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "Delete", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ApplicationPageBLL.DeleteApplicationPage(id);
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ApplicationPage", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

@@ -10,13 +10,10 @@
     }
 }
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">License</h3>
     </div>
-    <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -48,12 +45,19 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Day(s) Intimation Before Expiry<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="DaysIntimateBeforeExpiry" type="text" placeholder="Enter Day(s)" class="form-control" />
+                                            <span asp-validation-for="DaysIntimateBeforeExpiry" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <div class="col-lg-3">
 
                                         </div>
                                         <div class="col-lg-offset-3 col-lg-4">
                                             <div class="i-checks"><label asp-for="IsActive">Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i></div>
-                                        </div>                                    
+                                        </div>
                                         <div class="col-lg-offset-2 col-lg-4">
                                             <div class="i-checks"><label asp-for="IsMandatory">Is Mandatory</label>&nbsp;&nbsp;<input asp-for="IsMandatory" type="checkbox"><i></i></div>
                                         </div>

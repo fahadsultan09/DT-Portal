@@ -1,5 +1,4 @@
-﻿
-using BusinessLogicLayer.Application;
+﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
@@ -30,7 +29,6 @@ namespace UserPortal.Controllers
         // GET: User
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Index", " Form");
             return View(_UserBLL.GetAllUser());
         }
         public IActionResult List()
@@ -38,9 +36,13 @@ namespace UserPortal.Controllers
             return PartialView("List", _UserBLL.GetAllUser());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindUser(id));
         }
         [HttpPost]
@@ -50,7 +52,6 @@ namespace UserPortal.Controllers
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 ModelState.Remove("Password");
                 ModelState.Remove("ConfirmPassword");
@@ -85,7 +86,6 @@ namespace UserPortal.Controllers
                         jsonResponse.Message = "User name already exist";
                     }
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -97,13 +97,13 @@ namespace UserPortal.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Delete", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _UserBLL.DeleteUser(id);
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -137,14 +137,14 @@ namespace UserPortal.Controllers
             return Json(_UserBLL.GetAllUser().ToList());
         }
         [HttpPost]
-        public IActionResult ResetPassword(int id)
+        public IActionResult ResetPassword(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "ResetPassword", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
                 _UserBLL.ResetPassword(id, EncryptDecrypt.Encrypt(password));
-                new AuditLogBLL(_unitOfWork).AddAuditLog("User", "ResetPassword", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

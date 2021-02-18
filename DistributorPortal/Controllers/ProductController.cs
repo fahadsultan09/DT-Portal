@@ -32,7 +32,6 @@ namespace ProductPortal.Controllers
         // GET: Product
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Index", " Form");
             return View(_ProductMasterBLL.GetAllProductMaster());
         }
         public IActionResult List()
@@ -45,8 +44,7 @@ namespace ProductPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Sync", "Start Click on Sync Button of ");
-                var Client = new RestClient(_configuration.SyncProductURL);
+               var Client = new RestClient(_configuration.SyncProductURL);
                 var request = new RestRequest(Method.GET);
                 IRestResponse response = Client.Execute(request);
                 var SAPProduct = JsonConvert.DeserializeObject<List<ProductMaster>>(response.Content);
@@ -91,7 +89,6 @@ namespace ProductPortal.Controllers
                     });
                     _ProductMasterBLL.UpdateRange(list);
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "Sync", "End Click on Sync Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SyncedSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("Index", "Product");
@@ -109,7 +106,6 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public IActionResult ProductMapping()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "ProductMapping", "Get Prodct Mapping ");
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
             List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
@@ -121,7 +117,6 @@ namespace ProductPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "UpdateProductDetail", "Start Click on UpdateProductDetail Button of ");
                 if (model.Id > 0)
                 {
                     _ProductDetailBLL.UpdateProductDetail(model);
@@ -131,7 +126,6 @@ namespace ProductPortal.Controllers
                     _ProductDetailBLL.AddProductDetail(model);
                 }
 
-                new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "UpdateProductDetail", "End Click on UpdateProductDetail Button of ");
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
@@ -147,12 +141,12 @@ namespace ProductPortal.Controllers
             }
         }
         [HttpGet]
-        public JsonResult GetProduct(int Id)
+        public JsonResult GetProduct(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("Product", "GetProduct", "Get Product ");
-            ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(Id);
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });
         }
-
     }
 }

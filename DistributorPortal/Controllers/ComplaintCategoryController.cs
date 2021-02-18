@@ -8,6 +8,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
@@ -31,9 +32,13 @@ namespace DistributorPortal.Controllers
             return PartialView("List", _ComplaintCategoryBLL.GetAllComplaintCategory());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "Add", "Click on Add  Button of ");
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             return PartialView("Add", BindComplaintCategory(id));
         }
         [HttpPost]
@@ -41,13 +46,12 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
-            {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "SaveEdit", "Start Click on SaveEdit Button of ");
+            {                
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
-                    TempData["Message"] = NotificationMessage.RequiredFieldsValidation;
-                    return PartialView("Add", model);
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
                 }
                 else
                 {
@@ -70,12 +74,10 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
-                        jsonResponse.Status = false;
+                        jsonResponse.Status = true;
                         jsonResponse.Message = "Complaint Category name already exist";
                     }
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -88,13 +90,13 @@ namespace DistributorPortal.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string DPID)
         {
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "Delete", "Start Click on Delete Button of ");
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ComplaintCategoryBLL.DeleteComplaintCategory(id);
-                new AuditLogBLL(_unitOfWork).AddAuditLog("ComplaintCategory", "Delete", "End Click on Delete Button of ");
                 return Json(new { Result = true });
             }
             catch (Exception ex)

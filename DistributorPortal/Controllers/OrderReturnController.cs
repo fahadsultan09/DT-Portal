@@ -45,7 +45,6 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Index", " Form");
             OrderReturnViewModel model = new OrderReturnViewModel();
             model.OrderReturnMaster = GetOrderReturnList();
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
@@ -64,14 +63,21 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Add", BindOrderReturnMaster(id));
         }
         [HttpGet]
-        public IActionResult View(int id)
+        public IActionResult View(string DPID)
         {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("View", BindOrderReturnMaster(id));
         }
@@ -132,8 +138,10 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        public IActionResult Approve(int id)
+        public IActionResult Approve(string DPID)
         {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Approve", BindOrderReturnMaster(id));
         }
@@ -197,7 +205,6 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult Search(OrderReturnViewModel model, string Search)
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Search", "Start Click on Search Button of ");
             if (!string.IsNullOrEmpty(Search))
             {
                 model = List(model);
@@ -206,7 +213,6 @@ namespace DistributorPortal.Controllers
             {
                 model.OrderReturnMaster = GetOrderReturnList();
             }
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderReturn", "Search", "End Click on Search Button of ");
             return PartialView("List", model.OrderReturnMaster);
         }
         public List<OrderReturnMaster> GetOrderReturnList()
@@ -292,16 +298,17 @@ namespace DistributorPortal.Controllers
                 return sw.GetStringBuilder().ToString();
             }
         }
-        public IActionResult Delete(int Id)
+        public IActionResult Delete(string DPID)
         {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddReturnProduct;
-            var item = list.FirstOrDefault(e => e.ProductId == Id);
+            var item = list.FirstOrDefault(e => e.ProductId == id);
             if (item != null)
             {
                 list.Remove(item);
             }
             SessionHelper.AddReturnProduct = list;
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "Delete", "End Click on Delete Button of ");
             return PartialView("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
         }
     }

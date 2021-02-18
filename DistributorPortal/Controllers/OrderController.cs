@@ -53,7 +53,6 @@ namespace DistributorPortal.Controllers
         // GET: Order
         public ActionResult Index()
         {
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "Index", " Form");
             return View(GetOrderList());
         }
         public IActionResult List()
@@ -61,23 +60,35 @@ namespace DistributorPortal.Controllers
             return PartialView("List", GetOrderList());
         }
         [HttpGet]
-        public IActionResult Add(int id)
+        public IActionResult Add(string DPID)
         {
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             SessionHelper.AddProduct = new List<ProductDetail>();
             return View("AddDetail", BindOrderMaster(id));
         }
         [HttpGet]
-        public IActionResult Approve(int id)
+        public IActionResult Approve(string DPID)
         {
+            int id=0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
             var order = BindOrderMaster(id);
             SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
             ViewBag.Status = order.Status;
             return View("OrderApprove", order);
         }
-        public IActionResult OnHold(int id, string Comments)
+        public IActionResult OnHold(string DPID, string Comments)
         {
             try
             {
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Onhold;
@@ -98,11 +109,12 @@ namespace DistributorPortal.Controllers
                 throw;
             }
         }
-
-        public IActionResult Reject(int id, string Comments)
+        public IActionResult Reject(string DPID, string Comments)
         {
             try
             {
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Reject;
@@ -124,8 +136,35 @@ namespace DistributorPortal.Controllers
                 throw;
             }
         }
-        public IActionResult OrderView(int id)
+        [HttpPost]
+        public IActionResult Cancel(string DPID)
         {
+            try
+            {
+                int id=0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                JsonResponse jsonResponse = new JsonResponse();
+                var order = _OrderBLL.GetOrderMasterById(id);
+                order.Status = OrderStatus.Cancel;
+                var result = _OrderBLL.Update(order);
+                if (result > 0)
+                {
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Order has been cancelled";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                }
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                throw;
+            }
+        }
+        public IActionResult OrderView(string DPID)
+        {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ViewBag.View = true;
             return View(BindOrderMaster(id));
         }
@@ -213,16 +252,17 @@ namespace DistributorPortal.Controllers
             }
             return Json(new { data = jsonResponse });
         }
-        public IActionResult Delete(int Id)
+        public IActionResult Delete(string DPID)
         {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
-            var item = list.FirstOrDefault(e => e.ProductMasterId == Id);
+            var item = list.FirstOrDefault(e => e.ProductMasterId == id);
             if (item != null)
             {
                 list.Remove(item);
             }
             SessionHelper.AddProduct = list;
-            new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "Delete", "End Click on Delete Button of ");
             return PartialView("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber));
         }
         [HttpPost]
@@ -231,7 +271,6 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "SaveEdit", "Start Click on SaveEdit Button of ");
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -258,7 +297,6 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = Common.OrderContant.OrderItem;
                     }
                 }
-                new AuditLogBLL(_unitOfWork).AddAuditLog("OrderMaster", "SaveEdit", "End Click on Save Button of ");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -324,7 +362,7 @@ namespace DistributorPortal.Controllers
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
         }
-        public async Task<string> RenderRazorViewToString(string viewName, object model)
+        private async Task<string> RenderRazorViewToString(string viewName, object model)
         {
             ViewData.Model = model;
             using (var sw = new StringWriter())
@@ -336,7 +374,7 @@ namespace DistributorPortal.Controllers
                 return sw.GetStringBuilder().ToString();
             }
         }
-        public List<OrderMaster> GetOrderList()
+        private List<OrderMaster> GetOrderList()
         {
             if (SessionHelper.LoginUser.IsDistributor)
             {
@@ -365,10 +403,16 @@ namespace DistributorPortal.Controllers
                     var license = distributorLicense.FirstOrDefault(e => e.LicenseId == item.Id);
                     if (license != null)
                     {
-                        if (license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+                        if (DateTime.Now > license.Expiry && DateTime.Now < license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = "Please Re-new your" + license.LicenseControl.LicenseName + " license as soon as possible";
+                            return Json(new { data = jsonResponse });
+                        }
+                        else if (DateTime.Now > license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired. Please renew the license";
+                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired.";
                             return Json(new { data = jsonResponse });
                         }
                         else
@@ -418,19 +462,21 @@ namespace DistributorPortal.Controllers
             jsonResponse.HtmlString = RenderRazorViewToString("Grid", list);
             return Json(new { data = jsonResponse, companyId = companyId });
         }
-        public void SelectProduct(int Id)
+        public void SelectProduct(string DPID)
         {
+            int id=0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
-            var product = list.FirstOrDefault(e => e.ProductMasterId == Id);
+            var product = list.FirstOrDefault(e => e.ProductMasterId == id);
             if (product != null)
             {
                 if (product.IsProductSelected)
                 {
-                    list.FirstOrDefault(e => e.ProductMasterId == Id).IsProductSelected = false;
+                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = false;
                 }
                 else
                 {
-                    list.FirstOrDefault(e => e.ProductMasterId == Id).IsProductSelected = true;
+                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = true;
                 }
             }
             SessionHelper.AddProduct = list;
