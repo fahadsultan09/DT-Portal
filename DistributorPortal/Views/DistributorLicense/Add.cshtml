@@ -53,16 +53,16 @@
                         </div>
                     </div>
                 </div>
-                <form asp-controller="DistributorLicense"
-                      asp-action="SaveEdit"
-                      id="frmDistributorLicense"
-                      data-ajax-begin="Begin"
-                      data-ajax-success="OnSuccess"
-                      data-ajax-complete="Complete"
-                      data-ajax="true"
-                      data-ajax-method="POST"
-                      enctype="multipart/form-data">
-                    <div class="col-12">
+                <div class="col-12">
+                    <form asp-controller="DistributorLicense"
+                          asp-action="SaveEdit"
+                          id="frmDistributorLicense"
+                          data-ajax-begin="Begin"
+                          data-ajax-success="OnSuccess"
+                          data-ajax-complete="Complete"
+                          data-ajax="true"
+                          data-ajax-method="POST"
+                          enctype="multipart/form-data">
                         <div class="card card-primary">
                             <div class="card-header">
                                 <h3 class="card-title">License</h3>
@@ -134,14 +134,13 @@
                                                         <td width="10%">
                                                             @Model[i].Status
                                                         </td>
-                                                        @if (Model[i].Type == LicenseType.Challan)
-                                                        {
-                                                            j++;
-                                                        }
+                                                        j++;
                                                     }
                                                     else
                                                     {
                                                         <td width="15%">
+                                                            <input type="hidden" asp-for="@Model[j].Type" value="@Model[j].Type" />
+                                                            <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
                                                             @Model[i].LicenseControl.LicenseName
                                                         </td>
                                                         <td width="15%">
@@ -162,9 +161,7 @@
                                                         <td width="10%">
                                                             @Model[i].Status
                                                         </td>
-                                                     
-                                                            j++;
-                                                       
+                                                        j++;
                                                     }
                                                 </tr>
                                             }
@@ -176,8 +173,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">

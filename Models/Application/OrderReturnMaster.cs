@@ -17,7 +17,6 @@ namespace Models.Application
         public OrderReturnStatus Status { get; set; }
         [Required(ErrorMessage = "Transporter is required.")]
         public string Transporter { get; set; }
-        [Required(ErrorMessage = "TR No is required.")]
         public string TRNo { get; set; }
         [Required(ErrorMessage = "TR Date is required.")]
         public DateTime TRDate { get; set; }

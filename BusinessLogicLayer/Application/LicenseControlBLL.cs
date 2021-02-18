@@ -57,8 +57,9 @@ namespace BusinessLogicLayer.Application
 
         public bool CheckLicenseControlName(int Id, string LicenseControlName)
         {
-            int? DosageFormId = Id == 0 ? null : (int?)Id;
-            var model = repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.LicenseName == LicenseControlName).FirstOrDefault();
+            int? LicenseControlId = Id == 0 ? null : (int?)Id;
+            var model = GetAllLicenseControl().ToList().Where(x => x.IsDeleted == false && x.LicenseName == LicenseControlName && x.Id != LicenseControlId || (LicenseControlId == null && x.Id == null)).FirstOrDefault();
+
             if (model != null)
             {
                 return false;

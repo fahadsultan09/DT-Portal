@@ -22,6 +22,7 @@ namespace Models.Application
         public double TradePrice { get; set; }
         public double Rate { get; set; }
         public double Discount { get; set; }
+        public string LicenseType { get; set; }
         [NotMapped]
         public ProductDetail ProductDetail { get; set; }
         [NotMapped]
