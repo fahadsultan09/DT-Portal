@@ -248,7 +248,7 @@
                         $('#ddlProduct').val('');
                         $('#ddlProduct').change();
                         } else {
-
+                            $('#ErrorProductName').text(response.data.Message);
                             if (SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()) == undefined) {
                             $('#PendingQuantity').val('0');
                             } else {
