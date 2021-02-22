@@ -45,7 +45,7 @@
                     <tr>
                         <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" />
+                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model[i].ProductMasterId.ToString())" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" />
                                 <label for="checkbox@(Model[i].Id)">
                                 </label>
                             </div>
@@ -148,7 +148,7 @@
 
         $("input[type='checkbox']").change(function (e) {
 
-            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+            $.post(window.location.origin + "/Order/SelectProduct", { DPID: $(this).val() }, function (response) {
             });
             if ($(this).is(':checked') == false) {
                 $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
