@@ -7,6 +7,7 @@
 <form asp-controller="Order"
       asp-action="ApproveOrder"
       id="frmApproveOrder"
+      data-ajax-begin="LaddaBegin"
       data-ajax-success="OnSuccess"
       data-ajax-complete="Complete"
       data-ajax="true"
@@ -17,7 +18,7 @@
                 <tr>
                     <th colspan="2" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                         Company:
-                        <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies" style="width: 85%;">
+                        <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies" style="width: 85%;">
                             <option disabled>--Select company--</option>
                         </select>
                     </th>
@@ -45,7 +46,7 @@
                     <tr>
                         <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@Model[i].ProductMasterId" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@(ViewBag.Status != OrderStatus.PendingApproval ? "disabled" : null)" />
+                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model[i].ProductMasterId.ToString())" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
                                 <label for="checkbox@(Model[i].Id)">
                                 </label>
                             </div>
@@ -88,6 +89,11 @@
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
 <script type="text/javascript">
+    function LaddaBegin() {
+        debugger;
+        Ladda.create($("#Approve", this)).start();
+    }
+
     $(document).ready(function () {
 
         //Initialize Select2 Elements
@@ -148,7 +154,7 @@
 
         $("input[type='checkbox']").change(function (e) {
 
-            $.post(window.location.origin + "/Order/SelectProduct", { Id: $(this).val() }, function (response) {
+            $.post(window.location.origin + "/Order/SelectProduct", { DPID: $(this).val() }, function (response) {
             });
             if ($(this).is(':checked') == false) {
                 $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);

@@ -46,7 +46,9 @@ namespace Utility
         Approved = 10,
         [Display(Name = "Not Yet Process")]
         NotYetProcess = 11,
-        Cancel = 12
+        Cancel = 12,
+        [Display(Name = "Partially Approved")]
+        PartiallyApproved = 13
 
     }
     public enum PaymentStatus

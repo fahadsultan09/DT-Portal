@@ -78,7 +78,7 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             }
-            var order = BindOrderMaster(id);
+            var order = BindOrderMaster(id, true);
             SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
             ViewBag.Status = order.Status;
             return View("OrderApprove", order);
@@ -204,7 +204,8 @@ namespace DistributorPortal.Controllers
                     }
                 }
                 var order = _OrderBLL.GetOrderMasterById(OrderId);
-                order.Status = OrderStatus.InProcess;
+                var UpdatedOrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
+                order.Status = UpdatedOrderDetail.Count > 0 ? OrderStatus.PartiallyApproved : OrderStatus.InProcess;
                 order.ApprovedBy = SessionHelper.LoginUser.Id;
                 order.ApprovedDate = DateTime.Now;
                 var result = _OrderBLL.Update(order);
@@ -307,14 +308,14 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        private OrderMaster BindOrderMaster(int Id)
+        private OrderMaster BindOrderMaster(int Id, bool forApprove = false)
         {
             OrderMaster model = new OrderMaster();
             if (Id > 0)
             {
                 model = _OrderBLL.GetOrderMasterById(Id);
-                List<OrderDetail> orderDetail = _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
-                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id).ToList().Select(e => e.ProductId).ToArray(), Id);
+                List<OrderDetail> orderDetail = forApprove ? _orderDetailBLL.GetOrderDetailByIdByMasterId(Id).Where(e => e.OrderProductStatus is null).ToList() : _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
+                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id && e.OrderProductStatus == null).ToList().Select(e => e.ProductId).ToArray(), Id);
                 model.productDetails.ForEach(e => e.OrderNumber = Id);
                 model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
                 if (model.Status == OrderStatus.PendingApproval)

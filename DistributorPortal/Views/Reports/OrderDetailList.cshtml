@@ -25,7 +25,7 @@
                                 <td>@item.Quantity</td>
                                 <td>@item.ApprovedQuantity</td>
                                 <td>@item.SAPOrderNumber</td>
-                                <td>@item.OrderProductStatus</td>
+                                <td>@Html.DisplayFor(e => item.OrderProductStatus)</td>
                                 <td>
                                     @if (item.IsProductSelected)
                                     {
