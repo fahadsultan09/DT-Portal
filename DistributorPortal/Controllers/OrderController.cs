@@ -62,7 +62,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -73,7 +73,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Approve(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -87,7 +87,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
+                int id = 0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -113,7 +113,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
+                int id = 0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -141,7 +141,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
+                int id = 0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
@@ -163,7 +163,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult OrderView(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ViewBag.View = true;
             return View(BindOrderMaster(id));
@@ -255,7 +255,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == id);
@@ -391,41 +391,100 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                ProductDetail productDetail = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
-                var licenseControl = _licenseControlBLL.Where(e => e.IsMandatory == true && e.IsActive == true && e.IsDeleted == false).ToList();
-                if (productDetail.LicenseControlId != null)
+                ProductDetail Product = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
+                List<LicenseControl> LicenseControlList = _licenseControlBLL.Where(e => e.IsActive == true && e.IsDeleted == false).ToList();
+                List<DistributorLicense> DistributorLicenseList = _DistributorLicenseBLL.Where(x => x.Status == LicenseStatus.Verified);
+
+                if (Product.LicenseControlId is null)
                 {
-                    licenseControl.Add(productDetail.LicenseControl);
-                }
-                var distributorLicense = _DistributorLicenseBLL.Where(e => e.Status == LicenseStatus.Verified);
-                jsonResponse.Status = true;
-                foreach (var item in licenseControl)
-                {
-                    var license = distributorLicense.FirstOrDefault(e => e.LicenseId == item.Id);
-                    if (license != null)
+                    var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault() ?? new DistributorLicense();
+
+                    foreach (var item in LicenseControlList)
                     {
-                        if (DateTime.Now > license.Expiry && DateTime.Now < license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
+                        if (item.IsMandatory)
                         {
-                            jsonResponse.Status = true;
-                            jsonResponse.Message = "Please Re-new your" + license.LicenseControl.LicenseName + " license as soon as possible";
-                            return Json(new { data = jsonResponse });
+                            var result = DistributorLicenseList.Where(x => x.LicenseId == item.Id && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
+                            if (result is null)
+                            {
+                                jsonResponse.Status = false;
+                                jsonResponse.Message = "Add verified license or challan before placing the order.";
+                                return Json(new { data = jsonResponse });
+                            }
                         }
-                        else if (DateTime.Now > license.Expiry.AddDays(license.LicenseControl.LicenseAcceptanceInDay))
-                        {
-                            jsonResponse.Status = false;
-                            jsonResponse.Message = "Your " + license.LicenseControl.LicenseName + " license has been expired.";
-                            return Json(new { data = jsonResponse });
-                        }
-                        else
-                        {
-                            jsonResponse.Status = true;
-                        }
+                    }
+                    var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == License.LicenseId);
+
+                    if (Challan != null)
+                    {
+                        jsonResponse.Status = true;
+                    }
+                    else if (Challan == null && LicenseControl != null && DateTime.Now < License.Expiry)
+                    {
+                        jsonResponse.Status = true;
+                    }
+                    else if (Challan == null && LicenseControl != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                    {
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                    }
+                    else if (Challan == null && LicenseControl != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Your " + License.LicenseControl.LicenseName + " license has been expired.";
                     }
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = item.LicenseName + " license required for selected product";
-                        return Json(new { data = jsonResponse });
+                        jsonResponse.Message = "Add verified license or challan before placing the order.";
+                    }
+                }
+                if (Product.LicenseControlId != null)
+                {
+                    var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == Product.LicenseControlId);
+
+                    foreach (var item in LicenseControlList)
+                    {
+                        if (item.IsMandatory)
+                        {
+                            var result = DistributorLicenseList.Where(x => x.LicenseId == item.Id).FirstOrDefault();
+                            if (result is null)
+                            {
+                                jsonResponse.Status = false;
+                                jsonResponse.Message = "Add verified license or challan before placing the order.";
+                                return Json(new { data = jsonResponse });
+                            }
+                        }
+                    }
+                    if (Challan is null && License is null)
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Add verified license or challan before placing the order.";
+                    }
+                    if (Challan != null)
+                    {
+                        jsonResponse.Status = true;
+                    }
+                    else if (Challan == null && LicenseControl != null && License != null && DateTime.Now < License.Expiry)
+                    {
+                        jsonResponse.Status = true;
+                    }
+                    else if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                    {
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                    }
+                    else if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Your " + License.LicenseControl.LicenseName + " license has been expired.";
+                    }
+                    else
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Add verified license or challan before placing the order.";
                     }
                 }
                 return Json(new { data = jsonResponse });
@@ -465,7 +524,7 @@ namespace DistributorPortal.Controllers
         }
         public void SelectProduct(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
             var product = list.FirstOrDefault(e => e.ProductMasterId == id);

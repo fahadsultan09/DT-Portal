@@ -81,6 +81,7 @@ namespace ProductPortal.Controllers
                         item.ProductOrigin = e.ProductOrigin;
                         item.ProductPrice = e.ProductPrice;
                         item.ProductDescription = e.ProductDescription;
+                        item.LicenseType = e.LicenseType;
                         item.IsActive = e.IsActive;
                         item.UpdatedBy = SessionHelper.LoginUser.Id;
                         item.UpdatedDate = DateTime.Now;

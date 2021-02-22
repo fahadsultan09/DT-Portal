@@ -40,12 +40,13 @@ namespace Utility.HelperClasses
             byte[] bytes = key1;
             try
             {
-                cryptedString = cryptedString.Replace(" ", "+");
 
                 if (String.IsNullOrEmpty(cryptedString))
                 {
                     throw new ArgumentNullException("The string which needs to be decrypted can not be null.");
                 }
+
+                cryptedString = cryptedString.Replace(" ", "+");
 
                 DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
                 MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(cryptedString));

@@ -40,7 +40,7 @@
             <th>PhyTek</th>
         </tr>
     </thead>
-    <tbody style="font-size: 10.6px">
+    <tbody style="font-size: 11px">
         <tr>
             <td>@Html.LabelFor(e => e.Supplies0)</td>
             <td>@Convert.ToDecimal(Model.SAMISupplies0).ToString("#,##0.00")</td>
@@ -97,12 +97,6 @@
             <td>@Convert.ToDecimal(Model.SAMIUnConfirmedPayment).ToString("#,##0.00")</td>
             <td>@Convert.ToDecimal(Model.HealthTekUnConfirmedPayment).ToString("#,##0.00")</td>
             <td>@Convert.ToDecimal(Model.PhytekUnConfirmedPayment).ToString("#,##0.00")</td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(e => e.NetPayable)</td>
-            <td>@Convert.ToDecimal(Model.SAMINetPayable).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
-            <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(e => e.NetPayable)</td>

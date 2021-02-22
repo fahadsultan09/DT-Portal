@@ -77,7 +77,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Number:</h6>
                                                 <input type="text" asp-for="TRNo" placeholder="Enter TR Number" id="TRNo" class="form-control" />
-                                                <span asp-validation-for="TRNo" class="text-danger"></span>
+                                                <span id="ErrorTRNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Date:</h6>
@@ -309,7 +309,12 @@
     }
 
     function SubmitForm() {
-        debugger;
+
+        $('#ErrorTRNo').empty();
+        if ($("#ddlReturnReson option:selected").text() == "Leaked and breakage" && $('#TRNo').val().trim() == "") {
+            $('#ErrorTRNo').text('TR No is mandatory.');
+            return false;
+        };
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',

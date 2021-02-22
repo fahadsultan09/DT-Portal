@@ -15,5 +15,6 @@ namespace SAPConfigurationAPI.Models
         public string CartonSize { get; set; }
         public double Rate { get; set; }
         public double Discount { get; set; }
+        public string LicenseType { get; set; }
     }
 }

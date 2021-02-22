@@ -36,7 +36,7 @@ namespace DistributorPortal.Controllers
         private List<OrderReturnDetail> _OrderReturnDetail;
         private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
-        private List<Distributor> _Distributor; 
+        private List<Distributor> _Distributor;
         private readonly Configuration _configuration;
         public HomeController(IUnitOfWork unitOfWork, Configuration configuration)
         {
@@ -61,7 +61,9 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            var dashboard = SessionHelper.NavigationMenu.FirstOrDefault(x => x.ApplicationPage.ControllerName == "Home" || x.ApplicationPage.ControllerName == "StoreKeeperDashboard");
+            new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "Index", "Dashboard");
+
+            var dashboard = SessionHelper.NavigationMenu.FirstOrDefault(x => (x.ApplicationPage.ControllerName == "Home" || x.ApplicationPage.ControllerName == "StoreKeeperDashboard") && x.ApplicationPage.PageTitle != "Get File");
             if (dashboard != null)
             {
                 return RedirectToAction(dashboard.ApplicationPage.PageURL.Split('/')[2]);

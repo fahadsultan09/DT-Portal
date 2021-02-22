@@ -137,7 +137,7 @@ namespace BusinessLogicLayer.Application
             {
                 //viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == SAMIproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.SAMINetPayable = (viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI) > 0 ? viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI : 0;
+            viewModel.SAMINetPayable = (viewModel.SAMITotalOrderValues - (-1 * SessionHelper.DistributorBalance.SAMI)) > 0 ? viewModel.SAMITotalOrderValues - SessionHelper.DistributorBalance.SAMI : 0;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
             viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
@@ -157,7 +157,7 @@ namespace BusinessLogicLayer.Application
             {
                 //viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.HealthTekNetPayable = (viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek) > 0 ? viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek : 0;
+            viewModel.HealthTekNetPayable = (viewModel.HealthTekTotalOrderValues - (-1 * SessionHelper.DistributorBalance.HealthTek)) > 0 ? viewModel.HealthTekTotalOrderValues - SessionHelper.DistributorBalance.HealthTek : 0;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
             viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice);
@@ -177,7 +177,7 @@ namespace BusinessLogicLayer.Application
             {
                 //viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == HealthTekproductDetails.OrderMaster.Distributor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);tor.Id && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.PhytekNetPayable = (viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek) > 0 ? viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek : 0;
+            viewModel.PhytekNetPayable = (viewModel.PhytekTotalOrderValues - (-1 * SessionHelper.DistributorBalance.PhyTek)) > 0 ? viewModel.PhytekTotalOrderValues - SessionHelper.DistributorBalance.PhyTek : 0;
             return viewModel;
         }
 

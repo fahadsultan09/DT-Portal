@@ -31,7 +31,8 @@ namespace SAPConfigurationAPI.Controllers
                     ProductPrice = table[i].GetDouble("KBETR"),
                     CartonSize = table[i].GetString("Carton"),
                     Rate = table[i].GetDouble("KBETR"),
-                    Discount = table[i].GetDouble("DISCOUNT")
+                    Discount = table[i].GetDouble("DISCOUNT"),
+                    LicenseType = table[i].GetString("MTPOS")
                 });
             }
             return products;
