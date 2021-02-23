@@ -55,6 +55,18 @@ namespace BusinessLogicLayer.Application
         }
         public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
+            if (PaymentStatus.Verified == paymentStatus)
+
+            {
+                model.ApprovedBy = SessionHelper.LoginUser.Id;
+                model.ApprovedDate = DateTime.Now;
+            }
+            else if (PaymentStatus.Reject == paymentStatus)
+
+            {
+                model.RejectedBy = SessionHelper.LoginUser.Id;
+                model.RejectedDate = DateTime.Now;
+            }
             model.Remarks = Remarks;
             model.Status = paymentStatus;
             model.UpdatedBy = SessionHelper.LoginUser.Id;

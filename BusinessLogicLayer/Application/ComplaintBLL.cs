@@ -52,10 +52,22 @@ namespace BusinessLogicLayer.Application
             if (ComplaintStatus.Resolved == ComplaintStatus)
             {
                 model.ResolvedRemarks = Remarks;
+                model.ResolvedBy = SessionHelper.LoginUser.Id;
+                model.ResolvedDate = DateTime.Now;
             }
-            else
+            else if (ComplaintStatus.Approved == ComplaintStatus)
+
             {
                 model.Remarks = Remarks;
+                model.ApprovedBy = SessionHelper.LoginUser.Id;
+                model.ApprovedDate = DateTime.Now;
+            }
+            else if (ComplaintStatus.Reject == ComplaintStatus)
+
+            {
+                model.Remarks = Remarks;
+                model.RejectedBy = SessionHelper.LoginUser.Id;
+                model.RejectedDate = DateTime.Now;
             }
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
@@ -167,11 +179,12 @@ namespace BusinessLogicLayer.Application
                              CreatedDate = x.CreatedDate,
                              ResolvedBy = x.ResolvedBy,
                              ResolverName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
+                             ResolvedDate = x.ResolvedDate,
                              ApprovedBy = x.ApprovedBy,
-                             ApprovedName = a1 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
+                             ApprovedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              ApprovedDate = x.ApprovedDate,
                              RejectedBy = x.RejectedBy,
-                             RejectedName = a2 == null ? string.Empty : (a3.FirstName + " " + a3.LastName + " (" + a3.UserName + ")"),
+                             RejectedName = a3 == null ? string.Empty : (a3.FirstName + " " + a3.LastName + " (" + a3.UserName + ")"),
                              RejectedDate = x.RejectedDate
                          }).ToList();
 
