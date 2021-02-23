@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
@@ -23,38 +24,65 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ComplaintBLL _ComplaintBLL;
+        private readonly ComplaintSubCategoryBLL _ComplaintSubCategoryBLL;
         private readonly IConfiguration _IConfiguration;
         public ComplaintController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
             _IConfiguration = configuration;
+            _ComplaintSubCategoryBLL = new ComplaintSubCategoryBLL(_unitOfWork);
         }
         // GET: Complaint
         public IActionResult Index()
         {
-            return View(GetComplaintList());
+            ComplaintViewModel model = new ComplaintViewModel();
+            model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                model.ComplaintList = GetComplaintList().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                return View(model);
+            }
+            if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "ComplaintSubCategory").Select(x => x.ApplicationAction.Id).Contains((int)ApplicationActions.IsAdmin))
+            {
+                model.ComplaintList = GetComplaintList();
+            }
+            else
+            {
+                int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
+                model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+            }
+            return View(model);
         }
-        public IActionResult List()
+        public ComplaintViewModel List(ComplaintViewModel model)
         {
-            return PartialView("List", GetComplaintList());
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.ComplaintNo is null)
+            {
+                model.ComplaintList = GetComplaintList();
+            }
+            else
+            {
+                model.ComplaintList = _ComplaintBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            return model;
         }
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             }
-            return PartialView("Add", BindComplaint(id));
+            return View("Add", BindComplaint(id));
         }
         [HttpGet]
         public IActionResult ComplaintApproval(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
-            return PartialView("ComplaintApproval", BindComplaint(id));
+            return View("ComplaintApproval", BindComplaint(id));
         }
         [HttpPost]
         public JsonResult SaveEdit(Complaint model)
@@ -118,14 +146,12 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(string DPID, ComplaintStatus Status, string Remarks)
+        public JsonResult UpdateStatus(int Id, ComplaintStatus Status, string Remarks)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                Complaint model = _ComplaintBLL.GetById(id);
+                Complaint model = _ComplaintBLL.GetById(Id);
                 if (model != null)
                 {
                     _ComplaintBLL.UpdateStatus(model, Status, Remarks);
@@ -143,6 +169,33 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 return Json(new { data = jsonResponse });
             }
+        }
+        [HttpPost]
+        public IActionResult Search(ComplaintViewModel model, string Search)
+        {
+            if (!string.IsNullOrEmpty(Search))
+            {
+                model = List(model);
+            }
+            else
+            {
+                model.ComplaintList = GetComplaintList();
+            }
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                model.ComplaintList = model.ComplaintList.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                return View(model);
+            }
+            if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "ComplaintSubCategory").Select(x => x.ApplicationAction.Id).Contains((int)ApplicationActions.IsAdmin))
+            {
+                model.ComplaintList = model.ComplaintList;
+            }
+            else
+            {
+                int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
+                model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+            }
+            return PartialView();
         }
         public List<Complaint> GetComplaintList()
         {

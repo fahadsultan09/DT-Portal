@@ -43,15 +43,19 @@
                             {
                                 @if (Model.Status == ComplaintStatus.Resolved)
                                 {
-                                    <span class="badge badge-success pull-right" style="margin-left:5px;">@Model.Status</span>
+                                    <span class="badge badge-warning pull-right" style="margin-left:5px;">@Model.Status</span>
+                                }
+                                else if (Model.Status == ComplaintStatus.Approved)
+                                {
+                                    <span class="badge badge-success float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
                                 else if (Model.Status == ComplaintStatus.Pending)
                                 {
-                                    <span class="badge badge-warning float-left" style="margin-left:5px;">@Model.Status</span>
+                                    <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
                                 else
                                 {
-                                    <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
+                                    <span class="badge badge-info float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
                             }
                             <span class="float-right"><strong>Complaint No: @string.Format("{0:1000000000}", Model.Id)</strong></span>
@@ -81,15 +85,10 @@
                                     </span>
                                 </div>
                             </div>
+                            <br />
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <h6>Description<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.Remarks))
-                                    {
-                                        <h6>Remarks</h6>
-                                    }
                                 </div>
                             </div>
                             <div class="row">
@@ -97,19 +96,52 @@
                                     <textarea asp-for="Description" class="form-control"></textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                    {
+                                        <h6>Resolver Remarks</h6>
+                                    }
+                                </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     @if (!string.IsNullOrEmpty(Model.Remarks))
                                     {
-                                        <textarea asp-for="Description" class="form-control"></textarea>
+                                        <h6>Approver Remarks</h6>
                                     }
                                 </div>
-                            </div><br />
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                    {
+                                        <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
+                                    }
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    @if (!string.IsNullOrEmpty(Model.Remarks))
+                                    {
+                                        <textarea asp-for="Remarks" class="form-control"></textarea>
+                                    }
+                                </div>
+                            </div>
+                            <br />
                             <div class="row">
                                 <div class="col-12 pull-right">
-                                    @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 22))
+                                    @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Resolve && x.ApplicationPage.ControllerName == "Complaint"))
                                     {
                                         <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
                                             Resolve
+                                        </button>
+                                    }
+                                    @if (Model.Status == ComplaintStatus.Resolved && SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Approve && x.ApplicationPage.ControllerName == "Complaint"))
+                                    {
+                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Approved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Approved ? "d-none" : null)">
+                                            Approve
+                                        </button>
+                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Reject" class="btn btn-danger float-right  mr-1 @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Reject ? "d-none" : null)">
+                                            Reject
                                         </button>
                                     }
                                     <a asp-controller="Complaint" asp-action="Index" class="btn btn-secondary float-right mr-3">
@@ -158,5 +190,51 @@
             }
         });
     }
+
+    //Approve
+    function Approve(e, controllerName, actionName, id) {
+        var val = '';
+        if (e.value == undefined) {
+            val = e;
+        }
+        else {
+            val = e.value;
+        }
+            Swal.fire({
+                type: "warning",
+                confirmButtonText: "Yes",
+                title: 'Enter Remarks',
+                input: 'text',
+                inputLabel: 'Remarks',
+                inputValue: '',
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to write something!'
+                    }
+                    if (value.length > 255) {
+                        return 'You have exceeded 255 characters';
+                    }
+                }
+            }).then(function (result) {
+
+                if (result.value) {
+                    $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
+                        if (data) {
+                            if (e.value == "Resolved") {
+                                Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                            } else if (e.value == "Reject") {
+                                Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+                            }
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                        }
+                    });
+                }
+            });
+        }
 
 </script>

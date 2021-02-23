@@ -46,7 +46,7 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                 @{
-                    var modules = SessionHelper.NavigationMenu.Where(e => e.ApplicationPage.IsShowOnNavigation == true).OrderBy(y => y.ApplicationPage.Sort);
+                    var modules = SessionHelper.NavigationMenu.Where(e => e.ApplicationPage.IsShowOnNavigation == true && e.ApplicationActionId != (int)ApplicationActions.IsAdmin).OrderBy(y => y.ApplicationPage.Sort);
 
                     foreach (var module in modules.DistinctBy(x => x.ApplicationPage.ApplicationModuleId))
                     {

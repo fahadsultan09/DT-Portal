@@ -54,7 +54,7 @@
                                 </td>
                                 <td>@item.CreatedDate.ToString("dd/MM/yyyy hh:mm:ss")</td>
                                 <td>
-                                    <a asp-controller="Payment" asp-action="PaymentApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                    <a asp-controller="Payment" asp-action="PaymentApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" method="GET" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>

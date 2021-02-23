@@ -49,7 +49,14 @@ namespace BusinessLogicLayer.Application
         public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus, string Remarks)
         {
             model.Status = ComplaintStatus;
-            model.Remarks = Remarks;
+            if (ComplaintStatus.Resolved == ComplaintStatus)
+            {
+                model.ResolvedRemarks = Remarks;
+            }
+            else
+            {
+                model.Remarks = Remarks;
+            }
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
             _repository.Update(model);
@@ -70,6 +77,47 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.FirstOrDefault(predicate);
         }
+        public List<Complaint> Search(ComplaintViewModel model)
+        {
+            var LamdaId = (Expression<Func<Complaint, bool>>)(x => x.IsDeleted == false);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.Status != null)
+            {
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
+            }
+            if (model.FromDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
+            }
+            if (model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            if (model.FromDate != null && model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date || e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         select new Complaint
+                         {
+                             Id = x.Id,
+                             Distributor = x.Distributor,
+                             ComplaintCategory = x.ComplaintCategory,
+                             ComplaintCategoryId = x.ComplaintCategoryId,
+                             ComplaintSubCategory = x.ComplaintSubCategory,
+                             ComplaintSubCategoryId = x.ComplaintSubCategoryId,
+                             Status = x.Status,
+                             DistributorId = x.DistributorId,
+                             CreatedDate = x.CreatedDate,
+                         }).ToList();
+
+            return query.OrderByDescending(x => x.Id).ToList();
+        }
+
         public List<Complaint> SearchReport(ComplaintSearch model)
         {
             var LamdaId = (Expression<Func<Complaint, bool>>)(x => x.IsDeleted == false);
@@ -97,12 +145,15 @@ namespace BusinessLogicLayer.Application
             var query = (from x in Filter
                          join u in _UserBLL.GetAllUser().ToList()
                               on x.CreatedBy equals u.Id
+                         join ra in _UserBLL.GetAllUser().ToList()
+                              on x.ResolvedBy equals ra.Id into resolvedGroup
+                         from a1 in resolvedGroup.DefaultIfEmpty()
                          join ua in _UserBLL.GetAllUser().ToList()
                               on x.ApprovedBy equals ua.Id into approvedGroup
-                         from a1 in approvedGroup.DefaultIfEmpty()
+                         from a2 in approvedGroup.DefaultIfEmpty()
                          join ur in _UserBLL.GetAllUser().ToList()
                               on x.RejectedBy equals ur.Id into rejectedGroup
-                         from a2 in rejectedGroup.DefaultIfEmpty()
+                         from a3 in rejectedGroup.DefaultIfEmpty()
                          select new Complaint
                          {
                              Id = x.Id,
@@ -114,11 +165,13 @@ namespace BusinessLogicLayer.Application
                              CreatedBy = x.CreatedBy,
                              CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,
+                             ResolvedBy = x.ResolvedBy,
+                             ResolverName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
                              ApprovedBy = x.ApprovedBy,
-                             ApprovedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
+                             ApprovedName = a1 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              ApprovedDate = x.ApprovedDate,
                              RejectedBy = x.RejectedBy,
-                             RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
+                             RejectedName = a2 == null ? string.Empty : (a3.FirstName + " " + a3.LastName + " (" + a3.UserName + ")"),
                              RejectedDate = x.RejectedDate
                          }).ToList();
 

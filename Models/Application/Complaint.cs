@@ -32,6 +32,8 @@ namespace Models.Application
         [StringLength(255)]
         public string Description { get; set; }
         [StringLength(255)]
+        public string ResolvedRemarks { get; set; }
+        [StringLength(255)]
         public string Remarks { get; set; }
         public ComplaintStatus Status { get; set; }
         [StringLength(255)]
@@ -40,6 +42,8 @@ namespace Models.Application
         public DateTime? RejectedDate { get; set; }
         public int? ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
+        public int? ResolvedBy { get; set; }
+        public DateTime? ResolvedDate { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }
         [NotMapped]
@@ -50,6 +54,8 @@ namespace Models.Application
         public string CreatedName { get; set; }
         [NotMapped]
         public string ApprovedName { get; set; }
+        [NotMapped]
+        public string ResolverName { get; set; }
         [NotMapped]
         public string RejectedName { get; set; }
     }

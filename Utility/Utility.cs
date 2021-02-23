@@ -96,7 +96,9 @@ namespace Utility
     public enum ComplaintStatus
     {
         Pending = 1,
-        Resolved = 2
+        Resolved = 2,
+        Approved = 3,
+        Reject = 4,
     }
 
     public enum LicenseStatus
@@ -137,6 +139,8 @@ namespace Utility
         Approve = 5,
         Reject = 6,
         Onhold = 7,
+        Resolve = 8,
+        IsAdmin = 9,
     }
     public enum ApplicationPages
     {
@@ -183,5 +187,10 @@ namespace Utility
         AddComplaint = 44,
         GetFile = 45,
         ApproveComplaint = 46,
+    }
+    public enum EmailType
+    {
+        CC = 1,
+        KPI = 2
     }
 }
