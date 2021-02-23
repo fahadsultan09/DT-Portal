@@ -26,6 +26,7 @@
         select2 select2-container {
             width: 100%;
         }
+
         .text-sm .select2-container--default .select2-selection--single, select.form-control-sm ~ .select2-container--default .select2-selection--single {
             height: calc(2.2rem + 2px);
         }
@@ -37,9 +38,12 @@
         <partial name="Navigation" />
         @RenderBody()
         <partial name="Footer" />
-
     </div>
-    <partial name="FooterScripts" />
+    <div class="loader">
+        <div class="loading">
+        </div>
+    </div>
+    <partial name="FooterScripts" />    
     @RenderSection("Scripts", required: false)
 </body>
 </html>

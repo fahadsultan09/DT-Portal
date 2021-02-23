@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.GeneralSetup
 {
@@ -108,7 +109,7 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             var selectList = GetAllBank().Where(x => x.IsActive == true && x.CompanyId == CompanyId).Select(x => new SelectListItem
             {
-                Value = x.Id.ToString(),
+                Value = EncryptDecrypt.Encrypt(x.Id.ToString()),
                 Text = x.BankName.ToString()
             });
             return new SelectList(selectList, "Value", "Text", SelectedValue);

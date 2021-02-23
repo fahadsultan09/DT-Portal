@@ -1,9 +1,6 @@
 ﻿@model OrderReturnMaster
-@inject IUnitOfWork iUnitOfWork
 @{
-    var product = new ProductDetailBLL(iUnitOfWork).DropDownProductList();
-    var plantLocationList = new PlantLocationBLL(iUnitOfWork).DropDownPlantLocationList();
-    var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
+    
     ViewData["Title"] = "Return Order";
 }
 
@@ -106,7 +103,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Return Reason:</h6>
-                                                <select asp-for="OrderReturnReasonId" asp-items="@(new SelectList(returnReasonList, "Value", "Text"))" class="form-control select2" id="ddlReturnReson">
+                                                <select asp-for="OrderReturnReasonId" asp-items="Model.returnReasonList" class="form-control select2" id="ddlReturnReson">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span asp-validation-for="OrderReturnReasonId" class="text-danger"></span>
@@ -147,18 +144,11 @@
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <h6>Product Name:</h6>
-                                                <select name="ProductId" asp-items="@(new SelectList(product, "Value", "Text"))" class="form-control select2" id="ddlProduct">
+                                                <select name="ProductId" asp-items="Model.ProductList" class="form-control select2" id="ddlProduct">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
-                                            </div>
-                                            @*<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Location:</h6>
-                                                <select name="PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control select2" id="ddlPlantLocation">
-                                                    <option value="">--Select option--</option>
-                                                </select>
-                                                <span id="ErrorPlantLocationName" class="text-danger"></span>
-                                            </div>*@
+                                            </div>                                            
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:</h6>
                                                 <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />

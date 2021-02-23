@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
 {
@@ -26,7 +27,7 @@ namespace BusinessLogicLayer.Application
         {
             var selectList = GetAllPaymentMode().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
-                Value = x.Id.ToString(),
+                Value = EncryptDecrypt.Encrypt(x.Id.ToString()),
                 Text = x.PaymentName.Trim()
             });
 

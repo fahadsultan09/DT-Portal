@@ -31,6 +31,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly ProductMasterBLL _ProductMasterBLL;
         private readonly ProductDetailBLL _ProductDetailBLL;
+        private readonly OrderReturnReasonBLL _orderReturnReasonBLL;
         private ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
         public OrderReturnController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration _configuration)
@@ -40,6 +41,7 @@ namespace DistributorPortal.Controllers
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
             _ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
+            _orderReturnReasonBLL = new OrderReturnReasonBLL(_unitOfWork);
             _viewEngine = viewEngine;
             _Configuration = _configuration;
         }
@@ -106,9 +108,12 @@ namespace DistributorPortal.Controllers
                 if (!SessionHelper.AddReturnProduct.Any(e => e.ProductId == model.ProductId))
                 {
                     ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(model.ProductId);
+                    ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == productMaster.Id).FirstOrDefault();
                     if (productMaster != null)
                     {
                         var list = SessionHelper.AddReturnProduct;
+                        model.PlantLocationId = productDetail.PlantLocationId;
+                        model.PlantLocation = productDetail.PlantLocation;
                         model.ProductMaster = productMaster;
                         model.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == model.PlantLocationId).FirstOrDefault();
                         model.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
@@ -282,6 +287,8 @@ namespace DistributorPortal.Controllers
             }
             else
             {
+                model.ProductList = _ProductDetailBLL.DropDownProductList();
+                model.returnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
                 model.OrderReturnDetail = new List<OrderReturnDetail>();
                 model.Distributor = SessionHelper.LoginUser.Distributor;
             }

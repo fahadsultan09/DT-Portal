@@ -88,15 +88,14 @@
     </div>
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
+<script src="~/Pages/Common.js"></script>
 <script type="text/javascript">
     function LaddaBegin() {
         debugger;
-        Ladda.create($("#Approve", this)).start();
+        Ladda.create($("#Approve")[0]).start();
     }
 
     $(document).ready(function () {
-
-        //Initialize Select2 Elements
         $('.select2').select2();
 
         $("#example2").DataTable({

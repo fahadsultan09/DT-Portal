@@ -41,7 +41,7 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     }
-                                    @if ((item.Status == OrderStatus.PendingApproval || item.Status == OrderStatus.PartiallyApproved) && !SessionHelper.LoginUser.IsDistributor)
+                                    @if ((item.Status == OrderStatus.PendingApproval || item.Status == OrderStatus.PartiallyApproved || item.Status == OrderStatus.Onhold) && !SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <a asp-controller="Order" asp-action="Approve" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm">
                                             <i class="fas fa-thumbs-up"></i>

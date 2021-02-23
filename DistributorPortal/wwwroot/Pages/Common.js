@@ -33,6 +33,7 @@ function Begin() {
     $('#Spinner').show();
     $('button[type="submit"]').attr('disabled', true);
     Ladda.create($("button[type=submit]", this)[0]).start();
+    $("body").addClass("loading"); 
 }
 
 function OnSuccess(data) {
@@ -52,19 +53,22 @@ function OnSuccess(data) {
         })
     }
     Ladda.create($("button[type=submit]", this)[0]).stop();
+    $("body").removeClass("loading"); 
 }
 
 function Complete() {
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
     Ladda.create($("button[type=submit]", this)[0]).stop();
-
+    $("body").removeClass("loading"); 
     if ($("#btnOrderNow", this)[0] != undefined) {
         Ladda.create($("#btnOrderNow", this)[0]).stop();
+        $("body").removeClass("loading"); 
     }
 
     if ($("#btnDraft", this)[0] != undefined) {
         Ladda.create($("#btnDraft", this)[0]).stop();
+        $("body").removeClass("loading"); 
     }
 }
 
@@ -188,10 +192,10 @@ function inWords(num) {
     if ((num = num.toString()).length > 9) return 'overflow';
     n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
     if (!n) return; var str = '';
-    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
-    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
-    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
-    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lac ' : '';
+    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
     str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
     return str.charAt(0).toUpperCase() + str.slice(1);
 }

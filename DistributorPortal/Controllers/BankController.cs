@@ -122,9 +122,11 @@ namespace DistributorPortal.Controllers
         {
             return Json(_BankBLL.GetAllBank().ToList());
         }
-        public IActionResult DropDownBankList(int ComplaintCategoryId)
+        public IActionResult DropDownBankList(string DPID)
         {
-            return Json(_BankBLL.DropDownBankList(ComplaintCategoryId, 0));
+            int id = 0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return Json(_BankBLL.DropDownBankList(id, 0));
         }
         public JsonResult GetBranchCode(string DPID)
         {

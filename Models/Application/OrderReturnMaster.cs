@@ -38,6 +38,8 @@ namespace Models.Application
         [NotMapped]
         public SelectList ProductList { get; set; }
         [NotMapped]
+        public SelectList returnReasonList { get; set; }
+        [NotMapped]
         public List<ProductDetail> ProductDetail { get; set; }
         [NotMapped]
         public string CreatedName { get; set; }
