@@ -1,5 +1,5 @@
 ﻿@model OrderSearch
-    
+
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -16,7 +16,7 @@
                           id="frmPayment">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                     <div class="form-group">
                                         <label class="control-label">From Date</label>
                                         <div class="input-group date" data-target-input="nearest">
@@ -27,7 +27,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                     <div class="form-group">
                                         <label class="control-label">To Date</label>
                                         <div class="input-group date" data-target-input="nearest">
@@ -38,7 +38,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                     <div class="form-group">
                                         <label class="control-label">Status</label>
                                         <select asp-for="Status" asp-items="Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
@@ -46,12 +46,12 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row">
+
+
                                 @if (!SessionHelper.LoginUser.IsDistributor)
                                 {
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                         <div class="form-group">
                                             <label class="control-label">Distributor</label>
                                             <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2">
@@ -60,7 +60,7 @@
                                         </div>
                                     </div>
                                 }
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-top:10px">
                                     <div class="form-group">
                                         <label class="col-form-label font-weight-bold" for="Search"></label>
                                         <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
@@ -68,7 +68,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-top:10px">
                                     <div class="form-group">
                                         <label class="col-form-label font-weight-bold" for="Clear"></label>
                                         <button type="submit" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">

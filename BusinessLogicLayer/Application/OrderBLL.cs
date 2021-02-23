@@ -395,7 +395,7 @@ namespace BusinessLogicLayer.Application
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
-            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0).ToList();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0 && e.SAPOrderNumber == null).ToList();
             var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {

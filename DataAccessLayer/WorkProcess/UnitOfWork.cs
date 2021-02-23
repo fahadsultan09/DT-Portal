@@ -54,7 +54,7 @@ namespace DataAccessLayer.WorkProcess
             }
             return (GenericRepository<T>)repositories[type];
         }
-
+            
         public int Save()
         {
             return _context.SaveChanges();
