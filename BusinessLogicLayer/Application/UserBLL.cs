@@ -6,7 +6,6 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
 {
@@ -33,7 +32,6 @@ namespace BusinessLogicLayer.Application
             repository.Insert(module);
             return _unitOfWork.Save() > 0;
         }
-
         public bool UpdateUser(User module)
         {
             var item = repository.GetById(module.Id);
@@ -53,7 +51,6 @@ namespace BusinessLogicLayer.Application
             repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
-
         public bool DeleteUser(int id)
         {
             var item = repository.GetById(id);
@@ -72,17 +69,14 @@ namespace BusinessLogicLayer.Application
             repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
-
         public User GetUserById(int id)
         {
             return repository.GetById(id);
         }
-
         public List<User> GetAllUser()
         {
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-
         public bool CheckUserName(int Id, string UserName)
         {
             int? DistributorId = Id == 0 ? null : (int?)Id;
@@ -96,13 +90,32 @@ namespace BusinessLogicLayer.Application
                 return true;
             }
         }
-
         public MultiSelectList DropDownActionNameList(int[] SelectedValue)
         {
             var selectList = GetAllUser().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.UserName.Trim()
+            });
+
+            return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+        }
+        public SelectList DropDownUserList(int? SelectedValue)
+        {
+            var selectList = GetAllUser().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Email.Trim()
+            });
+
+            return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
+        public MultiSelectList DropDownUserList(int[] SelectedValue)
+        {
+            var selectList = GetAllUser().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Email.Trim()
             });
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);

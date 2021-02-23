@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Models.Application;
 using Models.ViewModel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Utility;
 using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
@@ -128,8 +129,25 @@ namespace DistributorPortal.Controllers
         }
         public List<Complaint> GetComplaintList(ComplaintSearch model)
         {
-            List<Complaint> list = _ComplaintBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
-            return list;
+            //List<Complaint> list = _ComplaintBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            //return list;
+            List<Complaint> ComplaintList = new List<Complaint>();
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                ComplaintList = _ComplaintBLL.SearchReport(model).Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                return ComplaintList;
+            }
+            if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "ComplaintSubCategory").Select(x => x.ApplicationAction.Id).Contains((int)ApplicationActions.IsAdmin))
+            {
+                ComplaintList = _ComplaintBLL.SearchReport(model);
+            }
+            else
+            {
+                int[] ComplaintSubCategoryIds = new ComplaintSubCategoryBLL(_unitOfWork).Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
+                ComplaintList = _ComplaintBLL.SearchReport(model).Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+            }
+            return ComplaintList;
         }
         [HttpPost]
         public IActionResult ComplaintSearch(ComplaintSearch model, string Search)

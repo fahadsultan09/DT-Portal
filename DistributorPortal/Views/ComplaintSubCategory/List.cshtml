@@ -31,8 +31,9 @@
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Name</th>
-                            <th>Complaint Category Name</th>
+                            <th>Sub Category</th>
+                            <th>Category</th>
+                            <th>Email To</th>
                             <th>Active</th>
                             <th>Action</th>
                         </tr>
@@ -44,6 +45,7 @@
                                 <td>@item.Id</td>
                                 <td>@item.ComplaintSubCategoryName</td>
                                 <td>@item.ComplaintCategory.ComplaintCategoryName</td>
+                                <td>@item.User.Email</td>
                                 <td>
                                     @if (item.IsActive)
                                     {<i class="fa fa-check text-navy"></i> }
@@ -79,6 +81,7 @@
         $("#example1").DataTable({
             "responsive": true,
             "autoWidth": false,
+            "order": [],
         });
     });
 

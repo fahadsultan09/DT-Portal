@@ -5,6 +5,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.GeneralSetup
 {
@@ -17,24 +18,25 @@ namespace BusinessLogicLayer.GeneralSetup
         }
         public int AddComplaintSubCategory(ComplaintSubCategory module)
         {
-            module.CreatedBy = SessionHelper.LoginUser.Id;
+            module.IsActive = true;
             module.IsDeleted = false;
+            module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<ComplaintSubCategory>().Insert(module);
             return _unitOfWork.Save();
         }
-
         public int UpdateComplaintSubCategory(ComplaintSubCategory module)
         {
             var item = _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(module.Id);
             item.ComplaintSubCategoryName = module.ComplaintSubCategoryName;
+            item.UserEmailTo = module.UserEmailTo;
+            item.KPIDay = module.KPIDay;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _unitOfWork.GenericRepository<ComplaintSubCategory>().Update(item);
             return _unitOfWork.Save();
         }
-
         public int DeleteComplaintSubCategory(int id)
         {
             var item = _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(id);
@@ -42,17 +44,22 @@ namespace BusinessLogicLayer.GeneralSetup
             _unitOfWork.GenericRepository<ComplaintSubCategory>().Delete(item);
             return _unitOfWork.Save();
         }
-
         public ComplaintSubCategory GetComplaintSubCategoryById(int id)
         {
             return _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(id);
         }
-
         public List<ComplaintSubCategory> GetAllComplaintSubCategory()
         {
             return _unitOfWork.GenericRepository<ComplaintSubCategory>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-
+        public List<ComplaintSubCategory> Where(Expression<Func<ComplaintSubCategory, bool>> predicate)
+        {
+            return _unitOfWork.GenericRepository<ComplaintSubCategory>().Where(predicate);
+        }
+        public ComplaintSubCategory FirstOrDefault(Expression<Func<ComplaintSubCategory, bool>> predicate)
+        {
+            return _unitOfWork.GenericRepository<ComplaintSubCategory>().FirstOrDefault(predicate);
+        }
         public bool CheckComplaintSubCategoryName(int Id, string ComplaintSubCategoryName)
         {
             int? ComplaintSubCategoryId = Id == 0 ? null : (int?)Id;
@@ -66,7 +73,6 @@ namespace BusinessLogicLayer.GeneralSetup
                 return true;
             }
         }
-
         public SelectList DropDownComplaintSubCategoryByUserId(int[] ComplaintSubCategory)
         {
             var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true && ComplaintSubCategory.Contains(x.Id)).Select(x => new SelectListItem
@@ -77,8 +83,6 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new SelectList(selectList, "Value", "Text");
         }
-
-
         public SelectList DropDownComplaintSubCategoryList(int SelectedValue)
         {
             var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true).Select(x => new SelectListItem
@@ -89,7 +93,6 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
-
         public SelectList DropDownComplaintSubCategoryList(int? ComplaintCategoryId, int? SelectedValue)
         {
             var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true && x.ComplaintCategoryId == ComplaintCategoryId).Select(x => new SelectListItem
@@ -100,7 +103,6 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
-
         public MultiSelectList DropDownComplaintSubCategoryMultiList(int[] SelectedValue)
         {
             var selectList = GetAllComplaintSubCategory().Where(x => x.IsActive == true).Select(x => new

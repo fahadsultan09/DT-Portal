@@ -8,6 +8,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using Utility;
 using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
@@ -16,10 +17,12 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ComplaintSubCategoryBLL _ComplaintSubCategoryBLL;
+        private readonly ComplaintUserEmailBLL _ComplaintUserEmailBLL;
         public ComplaintSubCategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _ComplaintSubCategoryBLL = new ComplaintSubCategoryBLL(_unitOfWork);
+            _ComplaintUserEmailBLL = new ComplaintUserEmailBLL(_unitOfWork);
         }
         // GET: ComplaintSubCategory
         public IActionResult Index()
@@ -33,7 +36,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -70,6 +73,28 @@ namespace DistributorPortal.Controllers
                             jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                             jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                         }
+
+                        foreach (var item in model.UserEmailCC)
+                        {
+                            ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                            {
+                                ComplaintSubCategoryId = model.Id,
+                                EmailType = EmailType.CC,
+                                UserEmailId = item,
+                            };
+                            _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                        }
+
+                        foreach (var item in model.UserEmailKPI)
+                        {
+                            ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                            {
+                                ComplaintSubCategoryId = model.Id,
+                                EmailType = EmailType.KPI,
+                                UserEmailId = item,
+                            };
+                            _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                        }
                     }
                     else
                     {
@@ -92,7 +117,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
+                int id = 0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _ComplaintSubCategoryBLL.DeleteComplaintSubCategory(id);
                 return Json(new { Result = true });
@@ -116,17 +141,20 @@ namespace DistributorPortal.Controllers
                 model.IsActive = true;
             }
             model.ComplaintCategoryList = new ComplaintCategoryBLL(_unitOfWork).DropDownComplaintCategoryList(model.ComplaintCategoryId);
+            model.UserList = new UserBLL(_unitOfWork).DropDownUserList(model.UserEmailTo);
+            int[] UserEmailCC = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.CC);
+            model.UserEmailCCList = new UserBLL(_unitOfWork).DropDownUserList(UserEmailCC);
+            int[] UserEmailKPI = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.KPI);
+            model.UserEmailKPIList = new UserBLL(_unitOfWork).DropDownUserList(UserEmailKPI);
             return model;
         }
         public JsonResult GetComplaintSubCategoryList()
         {
             return Json(_ComplaintSubCategoryBLL.GetAllComplaintSubCategory().ToList());
         }
-        public IActionResult DropDownComplaintSubCategoryList(string DPID)
+        public IActionResult DropDownComplaintSubCategoryList(int ComplaintCategoryId)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
-            return Json(_ComplaintSubCategoryBLL.DropDownComplaintSubCategoryList(id, 0));
+            return Json(_ComplaintSubCategoryBLL.DropDownComplaintSubCategoryList(ComplaintCategoryId, 0));
         }
     }
 }
