@@ -18,11 +18,13 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ComplaintSubCategoryBLL _ComplaintSubCategoryBLL;
         private readonly ComplaintUserEmailBLL _ComplaintUserEmailBLL;
+        private readonly UserBLL _UserBLL;
         public ComplaintSubCategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _ComplaintSubCategoryBLL = new ComplaintSubCategoryBLL(_unitOfWork);
             _ComplaintUserEmailBLL = new ComplaintUserEmailBLL(_unitOfWork);
+            _UserBLL = new UserBLL(_unitOfWork);
         }
         // GET: ComplaintSubCategory
         public IActionResult Index()
@@ -62,39 +64,41 @@ namespace DistributorPortal.Controllers
                         if (model.Id > 0)
                         {
                             _ComplaintSubCategoryBLL.UpdateComplaintSubCategory(model);
-                            jsonResponse.Status = true;
-                            jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
-                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                         }
                         else
                         {
                             _ComplaintSubCategoryBLL.AddComplaintSubCategory(model);
-                            jsonResponse.Status = true;
-                            jsonResponse.Message = NotificationMessage.SaveSuccessfully;
-                            jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                         }
 
-                        foreach (var item in model.UserEmailCC)
+                        if (model.UserEmailCC != null)
                         {
-                            ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                            foreach (var item in model.UserEmailCC)
                             {
-                                ComplaintSubCategoryId = model.Id,
-                                EmailType = EmailType.CC,
-                                UserEmailId = item,
-                            };
-                            _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                                ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                                {
+                                    ComplaintSubCategoryId = model.Id,
+                                    EmailType = EmailType.CC,
+                                    UserEmailId = item,
+                                };
+                                _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                            }
                         }
-
-                        foreach (var item in model.UserEmailKPI)
+                        if (model.UserEmailKPI != null)
                         {
-                            ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                            foreach (var item in model.UserEmailKPI)
                             {
-                                ComplaintSubCategoryId = model.Id,
-                                EmailType = EmailType.KPI,
-                                UserEmailId = item,
-                            };
-                            _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                                ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                                {
+                                    ComplaintSubCategoryId = model.Id,
+                                    EmailType = EmailType.KPI,
+                                    UserEmailId = item,
+                                };
+                                _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                            }
                         }
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                        jsonResponse.RedirectURL = Url.Action("Index", "ComplaintSubCategory");
                     }
                     else
                     {
@@ -102,7 +106,7 @@ namespace DistributorPortal.Controllers
                         return PartialView("Add", model);
                     }
                 }
-                return RedirectToAction("List");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
@@ -141,11 +145,11 @@ namespace DistributorPortal.Controllers
                 model.IsActive = true;
             }
             model.ComplaintCategoryList = new ComplaintCategoryBLL(_unitOfWork).DropDownComplaintCategoryList(model.ComplaintCategoryId);
-            model.UserList = new UserBLL(_unitOfWork).DropDownUserList(model.UserEmailTo);
+            model.UserList = _UserBLL.DropDownUserList(model.UserEmailTo);
             int[] UserEmailCC = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.CC);
-            model.UserEmailCCList = new UserBLL(_unitOfWork).DropDownUserList(UserEmailCC);
+            model.UserEmailCCList = _UserBLL.DropDownUserList(UserEmailCC);
             int[] UserEmailKPI = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.KPI);
-            model.UserEmailKPIList = new UserBLL(_unitOfWork).DropDownUserList(UserEmailKPI);
+            model.UserEmailKPIList = _UserBLL.DropDownUserList(UserEmailKPI);
             return model;
         }
         public JsonResult GetComplaintSubCategoryList()
