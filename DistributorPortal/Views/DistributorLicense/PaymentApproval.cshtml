@@ -193,6 +193,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
+                BlockUI();
                 $.post('@Url.Action("VerifyPayment", "Payment")/' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
@@ -203,6 +204,7 @@
                         Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
                     }
                 });
+                UnBlockUI();
             }
         });
     }

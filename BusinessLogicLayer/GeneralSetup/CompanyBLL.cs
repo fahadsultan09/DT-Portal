@@ -3,7 +3,6 @@ using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
-using Models.UserRights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && (IsPaymentAllowed == true ? x.IsPaymentAllowed == IsPaymentAllowed : true)).Select(x => new SelectListItem
             {
-                Value = EncryptDecrypt.Encrypt(x.Id.ToString()),
+                Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()
             });
 

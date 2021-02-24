@@ -22,6 +22,7 @@
                       id="frmDosageForm"
                       data-ajax-begin="Begin"
                       data-ajax-update="#divform"
+                      data-ajax-success="OnSuccess"
                       data-ajax-complete="MessageDisappear"
                       data-ajax="true"
                       data-ajax-method="POST">
@@ -85,16 +86,11 @@
 </div>
 <!-- /.card -->
 
-<script>
-    var MessageDisappear = function () {
-        setInterval(function () {
-            $("#alertmessage").hide('slow');
-        }, 5000);
-    }
+@*<script>
     var OnSuccess = function () {
         Toast.fire({
             icon: 'success',
             title: '@NotificationMessage.SaveSuccessfully'
         })
     }
-</script>
+</script>*@

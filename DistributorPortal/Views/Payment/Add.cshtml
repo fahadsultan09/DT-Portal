@@ -249,7 +249,7 @@
             var text = $(ddlCompany).text();
             var value = $(ddlCompany).val();
             var params = {
-                DPID: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
+                id: (value === undefined || value == "" || value == null || value.length <= 0 ? 0 : value)
             }
             $(".ddlDepostitorBank option").remove();
             var ddlDepostitorBank = $(".ddlDepostitorBank");
@@ -282,7 +282,7 @@
                 url: "/Bank/GetBranchCode",
                 contentType: "application/json",
                 dataType: "json",
-                data: { DPID: $(".ddlCompanyBank").val() },
+                data: { id: $(".ddlCompanyBank").val() },
                 async: false,
                 success: function (response) {
                     $('#CompanyBankCode').val(response[0]);

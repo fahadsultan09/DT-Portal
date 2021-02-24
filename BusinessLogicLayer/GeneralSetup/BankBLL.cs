@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             var selectList = GetAllBank().Where(x => x.IsActive == true && x.CompanyId == CompanyId).Select(x => new SelectListItem
             {
-                Value = EncryptDecrypt.Encrypt(x.Id.ToString()),
+                Value = x.Id.ToString(),
                 Text = x.BankName.ToString()
             });
             return new SelectList(selectList, "Value", "Text", SelectedValue);

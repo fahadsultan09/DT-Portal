@@ -27,7 +27,7 @@ namespace BusinessLogicLayer.Application
         {
             var selectList = GetAllPaymentMode().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
-                Value = EncryptDecrypt.Encrypt(x.Id.ToString()),
+                Value = x.Id.ToString(),
                 Text = x.PaymentName.Trim()
             });
 

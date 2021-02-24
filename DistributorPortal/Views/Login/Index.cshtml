@@ -43,7 +43,7 @@
                 <form asp-controller="Login"
                       asp-action="Index"
                       id="frmUser"
-                      data-ajax-begin="Begin"
+                      data-ajax-begin="LoginBegin"
                       data-ajax-success="OnLoginSuccess"
                       data-ajax-complete="Complete"
                       data-ajax="true"
@@ -164,6 +164,12 @@
             $('#Spinner').hide('slow');
             $('button[type="submit"]').attr('disabled', false);
             Ladda.create($("button[type=submit]", this)[0]).stop();
+        }
+
+        function LoginBegin() {
+            $('#Spinner').show();
+            $('button[type="submit"]').attr('disabled', true);
+            Ladda.create($("button[type=submit]", this)[0]).start();
         }
 
     </script>

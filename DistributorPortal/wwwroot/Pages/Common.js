@@ -33,7 +33,7 @@ function Begin() {
     $('#Spinner').show();
     $('button[type="submit"]').attr('disabled', true);
     Ladda.create($("button[type=submit]", this)[0]).start();
-    $("body").addClass("loading"); 
+    BlockUI();
 }
 
 function OnSuccess(data) {
@@ -60,16 +60,21 @@ function Complete() {
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
     Ladda.create($("button[type=submit]", this)[0]).stop();
-    $("body").removeClass("loading"); 
     if ($("#btnOrderNow", this)[0] != undefined) {
         Ladda.create($("#btnOrderNow", this)[0]).stop();
-        $("body").removeClass("loading"); 
     }
 
     if ($("#btnDraft", this)[0] != undefined) {
         Ladda.create($("#btnDraft", this)[0]).stop();
-        $("body").removeClass("loading"); 
     }
+    UnBlockUI();
+}
+
+function MessageDisappear() {
+    setInterval(function () {
+        $("#alertmessage").hide('slow');
+    }, 5000);
+    UnBlockUI();
 }
 
 //Save
@@ -160,7 +165,6 @@ function UpdateStatus(e, controllerName, actionName, id) {
         })
     }
     else {
-
         Swal.fire({
             title: "Are you sure you want to continue?",
             type: "warning",
@@ -198,4 +202,12 @@ function inWords(num) {
     str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
     str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function BlockUI() {
+    $.blockUI({ message: ('<div id="feedback"><div style="background-color:#fff; padding:20px; border:2px solid #031e77; z-index:9999;"><h1>Please Wait</h1></div></div>') });
+}
+
+function UnBlockUI() {
+    $.unblockUI();
 }

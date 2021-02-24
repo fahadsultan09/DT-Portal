@@ -21,6 +21,10 @@
     {
       "library": "bootstrap-datepicker@1.9.0",
       "destination": "wwwroot/lib/"
+    },
+    {
+      "library": "jquery.blockUI@2.70",
+      "destination": "wwwroot/jquery.blockUI/"
     }
   ]
 }

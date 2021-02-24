@@ -171,6 +171,7 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.value != null || result.value != undefined) {
+                BlockUI();
                     $.ajax({
                     type: "POST",
                     url: '@Url.Action("OnHold", "Order")',
@@ -182,7 +183,8 @@
                             window.location.reload();
                         }, 2000);
                     }
-                });
+                    });
+                UnBlockUI();
             }
         })
     }
@@ -206,6 +208,7 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.value != null || result.value != undefined) {
+                BlockUI();
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Reject", "Order")',
@@ -218,6 +221,7 @@
                         }, 2000);
                     }
                 });
+                UnBlockUI();
             }
         })
     }

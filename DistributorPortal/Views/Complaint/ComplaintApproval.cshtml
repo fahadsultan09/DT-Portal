@@ -177,6 +177,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
+                BlockUI();
                 $.post('@Url.Action("VerifyComplaint", "Complaint")/' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
@@ -187,6 +188,7 @@
                         Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
                     }
                 });
+                UnBlockUI();
             }
         });
     }
@@ -217,8 +219,9 @@
                     }
                 }
             }).then(function (result) {
-
+                
                 if (result.value) {
+                    BlockUI();
                     $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
                         if (data) {
                             if (e.value == "Resolved") {
@@ -233,6 +236,7 @@
                             Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                         }
                     });
+                    UnBlockUI();
                 }
             });
         }
