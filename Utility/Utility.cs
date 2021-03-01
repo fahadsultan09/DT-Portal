@@ -131,6 +131,7 @@ namespace Utility
         Submitted = 2,
         Received = 3,
         CompletelyProcessed = 4,
+        PartiallyReceived = 5,
     }
     public enum ApplicationActions
     {

@@ -42,7 +42,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@item.Id.ToString()" /></td>
+                                    <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" /></td>
                                     <td>@string.Format("{0:1000000000}", item.Id)</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
@@ -51,10 +51,7 @@
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.CreatedName</td>
                                     <td>@item.CreatedDate</td>
-                                    @*<td>@item.ApprovedName</td>
-                                        <td>@item.ApprovedDate</td>
-                                        <td>@item.RejectedName</td>
-                                        <td>@item.RejectedDate</td>*@
+                                    
                                     <td>
                                         <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
@@ -101,14 +98,14 @@
 
         // Add event listener for opening and closing details
         $('#example1 tbody').on('click', 'td.details-control', function () {
-
+            debugger;
             var tr = $(this).closest('tr');
             var row = table.row(tr);
             var OrderReturnId = $(row.data()[0]).val();
             $.ajax({
                 type: 'GET',
                 url: '/Reports/GetOrderReturnDetailList',
-                data: { OrderReturnId: OrderReturnId },
+                data: { DPID: OrderReturnId },
                 async: false,
                 success: function (response) {
                     $('#modal-detail').html(response);

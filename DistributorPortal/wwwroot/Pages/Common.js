@@ -205,7 +205,18 @@ function inWords(num) {
 }
 
 function BlockUI() {
-    $.blockUI({ message: ('<div id="feedback"><div style="background-color:#fff; padding:20px; border:2px solid #031e77; z-index:9999;"><h1>Please Wait</h1></div></div>') });
+    $.blockUI.defaults.css = {
+        padding: 0,
+        margin: 0,
+        width: '30%',
+        top: '40%',
+        left: '35%',
+        textAlign: 'center',
+        cursor: 'wait'
+    };
+    $.blockUI({
+        Message: ('<img src="/Images/loading-spinner-grey.gif" />')
+    });
 }
 
 function UnBlockUI() {

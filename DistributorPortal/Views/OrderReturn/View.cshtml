@@ -6,7 +6,7 @@
     var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
     ViewData["Title"] = "View";
     ViewBag.IsView = true;
-    List<OrderReturnDetail> OrderReturnDetail = SessionHelper.LoginUser.IsDistributor ? Model.OrderReturnDetail : Model.OrderReturnDetail.Where(e => e.Company.Id == SessionHelper.LoginUser.CompanyId && e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).ToList();
+    List<OrderReturnDetail> OrderReturnDetail = Model.OrderReturnDetail;
 }
 
 <style type="text/css">
@@ -114,8 +114,9 @@
                                                 <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th>S.No.</th>
                                                             <th>Product Name</th>
+                                                            <th>Company</th>
+                                                            <th>Location</th>
                                                             <th>Batch No</th>
                                                             <th>MRP</th>
                                                             <th>Total Price</th>
@@ -128,15 +129,17 @@
                                                             <th>Invoice No</th>
                                                             <th>Invoice Date</th>
                                                             <th>Intimation Date</th>
-                                                            <th>Location</th>
+                                                            <th>SAP Order Number</th>
+                                                            <th>SAP Order Status</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @foreach (var item in OrderReturnDetail)
                                                         {
                                                         <tr>
-                                                            <td>@string.Format("{0:1000000000}", item.Id)</td>
                                                             <td>@item.ProductMaster.ProductName</td>
+                                                            <td>@item.Company.CompanyName</td>
+                                                            <td>@item.PlantLocation.PlantLocationName</td>
                                                             <td>@item.BatchNo</td>
                                                             <td>@item.MRP</td>
                                                             <td>@item.NetAmount</td>
@@ -149,7 +152,8 @@
                                                             <td>@item.InvoiceNo</td>
                                                             <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
                                                             <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
-                                                            <td>@item.PlantLocation.PlantLocationName</td>
+                                                            <td>@item.ReturnOrderNumber</td>
+                                                            <td>@item.ReturnOrderStatus</td>
                                                         </tr>
                                                         }
                                                     </tbody>
@@ -158,6 +162,7 @@
                                             <script type="text/javascript">
                                                 $(document).ready(function () {
                                                     $("#example").DataTable({
+                                                       
                                                     });
                                                 });
                                             </script>

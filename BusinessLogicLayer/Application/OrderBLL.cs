@@ -361,7 +361,7 @@ namespace BusinessLogicLayer.Application
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { Id = model.Id }) : Url.Action("Index", "Order", new { Id = model.Id });
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
             }
             else
             {
@@ -387,7 +387,7 @@ namespace BusinessLogicLayer.Application
                 AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
                 jsonResponse.Status = true;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { Id = model.Id }) : Url.Action("Index", "Order", new { Id = model.Id });
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
             }
             return jsonResponse;
         }
