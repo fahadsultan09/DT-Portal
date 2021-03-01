@@ -74,7 +74,7 @@
                         <td><span id="CurtonSize">@Model[i].ProductMaster.CartonSize</span></td>
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>
-                        <td><span id="CurtonQty">@(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize)</span></td>
+                        <td><span id="CurtonQty">@(Math.Ceiling(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize))</span></td>
                         <td>@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</td>
                         <td>@Model[i].WTaxRate %</td>
                         <td>

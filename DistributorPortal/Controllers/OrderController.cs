@@ -189,6 +189,7 @@ namespace DistributorPortal.Controllers
                     _orderDetailBLL.Update(Detail);
                 }
                 var Client = new RestClient(_Configuration.PostOrder);
+                var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
                 var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
                 IRestResponse response = Client.Execute(request);
                 var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
@@ -198,9 +199,12 @@ namespace DistributorPortal.Controllers
                     var product = detail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
                     if (product != null)
                     {
-                        product.SAPOrderNumber = item.SAPOrderNo;
-                        product.OrderProductStatus = OrderStatus.NotYetProcess;
-                        _orderDetailBLL.Update(product);
+                        if (!string.IsNullOrEmpty(item.SAPOrderNo))
+                        {
+                            product.SAPOrderNumber = item.SAPOrderNo;
+                            product.OrderProductStatus = OrderStatus.NotYetProcess;
+                            _orderDetailBLL.Update(product);
+                        }                        
                     }
                 }
                 var order = _OrderBLL.GetOrderMasterById(OrderId);

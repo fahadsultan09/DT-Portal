@@ -21,6 +21,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
+using MoreLinq;
 
 namespace DistributorPortal.Controllers
 {
@@ -80,7 +81,7 @@ namespace DistributorPortal.Controllers
         {
             int id=0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
-            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();           
             return View("View", BindOrderReturnMaster(id));
         }
         [HttpPost]
@@ -118,6 +119,7 @@ namespace DistributorPortal.Controllers
                         model.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == model.PlantLocationId).FirstOrDefault();
                         model.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
                         model.NetAmount = model.Quantity * model.MRP;
+                        model.Company = productDetail.Company;
                         list.Add(model);
                         SessionHelper.AddReturnProduct = list;
                         jsonResponse.Status = true;
@@ -163,8 +165,7 @@ namespace DistributorPortal.Controllers
                 var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
                 if (master != null)
                 {
-                    master.Status = OrderReturnStatus.Received;
-                    _OrderReturnBLL.Update(master);
+                    
                 }
                 foreach (var item in model.OrderReturnDetail)
                 {
@@ -193,6 +194,15 @@ namespace DistributorPortal.Controllers
                         }                        
                     }
                 }
+                if (_OrderReturnDetailBLL.Where(e => e.ReturnOrderNumber == null && e.OrderReturnId == model.Id).ToList().Count > 0)
+                {
+                    master.Status = OrderReturnStatus.PartiallyReceived;
+                }
+                else
+                {
+                    master.Status = OrderReturnStatus.Received;
+                }                
+                _OrderReturnBLL.Update(master);
                 _unitOfWork.Commit();
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.ReceivedReturn;
@@ -225,8 +235,8 @@ namespace DistributorPortal.Controllers
             List<OrderReturnMaster> list = new List<OrderReturnMaster>();
             if (SessionHelper.LoginUser.IsStoreKeeper)
             {
-                List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Where(x => x.CompanyId == SessionHelper.LoginUser.CompanyId).Select(x=>x.ProductMasterId).ToList();
-                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).Select(x=> new OrderReturnMaster 
+                List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Select(x=>x.ProductMasterId).Distinct().ToList();
+                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e=> e.OrderReturnId).Select(x=> new OrderReturnMaster 
                 {
                     Id = x.OrderReturnMaster.Id,
                     Distributor = x.OrderReturnMaster.Distributor,
@@ -250,21 +260,29 @@ namespace DistributorPortal.Controllers
                 model.Distributor = model.Distributor;
                 model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id).ToList();
                 var allproducts = _ProductMasterBLL.GetAllProductMaster();
-                var allproductDetail = _ProductDetailBLL.GetAllProductDetail();
+                List<ProductDetail> allproductDetail;
+                if (SessionHelper.LoginUser.IsStoreKeeper)
+                {
+                    allproductDetail = _ProductDetailBLL.Where(e => e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).ToList();
+                }
+                else
+                {
+                    allproductDetail = _ProductDetailBLL.GetAllProductDetail();
+                }
                 OrderReturnDetail detail = new OrderReturnDetail();
                 foreach (var item in model.OrderReturnDetail)
                 {
                     ProductMaster productMaster = allproducts.FirstOrDefault(e => e.Id == item.ProductId);
                     ProductDetail productDetail = allproductDetail.FirstOrDefault(e => e.ProductMasterId == item.ProductId);
-                    if (productMaster != null)
-                    {
-                        
+                    if (productMaster != null && productDetail != null)
+                    {                        
                         var list = SessionHelper.AddReturnProduct;
                         detail.BatchNo = item.BatchNo;
                         detail.MRP = item.MRP;
                         detail.TotalPrice = item.TotalPrice;
                         detail.Discount = item.Discount;
                         detail.Quantity = item.Quantity;
+                        detail.ReceivedQty = item.ReceivedQty;
                         detail.Discount = item.Discount;
                         detail.ManufactureDate = item.ManufactureDate;
                         detail.ExpiryDate = item.ExpiryDate;
@@ -279,11 +297,15 @@ namespace DistributorPortal.Controllers
                         detail.OrderReturnId = item.OrderReturnId;
                         detail.PlantLocationId = item.PlantLocationId;
                         detail.Company = productDetail.Company;
+                        detail.ReturnOrderNumber = item.ReturnOrderNumber;
+                        detail.ReturnOrderStatus = item.ReturnOrderStatus;
                         list.Add(detail);
                         SessionHelper.AddReturnProduct = list;
                     }
                 }
                 model.OrderReturnDetail = SessionHelper.AddReturnProduct;
+                model.ProductList = _ProductDetailBLL.DropDownProductList();
+                model.returnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
             }
             else
             {

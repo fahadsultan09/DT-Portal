@@ -29,7 +29,7 @@
                     <td width="12%">@item.ProductMaster.CartonSize</td>
                     <td width="5%" >@item.ProductMaster.Rate</td>
                     <td width="5%" >@item.ProductMaster.Discount %</td>
-                    <td width="20%">@(item.ProductMaster.CartonSize / item.ProductMaster.Quantity)</td>
+                    <td width="20%">@(Math.Ceiling(item.ProductMaster.Quantity / item.ProductMaster.CartonSize))</td>
                     <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
                     <td width="10%">@item.WTaxRate %</td>
                     <td width="10%">@item.Company.CompanyName</td>

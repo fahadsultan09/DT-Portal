@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Utility;
+using Utility.HelperClasses;
 using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
@@ -190,7 +191,7 @@ namespace BusinessLogicLayer.Application
                         detail.ForEach(e => e.ProductMaster = null);
                         detail.ForEach(e => e.PlantLocation = null);
                         _OrderReturnDetailBLL.AddRange(detail);
-                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { id = model.Id }) : Url.Action("Index", "OrderReturn");
+                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "OrderReturn");
                     }
                     else
                     {
@@ -205,7 +206,7 @@ namespace BusinessLogicLayer.Application
                         detail.ForEach(e => e.ProductMaster = null);
                         detail.ForEach(e => e.PlantLocation = null);
                         _OrderReturnDetailBLL.AddRange(detail);
-                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { id = model.Id }) : Url.Action("Index", "OrderReturn");
+                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "OrderReturn");
                     }
                     jsonResponse.Status = true;
                 }
