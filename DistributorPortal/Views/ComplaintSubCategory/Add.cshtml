@@ -8,105 +8,157 @@
             @viewdata <a class="alert-link" href="#"></a>.
         </div>
     }
+    string CCEmail = string.Join(',', Model.UserEmailCC.ToArray());
+    string KPIEmail = string.Join(',', Model.UserEmailKPI.ToArray());
 }
-
-<div class="card card-default">
-    <div class="card-header">
-        <h3 class="card-title">Complaint Sub Category</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-12">
-                <form asp-controller="ComplaintSubCategory"
-                      asp-action="SaveEdit"
-                      id="frmDosageForm"
-                      data-ajax-update="#divform"
-                      data-ajax-begin="Begin"
-                      data-ajax-success="OnSuccess"
-                      data-ajax-complete="MessageDisappear"
-                      data-ajax="true"
-                      data-ajax-method="POST">
+<link href="~/lib/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+<div class="content-wrapper">
+    <section class="content-header" disabled>
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Complaint Sub Category</h3>
+                </div>
+                <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-12">
-                            <div class="ibox ">
-                                <input asp-for="Id" type="hidden" />
-                                <div class="ibox-content">
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Complaint Category Name<span class="text-danger"> * </span></label>
-                                        <div class="col-lg-9">
-                                            <select asp-for="ComplaintCategoryId" asp-items="@(new SelectList(Model.ComplaintCategoryList,"Value","Text"))" class="select2" data-placeholder="--Select option--" style="width: 100%;">
-                                                <option readonly disabled>--Please Select--</option>
-                                            </select>
-                                            <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
+                        <div class="col-md-12">
+                            <form asp-controller="ComplaintSubCategory"
+                                  asp-action="SaveEdit"
+                                  id="frmComplaintSubCategory"
+                                  data-ajax-update="#divform"
+                                  data-ajax-begin="Begin"
+                                  data-ajax-success="OnSuccess"
+                                  data-ajax-complete="Complete"
+                                  data-ajax="true"
+                                  data-ajax-method="POST">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="ibox ">
+                                            <input asp-for="Id" type="hidden" />
+                                            <div class="ibox-content">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">Complaint Category Name<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-9">
+                                                        <select asp-for="ComplaintCategoryId" asp-items="@(new SelectList(Model.ComplaintCategoryList,"Value","Text"))" class="select2" data-placeholder="--Select option--" style="width: 100%;">
+                                                            <option readonly disabled>--Please Select--</option>
+                                                        </select>
+                                                        <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">Sub Category Name<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-9">
+                                                        <input asp-for="ComplaintSubCategoryName" type="text" placeholder="Name" class="form-control" />
+                                                        <span asp-validation-for="ComplaintSubCategoryName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">To Email<span class="text-danger"> * </span></label>
+                                                    <div class="col-lg-9">
+                                                        <select asp-for="UserEmailTo" asp-items="@(Model.UserList)" class="select2" data-placeholder="--Select option--" style="width: 100%;">
+                                                            <option value="" disabled selected>--Please Select--</option>
+                                                        </select>
+                                                        <span asp-validation-for="UserEmailTo" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">CC Emails</label>
+                                                    <div class="col-lg-9">
+                                                        @*<select asp-for="UserEmailCC" asp-items="@(Model.UserEmailCCList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
+                                                                <option readonly disabled>--Please Select--</option>
+                                                            </select>*@
+                                                        <input type="text" name="UserEmailCC" id="UserEmailCC" value="@CCEmail" placeholder="Email" class="form-control email">
+                                                        <span id="errorUserEmailCC" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">KPI Days</label>
+                                                    <div class="col-lg-9">
+                                                        <input type="number" asp-for="KPIDay" placeholder="KPI Days" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-lg-3 col-form-label">KPI Emails</label>
+                                                    <div class="col-lg-9">
+                                                        @*<select asp-for="UserEmailKPI" asp-items="@(Model.UserEmailKPIList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
+                                                                <option readonly disabled>--Please Select--</option>
+                                                            </select>*@
+                                                        <input type="text" name="UserEmailKPI" id="UserEmailKPI" value="@KPIEmail" placeholder="Email" class="form-control email">
+                                                        <span id="errorUserEmailKPI" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Sub Category Name<span class="text-danger"> * </span></label>
-                                        <div class="col-lg-9">
-                                            <input asp-for="ComplaintSubCategoryName" type="text" placeholder="Name" class="form-control" />
-                                            <span asp-validation-for="ComplaintSubCategoryName" class="text-danger"></span>
+                                        <div class="form-group row">
+                                            <div class="col-lg-offset-2 col-lg-10">
+                                                <div class="i-checks"><label>Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">To Email<span class="text-danger"> * </span></label>
-                                        <div class="col-lg-9">
-                                            <select asp-for="UserEmailTo" asp-items="@(Model.UserList)" class="select2" data-placeholder="--Select option--" style="width: 100%;">
-                                                <option>--Please Select--</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">CC Emails</label>
-                                        <div class="col-lg-9">
-                                            <select asp-for="UserEmailCC" asp-items="@(Model.UserEmailCCList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
-                                                <option readonly disabled>--Please Select--</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">KPI Days</label>
-                                        <div class="col-lg-9">
-                                            <input type="number" asp-for="KPIDay" placeholder="KPI Days" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">KPI Emails</label>
-                                        <div class="col-lg-9">
-                                            <select asp-for="UserEmailKPI" asp-items="@(Model.UserEmailKPIList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
-                                                <option readonly disabled>--Please Select--</option>
-                                            </select>
+                                        <div class="form-group row">
+                                            <div class="col-lg-12 ">
+                                                <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
+                                                    @(Model.Id > 0 ? "Update" : "Add")
+                                                </button>
+                                                <a data-ajax-update="#divform"
+                                                   data-ajax="true"
+                                                   data-ajax-method="GET"
+                                                   asp-controller="ComplaintSubCategory" asp-action="List"
+                                                   class="btn btn-sm btn-default float-right mr-3">Back</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-lg-offset-2 col-lg-10">
-                                    <div class="i-checks"><label>Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i></div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-lg-12 ">
-                                    <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
-                                        @(Model.Id > 0 ? "Update" : "Add")
-                                    </button>
-                                    <a data-ajax-update="#divform"
-                                       data-ajax="true"
-                                       data-ajax-method="GET"
-                                       asp-controller="ComplaintSubCategory" asp-action="List"
-                                       class="btn btn-sm btn-default float-right mr-3">Back</a>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
+<script src="~/lib/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+
 <script>
+
     $(document).ready(function () {
-        //Initialize Select2 Elements
+
         $('.select2').select2();
+
+        $('#UserEmailCC').tagsinput({
+            trimValue: true,
+            allowDuplicates: false
+        });
+
+        $('#UserEmailKPI').tagsinput({
+            trimValue: true,
+            allowDuplicates: false
+        });
+        $('.bootstrap-tagsinput').css('width', '100%');
+
+        $('#UserEmailCC').on('beforeItemAdd', function (event) {
+            $('.text-danger').empty();
+
+            if (!validateEmail(event.item)) {
+                event.cancel = true;
+                $('#errorUserEmailCC').text('Input string was not in a correct email format');
+            }
+        });
+
+        $('#UserEmailKPI').on('beforeItemAdd', function (event) {
+            $('.text-danger').empty();
+
+            if (!validateEmail(event.item)) {
+                event.cancel = true;
+                $('#errorUserEmailKPI').text('Input string was not in a correct email format');
+            }
+        });
+
     });
+
+    function validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
 </script>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using DataAccessLayer.Repository;
+using System.Threading.Tasks;
 
 namespace DataAccessLayer.WorkProcess
 {
@@ -8,6 +9,7 @@ namespace DataAccessLayer.WorkProcess
     {
         IGenericRepository<T> GenericRepository<T>() where T : class;
         int Save();
+        Task<int> SaveAsync();
         IDbContextTransaction Begin();
         void Commit();
         void Rollback();

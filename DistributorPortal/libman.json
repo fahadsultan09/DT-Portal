@@ -25,6 +25,16 @@
     {
       "library": "jquery.blockUI@2.70",
       "destination": "wwwroot/jquery.blockUI/"
+    },
+    {
+      "library": "bootstrap-tagsinput@0.8.0",
+      "destination": "wwwroot/lib/plugins/bootstrap-tagsinput/",
+      "files": [
+        "bootstrap-tagsinput-typeahead.css",
+        "bootstrap-tagsinput.css",
+        "bootstrap-tagsinput.js",
+        "bootstrap-tagsinput.min.js"
+      ]
     }
   ]
 }

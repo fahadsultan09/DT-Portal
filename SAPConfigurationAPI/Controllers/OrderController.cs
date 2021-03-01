@@ -81,5 +81,12 @@ namespace SAPConfigurationAPI.Controllers
             }
             return list;
         }
+        [HttpPost]
+        [Route("api/Order/GetValue")]
+        public string GetValue(string value1, string value12)
+        {
+
+            return value1 + " " + value12;
+        }
     }
 }

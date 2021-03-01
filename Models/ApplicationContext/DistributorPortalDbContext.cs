@@ -56,5 +56,6 @@ namespace Models.ApplicationContext
         public DbSet<OrderReturnReason> OrderReturnReason { get; set; }
         public DbSet<PlantLocation> PlantLocation { get; set; }
         public DbSet<ComplaintUserEmail> ComplaintUserEmail { get; set; }
+        public DbSet<EmailLog> EmailLog { get; set; }
     }
 }

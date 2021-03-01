@@ -10,8 +10,8 @@ namespace Models.Application
         [ForeignKey("ComplaintSubCategoryId")]
         public virtual ComplaintSubCategory ComplaintSubCategory { get; set; }
         public EmailType EmailType { get; set; }
-        public int UserEmailId { get; set; }
-        [ForeignKey("UserEmailId")]
-        public virtual User User { get; set; }
+        public string UserEmailId { get; set; }
+        //[ForeignKey("UserEmailId")]
+        //public virtual User User { get; set; }
     }
 }

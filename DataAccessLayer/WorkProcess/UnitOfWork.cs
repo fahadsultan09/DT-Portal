@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Models.ApplicationContext;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataAccessLayer.WorkProcess
 {
@@ -12,9 +13,7 @@ namespace DataAccessLayer.WorkProcess
         private bool disposed;
         private Dictionary<string, object> repositories;
         private readonly DistributorPortalDbContext _context;
-
         private IDbContextTransaction _transaction;
-
         public UnitOfWork(DistributorPortalDbContext context)
         {
             _context = context;
@@ -26,7 +25,6 @@ namespace DataAccessLayer.WorkProcess
                 _transaction.Dispose();
             _transaction = null;
         }
-
         protected virtual void Dispose(bool Disposing)
         {
             if (!this.disposed)
@@ -38,7 +36,6 @@ namespace DataAccessLayer.WorkProcess
             }
             this.disposed = true;
         }
-
         public IGenericRepository<T> GenericRepository<T>() where T : class
         {
             if (repositories == null)
@@ -54,30 +51,29 @@ namespace DataAccessLayer.WorkProcess
             }
             return (GenericRepository<T>)repositories[type];
         }
-            
         public int Save()
         {
             return _context.SaveChanges();
         }
-
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
         public IDbContextTransaction Begin()
         {
             _transaction = _context.Database.BeginTransaction();
             return _transaction;
         }
-
         public void Commit()
         {
             _transaction.Commit();
             Dispose();
         }
-
         public void Rollback()
         {
             _transaction.Rollback();
             Dispose();
         }
-
         public ChangeTracker ChangeTracker { get { return _context.ChangeTracker; } }
     }
 }

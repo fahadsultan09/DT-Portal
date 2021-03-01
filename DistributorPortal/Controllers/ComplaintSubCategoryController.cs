@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Utility;
 using Utility.HelperClasses;
@@ -31,9 +32,9 @@ namespace DistributorPortal.Controllers
         {
             return View(_ComplaintSubCategoryBLL.GetAllComplaintSubCategory());
         }
-        public IActionResult List()
+        public List<ComplaintSubCategory> List()
         {
-            return PartialView("List", _ComplaintSubCategoryBLL.GetAllComplaintSubCategory());
+            return _ComplaintSubCategoryBLL.GetAllComplaintSubCategory();
         }
         [HttpGet]
         public IActionResult Add(string DPID)
@@ -43,7 +44,7 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             }
-            return PartialView("Add", BindComplaintSubCategory(id));
+            return View("Add", BindComplaintSubCategory(id));
         }
         [HttpPost]
         public IActionResult SaveEdit(ComplaintSubCategory model)
@@ -63,6 +64,14 @@ namespace DistributorPortal.Controllers
                     {
                         if (model.Id > 0)
                         {
+                            var UserEmailCC = _ComplaintUserEmailBLL.Where(e => e.ComplaintSubCategoryId == model.Id).ToList();
+                            UserEmailCC.ForEach(x => x.ComplaintSubCategory = null);
+                            _ComplaintUserEmailBLL.DeleteRange(UserEmailCC);
+
+                            var UserEmailKPI = _ComplaintUserEmailBLL.Where(e => e.ComplaintSubCategoryId == model.Id).ToList();
+                            UserEmailKPI.ForEach(x => x.ComplaintSubCategory = null);
+                            _ComplaintUserEmailBLL.DeleteRange(UserEmailKPI);
+
                             _ComplaintSubCategoryBLL.UpdateComplaintSubCategory(model);
                         }
                         else
@@ -74,26 +83,40 @@ namespace DistributorPortal.Controllers
                         {
                             foreach (var item in model.UserEmailCC)
                             {
-                                ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                                if (item != null)
                                 {
-                                    ComplaintSubCategoryId = model.Id,
-                                    EmailType = EmailType.CC,
-                                    UserEmailId = item,
-                                };
-                                _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                                    foreach (var email in item.Split(','))
+                                    {
+
+                                        ComplaintUserEmail complaintUserEmail = new ComplaintUserEmail()
+                                        {
+                                            ComplaintSubCategoryId = model.Id,
+                                            EmailType = EmailType.CC,
+                                            UserEmailId = email,
+                                        };
+                                        _ComplaintUserEmailBLL.Add(complaintUserEmail);
+                                    }
+                                }
                             }
                         }
                         if (model.UserEmailKPI != null)
                         {
                             foreach (var item in model.UserEmailKPI)
                             {
-                                ComplaintUserEmail ComplaintUserEmail = new ComplaintUserEmail()
+                                if (item != null)
                                 {
-                                    ComplaintSubCategoryId = model.Id,
-                                    EmailType = EmailType.KPI,
-                                    UserEmailId = item,
-                                };
-                                _ComplaintUserEmailBLL.Add(ComplaintUserEmail);
+                                    foreach (var email in item.Split(','))
+                                    {
+
+                                        ComplaintUserEmail complaintUserEmail = new ComplaintUserEmail()
+                                        {
+                                            ComplaintSubCategoryId = model.Id,
+                                            EmailType = EmailType.KPI,
+                                            UserEmailId = email,
+                                        };
+                                        _ComplaintUserEmailBLL.Add(complaintUserEmail);
+                                    }
+                                }
                             }
                         }
                         jsonResponse.Status = true;
@@ -102,8 +125,8 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        TempData["Message"] = "Complaint Sub Category name already exist";
-                        return PartialView("Add", model);
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Complaint Sub Category name already exist";
                     }
                 }
                 return Json(new { data = jsonResponse });
@@ -146,10 +169,8 @@ namespace DistributorPortal.Controllers
             }
             model.ComplaintCategoryList = new ComplaintCategoryBLL(_unitOfWork).DropDownComplaintCategoryList(model.ComplaintCategoryId);
             model.UserList = _UserBLL.DropDownUserList(model.UserEmailTo);
-            int[] UserEmailCC = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.CC);
-            model.UserEmailCCList = _UserBLL.DropDownUserList(UserEmailCC);
-            int[] UserEmailKPI = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.KPI);
-            model.UserEmailKPIList = _UserBLL.DropDownUserList(UserEmailKPI);
+            model.UserEmailCC = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.CC).ToArray();
+            model.UserEmailKPI = _ComplaintUserEmailBLL.GetAllAComplaintUserEmailByComplaintSubCategoryId(model.Id, EmailType.KPI).ToArray();
             return model;
         }
         public JsonResult GetComplaintSubCategoryList()

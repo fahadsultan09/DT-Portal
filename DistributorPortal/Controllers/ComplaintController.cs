@@ -5,6 +5,7 @@ using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
@@ -25,13 +26,21 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ComplaintBLL _ComplaintBLL;
         private readonly ComplaintSubCategoryBLL _ComplaintSubCategoryBLL;
+        private readonly ComplaintUserEmailBLL _ComplaintUserEmailBLL;
         private readonly IConfiguration _IConfiguration;
-        public ComplaintController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private readonly Configuration _Configuration;
+        private readonly EmailLogBLL _EmailLogBLL;
+        private readonly IHostingEnvironment _env;
+        public ComplaintController(IUnitOfWork unitOfWork, IConfiguration IConfiguration, Configuration configuration, IHostingEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
-            _IConfiguration = configuration;
+            _IConfiguration = IConfiguration;
+            _Configuration = configuration;
             _ComplaintSubCategoryBLL = new ComplaintSubCategoryBLL(_unitOfWork);
+            _ComplaintUserEmailBLL = new ComplaintUserEmailBLL(_unitOfWork);
+            _env = env;
+            _EmailLogBLL = new EmailLogBLL(_unitOfWork, _Configuration);
         }
         // GET: Complaint
         public IActionResult Index()
@@ -116,6 +125,29 @@ namespace DistributorPortal.Controllers
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _ComplaintBLL.Add(model);
                 }
+
+                //Sending Email
+                string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\NewComplaint.html";
+                EmailUserModel EmailUserModel = new EmailUserModel();
+                List<User> UserList = new List<User>();
+
+                ComplaintSubCategory complaintSubCategory = _ComplaintSubCategoryBLL.Where(x => x.Id == model.ComplaintSubCategoryId).FirstOrDefault();
+                if (complaintSubCategory != null)
+                {
+                    UserList.Add(complaintSubCategory.User);
+                    EmailUserModel.Day = complaintSubCategory.KPIDay.ToString();
+                    EmailUserModel.ComplaintCategory = complaintSubCategory.ComplaintCategory.ComplaintCategoryName + " - " + complaintSubCategory.ComplaintSubCategoryName;
+                }
+                EmailUserModel.ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate);
+                EmailUserModel.ComplaintNo = string.Format("{0:1000000000}", model.Id);
+                EmailUserModel.DistributorName = SessionHelper.LoginUser.Distributor.DistributorName;
+                EmailUserModel.ComplaintDetail = model.Description;
+                EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MM/yyyy");
+                EmailUserModel.CreatedBy = SessionHelper.LoginUser.Id;
+                EmailUserModel.CCEmail = string.Join(',', _ComplaintUserEmailBLL.Where(x => x.ComplaintSubCategoryId == model.ComplaintSubCategoryId && x.EmailType == EmailType.CC).Select(x => x.UserEmailId).ToArray());
+
+                _EmailLogBLL.EmailSend(UserList, EmailUserModel);
+
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");

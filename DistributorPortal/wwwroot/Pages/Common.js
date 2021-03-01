@@ -77,7 +77,6 @@ function MessageDisappear() {
     UnBlockUI();
 }
 
-//Save
 function Save() {
     var form = event.target.form; // storing the form
     $(form).each(function () {
@@ -118,7 +117,6 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
     });
 }
 
-//Approve
 function UpdateStatus(e, controllerName, actionName, id) {
     var val = '';
     if (e.value == undefined) {
@@ -210,4 +208,10 @@ function BlockUI() {
 
 function UnBlockUI() {
     $.unblockUI();
+}
+
+function isEmailValidate(email) {
+
+    var re = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }

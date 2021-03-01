@@ -18,6 +18,11 @@ namespace Utility.HelperClasses
         public int DistributorFiler { get; set; }
         public int DistributorNonFiler { get; set; }
         public string GetPendingOrderValue { get; set; }
+        public string BaseFilePath { get; set; }
+        public string FromEmail { get; set; }
+        public string Password { get; set; }
+        public int Port { get; set; }
+        public string ServerAddress { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -32,10 +37,17 @@ namespace Utility.HelperClasses
                 GetPendingQuantity = configuration["AppSettings:GetPendingQuantity"];
                 GetInProcessOrderStatus = configuration["AppSettings:GetInProcessOrderStatus"];
                 PostReturnOrder = configuration["AppSettings:PostReturnOrder"];
-                DistributorFiler= configuration["Distributor:Filer"].ParseToInt32();
+                DistributorFiler = configuration["Distributor:Filer"].ParseToInt32();
                 DistributorNonFiler = configuration["Distributor:NonFiler"].ParseToInt32();
                 GetPendingOrderValue = configuration["AppSettings:GetPendingOrderValue"];
-            }            
+                int portnumber;
+                BaseFilePath = configuration["Settings:FolderPath"];
+                FromEmail = configuration["Settings:FromEmail"];
+                Password = configuration["Settings:Password"];
+                ServerAddress = configuration["Settings:ServerAddress"];
+                int.TryParse(configuration["Settings:Port"], out portnumber);
+                Port = portnumber;
+            }
         }
     }
 }

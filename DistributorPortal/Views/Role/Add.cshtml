@@ -10,19 +10,16 @@
     }
 }
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Role</h3>
     </div>
-    <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <form asp-controller="Role"
                       asp-action="SaveEdit"
-                      id="frmDosageForm"
+                      id="frmRole"
                       data-ajax-update="#divform"
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
@@ -75,7 +72,6 @@
         </div>
     </div>
 </div>
-<!-- /.card -->
 
 <script>
     var MessageDisappear = function () {

@@ -20,9 +20,9 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter Complaint Sub Category name.")]
         [StringLength(255)]
         public string ComplaintSubCategoryName { get; set; }
-        [Required(ErrorMessage = "Select Email To.")]
         [BindRequired]
-        public int? UserEmailTo { get; set; }
+        [Required(ErrorMessage = "Select Email To.")]
+        public int UserEmailTo { get; set; }
         [ForeignKey("UserEmailTo")]
         public virtual User User { get; set; }
         public int? KPIDay { get; set; }
@@ -30,16 +30,16 @@ namespace Models.Application
         [NotMapped]
         public EmailType EmailType { get; set; }
         [NotMapped]
-        public int[] UserEmailKPI { get; set; }
+        public string[] UserEmailKPI { get; set; }
         [NotMapped]
-        public int[] UserEmailCC { get; set; }
+        public string[] UserEmailCC { get; set; }
         [NotMapped]
         public SelectList ComplaintCategoryList { get; set; }
         [NotMapped]
         public SelectList UserList { get; set; }
-        [NotMapped]
-        public MultiSelectList UserEmailKPIList { get; set; }
-        [NotMapped]
-        public MultiSelectList UserEmailCCList { get; set; }
+        //[NotMapped]
+        //public MultiSelectList UserEmailKPIList { get; set; }
+        //[NotMapped]
+        //public MultiSelectList UserEmailCCList { get; set; }
     }
 }
