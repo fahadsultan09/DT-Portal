@@ -30,6 +30,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderBLL _OrderBLL;
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly OrderValueBLL _OrderValueBLL;
+        private readonly ProductMasterBLL _ProductMasterBLL;
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly DistributorLicenseBLL _DistributorLicenseBLL;
         private readonly LicenseControlBLL _licenseControlBLL;
@@ -41,6 +42,7 @@ namespace DistributorPortal.Controllers
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
+            _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
             _productDetailBLL = new ProductDetailBLL(_unitOfWork);
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _OrderValueBLL = new OrderValueBLL(_unitOfWork);
@@ -204,7 +206,7 @@ namespace DistributorPortal.Controllers
                             product.SAPOrderNumber = item.SAPOrderNo;
                             product.OrderProductStatus = OrderStatus.NotYetProcess;
                             _orderDetailBLL.Update(product);
-                        }                        
+                        }
                     }
                 }
                 var order = _OrderBLL.GetOrderMasterById(OrderId);
@@ -395,21 +397,28 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                ProductMaster productMaster = new ProductMaster();
                 ProductDetail Product = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
-                List<LicenseControl> LicenseControlList = _licenseControlBLL.Where(e => e.IsActive == true && e.IsDeleted == false).ToList();
-                List<DistributorLicense> DistributorLicenseList = _DistributorLicenseBLL.Where(x => x.Status == LicenseStatus.Verified);
+                List<LicenseControl> LicenseControlList = _licenseControlBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.IsMandatory == true).ToList();
+                List<DistributorLicense> DistributorLicenseList = _DistributorLicenseBLL.Where(x => x.Status == LicenseStatus.Verified && x.DistributorId == SessionHelper.LoginUser.DistributorId);
 
+                if (LicenseControlList.Count() == 0 || LicenseControlList is null)
+                {
+                    jsonResponse.Status = true;
+                    return Json(new { data = jsonResponse });
+                }
                 if (Product.LicenseControlId is null)
                 {
                     var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
-                    var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault() ?? new DistributorLicense();
+                    var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
 
                     foreach (var item in LicenseControlList)
                     {
                         if (item.IsMandatory)
                         {
-                            var result = DistributorLicenseList.Where(x => x.LicenseId == item.Id && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
-                            if (result is null)
+                            var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault(); 
+
+                            if (resultChallan is null && License == null)
                             {
                                 jsonResponse.Status = false;
                                 jsonResponse.Message = "Add verified license or challan before placing the order.";
@@ -417,7 +426,7 @@ namespace DistributorPortal.Controllers
                             }
                         }
                     }
-                    var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == License.LicenseId);
+                    var LicenseControl = LicenseControlList.FirstOrDefault(x => License != null && x.Id == License.LicenseId);
 
                     if (Challan != null)
                     {
@@ -447,6 +456,7 @@ namespace DistributorPortal.Controllers
                 {
                     var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var ProductLicense = LicenseControlList.Select(x => x.Id).Contains((int)Product.LicenseControlId);
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == Product.LicenseControlId);
 
                     foreach (var item in LicenseControlList)
@@ -491,7 +501,12 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = "Add verified license or challan before placing the order.";
                     }
                 }
-                return Json(new { data = jsonResponse });
+
+                if (jsonResponse.Status)
+                {
+                    productMaster = _ProductMasterBLL.GetProductMasterById(ProductMasterId);
+                }
+                return Json(new { data = jsonResponse, productMaster = productMaster });
             }
             catch (Exception ex)
             {

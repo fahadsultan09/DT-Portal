@@ -51,10 +51,12 @@
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.CreatedName</td>
                                     <td>@item.CreatedDate</td>
-                                    
                                     <td>
                                         <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a onclick="Print('/Reports/Print?', '@ApplicationPages.OrderReturn', '@EncryptDecrypt.Encrypt(item.Id.ToString())', '@item.OrderReturnReasonId');" class="btn btn-success btn-sm">
+                                            <i class="fas fa-print"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -82,6 +84,44 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTR">
+    <div class="modal-dialog">
+        <form asp-controller="Reports"
+              asp-action="Print"
+              id="frmPrint"
+              method="get"
+              target="_blank"
+              autocomplete="off">
+            <input type="hidden" value="@ApplicationPages.OrderReturn" name="ApplicationPage" id="ApplicationPage" />
+            <input type="hidden" value="" name="DPID" id="DPID" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="text-center">
+                        <h6>Enter TR number for both location to print return order</h6>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" name="SiteTRNo" id="SiteTRNo" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Site TR No" autocomplete="off" />
+                        <span id="errorSiteTRNo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="KorangiTRNo" id="KorangiTRNo" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Korangi TR No" autocomplete="off" />
+                        <span id="errorKorangiTRNo" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="PrintIt" onclick="PrintForm();" class="btn btn-primary" formtarget="_blank">Print</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -114,6 +154,22 @@
                 }
             });
         });
+
     });
+
+    function PrintForm() {
+
+        $('.text-danger').empty();
+        if ($('#SiteTRNo').val() == "") {
+            $('#errorSiteTRNo').text('TR No is required.');
+            return false;
+        }
+        if ($('#KorangiTRNo').val() == "") {
+            $('#errorKorangiTRNo').text('TR No is required.');
+            return false;
+        }
+        var form = event.target.form;
+        $(form).submit();
+    }
 
 </script>

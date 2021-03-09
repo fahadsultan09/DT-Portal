@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Models.ApplicationContext;
+using Rotativa.AspNetCore;
 using SapNwRfc.Pooling;
 using System;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace DistributorPortal
             return builder.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IHostingEnvironment env2)
         {
             app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
             if (env.IsDevelopment())
@@ -117,6 +118,7 @@ namespace DistributorPortal
             {
                 route.MapRoute("default", "{Controller=Login}/{Action=Index}/{Id?}");
             });
+            RotativaConfiguration.Setup(env2, "Rotativa");
         }
     }
 }

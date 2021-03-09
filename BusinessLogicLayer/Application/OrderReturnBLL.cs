@@ -153,6 +153,7 @@ namespace BusinessLogicLayer.Application
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
+                             OrderReturnReasonId = x.OrderReturnReasonId,
                              CreatedBy = x.CreatedBy,
                              CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,

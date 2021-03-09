@@ -68,7 +68,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -79,9 +79,9 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult View(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
-            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();           
+            SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("View", BindOrderReturnMaster(id));
         }
         [HttpPost]
@@ -147,7 +147,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Approve(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Approve", BindOrderReturnMaster(id));
@@ -165,7 +165,7 @@ namespace DistributorPortal.Controllers
                 var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
                 if (master != null)
                 {
-                    
+
                 }
                 foreach (var item in model.OrderReturnDetail)
                 {
@@ -191,7 +191,7 @@ namespace DistributorPortal.Controllers
                             product.ReceivedBy = SessionHelper.LoginUser.Id;
                             product.ReceivedDate = DateTime.Now;
                             _OrderReturnDetailBLL.Update(product);
-                        }                        
+                        }
                     }
                 }
                 if (_OrderReturnDetailBLL.Where(e => e.ReturnOrderNumber == null && e.OrderReturnId == model.Id).ToList().Count > 0)
@@ -201,7 +201,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     master.Status = OrderReturnStatus.Received;
-                }                
+                }
                 _OrderReturnBLL.Update(master);
                 _unitOfWork.Commit();
                 jsonResponse.Status = true;
@@ -235,8 +235,8 @@ namespace DistributorPortal.Controllers
             List<OrderReturnMaster> list = new List<OrderReturnMaster>();
             if (SessionHelper.LoginUser.IsStoreKeeper)
             {
-                List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Select(x=>x.ProductMasterId).Distinct().ToList();
-                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e=> e.OrderReturnId).Select(x=> new OrderReturnMaster 
+                List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Select(x => x.ProductMasterId).Distinct().ToList();
+                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e => e.OrderReturnId).Select(x => new OrderReturnMaster
                 {
                     Id = x.OrderReturnMaster.Id,
                     Distributor = x.OrderReturnMaster.Distributor,
@@ -275,7 +275,7 @@ namespace DistributorPortal.Controllers
                     ProductMaster productMaster = allproducts.FirstOrDefault(e => e.Id == item.ProductId);
                     ProductDetail productDetail = allproductDetail.FirstOrDefault(e => e.ProductMasterId == item.ProductId);
                     if (productMaster != null && productDetail != null)
-                    {                        
+                    {
                         var list = SessionHelper.AddReturnProduct;
                         detail.BatchNo = item.BatchNo;
                         detail.MRP = item.MRP;
@@ -329,7 +329,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID)
         {
-            int id=0;
+            int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddReturnProduct;
             var item = list.FirstOrDefault(e => e.ProductId == id);
@@ -339,6 +339,13 @@ namespace DistributorPortal.Controllers
             }
             SessionHelper.AddReturnProduct = list;
             return PartialView("ProductGrid", SessionHelper.AddReturnProduct.OrderByDescending(e => e.OrderReturnNumber));
+        }
+        public JsonResult GetTRNoById(string DPID)
+        {
+            int id = 0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            var TRNoPlantLocation = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id).Select(x => new { TRNo = x.TRNo, PlantLocationId = x.PlantLocationId }).Distinct().ToArray();
+            return Json(new { data = TRNoPlantLocation });
         }
     }
 }

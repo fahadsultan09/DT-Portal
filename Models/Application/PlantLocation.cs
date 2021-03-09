@@ -7,5 +7,7 @@ namespace Models.Application
     {
         [StringLength(255)]
         public string PlantLocationName { get; set; }
+        [StringLength(255)]
+        public string Address { get; set; }
     }
 }

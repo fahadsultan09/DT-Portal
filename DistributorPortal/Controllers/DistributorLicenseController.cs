@@ -72,7 +72,7 @@ namespace DistributorPortal.Controllers
                 license.LicenseControl = new LicenseControl { LicenseName = licenseControl.FirstOrDefault(x => x.Id == license.LicenseId).LicenseName };
                 distributorLicensesHistory.Add(license);
             }
-            ViewBag.distributorLicensesHistory = distributorLicensesHistory.ToList();
+            ViewBag.distributorLicensesHistory = distributorLicensesHistory.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             return View(model);
         }
         [HttpPost]
@@ -82,7 +82,7 @@ namespace DistributorPortal.Controllers
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("LicenseFolderPath").Value;
             try
             {
-                if (model.Where(x=>x.File is null).Count() == model.Count())
+                if (model.Where(x => x.File is null).Count() == model.Count())
                 {
                     jsonResponse.Status = false;
                     jsonResponse.Message = "Add license";
@@ -94,6 +94,7 @@ namespace DistributorPortal.Controllers
                     {
                         ModelState.Remove("[" + i + "].Type");
                         ModelState.Remove("[" + i + "].RequestType");
+                        ModelState.Remove("[" + i + "].FormNoId");
                     }
                 }
                 if (!ModelState.IsValid)
@@ -138,7 +139,7 @@ namespace DistributorPortal.Controllers
 
                         }
                     }
-                    
+
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;

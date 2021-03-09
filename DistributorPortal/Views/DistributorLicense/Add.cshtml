@@ -1,8 +1,11 @@
 ﻿@model List<DistributorLicense>
+@inject IUnitOfWork unitOfWork
 @{
+    List<LicenseForm> LicenseFormList = new LicenseFormBLL(unitOfWork).GetAllLicenseForm();
     ViewBag.Title = "Add License | Distributor Portal";
     var j = 0;
 }
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -19,7 +22,6 @@
             </div>
         </div>
     </section>
-
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -30,24 +32,35 @@
                         </div>
                         <div class="card-body" style="padding: 10px 0px 0px 20px;">
                             <div class="row">
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                     <h6>Name:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 m-0 p-0">
                                     <span><strong>@SessionHelper.LoginUser.Distributor.DistributorName</strong></span>
                                 </div>
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                     <h6>City:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                     <span><strong>@SessionHelper.LoginUser.Distributor.City</strong></span>
                                 </div>
-
-                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                     <h6>Code:</h6>
                                 </div>
-                                <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                     <span><strong>@SessionHelper.LoginUser.Distributor.DistributorSAPCode</strong></span>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
+                                    <h6>CNIC:</h6>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 m-0 p-0">
+                                    <span><strong>@SessionHelper.LoginUser.Distributor.CNIC</strong></span>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
+                                    <h6>NTN:</h6>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
+                                    <span><strong>@SessionHelper.LoginUser.Distributor.NTN</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -67,14 +80,17 @@
                             <div class="card-header">
                                 <h3 class="card-title">License</h3>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive-sm">
-                                    <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+                            <div class="card-body m-0 p-0">
+                                <div class="table-responsive scrollmenu">
+                                    <table id="example2" class="table table-bordered table-condensed table-hover table-striped" style="width: 125%;">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">License</th>
                                                 <th class="text-center">Type</th>
                                                 <th class="text-center">Request Type</th>
+                                                <th class="text-center">License No</th>
+                                                <th class="text-center">Issuing Authority</th>
+                                                <th class="text-center">Form No</th>
                                                 <th class="text-center">Attachment</th>
                                                 <th class="text-center">Issue Date</th>
                                                 <th class="text-center">Expiry</th>
@@ -87,69 +103,87 @@
                                                 <tr>
                                                     @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].Type == LicenseType.Challan)
                                                     {
-                                                        <td width="10%">
+                                                        <td>
                                                             <input type="hidden" asp-for="@Model[j].LicenseId" value="@Model[i].LicenseControl.Id" />
                                                             <input type="hidden" asp-for="@Model[j].Id" value="@Model[i].Id" />
                                                             @Model[i].LicenseControl.LicenseName
                                                         </td>
-                                                        <td width="15%">
+                                                        <td>
                                                             <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
                                                                 <option readonly>--Select option--</option>
                                                             </select>
                                                             <span asp-validation-for="@Model[j].Type" class="text-danger"></span>
                                                         </td>
-                                                        <td width="15%">
-                                                            <select class="form-control select2" asp-for="@Model[j].RequestType" asp-items="Enum.GetValues(typeof(LicenseRequestType)).Cast<LicenseRequestType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
+                                                        <td>
+                                                            <select style="width: 170px;" class="form-control select2" asp-for="@Model[j].RequestType" asp-items="Enum.GetValues(typeof(LicenseRequestType)).Cast<LicenseRequestType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
                                                                 <option readonly>--Select option--</option>
                                                             </select>
                                                             <span asp-validation-for="@Model[j].RequestType" class="text-danger"></span>
                                                         </td>
-                                                        <td width="20%">
-                                                            <div class="form-group">
-                                                                <div class="custom-file">
-                                                                    <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, image/*" />
-                                                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                                                </div>
+                                                        <td>
+                                                            <input type="text" asp-for="@Model[j].LicenseNo" value="@Model[j].LicenseNo" class="form-control" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" asp-for="@Model[j].IssuingAuthority" value="@Model[j].IssuingAuthority" class="form-control" />
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control select2" asp-for="@Model[j].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[j].FormNoId))">
+                                                                <option readonly>--Select option--</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <div class="custom-file">
+                                                                <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                                <label class="custom-file-label" for="customFile">Choose file</label>
                                                                 <span class="caption">
                                                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(!string.IsNullOrEmpty(Model[j].Attachment) ? Model[j].Attachment : "")" target="_blank">@(Model[j].Attachment != null ? Model[j].Attachment.Split('_')[1] : "")</a>
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td width="15%">
+                                                        <td>
                                                             <div class="input-group date" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : @Model[j].IssueDate.ToString("dd/MM/yyyy"))" id="IssueDate@(j)" class="form-control datepicker" />
+                                                                <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].IssueDate.ToString("dd/MMM/yyyy"))" id="IssueDate@(j)" class="form-control datepicker" />
                                                                 <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td width="15%">
+                                                        <td>
                                                             <div class="input-group date" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : @Model[j].Expiry.ToString("dd/MM/yyyy"))" id="Expiry@(j)" class="form-control datepicker" />
+                                                                <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].Expiry.ToString("dd/MMM/yyyy"))" id="Expiry@(j)" class="form-control datepicker" />
                                                                 <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td width="10%">
+                                                        <td>
                                                             @Model[i].Status
                                                         </td>
                                                         j++;
                                                     }
                                                     else
                                                     {
-                                                        <td width="15%">
+                                                        <td>
                                                             <input type="hidden" asp-for="@Model[j].Type" value="@Model[j].Type" />
                                                             <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
                                                             @Model[i].LicenseControl.LicenseName
                                                         </td>
-                                                        <td width="15%">
+                                                        <td>
                                                             @Model[i].Type
                                                         </td>
-                                                        <td width="15%">
+                                                        <td>
                                                             @Model[i].RequestType
                                                         </td>
-                                                        <td width="20%">
+                                                        <td>
+                                                            @Model[i].LicenseNo
+                                                        </td>
+                                                        <td>
+                                                            @Model[i].IssuingAuthority
+                                                        </td>
+                                                        <td>
+                                                            @Model[i].FormNoId
+                                                        </td>
+                                                        <td>
                                                             <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>
                                                         </td>
                                                         <td>
@@ -158,7 +192,7 @@
                                                         <td>
                                                             @Model[i].Expiry.ToShortDateString()
                                                         </td>
-                                                        <td width="10%">
+                                                        <td>
                                                             @Model[i].Status
                                                         </td>
                                                         j++;
@@ -166,7 +200,7 @@
                                                 </tr>
                                             }
                                             <tr>
-                                                <td colspan="7"><button class="btn btn-info fa-pull-right" type="submit">Save</button></td>
+                                                <td colspan="10"><button class="btn btn-info fa-pull-right" type="submit">Save</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -200,16 +234,16 @@
                                             @foreach (var item in ViewBag.distributorLicensesHistory)
                                             {
                                                 <tr>
-                                                    <td width="15%">
+                                                    <td>
                                                         @(item.LicenseControl is null ? "" : @item.LicenseControl.LicenseName)
                                                     </td>
-                                                    <td width="15%">
+                                                    <td>
                                                         @item.Type
                                                     </td>
-                                                    <td width="15%">
+                                                    <td>
                                                         @item.RequestType
                                                     </td>
-                                                    <td width="20%">
+                                                    <td>
                                                         <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ?  item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
                                                     </td>
                                                     <td>
@@ -306,8 +340,7 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
-            "order": [],
-
+            "order": []
         });
     });
 </script>

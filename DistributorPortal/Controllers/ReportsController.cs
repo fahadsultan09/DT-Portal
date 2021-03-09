@@ -1,10 +1,14 @@
 ﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
+using Rotativa.AspNetCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utility;
@@ -12,7 +16,7 @@ using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
-    public class ReportsController : Controller
+    public class ReportsController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderBLL _OrderBLL;
@@ -56,9 +60,14 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpGet]
-        public ActionResult GetOrderDetailList(int OrderId)
+        public ActionResult GetOrderDetailList(string DPID)
         {
-            var Detail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(OrderId);
+            int id = 0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
+            var Detail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(id);
             return PartialView("OrderDetailList", Detail);
         }
         #endregion
@@ -88,7 +97,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public ActionResult GetOrderReturnDetailList(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -159,6 +168,71 @@ namespace DistributorPortal.Controllers
             else
             {
                 return PartialView("ComplaintList", new Complaint());
+            }
+        }
+        #endregion
+
+        #region Common
+        public IActionResult Print(ApplicationPages ApplicationPage, string DPID, string SiteTRNo, string KorangiTRNo)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                List<OrderReturnDetail> List = new List<OrderReturnDetail>();
+                int id = 0;
+                if (!string.IsNullOrEmpty(DPID))
+                {
+                    int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                }
+                switch (ApplicationPage)
+                {
+                    case ApplicationPages.Order:
+
+                        return new ViewAsPdf("PrintOrder", GetOrderDetailList(DPID))
+                        {
+                            PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,
+                        };
+
+                    case ApplicationPages.OrderReturn:
+                        if (!string.IsNullOrEmpty(SiteTRNo))
+                        {
+                            List<OrderReturnDetail> OrderReturnDetailList = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id && x.PlantLocationId == 1).ToList();
+                            OrderReturnDetailList.ForEach(x => x.TRNo = SiteTRNo);
+                            _OrderReturnDetailBLL.UpdateRange(OrderReturnDetailList);
+                            List.AddRange(_OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id && x.PlantLocationId == 1).ToList());
+                        }
+                        if (!string.IsNullOrEmpty(KorangiTRNo))
+                        {
+                            List<OrderReturnDetail> OrderReturnDetailList = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id && x.PlantLocationId == 2).ToList();
+                            OrderReturnDetailList.ForEach(x => x.TRNo = KorangiTRNo);
+                            _OrderReturnDetailBLL.UpdateRange(OrderReturnDetailList);
+                            List.AddRange(_OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id && x.PlantLocationId == 2).ToList());
+                        }
+                        if (string.IsNullOrEmpty(KorangiTRNo) && string.IsNullOrEmpty(SiteTRNo))
+                        {
+                            List = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id).ToList();
+                        }
+                        //return View("PrintOrderReturn", _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id));
+                        return new ViewAsPdf("PrintOrderReturn", List)
+                        {
+                            PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,
+                            CustomSwitches = "--footer-left \" Use Controlled Copy Only \" --footer-center \" [page]/[toPage] \" --footer-right \" For Internal Use Only \"" +
+                            " --footer-line --footer-font-size \"12\" --footer-spacing 1 --footer-font-name \"Segoe UI\""
+                            //CustomSwitches = "--footer-center \" Created Date: " + DateTime.Now.Date.ToString("dd/MM/yyyy") + "  Page: [page]/[toPage]\"" + " --footer-line --footer-font-size \"12\" --footer-spacing 1 --footer-font-name \"Segoe UI\""
+                        };
+
+                }
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+
+            }
+            catch (Exception ex)
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return Json(new { data = jsonResponse });
             }
         }
         #endregion

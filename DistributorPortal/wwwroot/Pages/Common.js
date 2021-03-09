@@ -53,7 +53,7 @@ function OnSuccess(data) {
         })
     }
     Ladda.create($("button[type=submit]", this)[0]).stop();
-    $("body").removeClass("loading"); 
+    $("body").removeClass("loading");
 }
 
 function Complete() {
@@ -140,7 +140,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                 }
                 if (value.length > 255) {
                     return 'You have exceeded 255 characters';
-                } 
+                }
             }
         }).then(function (result) {
 
@@ -190,7 +190,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
 }
 
 function inWords(num) {
-    
+
     if ((num = num.toString()).length > 9) return 'overflow';
     n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
     if (!n) return; var str = '';
@@ -225,4 +225,39 @@ function isEmailValidate(email) {
 
     var re = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+}
+
+//Print Report
+function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
+
+    $('#DPID').val(DPID);
+
+    if (Reason == 3) {
+        window.open(window.location.origin + RedirectToUrl + "ApplicationPage=" + ApplicationPage + "&DPID=" + DPID, '_blank');
+    }
+    else {
+        $.post(window.location.origin + "/OrderReturn/GetTRNoById", { DPID: DPID }, function (data) {
+
+            if (data) {
+                if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 1) != undefined) {
+                    $('#SiteTRNo').val(data.data.find(x => x.PlantLocationId == 1).TRNo);
+                }
+                else {
+                    debugger
+                    $('#SiteTRNo').remove();
+                }
+                if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 2) != undefined) {
+                    $('#KorangiTRNo').val(data.data.find(x => x.PlantLocationId == 2).TRNo);
+                }
+                else {
+                    debugger
+                    $('#KorangiTRNo').remove();
+                }
+                $('#modalTR').modal('toggle');
+                $('#modalTR').modal('show');
+            } else {
+                Toast.fire({ icon: 'error', title: 'Error occured.' });
+            }
+        });
+    }
 }

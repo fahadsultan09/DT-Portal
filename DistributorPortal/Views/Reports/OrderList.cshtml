@@ -59,6 +59,9 @@
                                         <a asp-controller="Order" asp-action="OrderView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        <a  onclick="Print('/Order/Print?', '@ApplicationPages.Order', '@EncryptDecrypt.Encrypt(item.Id.ToString())');" class="btn btn-success btn-sm">
+                                            <i class="fas fa-print"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             }

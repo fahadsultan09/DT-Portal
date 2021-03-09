@@ -57,5 +57,6 @@ namespace Models.ApplicationContext
         public DbSet<PlantLocation> PlantLocation { get; set; }
         public DbSet<ComplaintUserEmail> ComplaintUserEmail { get; set; }
         public DbSet<EmailLog> EmailLog { get; set; }
+        public DbSet<LicenseForm> LicenseForm { get; set; }
     }
 }

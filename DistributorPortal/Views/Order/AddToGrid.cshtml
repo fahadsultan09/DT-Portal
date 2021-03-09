@@ -4,15 +4,15 @@
     <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
         <thead>
             <tr>
-                <th width="8%" >Code</th>
+                <th width="8%">Code</th>
                 <th width="15%">Product Name</th>
                 <th width="12%">Pack Size</th>
-                <th width="5%" >Quantity</th>
+                <th width="7%">Quantity</th>
                 <th width="12%">Carton Size</th>
-                <th width="5%" >Rate</th>
-                <th width="5%" >Discount</th>
+                <th width="5%">Rate</th>
+                <th width="5%">Discount</th>
                 <th width="20%">Quantity in Cartons</th>
-                <th width="5%" >Total</th>
+                <th width="5%">Total</th>
                 <th width="10%">Supplies</th>
                 <th width="10%">Company</th>
                 <th>Action</th>
@@ -22,18 +22,20 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td width="8%" >@item.ProductMaster.SAPProductCode</td>
+                    <td width="8%">@item.ProductMaster.SAPProductCode</td>
                     <td width="15%">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
                     <td width="12%">@item.ProductMaster.PackSize</td>
-                    <td width="5%" >@item.ProductMaster.Quantity</td>
+                    <td width="7%">
+                        <input type="number" asp-for="@item.ProductMaster.Quantity" value="@item.ProductMaster.Quantity" min="0" oninput="validity.valid||(value='');" class="form-control ApproveQuantity numeric" _ProductId="@item.ProductMaster.Id" />
+                    </td>
                     <td width="12%">@item.ProductMaster.CartonSize</td>
-                    <td width="5%" >@item.ProductMaster.Rate</td>
-                    <td width="5%" >@item.ProductMaster.Discount %</td>
+                    <td width="5%">@item.ProductMaster.Rate</td>
+                    <td width="5%">@item.ProductMaster.Discount %</td>
                     <td width="20%">@(Math.Ceiling(item.ProductMaster.Quantity / item.ProductMaster.CartonSize))</td>
-                    <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
+                    <td width="5%">@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
                     <td width="10%">@item.WTaxRate %</td>
                     <td width="10%">@item.Company.CompanyName</td>
-                    <td >
+                    <td>
                         <a asp-action="Delete"
                            asp-controller="Order"
                            asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
@@ -58,7 +60,24 @@
             "scrollX": true,
             "scrollY": true,
             "sScrollXInner": "130%"
-        });        
+        });
+    });
+
+    $('.ApproveQuantity').bind('keyup mouseup',function (data) {
+
+        var Quantity = data.currentTarget.value;
+        var Product = data.currentTarget.getAttribute("_ProductId");
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ApprovedOrderValue", "Order")',
+            data: { 'Quantity': Quantity, 'Product': Product, 'Order': '' },
+            cache: false,
+            success: function (response) {
+                $("#UpdateOrderValueId").html(response);
+            }
+        });
+
     });
 </script>
 

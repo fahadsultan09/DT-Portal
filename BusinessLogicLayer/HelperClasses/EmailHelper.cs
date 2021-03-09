@@ -45,6 +45,7 @@ namespace BusinessLogicLayer.HelperClasses
                 smtp.Port = Port;
 
                 emailLog.ToEmail = To;
+                emailLog.CCEmail = CC;
                 emailLog.Subject = Subject;
                 emailLog.Message = Body;
                 emailLog.IsSend = true;
@@ -56,6 +57,7 @@ namespace BusinessLogicLayer.HelperClasses
             catch (Exception ex)
             {
                 emailLog.ToEmail = To;
+                emailLog.CCEmail = CC;
                 emailLog.Subject = Subject;
                 emailLog.Message = Body;
                 emailLog.IsSend = false;

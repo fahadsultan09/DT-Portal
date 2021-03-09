@@ -15,10 +15,7 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">Complaint Sub Category List</h2>
-                <form asp-controller="ComplaintSubCategory"
-                      asp-action="Add"
-                      id="frmAdd"
-                      method="GET">
+                <form asp-controller="ComplaintSubCategory" asp-action="Add" id="frmAdd" method="GET">
                     <button type="submit" class="btn btn-info float-right">Add</button>
                 </form>
             </div>
@@ -49,10 +46,7 @@
                                     {<i class="fa fa-times text-danger"></i>}
                                 </td>
                                 <td>
-                                    <a data-ajax-update="#divform"
-                                       data-ajax="true"
-                                       data-ajax-method="GET"
-                                       asp-controller="ComplaintSubCategory" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                    <a asp-controller="ComplaintSubCategory" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                     <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">

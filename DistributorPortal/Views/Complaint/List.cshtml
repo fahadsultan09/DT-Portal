@@ -29,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Where(x => SessionHelper.LoginUser.IsDistributor ? x.Status != ComplaintStatus.Resolved : true))
                         {
                             <tr>
                                 <td>@string.Format("{0:1000000000}", item.Id)</td>

@@ -15,22 +15,27 @@
 <div class="content-wrapper">
     <section class="content-header" disabled>
         <div class="container-fluid">
-            <div class="card card-default">
-                <div class="card-header">
-                    <h3 class="card-title">Complaint Sub Category</h3>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Complaint Sub Category</h1>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form asp-controller="ComplaintSubCategory"
-                                  asp-action="SaveEdit"
-                                  id="frmComplaintSubCategory"
-                                  data-ajax-update="#divform"
-                                  data-ajax-begin="Begin"
-                                  data-ajax-success="OnSuccess"
-                                  data-ajax-complete="Complete"
-                                  data-ajax="true"
-                                  data-ajax-method="POST">
+            </div>
+            <section class="content">
+                <div class="container-fluid" id="divform">
+                    <form asp-controller="ComplaintSubCategory"
+                          asp-action="SaveEdit"
+                          id="frmComplaintSubCategory"
+                          data-ajax-update="#divform"
+                          data-ajax-begin="Begin"
+                          data-ajax-success="OnSuccess"
+                          data-ajax-complete="Complete"
+                          data-ajax="true"
+                          data-ajax-method="POST">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <h3 class="card-title">License</h3>
+                            </div>
+                            <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="ibox ">
@@ -64,9 +69,6 @@
                                                 <div class="form-group row">
                                                     <label class="col-lg-3 col-form-label">CC Emails</label>
                                                     <div class="col-lg-9">
-                                                        @*<select asp-for="UserEmailCC" asp-items="@(Model.UserEmailCCList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
-                                                                <option readonly disabled>--Please Select--</option>
-                                                            </select>*@
                                                         <input type="text" name="UserEmailCC" id="UserEmailCC" value="@CCEmail" placeholder="Email" class="form-control email">
                                                         <span id="errorUserEmailCC" class="text-danger"></span>
                                                     </div>
@@ -99,20 +101,17 @@
                                                 <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
                                                     @(Model.Id > 0 ? "Update" : "Add")
                                                 </button>
-                                                <a data-ajax-update="#divform"
-                                                   data-ajax="true"
-                                                   data-ajax-method="GET"
-                                                   asp-controller="ComplaintSubCategory" asp-action="List"
+                                                <a asp-controller="ComplaintSubCategory" asp-action="Index"
                                                    class="btn btn-sm btn-default float-right mr-3">Back</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </div>
+            </section>
         </div>
     </section>
 </div>

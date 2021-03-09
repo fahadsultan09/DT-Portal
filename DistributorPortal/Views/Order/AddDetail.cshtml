@@ -161,42 +161,42 @@
                                           data-ajax-complete="UpdateOrderValue"
                                           data-ajax-method="POST">
                                         <div class="form-group row">
-                                            <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                                 <h6>Product</h6>
                                             </div>
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 m-0 p-0">
                                                 <select asp-items="@(new SelectList(product, "Value", "Text"))" class="js-example-basic-single form-control" name="Product" id="ddlProduct">
                                                     <option value="">--Select Product--</option>
                                                 </select>
                                                 <br />
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                                                 <h6>Pending Quantity</h6>
                                             </div>
-                                            <div class="col-lg-1 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                                 <div class="col-lg-12">
                                                     <input type="text" name="PendingQuantity" id="PendingQuantity" class="form-control" readonly="readonly" />
                                                 </div>
                                             </div>
-                                            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 m-0 p-0">
                                                 <h6>Current Inventory Status</h6>
                                             </div>
-                                            <div class="col-lg-1 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                                 <div class="col-lg-12">
                                                     <input type="text" name="CurrentInventoryStatus" id="CurrentInventoryStatus" class="form-control" readonly="readonly" />
                                                 </div>
                                             </div>
-                                            <div class="col-lg-1 col-md-3 col-sm-12 col-xs-12">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 m-0 p-0">
                                                 <h6>Quantity</h6>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 m-0 p-0">
                                                 <div class="col-lg-12">
-                                                    <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" style="height: calc(2.25rem + -4px)" class="form-control" />
+                                                    <input type="number" name="Quantity" id="Quantity" min="0" oninput="validity.valid||(value='');" placeholder="Enter Quantity" style="height: calc(2.25rem + -4px)" class="form-control" />
                                                     <span id="ErrorQuantity" class="text-danger"></span>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-1 col-md-1 col-sm-3 col-xs-3">
+                                            <div class="col-lg-1 col-md-1 col-sm-3 col-xs-3 m-0 p-0">
                                                 <h4 class="col-lg-12 col-form-h4"></h4>
                                                 <button type="submit" id="AddProducts" onclick="return CheckQuantity();" style="margin-top: -10px" class="ladda-button btn btn-info float-right">
                                                     Add
@@ -204,8 +204,38 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <table id="example3" class="table table-bordered table-hover table-striped table-sm d-none text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <h6>Pack Size</h6>
+                                                </td>
+                                                <td>
+                                                    <label id="PackSize"></label>
+                                                </td>
+                                                <td>
+                                                    <h6>Carton Size</h6>
+                                                </td>
+                                                <td>
+                                                    <label id="CartonSize"></label>
+                                                </td>
+                                                <td>
+                                                    <h6>Rate</h6>
+                                                </td>
+                                                <td>
+                                                    <label id="Rate"></label>
+                                                </td>
+                                                <td>
+                                                    <h6>Discount</h6>
+                                                </td>
+                                                <td>
+                                                    <label id="Discount"></label>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     <div id="addToGrid">
-                                         <partial name="AddToGrid" model="Model.productDetails" />
+                                        <partial name="AddToGrid" model="Model.productDetails" />
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +247,7 @@
     </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>    
+<script>
     var SAPOrderPendingQuantity = [];
 
     function obj(Id, PendingQuantity) {
@@ -239,38 +269,47 @@
 
     $('body').on('change', '#ddlProduct', function () {
 
-            if ($('#ddlProduct').val() != "") {
+        if ($('#ddlProduct').val() != "") {
             $('#ErrorProductName').empty();
+            $('#ProductMaster').addClass('d-none');
+
             $.ajax({
-                    type: "GET",
+                type: "GET",
                 url: "/Order/CheckProductLicense",
                 contentType: "application/json",
                 dataType: "json",
                 data: { ProductMasterId: $("#ddlProduct").val() },
                 async: false,
                 success: function (response) {
-                        if (response.data.Status == false) {
+                    if (response.data.Status == false) {
                         $('#PendingQuantity').val('');
                         $('#ErrorProductName').text(response.data.Message);
                         $('#ddlProduct').val('');
                         $('#ddlProduct').change();
-                        } else {
-                            $('#ErrorProductName').text(response.data.Message);
-                            if (SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()) == undefined) {
+                    } else {
+                        $('#ErrorProductName').text(response.data.Message);
+                        if (SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()) == undefined) {
                             $('#PendingQuantity').val('0');
-                            } else {
+                        } else {
                             $('#PendingQuantity').val(Math.ceil(SAPOrderPendingQuantity.find(x => x.Id == $("#ddlProduct").val()).PendingQuantity));
-                            }
                         }
-                    },
+                        if (response.productMaster) {
+                            $('#PackSize').text(response.productMaster.PackSize);
+                            $('#CartonSize').text(response.productMaster.CartonSize);
+                            $('#Rate').text(response.productMaster.Rate);
+                            $('#Discount').text(response.productMaster.Discount);
+                            $('#example3').removeClass('d-none');
+                        }
+                    }
+                },
             });
-            }
-        });
+        }
+    });
 
-        var ProductArr = [];
-        var response = [];
+    var ProductArr = [];
+    var response = [];
 
-        function CheckQuantity() {
+    function CheckQuantity() {
         $('#ErrorQuantity').empty();
         $('#ErrorProductName').empty();
             var qty = $('#Quantity').val();
@@ -296,24 +335,24 @@
             var HealthTek = $('#HealthTekTotalOrderValues').val();
             var Phytek = $('#PhytekTotalOrderValues').val();
             var total = parseFloat(sami) + parseFloat(HealthTek) + parseFloat(Phytek);
-        $('#TotalValue').text(total);
+            $('#TotalValue').text(total);
         }
 
         function SubmitForm() {
-            debugger;
+
             Swal.fire({
                 title: 'Are you sure?',
-            html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Order Place!'
+                html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Order Place!'
             }).then((result) => {
-            if (result.value == true) {
-                $('#frmOrderMaster').submit();
-            }
-        })
+                if (result.value == true) {
+                    $('#frmOrderMaster').submit();
+                }
+            });
         return false;
     }
 
@@ -323,6 +362,9 @@
         Ladda.create($("#btnDraft", this)[0]).start();
     }
     $(document).ready(function () {
+
+        $("#example3").DataTable({});
+
         $('#DI').click();
         $('#OV').click();
         $('.js-example-basic-single').select2();
@@ -346,13 +388,13 @@
             Toast.fire({
                 icon: 'success',
                 title: data.data.Message
-            })
+            });
         }
         else {
             Toast.fire({
                 icon: 'error',
                 title: data.data.Message
-            })
+            });
         }
     }
 </script>

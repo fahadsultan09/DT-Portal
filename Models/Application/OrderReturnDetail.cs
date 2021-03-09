@@ -16,6 +16,7 @@ namespace Models.Application
         public int PlantLocationId { get; set; }
         [ForeignKey("PlantLocationId")]
         public virtual PlantLocation PlantLocation { get; set; }
+        public string TRNo { get; set; }
         public int Quantity { get; set; }
         public int ReceivedQty { get; set; }
         public int? ReceivedBy { get; set; }
