@@ -28,11 +28,11 @@
                     <td width="7%">
                         <input type="number" asp-for="@item.ProductMaster.Quantity" value="@item.ProductMaster.Quantity" min="0" oninput="validity.valid||(value='');" class="form-control ApproveQuantity numeric" _ProductId="@item.ProductMaster.Id" />
                     </td>
-                    <td width="12%">@item.ProductMaster.CartonSize</td>
-                    <td width="5%">@item.ProductMaster.Rate</td>
-                    <td width="5%">@item.ProductMaster.Discount %</td>
-                    <td width="20%">@(Math.Ceiling(item.ProductMaster.Quantity / item.ProductMaster.CartonSize))</td>
-                    <td width="5%">@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
+                    <td width="12%"><span id="CurtonSize">@item.ProductMaster.CartonSize</span></td>
+                    <td width="5%" >@item.ProductMaster.Rate</td>
+                    <td width="5%" >@item.ProductMaster.Discount %</td>
+                    <td width="20%"><span id="CurtonQty">@(Math.Ceiling(item.ProductMaster.Quantity / item.ProductMaster.CartonSize))</span></td>
+                    <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
                     <td width="10%">@item.WTaxRate %</td>
                     <td width="10%">@item.Company.CompanyName</td>
                     <td>
@@ -61,6 +61,48 @@
             "scrollY": true,
             "sScrollXInner": "130%"
         });
+
+
+        $('.ChangeQuantity').bind('keyup mouseup',function (data) {
+            debugger;
+            var intmaxvalue = @Int32.MaxValue;
+            var Quantity = data.currentTarget.value;
+            var Product = data.currentTarget.getAttribute("_ProductId");
+            if (Quantity > intmaxvalue) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "Quantity cannot be greater than " + intmaxvalue
+                });
+            }
+            else {
+                var size = parseInt($(this).parent('td').parent('tr').find('#CurtonSize').text());
+                if (Quantity == "" || Quantity == "0") {
+                    $(this).val('1');
+                    Quantity = data.currentTarget.value;
+                }
+                if (Quantity != "" && Quantity != undefined) {
+                    $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = Math.ceil(parseInt(Quantity) / size).toString();
+                }
+                else {
+                    $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
+                }   
+                
+                    $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ApprovedOrderValue", "Order")',
+                    data: { 'Quantity': Quantity, 'Product': Product },
+                    cache: false,
+                    success: function (response) {
+                        debugger;
+                        $("#UpdateOrderValueId").html(response);
+                    },
+                    complete: function (response) {
+
+                    }
+                })
+            }
+        });
+        });
     });
 
     $('.ApproveQuantity').bind('keyup mouseup',function (data) {
@@ -79,6 +121,9 @@
         });
 
     });
+
+
+
 </script>
 
 

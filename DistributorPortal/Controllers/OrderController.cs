@@ -361,7 +361,7 @@ namespace DistributorPortal.Controllers
             return PartialView("OrderValue", OrderVal);
         }
 
-        public ActionResult ApprovedOrderValue(int Product, int Quantity, int Order)
+        public ActionResult ApprovedOrderValue(int Product, int Quantity)
         {
             var list = SessionHelper.AddProduct;
             list.First(e => e.ProductMasterId == Product).ProductMaster.Quantity = Quantity;

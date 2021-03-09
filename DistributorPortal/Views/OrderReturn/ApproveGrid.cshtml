@@ -1,0 +1,80 @@
+﻿@model OrderReturnMaster
+
+<style type="text/css">
+    table.dataTable tr th.select-checkbox.selected::after {
+        content: "✔";
+        margin-top: -11px;
+        margin-left: -4px;
+        text-align: center;
+        text-shadow: rgb(176, 190, 217) 1px 1px, rgb(176, 190, 217) -1px -1px, rgb(176, 190, 217) 1px -1px, rgb(176, 190, 217) -1px 1px;
+</style>
+
+
+@if (Model.OrderReturnDetail.Count > 0)
+{
+    <div class="table-responsive-sm">
+        <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="icheck-success d-inline">
+                            <input type="checkbox" name="select_all" value="1" id="example-select-all" />
+                            <label for="example-select-all"></label>
+                        </div>
+                    </th>
+                    <th>Product Name</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Batch No</th>
+                    <th>Market Retail Price</th>
+                    <th>Total Price</th>
+                    <th>Quantity</th>
+                    <th>Received Qty</th>
+                    <th>Discount</th>
+                    <th>Net Amount</th>
+                    <th>Manufacture Date</th>
+                    <th>Expiry Date</th>
+                    <th>Invoice No</th>
+                    <th>Invoice Date</th>
+                    <th>Intimation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.OrderReturnDetail.Count(); i++)
+                {
+                    <tr>
+                        <input type="hidden" asp-for="@Model.OrderReturnDetail[i].ProductId" />
+                        <td>
+                            <div class="icheck-success d-inline">
+                                <input type="checkbox" id="checkbox@(i)" asp-for="@Model.OrderReturnDetail[i].IsProductSelected" />
+                                <label for="checkbox@(i)" ></label>
+                            </div>
+                        </td>
+                        <td>@Model.OrderReturnDetail[i].ProductMaster.ProductName</td>
+                        <td>@Model.OrderReturnDetail[i].Company.CompanyName</td>
+                        <td>@Model.OrderReturnDetail[i].PlantLocation.PlantLocationName</td>
+                        <td>
+                            <input type="number" asp-for="@Model.OrderReturnDetail[i].BatchNo" value="@Model.OrderReturnDetail[i].BatchNo" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="number" asp-for="@Model.OrderReturnDetail[i].MRP" width="100" value="@Model.OrderReturnDetail[i].MRP" class="form-control" />
+                        </td>
+                        <td>@Model.OrderReturnDetail[i].TotalPrice</td>
+                        <td>@Model.OrderReturnDetail[i].Quantity</td>
+                        <td>
+                            <input type="number" asp-for="@Model.OrderReturnDetail[i].ReceivedQty" value="@Model.OrderReturnDetail[i].Quantity" class="form-control" />
+                        </td>
+                        <td>@Model.OrderReturnDetail[i].ProductMaster.Discount %</td>
+                        <td>@Model.OrderReturnDetail[i].NetAmount</td>
+                        <td><input type="text" value="@Model.OrderReturnDetail[i].ManufactureDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].ManufactureDate" readonly="readonly" /></td>
+                        <td><input type="text" value="@Model.OrderReturnDetail[i].ExpiryDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].ExpiryDate" readonly="readonly" /></td>
+                        <td><input type="text" value="@Model.OrderReturnDetail[i].InvoiceNo" asp-for="@Model.OrderReturnDetail[i].InvoiceNo" readonly="readonly" /></td>
+                        <td><input type="text" value="@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].InvoiceDate" readonly="readonly" /></td>
+                        <td><input type="text" value="@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].IntimationDate" readonly="readonly" /></td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
