@@ -37,11 +37,11 @@
                                     </a>
                                     @if (item.Status == OrderStatus.Draft && SessionHelper.LoginUser.IsDistributor)
                                     {
-                                        <a asp-controller="Order" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Edit" class="btn btn-warning btn-sm">
+                                        <a asp-controller="Order" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Edit" class="btn btn-primary btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     }
-                                    @if ((item.Status == OrderStatus.PendingApproval || item.Status == OrderStatus.PartiallyApproved || item.Status == OrderStatus.Onhold) && !SessionHelper.LoginUser.IsDistributor)
+                                    @if ((item.Status == OrderStatus.PendingApproval) && !SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <a asp-controller="Order" asp-action="Approve" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm">
                                             <i class="fas fa-thumbs-up"></i>
@@ -51,6 +51,12 @@
                                     {
                                         <a onclick="Cancel('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Cancel" class="btn btn-warning btn-sm">
                                             <i class="fas fa-trash-restore"></i>
+                                        </a>
+                                    }
+                                    @if (item.Status == OrderStatus.Draft && SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        <a onclick="DeleteOrder('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Cancel" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
                                         </a>
                                     }
                                 </td>
@@ -91,6 +97,36 @@
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Cancel", "Order")',
+                    data: { 'DPID': Id },
+                    cache: false,
+                    success: function (response) {
+                        debugger;
+                        Swal.fire('Saved!', response.Message, 'success')
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                });
+            }
+        })
+    }
+
+    function DeleteOrder(Id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this order!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Delete it!'
+        }).then((result) => {
+            debugger;
+            if (result.value) {
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteOrder", "Order")',
                     data: { 'DPID': Id },
                     cache: false,
                     success: function (response) {

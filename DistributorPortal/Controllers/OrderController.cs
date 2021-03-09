@@ -163,6 +163,29 @@ namespace DistributorPortal.Controllers
                 throw;
             }
         }
+        [HttpPost]
+        public IActionResult DeleteOrder(string DPID)
+        {
+            try
+            {
+                int id = 0;
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                JsonResponse jsonResponse = new JsonResponse();
+                var result = _OrderBLL.Delete(id);
+                if (result > 0)
+                {
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Order has been deleted";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                }
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                throw;
+            }
+        }
         public IActionResult OrderView(string DPID)
         {
             int id = 0;
@@ -385,11 +408,11 @@ namespace DistributorPortal.Controllers
         {
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                return _OrderBLL.GetAllOrderMaster().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
+                return _OrderBLL.Where(x => x.IsDeleted == false && x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
             }
             else
             {
-                return _OrderBLL.GetAllOrderMaster().OrderByDescending(x => x.Id).ToList();
+                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).OrderByDescending(x => x.Id).ToList();
             }
         }
         public JsonResult CheckProductLicense(int ProductMasterId)
@@ -416,7 +439,7 @@ namespace DistributorPortal.Controllers
                     {
                         if (item.IsMandatory)
                         {
-                            var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault(); 
+                            var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
 
                             if (resultChallan is null && License == null)
                             {

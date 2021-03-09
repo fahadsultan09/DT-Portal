@@ -78,6 +78,9 @@ namespace BusinessLogicLayer.Application
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(id);
             item.IsDeleted = true;
+            item.IsActive = false;
+            item.DeletedBy = SessionHelper.LoginUser.Id;
+            item.DeletedDate = DateTime.Now;
             _unitOfWork.GenericRepository<OrderMaster>().Delete(item);
             return _unitOfWork.Save();
         }

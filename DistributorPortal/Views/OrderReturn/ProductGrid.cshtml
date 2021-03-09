@@ -4,7 +4,7 @@
     <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
         <thead>
             <tr>
-                <th width="1%"></th>
+                <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
                 <th>Product Name</th>
                 <th>Company</th>
                 <th>Location</th>
@@ -26,14 +26,14 @@
             @foreach (var item in Model)
             {
             <tr>
-                <td>
+                <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                     <div class="icheck-success d-inline">
                         <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
                         <label for="checkbox@(item.Id)">
                         </label>
                     </div>
                 </td>
-                <td>@item.ProductMaster.ProductName</td>
+                <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
                 <td>@item.Company.CompanyName</td>
                 <td>@item.PlantLocation.PlantLocationName</td>
                 <td>@item.BatchNo</td>

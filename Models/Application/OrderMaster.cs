@@ -9,7 +9,7 @@ using Utility;
 
 namespace Models.Application
 {
-    public class OrderMaster : UpdatedEntity
+    public class OrderMaster : DeletedEntity
     {
         public int DistributorId { get; set; }
         [ForeignKey("DistributorId")]
