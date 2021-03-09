@@ -95,7 +95,10 @@ namespace BusinessLogicLayer.Application
 
             return new SelectList(selectList, "Value", "Text");
         }
-
+        public ProductDetail FirstOrDefault(Expression<Func<ProductDetail, bool>> predicate)
+        {
+            return _unitOfWork.GenericRepository<ProductDetail>().FirstOrDefault(predicate);
+        }
         public List<ProductDetail> Where(Expression<Func<ProductDetail, bool>> expression)
         {
             return _unitOfWork.GenericRepository<ProductDetail>().Where(expression);

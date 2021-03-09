@@ -6,10 +6,10 @@
     var returnReasonList = new OrderReturnReasonBLL(iUnitOfWork).DropDownOrderReturnReasonList();
     ViewData["Title"] = "Approve Return Order";
     ViewBag.IsView = true;
+    var btnDisable = Model.OrderReturnDetail.Where(e => e.ReturnOrderNumber == null).Count() > 0 ? false : true;
 }
 
 <style type="text/css">
-
     .card-header {
         padding: 5px 15px 0px 15px
     }
@@ -17,6 +17,13 @@
     .swal-modal .swal-text {
         text-align: center;
     }
+
+    table.dataTable tr th.select-checkbox.selected::after {
+        content: "✔";
+        margin-top: -11px;
+        margin-left: -4px;
+        text-align: center;
+        text-shadow: rgb(176, 190, 217) 1px 1px, rgb(176, 190, 217) -1px -1px, rgb(176, 190, 217) 1px -1px, rgb(176, 190, 217) -1px 1px;
 </style>
 
 <!-- Main content -->
@@ -101,10 +108,10 @@
                                                 <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" id="btnReject" name="btnSubmit" class="ladda-button btn btn-danger float-right mr-3">
+                                                <button type="button" id="btnReject" disabled="@btnDisable" name="btnSubmit" class="ladda-button btn btn-danger float-right mr-3">
                                                     Reject
                                                 </button>
-                                                <button type="submit" onclick="return SubmitForm();" id="btnReceived" name="btnSubmit" class="ladda-button btn btn-success mr-1 float-right">
+                                                <button type="submit" disabled="@btnDisable" onclick="return SubmitForm();" id="btnReceived" name="btnSubmit" class="ladda-button btn btn-success mr-1 float-right">
                                                     Received
                                                 </button>
                                             </div>
@@ -122,67 +129,90 @@
                                         <span class="float-right"><strong>Return Order No: @string.Format("{0:1000000000}", Model.Id)</strong></span>
                                     </div>
                                     <div class="card-body">
+
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <h6>Product Name:</h6>
+                                                <select name="ProductId" asp-items="Model.ProductList" class="form-control select2" id="ddlProduct">
+                                                    <option value="">--Select option--</option>
+                                                </select>
+                                                <span id="ErrorProductName" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Quantity:</h6>
+                                                <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />
+                                                <span id="ErrorQuantity" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>MRP:</h6>
+                                                <input type="number" name="MRP" id="MRP" placeholder="Enter MRP" class="form-control" />
+                                                <span id="ErrorMRP" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Batch No:</h6>
+                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" class="form-control" />
+                                                <span id="ErrorBatchNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Earlier Intimation:</h6>
+                                                <div class="input-group date"  data-target-input="nearest">
+                                                    <input type="text" readonly="readonly" id="IntimationDate" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Invoice No:</h6>
+                                                <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
+                                                <span id="ErrorInvoiceNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Invoice Date:</h6>
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" readonly="readonly" id="InvoiceDate" name="InvoiceDate" value="" data-target="#InvoiceDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Expiry Date:</h6>
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" id="ExpiryDate" readonly="readonly" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Manufacture Date:</h6>
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" id="ManufactureDate" readonly="readonly" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Remarks:</h6>
+                                                <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
+                                                <span id="ErrorRemarks" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                <h6></h6>
+                                                <button type="button" id="AddProducts" onclick="return AddToGrid();" class="ladda-button btn btn-primary float-right" style="margin-top: 20px;">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         <br />
                                         <div class="scrollmenu" id="ProductGrid">
-                                            @if (Model.OrderReturnDetail.Count > 0)
-                                            {
-                                                <div class="table-responsive-sm">
-                                                    <table id="example" class="table table-bordered table-condensed table-hover table-striped table-sm">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Product Name</th>
-                                                                <th>Company</th>
-                                                                <th>Location</th>
-                                                                <th>Batch No</th>
-                                                                <th>MRP</th>
-                                                                <th>Total Price</th>
-                                                                <th>Quantity</th>
-                                                                <th>Received Qty</th>
-                                                                <th>Discount</th>
-                                                                <th>Net Amount</th>
-                                                                <th>Manufacture Date</th>
-                                                                <th>Expiry Date</th>
-                                                                <th>Invoice No</th>
-                                                                <th>Invoice Date</th>
-                                                                <th>Intimation Date</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                            @for (int i = 0; i < Model.OrderReturnDetail.Count(); i++)
-                                                            {
-                                                            <tr>
-                                                                <input type="hidden" asp-for="@Model.OrderReturnDetail[i].ProductId" />     
-                                                                <td>@Model.OrderReturnDetail[i].ProductMaster.ProductName</td>
-                                                                <td>@Model.OrderReturnDetail[i].Company.CompanyName</td>
-                                                                <td>@Model.OrderReturnDetail[i].PlantLocation.PlantLocationName</td>
-                                                                <td>@Model.OrderReturnDetail[i].BatchNo</td>
-                                                                <td>@Model.OrderReturnDetail[i].MRP</td>
-                                                                <td>@Model.OrderReturnDetail[i].NetAmount</td>
-                                                                <td>@Model.OrderReturnDetail[i].Quantity</td>
-                                                                <td>
-                                                                    <input type="number" asp-for="@Model.OrderReturnDetail[i].ReceivedQty" value="@Model.OrderReturnDetail[i].Quantity" class="form-control" />
-                                                                </td>
-                                                                <td>@Model.OrderReturnDetail[i].ProductMaster.Discount %</td>
-                                                                <td>@Model.OrderReturnDetail[i].NetAmount</td>
-                                                                <td>@Model.OrderReturnDetail[i].ManufactureDate.ToString("dd/MM/yyyy")</td>
-                                                                <td>@Model.OrderReturnDetail[i].ExpiryDate.ToString("dd/MM/yyyy")</td>
-                                                                <td>@Model.OrderReturnDetail[i].InvoiceNo</td>
-                                                                <td>@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")</td>
-                                                                <td>@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")</td>
-
-                                                            </tr>
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <script type="text/javascript">
-                                                    $(document).ready(function () {
-                                                        $("#example").DataTable({
-                                                        });
-                                                    });
-                                                </script>
-                                            }
+                                            <partial name="ApproveGrid" data="@Model" />
                                         </div>
                                     </div>
                                 </div>
@@ -196,6 +226,88 @@
 </div>
 
 <script>
+    var table;
+    $(document).ready(function () {
+        $("tr > input[type='checkbox']").change(function (e) {
+            $.post(window.location.origin + "/OrderReturn/SelectProduct", { DPID: $(this).val() }, function (response) {
+            });
+            if ($(this).is(':checked') == false) {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').val(0);
+            } else {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+            }
+        });
+
+       table = $("#example").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [],
+            "scrollX": true,
+            "sScrollXInner": "200%",
+            "columnDefs": [{
+                "targets": 0,
+                "searchable": false,
+                "orderable": false,
+                "className": "dt-body-center"                
+            }],
+            'order': [1, 'asc']
+       });
+
+        //// Handle click on "Select all" control
+        $('#example-select-all').on('click', function () {
+            // Check/uncheck all checkboxes in the table
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        //// Handle click on checkbox to set state of "Select all" control
+        $('#example tbody').on('change', 'input[type="checkbox"]', function () {
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#example-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        $('#frm-example').on('submit', function (e) {
+            var form = this;
+
+            // Iterate over all checkboxes in the table
+            table.$('input[type="checkbox"]').each(function () {
+                // If checkbox doesn't exist in DOM
+                if (!$.contains(document, this)) {
+                    // If checkbox is checked
+                    if (this.checked) {
+                        // Create a hidden element
+                        $(form).append(
+                            $('<input>')
+                                .attr('type', 'hidden')
+                                .attr('name', this.name)
+                                .val(this.value)
+                        );
+                    }
+                }
+            });
+
+            // FOR TESTING ONLY
+
+            // Output form data to a console
+            $('#example-console').text($(form).serialize());
+            console.log("Form submission", $(form).serialize());
+
+            // Prevent actual form submission
+            e.preventDefault();
+        });
+
+    });
+
     function LaddaBegin() {
         BlockUI();
         Ladda.create($("#btnReject", this)[0]).start();
@@ -217,6 +329,129 @@
             }
         })
         return false;
+    }
+
+    function AddToGrid() {
+        debugger;
+        var ddlProduct = $("#ddlProduct option:selected").text();
+        var productId = $('#ddlProduct').val();
+        var Quantity = $('#Quantity').val();
+        var MRP = $('#MRP').val();
+        var BatchNo = $('#BatchNo').val();
+        var IntimationDate = $('#IntimationDate').val();
+        var InvoiceNo = $('#InvoiceNo').val();
+        var InvoiceDate = $('#InvoiceDate').val();
+        var ExpiryDate = $('#ExpiryDate').val();
+        var ManufactureDate = $('#ManufactureDate').val();
+        var Remarks = $('#Remarks').val();
+        var OrderId = $('#Id').val();
+        if (ddlProduct === '--Select option--') {
+            $("#ErrorProductName").text('Product Name is required');
+            return false;
+        }
+        if (Quantity === '') {
+            $("#ErrorQuantity").text('Quantity is required');
+            return false;
+        }
+        if (MRP === '') {
+            $("#ErrorMRP").text('MRP is required');
+            return false;
+        }
+        if (BatchNo === '') {
+            $("#ErrorBatchNo").text('Batch No is required');
+            return false;
+        }
+        if (InvoiceNo === '') {
+            $("#ErrorInvoiceNo").text('Invoice No is required');
+            return false;
+        }
+        if (Remarks === '') {
+            $("#ErrorRemarks").text('Remarks is required');
+            return false;
+        }
+        var jsonarray = { productId, Quantity, MRP, BatchNo, IntimationDate, InvoiceNo, InvoiceDate, ExpiryDate, ManufactureDate, Remarks };
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddApproveReturnProduct", "OrderReturn")',
+            data: { 'model': jsonarray, 'OrderId': OrderId },
+            cache: false,
+            begin: function () {
+                BlockUI();
+            },
+            success: function (response) {
+                debugger;
+                $('#ProductGrid').html(response.data.HtmlString.Result);
+                $("#example").dataTable().fnDestroy();
+                table = $("#example").DataTable({
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                    "responsive": true,
+                    "autoWidth": false,
+                    "order": [],
+                    "scrollX": true,
+                    "sScrollXInner": "200%",
+                    "columnDefs": [{
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "className": "dt-body-center"
+                    }],
+                    'order': [1, 'asc']
+                });
+
+                $('#example-select-all').on('click', function () {
+                    // Check/uncheck all checkboxes in the table
+                    var rows = table.rows({ 'search': 'applied' }).nodes();
+                    $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                });
+
+                // Handle click on checkbox to set state of "Select all" control
+                $('#example tbody').on('change', 'input[type="checkbox"]', function () {
+                    // If checkbox is not checked
+                    if (!this.checked) {
+                        var el = $('#example-select-all').get(0);
+                        // If "Select all" control is checked and has 'indeterminate' property
+                        if (el && el.checked && ('indeterminate' in el)) {
+                            // Set visual state of "Select all" control
+                            // as 'indeterminate'
+                            el.indeterminate = true;
+                        }
+                    }
+                });
+
+                $('#frm-example').on('submit', function (e) {
+                    var form = this;
+
+                    // Iterate over all checkboxes in the table
+                    table.$('input[type="checkbox"]').each(function () {
+                        // If checkbox doesn't exist in DOM
+                        if (!$.contains(document, this)) {
+                            // If checkbox is checked
+                            if (this.checked) {
+                                // Create a hidden element
+                                $(form).append(
+                                    $('<input>')
+                                        .attr('type', 'hidden')
+                                        .attr('name', this.name)
+                                        .val(this.value)
+                                );
+                            }
+                        }
+                    });
+
+                    // FOR TESTING ONLY
+
+                    // Output form data to a console
+                    $('#example-console').text($(form).serialize());
+                    console.log("Form submission", $(form).serialize());
+
+                    // Prevent actual form submission
+                    e.preventDefault();
+                });
+            },
+            complete: function (response) {
+                UnBlockUI();
+            }
+        });
     }
 </script>
 

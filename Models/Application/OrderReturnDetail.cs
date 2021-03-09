@@ -30,6 +30,7 @@ namespace Models.Application
         public string Remarks { get; set; }
         public string ReturnOrderNumber { get; set; }
         public OrderStatus ReturnOrderStatus { get; set; }
+        public bool IsProductSelected { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
         [NotMapped]
