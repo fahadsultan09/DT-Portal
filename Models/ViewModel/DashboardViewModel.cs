@@ -40,7 +40,7 @@ namespace Models.ViewModel
     public class ProductViewModel
     {
         public string ProductName { get; set; }
-        public string CurrentPrice { get; set; }
+        public double CurrentPrice { get; set; }
         public int OrderCount { get; set; }
         public int Quantity { get; set; }
     }

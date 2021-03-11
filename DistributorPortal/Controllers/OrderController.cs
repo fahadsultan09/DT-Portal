@@ -342,9 +342,10 @@ namespace DistributorPortal.Controllers
             OrderMaster model = new OrderMaster();
             if (Id > 0)
             {
+                List<OrderDetail> OrderDetailList = _orderDetailBLL.GetAllOrderDetail().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
                 model = _OrderBLL.GetOrderMasterById(Id);
-                List<OrderDetail> orderDetail = forApprove ? _orderDetailBLL.GetOrderDetailByIdByMasterId(Id).Where(e => e.OrderProductStatus is null).ToList() : _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
-                model.productDetails = _productDetailBLL.GetAllProductDetailById(_orderDetailBLL.Where(e => e.OrderId == Id && e.OrderProductStatus == null).ToList().Select(e => e.ProductId).ToArray(), Id);
+                List<OrderDetail> orderDetail = forApprove ? OrderDetailList.Where(e => e.OrderId == Id && e.OrderProductStatus is null).ToList() : OrderDetailList.Where(e => e.OrderId == Id).ToList();
+                model.productDetails = _productDetailBLL.GetAllProductDetailById(OrderDetailList.Where(e => e.OrderId == Id && (forApprove ? e.OrderProductStatus == null : true)).ToList().Select(e => e.ProductId).ToArray(), Id);
                 model.productDetails.ForEach(e => e.OrderNumber = Id);
                 model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
                 if (model.Status == OrderStatus.PendingApproval)
@@ -435,20 +436,20 @@ namespace DistributorPortal.Controllers
                     var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
 
-                    foreach (var item in LicenseControlList)
-                    {
-                        if (item.IsMandatory)
-                        {
-                            var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
+                    //foreach (var item in LicenseControlList)
+                    //{
+                    //    if (item.IsMandatory)
+                    //    {
+                    //        var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
 
-                            if (resultChallan is null && License == null)
-                            {
-                                jsonResponse.Status = false;
-                                jsonResponse.Message = "Add verified license or challan before placing the order.";
-                                return Json(new { data = jsonResponse });
-                            }
-                        }
-                    }
+                    //        if (resultChallan is null && License == null)
+                    //        {
+                    //            jsonResponse.Status = false;
+                    //            jsonResponse.Message = "Add verified license or challan before placing the order.";
+                    //            return Json(new { data = jsonResponse });
+                    //        }
+                    //    }
+                    //}
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => License != null && x.Id == License.LicenseId);
 
                     if (Challan != null)
@@ -490,7 +491,7 @@ namespace DistributorPortal.Controllers
                             if (result is null)
                             {
                                 jsonResponse.Status = false;
-                                jsonResponse.Message = "Add verified license or challan before placing the order.";
+                                jsonResponse.Message = "Add verified " + item.LicenseName + " license or challan before placing the order.";
                                 return Json(new { data = jsonResponse });
                             }
                         }
@@ -541,9 +542,29 @@ namespace DistributorPortal.Controllers
             }
         }
 
-        public IActionResult Search(OrderSearch orderSearch)
+        public IActionResult Search(OrderSearch model, string Search)
         {
-            return Json("");
+            if (!string.IsNullOrEmpty(Search))
+            {
+                model = List(model);
+            }
+            else
+            {
+                model.OrderMaster = GetOrderList();
+            }
+            return PartialView("List", model.OrderMaster);
+        }
+        public OrderSearch List(OrderSearch model)
+        {
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null)
+            {
+                model.OrderMaster = GetOrderList();
+            }
+            else
+            {
+                model.OrderMaster = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            return model;
         }
         public IActionResult GetCompanyProduct(int[] companyId, int OrderId)
         {
@@ -567,18 +588,33 @@ namespace DistributorPortal.Controllers
         public void SelectProduct(string DPID)
         {
             int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddProduct;
-            var product = list.FirstOrDefault(e => e.ProductMasterId == id);
-            if (product != null)
+
+            if (DPID == "all")
             {
-                if (product.IsProductSelected)
+                if (list.Any(x=>x.IsProductSelected == true))
                 {
-                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = false;
+                    list.ForEach(x => x.IsProductSelected = false);
                 }
                 else
                 {
-                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = true;
+                    list.ForEach(x => x.IsProductSelected = true);
+                }
+            }
+            else
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                var product = list.FirstOrDefault(e => e.ProductMasterId == id);
+                if (product != null)
+                {
+                    if (product.IsProductSelected)
+                    {
+                        list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = false;
+                    }
+                    else
+                    {
+                        list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = true;
+                    }
                 }
             }
             SessionHelper.AddProduct = list;

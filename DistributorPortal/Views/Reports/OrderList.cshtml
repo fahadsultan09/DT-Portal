@@ -42,7 +42,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@item.Id.ToString()" /></td>
+                                    <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" /></td>
                                     <td>@string.Format("{0:1000000000}", item.Id)</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
@@ -59,7 +59,7 @@
                                         <a asp-controller="Order" asp-action="OrderView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a  onclick="Print('/Order/Print?', '@ApplicationPages.Order', '@EncryptDecrypt.Encrypt(item.Id.ToString())');" class="btn btn-success btn-sm">
+                                        <a onclick="Print('/Order/Print?', '@ApplicationPages.Order', '@EncryptDecrypt.Encrypt(item.Id.ToString())');" class="btn btn-success btn-sm">
                                             <i class="fas fa-print"></i>
                                         </a>
                                     </td>
@@ -111,7 +111,7 @@
             $.ajax({
                 type: 'GET',
                 url: '/Reports/GetOrderDetailList',
-                data: { OrderId: OrderId },
+                data: { DPID: OrderId },
                 async: false,
                 success: function (response) {
                     $('#modal-detail').html(response);

@@ -25,7 +25,7 @@
                                     {
                                         <tr>
                                             <td>@String.Format("{0:1000000000}", item.OrderNo)</td>
-                                            <td>@String.Format("{0:N}", item.Amount)</td>
+                                            <td>@item.Amount.ToString("#,##0.00")</td>
                                             <td>@item.Status</td>
                                             <td>
                                                 <a asp-controller="Order" asp-action="OrderView" asp-route-id="@item.OrderNo" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
@@ -69,7 +69,7 @@
                                         <tr>
                                             <td>@string.Format("{0:1000000000}", item.PaymentId)</td>
                                             <td>@item.PaymentMode</td>
-                                            <td>@String.Format("{0:N}", item.Amount)</td>
+                                            <td>@item.Amount.ToString("#,##0.00")</td>
                                             <td>
                                                 @if (item.Status == PaymentStatus.Verified)
                                                 {

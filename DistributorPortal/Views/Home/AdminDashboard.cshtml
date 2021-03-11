@@ -114,13 +114,13 @@
                             <!-- /.row -->
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.VerifiedPayment" title="@Model.VerifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.VerifiedPayment" title="@Model.VerifiedPayment.ToString("#,##0.00")" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" title="@Model.UnverifiedPayment" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545" readonly="readonly" disabled="disabled">
+                                    <input type="text" class="knob" value="@Model.UnverifiedPayment" title="@Model.UnverifiedPayment.ToString("#,##0.00")" data-min="0" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545" readonly="readonly" disabled="disabled">
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
                             </div>

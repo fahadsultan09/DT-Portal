@@ -5,6 +5,8 @@ var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eigh
 
 $(document).ready(function () {
 
+    $('.select2').select2();
+
     $('#Spinner').hide();
 
     $('.datetimepicker-input').keypress(function (e) {
@@ -32,7 +34,9 @@ function Begin() {
 
     $('#Spinner').show();
     $('button[type="submit"]').attr('disabled', true);
-    Ladda.create($("button[type=submit]", this)[0]).start();
+    if ($("button[type=submit]", this)[0] != undefined) {
+        Ladda.create($("button[type=submit]", this)[0]).start();
+    }
     BlockUI();
 }
 
@@ -160,7 +164,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                     }
                 });
             }
-        })
+        });
     }
     else {
         Swal.fire({

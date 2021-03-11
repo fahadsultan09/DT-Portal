@@ -1,4 +1,4 @@
-﻿@model OrderSearch
+﻿@model OrderReturnViewModel
 
 <section class="content">
     <div class="container-fluid">
@@ -10,12 +10,10 @@
                     </div>
                     <form data-ajax-update="#divform"
                           data-ajax="true"
-                          data-ajax-method="GET"
-                          data-ajax-begin="Begin"
-                          data-ajax-complete="Complete"
-                          asp-controller="Order"
+                          data-ajax-method="POST"
+                          asp-controller="OrderReturn"
                           asp-action="Search"
-                          id="frmOrderSearch">
+                          id="frmOrderReturn">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
@@ -43,7 +41,7 @@
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                     <div class="form-group">
                                         <label class="control-label">Status</label>
-                                        <select asp-for="Status" asp-items="Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
+                                        <select asp-for="Status" asp-items="Enum.GetValues(typeof(OrderReturnStatus)).Cast<OrderReturnStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
                                             <option value="">--Select option--</option>
                                         </select>
                                     </div>
@@ -83,7 +81,6 @@
         </div>
     </div>
 </section>
-
 <script>
     $('#btnClear').on('click', function () {
 

@@ -94,7 +94,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.Status != null)
             {
-                //LamdaId = LamdaId.And(e => e.Status == model.Status);
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
             }
             if (model.FromDate != null)
             {
@@ -110,11 +110,17 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
+                         join u in _UserBLL.GetAllUser().ToList()
+                              on x.CreatedBy equals u.Id
                          select new OrderReturnMaster
                          {
                              Id = x.Id,
                              Distributor = x.Distributor,
+                             Status = x.Status,
                              DistributorId = x.DistributorId,
+                             OrderReturnReasonId = x.OrderReturnReasonId,
+                             CreatedBy = x.CreatedBy,
+                             CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,
                          }).ToList();
 
@@ -167,13 +173,13 @@ namespace BusinessLogicLayer.Application
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                _unitOfWork.Begin();                
+                _unitOfWork.Begin();
                 if (SessionHelper.AddReturnProduct.Count > 0)
                 {
                     if (btnSubmit == SubmitStatus.Draft)
                     {
                         model.Status = OrderReturnStatus.Draft;
-                        jsonResponse.Message = OrderContant.OrderDraft;                        
+                        jsonResponse.Message = OrderContant.OrderDraft;
                     }
                     else
                     {
@@ -225,13 +231,13 @@ namespace BusinessLogicLayer.Application
                 _unitOfWork.Rollback();
                 throw ex;
             }
-            
+
         }
 
         public List<OrderStatusViewModel> PlaceReturnOrderToSAP(int OrderReturnId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
-            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId).ToList();
+            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId && e.IsProductSelected == true && e.ReturnOrderNumber == null).ToList();
             var ProductDetail = productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
