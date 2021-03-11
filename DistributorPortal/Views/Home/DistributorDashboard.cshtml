@@ -116,22 +116,22 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@Model.VerifiedPayment" value="@Model.VerifiedPayment" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@Model.VerifiedPayment.ToString("#,##0.00")" value="@Model.VerifiedPayment" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745">
                                     <div class="knob-label">Verified Payment</div>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@Model.UnverifiedPayment" value="@Model.UnverifiedPayment" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@Model.UnverifiedPayment.ToString("#,##0.00")" value="@Model.UnverifiedPayment" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#dc3545">
                                     <div class="knob-label">Unverified Payment</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.SAMI" value="@SessionHelper.DistributorBalance.SAMI" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.SAMI.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.SAMI" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
 
                                     <div class="knob-label">SAMI Balance</div>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.HealthTek" value="@SessionHelper.DistributorBalance.HealthTek" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.HealthTek.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.HealthTek" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
 
                                     <div class="knob-label">Healthtek Balance</div>
                                 </div>

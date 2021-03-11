@@ -316,6 +316,10 @@
 
     function SubmitForm() {
         debugger;
+        $('#example2').dataTable().fnDestroy();
+        $("#example2").DataTable({
+            "lengthMenu": [[-1], ["All"]]
+        });
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',

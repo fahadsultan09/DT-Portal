@@ -16,7 +16,7 @@
 
 <!-- Main content -->
 <div class="content-wrapper">
-    <section class="content-header">
+    <section class="content-header" style="padding-top: 5px;">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
@@ -100,7 +100,7 @@
                                                 </div>
                                                 <span asp-validation-for="DebitNoteDate" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 row" style="width:100%;">
                                                 <h6>Return Reason:</h6>
                                                 <select asp-for="OrderReturnReasonId" asp-items="Model.returnReasonList" class="form-control select2" id="ddlReturnReson">
                                                     <option value="">--Select option--</option>
@@ -141,7 +141,7 @@
                                           data-ajax-complete="Complete"
                                           data-ajax-method="POST">
                                         <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 row" style="width:100%;">
                                                 <h6>Product Name:</h6>
                                                 <select name="ProductId" asp-items="Model.ProductList" class="form-control select2" id="ddlProduct">
                                                     <option value="">--Select option--</option>

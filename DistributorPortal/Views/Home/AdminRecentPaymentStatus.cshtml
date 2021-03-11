@@ -58,11 +58,11 @@
                             {
                                 foreach (var item in Model.DistributorViewModelPayment.OrderByDescending(x => x.Payment))
                                 {
-                                    <tr>
-                                        <td>@(j++)</td>
-                                        <td>@item.DistributorName</td>
-                                        <td>@String.Format("{0:N}", item.Payment)</td>
-                                    </tr>
+                                                <tr>
+                                                    <td>@(j++)</td>
+                                                    <td>@item.DistributorName</td>
+                                                    <td>@item.Payment.ToString("#,##0.00")</td>
+                                                </tr>
                                 }
                             }
                         }
@@ -99,7 +99,7 @@
                                     <tr>
                                         <td>@(k++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
+                                        <td>@item.CurrentPrice.ToString("#,##0.00")</td>
                                         <td>@item.OrderCount</td>
                                     </tr>
                                 }
@@ -136,7 +136,7 @@
                                     <tr>
                                         <td>@(l++)</td>
                                         <td>@item.ProductName</td>
-                                        <td>@String.Format("{0:N}", item.CurrentPrice)</td>
+                                        <td>@item.CurrentPrice.ToString("#,##0.00")</td>
                                         <td>@item.Quantity</td>
                                     </tr>
                                 }

@@ -24,7 +24,12 @@
                     </th>
                 </tr>
                 <tr>
-                    <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
+                    <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                        <div class="icheck-success d-inline">
+                            <input type="checkbox" name="select_all" value="all" id="example-select-all" />
+                            <label for="example-select-all"></label>
+                        </div>
+                    </th>
                     <th>Code</th>
                     <th>Product Name</th>
                     <th>Pack Size</th>
@@ -89,7 +94,11 @@
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
 <script src="~/Pages/Common.js"></script>
+
 <script type="text/javascript">
+
+    var table;
+
     function LaddaBegin() {
         debugger;
         Ladda.create($("#Approve")[0]).start();
@@ -98,7 +107,7 @@
     $(document).ready(function () {
         $('.select2').select2();
 
-        $("#example2").DataTable({
+        table = $("#example2").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
@@ -163,6 +172,27 @@
             }
         });
 
+
+        //// Handle click on "Select all" control
+        $('#example-select-all').on('click', function () {
+            // Check/uncheck all checkboxes in the table
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        //// Handle click on checkbox to set state of "Select all" control
+        $('#example2 tbody').on('change', 'input[type="checkbox"]', function () {
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#example-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
     });
 
 </script>

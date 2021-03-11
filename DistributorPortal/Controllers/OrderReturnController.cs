@@ -159,7 +159,7 @@ namespace DistributorPortal.Controllers
             int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
-            return View("Approve", BindOrderReturnMaster(id));
+            return View("Approve", BindOrderReturnMaster(id, true));
         }
 
         public void SelectProduct(string DPID)
@@ -189,16 +189,18 @@ namespace DistributorPortal.Controllers
             try
             {
                 _unitOfWork.Begin();
+                //var ProductIds = model.OrderReturnDetail.Where(e => e.OrderReturnId == model.Id).Select(e => e.ProductId).ToArray();
                 var ProductIds = model.OrderReturnDetail.Select(e => e.ProductId).ToList();
-                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => ProductIds.Contains(e.ProductId)).ToList();
+                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && ProductIds.Contains(e.ProductId)).ToList();
                 var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
                 if (master != null)
                 {
 
                 }
-                foreach (var item in model.OrderReturnDetail)
+                foreach (var item in model.OrderReturnDetail.Where(x => x.IsProductSelected == true))
                 {
                     var product = OrderreturnProduct.First(e => e.ProductId == item.ProductId);
+                    product.IsProductSelected = true;
                     product.ReceivedQty = item.ReceivedQty;
                     product.ReceivedBy = SessionHelper.LoginUser.Id;
                     product.ReceivedDate = DateTime.Now;
@@ -280,14 +282,14 @@ namespace DistributorPortal.Controllers
             }
             return list;
         }
-        private OrderReturnMaster BindOrderReturnMaster(int Id)
+        private OrderReturnMaster BindOrderReturnMaster(int Id, bool forApprove = false)
         {
             OrderReturnMaster model = new OrderReturnMaster();
             if (Id > 0)
             {
                 model = _OrderReturnBLL.GetById(Id);
                 model.Distributor = model.Distributor;
-                model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id).ToList();
+                model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id && (forApprove ? string.IsNullOrEmpty(e.ReturnOrderNumber) : true)).ToList();
                 var allproducts = _ProductMasterBLL.GetAllProductMaster();
                 List<ProductDetail> allproductDetail;
                 if (SessionHelper.LoginUser.IsStoreKeeper)
