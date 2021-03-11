@@ -143,7 +143,7 @@
                                                         <td>
                                                             <div class="input-group date" data-target-input="nearest">
                                                                 <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].IssueDate.ToString("dd/MMM/yyyy"))" id="IssueDate@(j)" class="form-control datepicker" />
-                                                                <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datetimepicker">
+                                                                <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
                                                             </div>
@@ -151,7 +151,7 @@
                                                         <td>
                                                             <div class="input-group date" data-target-input="nearest">
                                                                 <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].Expiry.ToString("dd/MMM/yyyy"))" id="Expiry@(j)" class="form-control datepicker" />
-                                                                <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datetimepicker">
+                                                                <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
                                                             </div>

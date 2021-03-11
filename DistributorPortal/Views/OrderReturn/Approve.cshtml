@@ -105,7 +105,7 @@
                                         </div><br />
                                         <div class="row">
                                             <div class="col-6">
-                                                <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
+                                                <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp;</label><strong><span id="TotalValue">@Model.TotalValue.ToString("#,##0.00")</span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
                                                 <button type="button" id="btnReject" disabled="@btnDisable" name="btnSubmit" class="ladda-button btn btn-danger float-right mr-3">
@@ -157,7 +157,7 @@
                                                 <h6>Earlier Intimation:</h6>
                                                 <div class="input-group date"  data-target-input="nearest">
                                                     <input type="text" readonly="readonly" id="IntimationDate" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -174,7 +174,7 @@
                                                 <h6>Invoice Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" id="InvoiceDate" name="InvoiceDate" value="" data-target="#InvoiceDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -183,7 +183,7 @@
                                                 <h6>Expiry Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" id="ExpiryDate" readonly="readonly" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -192,7 +192,7 @@
                                                 <h6>Manufacture Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" id="ManufactureDate" readonly="readonly" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -211,7 +211,7 @@
                                         </div>
 
                                         <br />
-                                        <div class="scrollmenu" id="ProductGrid">
+                                        <div id="ProductGrid">
                                             <partial name="ApproveGrid" data="@Model" />
                                         </div>
                                     </div>

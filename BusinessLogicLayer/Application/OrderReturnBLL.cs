@@ -191,6 +191,7 @@ namespace BusinessLogicLayer.Application
                     {
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                         var detail = SessionHelper.AddReturnProduct;
+                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
                         Add(model);
                         detail.ForEach(e => e.OrderReturnId = model.Id);
                         detail.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);

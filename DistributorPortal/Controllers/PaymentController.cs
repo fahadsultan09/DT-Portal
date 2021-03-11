@@ -155,7 +155,16 @@ namespace DistributorPortal.Controllers
             bool result = false;
             try
             {
-              if (Status == PaymentStatus.Verified)
+                PaymentMaster model = _PaymentBLL.GetById(id);
+
+                if (model.Status == PaymentStatus.Verified || model.Status == PaymentStatus.Rejected)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Payment alread " + model.Status;
+                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    return Json(new { data = jsonResponse });
+                }
+                if (Status == PaymentStatus.Verified)
                 {
                     var Client = new RestClient(_Configuration.PostPayment);
                     var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
@@ -184,15 +193,14 @@ namespace DistributorPortal.Controllers
                         return Json(new { data = jsonResponse });
                     }
                 }
-                PaymentMaster model = _PaymentBLL.GetById(id);
                 if (model != null)
                 {
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "Payment rejected successfully.";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 }
                 _unitOfWork.Save();
-                jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.PaymentVerified;
-                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

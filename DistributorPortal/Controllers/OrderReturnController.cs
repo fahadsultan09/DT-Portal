@@ -319,6 +319,7 @@ namespace DistributorPortal.Controllers
                         detail.ExpiryDate = item.ExpiryDate;
                         detail.InvoiceNo = item.InvoiceNo;
                         detail.InvoiceDate = item.InvoiceDate;
+                        detail.IntimationDate = item.IntimationDate;
                         detail.ProductMaster = productMaster;
                         detail.PlantLocation = item.PlantLocation;
                         detail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;

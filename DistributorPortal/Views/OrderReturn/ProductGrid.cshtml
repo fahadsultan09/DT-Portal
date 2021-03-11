@@ -11,7 +11,7 @@
                 <th>Batch No</th>
                 <th>MRP</th>
                 <th>Total Price</th>
-                <th>Quantity</th>
+                <th width="10%">Quantity</th>
                 <th>Discount</th>
                 <th>Net Amount</th>
                 <th>Manufacture Date</th>
@@ -25,49 +25,54 @@
         <tbody>
             @foreach (var item in Model)
             {
-            <tr>
-                <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
-                    <div class="icheck-success d-inline">
-                        <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
-                        <label for="checkbox@(item.Id)">
-                        </label>
-                    </div>
-                </td>
-                <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
-                <td>@item.Company.CompanyName</td>
-                <td>@item.PlantLocation.PlantLocationName</td>
-                <td>@item.BatchNo</td>
-                <td>@item.MRP</td>
-                <td>@item.NetAmount</td>
-                <td width="10%">
-                    <input type="number" value="@item.Quantity" class="form-control ReturnQuantity numeric" _ProductId="@item.ProductId" />
-                </td>
-                <td>@item.ProductMaster.Discount %</td>
-                <td>@item.NetAmount</td>
-                <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.InvoiceNo</td>
-                <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
-                <td>
-                    <a asp-action="Delete"
-                       asp-controller="OrderReturn"
-                       asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
-                       class="btn btn-danger"
-                       data-ajax="true"
-                       data-ajax-complete="UpdateOrderValue"
-                       data-ajax-update="#ProductGrid"
-                       data-ajax-method="POST">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                        <div class="icheck-success d-inline">
+                            <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
+                            <label for="checkbox@(item.Id)">
+                            </label>
+                        </div>
+                    </td>
+                    <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
+                    <td>@item.Company.CompanyName</td>
+                    <td>@item.PlantLocation.PlantLocationName</td>
+                    <td>@item.BatchNo</td>
+                    <td>@item.MRP</td>
+                    <td>@item.NetAmount</td>
+                    <td>
+                        <input type="number" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="0" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
+                    </td>
+                    <td>@item.ProductMaster.Discount %</td>
+                    <td><span class="NetAmount">@item.NetAmount</span></td>
+                    <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.InvoiceNo</td>
+                    <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="Delete"
+                           asp-controller="OrderReturn"
+                           asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
+                           class="btn btn-danger"
+                           data-ajax="true"
+                           data-ajax-complete="UpdateOrderValue"
+                           data-ajax-update="#ProductGrid"
+                           data-ajax-method="POST">Delete</a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
 <script type="text/javascript">
+
     $(document).ready(function () {
-        $("#example").DataTable({
-        });
+
+        CalculateTotal();
+
+        $('div input[type="text"],input[type="number"],input[type="date"] ').val('');
+
+        $("#example").DataTable({});
 
         $('.ReturnQuantity').bind('keyup mouseup',function (data) {
             debugger;
@@ -83,20 +88,33 @@
             else
             {
                 $.ajax({
-                type: "GET",
-                url: '@Url.Action("UpdateQuantity", "OrderReturn")',
-                data: { 'Quantity': Quantity, 'Product': Product },
-                cache: false,
-                success: function (response) {
-                    
-                },
-                complete: function (response) {
+                    type: "GET",
+                    url: '@Url.Action("UpdateQuantity", "OrderReturn")',
+                    data: { 'Quantity': Quantity, 'Product': Product },
+                    cache: false,
+                    success: function (response) {
 
-                }
-                })
+                    },
+                    complete: function (response) {
+
+                    }
+                });
             }
         });
+
     });
+
+    function CalculateTotal() {
+        var sum = 0;
+        $(".NetAmount").each(function () {
+
+            if ($(this).text() != "") {
+                sum += parseFloat($(this).text());
+            }
+        });
+        $('#TotalValue').text(sum);
+    }
+
 </script>
 
 

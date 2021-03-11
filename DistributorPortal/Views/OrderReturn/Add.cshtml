@@ -1,5 +1,5 @@
 ﻿@model OrderReturnMaster
-@{    
+@{
     ViewData["Title"] = "Return Order";
 }
 
@@ -79,7 +79,7 @@
                                                 <h6>TR Date:</h6>
                                                 <div class="input-group date" id="TRDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("dd/MM/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#TRDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -94,7 +94,7 @@
                                                 <h6>Debit Note Date:</h6>
                                                 <div class="input-group date" id="DebitNoteDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" asp-for="DebitNoteDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.DebitNoteDate).ToString("dd/MM/yyyy"))" data-target="#DebitNoteDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#DebitNoteDate" data-toggle="datetimepicker">
+                                                    <div class="input-group-append" data-target="#DebitNoteDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -147,7 +147,7 @@
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
-                                            </div>                                            
+                                            </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:</h6>
                                                 <input type="number" name="Quantity" id="Quantity" min="0" oninput="validity.valid||(value='');" placeholder="Enter Quantity" class="form-control" />
@@ -166,11 +166,12 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Earlier Intimation:</h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datetimepicker">
+                                                    <input type="text" readonly="readonly" name="IntimationDate" id="txtIntimationDate" data-target="#IntimationDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span id="ErrorIntimationDate" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <br />
@@ -183,29 +184,32 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice Date:</h6>
                                                 <div class="input-group date" id="InvoiceDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="InvoiceDate" value="" data-target="#InvoiceDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datetimepicker">
+                                                    <input type="text" readonly="readonly" name="InvoiceDate" id="txtInvoiceDate" data-target="#InvoiceDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span id="ErrorInvoiceDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Expiry Date:</h6>
                                                 <div class="input-group date" id="ExpiryDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="ExpiryDate" value="" data-target="#ExpiryDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datetimepicker">
+                                                    <input type="text" readonly="readonly" name="ExpiryDate" id="txtExpiryDate" data-target="#ExpiryDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span id="ErrorExpiryDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Manufacture Date:</h6>
                                                 <div class="input-group date" id="ManufactureDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datetimepicker">
+                                                    <input type="text" readonly="readonly" name="ManufactureDate" id="txtManufactureDate" data-target="#ManufactureDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
+                                                <span id="ErrorManufactureDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                                 <h6>Remarks:</h6>
@@ -220,13 +224,12 @@
                                             </div>
                                         </div>
                                     </form><br />
-                                           <div class="scrollmenu" id="ProductGrid">
-                                               @if (Model.OrderReturnDetail.Count > 0)
-                                               {
-                                                   <partial name="ProductGrid" model="Model.OrderReturnDetail" />
-                                               }
-                                              
-                                           </div>
+                                    <div class="scrollmenu" id="ProductGrid">
+                                        @if (Model.OrderReturnDetail.Count > 0)
+                                        {
+                                            <partial name="ProductGrid" model="Model.OrderReturnDetail" />
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -287,8 +290,24 @@
             $("#ErrorBatchNo").text('Batch No is required');
             return false;
         }
+        if ($('#txtIntimationDate').val() === '') {
+            $("#ErrorIntimationDate").text('Intimation Date is required');
+            return false;
+        }
         if (InvoiceNo === '') {
             $("#ErrorInvoiceNo").text('Invoice No is required');
+            return false;
+        }
+        if ($('#txtInvoiceDate').val() === '') {
+            $("#ErrorInvoiceDate").text('Invoice Date is required');
+            return false;
+        }
+        if ($('#txtExpiryDate').val() === '') {
+            $("#ErrorExpiryDate").text('Expiry Date is required');
+            return false;
+        }
+        if ($('#txtManufactureDate').val() === '') {
+            $("#ErrorManufactureDate").text('Manufacture Date is required');
             return false;
         }
         if (Remarks === '') {
@@ -310,7 +329,7 @@
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Order Place!'
+            confirmButtonText: 'Yes, Return Order Place!'
         }).then((result) => {
             if (result.value == true) {
                 $('#frmOrderReturnMaster').submit();
