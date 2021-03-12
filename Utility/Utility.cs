@@ -77,7 +77,7 @@ namespace Utility
     {
         Verified = 1,
         Unverified = 2,
-        Reject = 3
+        Rejected = 3
     }
     public enum ProductVisibility
     {

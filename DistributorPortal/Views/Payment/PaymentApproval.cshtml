@@ -100,7 +100,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="DepositDate" data-target-input="nearest">
                                         <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" data-target="#DepositDate" class="form-control datetimepicker-input" />
-                                        <div class="input-group-append" data-target="#DepositDate" data-toggle="datetimepicker">
+                                        <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
@@ -111,7 +111,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
                                         <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
-                                        <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datetimepicker">
+                                        <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
@@ -215,10 +215,10 @@
                                 <div class="col-6 pull-right">
                                     @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 16))
                                     {
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
+                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
                                             Verify
                                         </button>
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Reject" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Reject) ? "d-none" : null)">
+                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
                                             Reject
                                         </button>
                                     }

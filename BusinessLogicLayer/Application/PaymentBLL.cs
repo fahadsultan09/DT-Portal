@@ -61,7 +61,7 @@ namespace BusinessLogicLayer.Application
                 model.ApprovedBy = SessionHelper.LoginUser.Id;
                 model.ApprovedDate = DateTime.Now;
             }
-            else if (PaymentStatus.Reject == paymentStatus)
+            else if (PaymentStatus.Rejected == paymentStatus)
 
             {
                 model.RejectedBy = SessionHelper.LoginUser.Id;

@@ -69,7 +69,7 @@
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                             <h6>TR Number:</h6>
-                                            <span asp-for="TRNo" class="form-control">@Model.TRNo</span>                                            
+                                            <span asp-for="TRNo" class="form-control">@Model.TRNo</span>
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                             <h6>TR Date:</h6>
@@ -77,7 +77,7 @@
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                             <h6>Debit Note No:</h6>
-                                            <span asp-for="DebitNoteNo" class="form-control">@Model.DebitNoteNo</span>                                            
+                                            <span asp-for="DebitNoteNo" class="form-control">@Model.DebitNoteNo</span>
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                             <h6>Debit Note Date:</h6>
@@ -90,8 +90,8 @@
                                     </div><br />
                                     <div class="row">
                                         <div class="col-6">
-                                            <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
-                                        </div>                                        
+                                            <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp;</label><strong><span id="TotalValue">@Model.TotalValue.ToString("#,##0.00")</span></strong>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -136,36 +136,29 @@
                                                     <tbody>
                                                         @foreach (var item in OrderReturnDetail)
                                                         {
-                                                        <tr>
-                                                            <td>@item.ProductMaster.ProductName</td>
-                                                            <td>@item.Company.CompanyName</td>
-                                                            <td>@item.PlantLocation.PlantLocationName</td>
-                                                            <td>@item.BatchNo</td>
-                                                            <td>@item.MRP</td>
-                                                            <td>@item.NetAmount</td>
-                                                            <td>@item.Quantity</td>
-                                                            <td>@item.ReceivedQty</td>
-                                                            <td>@item.ProductMaster.Discount %</td>
-                                                            <td>@item.NetAmount</td>
-                                                            <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
-                                                            <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
-                                                            <td>@item.InvoiceNo</td>
-                                                            <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
-                                                            <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
-                                                            <td>@item.ReturnOrderNumber</td>
-                                                            <td>@item.ReturnOrderStatus</td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td>@item.ProductMaster.ProductName</td>
+                                                                <td>@item.Company.CompanyName</td>
+                                                                <td>@item.PlantLocation.PlantLocationName</td>
+                                                                <td>@item.BatchNo</td>
+                                                                <td>@item.MRP</td>
+                                                                <td>@item.NetAmount</td>
+                                                                <td>@item.Quantity</td>
+                                                                <td>@item.ReceivedQty</td>
+                                                                <td>@item.ProductMaster.Discount %</td>
+                                                                <td>@item.NetAmount</td>
+                                                                <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
+                                                                <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                                                                <td>@item.InvoiceNo</td>
+                                                                <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                                                                <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                                                                <td>@item.ReturnOrderNumber</td>
+                                                                <td>@item.ReturnOrderStatus</td>
+                                                            </tr>
                                                         }
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <script type="text/javascript">
-                                                $(document).ready(function () {
-                                                    $("#example").DataTable({
-                                                       
-                                                    });
-                                                });
-                                            </script>
                                         }
                                     </div>
                                 </div>
@@ -177,5 +170,10 @@
         </div>
     </section>
 </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#example").DataTable({});
+    });
+</script>
 
 

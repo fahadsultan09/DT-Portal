@@ -5,6 +5,12 @@ var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eigh
 
 $(document).ready(function () {
 
+    //File upload
+    $('.custom-file-input').on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+
     $('.select2').select2();
 
     $('#Spinner').hide();
@@ -18,6 +24,33 @@ $(document).ready(function () {
         $('#modal-disclaimer').modal('show');
     });
 
+    $('#ToDate').on('change', function () {
+
+        var d1 = new Date($('#ToDate').val());
+        var d2 = new Date($('#FromDate').val());
+
+        if (d1.getTime() < d2.getTime()) {
+            $('button[type=submit]').attr('disabled', true);
+            Toast.fire({ icon: 'error', title: 'To date cannot be small than from date.' });
+        } else {
+            $('button[type=submit]').attr('disabled', false);
+        }
+
+    });
+
+
+    $('#FromDate').on('change', function () {
+
+        var d1 = new Date($('#ToDate').val());
+        var d2 = new Date($('#FromDate').val());
+
+        if (d1.getTime() < d2.getTime()) {
+            $('button[type=submit]').attr('disabled', true);
+            Toast.fire({ icon: 'error', title: 'To Date can not be greater than from date.' });
+        } else {
+            $('button[type=submit]').attr('disabled', false);
+        }
+    });
 });
 
 $(function () {
@@ -150,11 +183,13 @@ function UpdateStatus(e, controllerName, actionName, id) {
 
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
+
                     if (data) {
-                        if (e.value == "Resolved") {
-                            Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
-                        } else if (e.value == "Reject") {
-                            Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+
+                        if (data.data.Status) {
+                            Toast.fire({ icon: 'success', title: data.data.Message });
+                        } else {
+                            Toast.fire({ icon: 'error', title: data.data.Message });
                         }
                         setTimeout(function () {
                             window.location.reload();
@@ -180,7 +215,11 @@ function UpdateStatus(e, controllerName, actionName, id) {
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val }, function (data) {
                     if (data) {
-                        Toast.fire({ icon: 'success', title: 'Verified successfully.' });
+                        if (data.data.Status) {
+                            Toast.fire({ icon: 'success', title: data.data.Message });
+                        } else {
+                            Toast.fire({ icon: 'error', title: data.data.Message });
+                        }
                         setTimeout(function () {
                             window.location.reload();
                         }, 1000);
@@ -207,22 +246,27 @@ function inWords(num) {
 }
 
 function BlockUI() {
-    $.blockUI.defaults.css = {
-        padding: 0,
-        margin: 0,
-        width: '30%',
-        top: '40%',
-        left: '35%',
-        textAlign: 'center',
-        cursor: 'wait'
-    };
-    $.blockUI({
-        Message: ('<img src="/Images/loading-spinner-grey.gif" />')
-    });
+
+    if ($.blockUI != undefined) {
+        $.blockUI.defaults.css = {
+            padding: 0,
+            margin: 0,
+            width: '30%',
+            top: '40%',
+            left: '35%',
+            textAlign: 'center',
+            cursor: 'wait'
+        };
+        $.blockUI({
+            Message: ('<img src="/Images/loading-spinner-grey.gif" />')
+        });
+    }
 }
 
 function UnBlockUI() {
-    $.unblockUI();
+    if($.blockUI != undefined) {
+        $.unblockUI();
+    }
 }
 
 function isEmailValidate(email) {

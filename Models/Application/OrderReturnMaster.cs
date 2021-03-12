@@ -24,7 +24,7 @@ namespace Models.Application
         public string DebitNoteNo { get; set; }
         [Required(ErrorMessage = "Debit Note Date is required.")]
         public DateTime DebitNoteDate { get; set; }
-        [Required(ErrorMessage = "Return Reson is required.")]
+        [Required(ErrorMessage = "Return Reason is required.")]
         public int OrderReturnReasonId { get; set; }
         [ForeignKey("OrderReturnReasonId")]
         public virtual OrderReturnReason OrderReturnReason { get; set; }
