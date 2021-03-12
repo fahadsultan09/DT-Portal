@@ -181,7 +181,7 @@
                                                             @Model[i].IssuingAuthority
                                                         </td>
                                                         <td>
-                                                            @Model[i].FormNoId
+                                                            @Model[i].LicenseForm.LicenseFormNo
                                                         </td>
                                                         <td>
                                                             <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>

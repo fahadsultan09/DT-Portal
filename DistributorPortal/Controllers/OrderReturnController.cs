@@ -115,7 +115,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                if (!SessionHelper.AddReturnProduct.Any(e => e.ProductId == model.ProductId))
+                if (!SessionHelper.AddReturnProduct.Any(e => e.ProductId == model.ProductId && e.BatchNo == model.BatchNo))
                 {
                     ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(model.ProductId);
                     ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == productMaster.Id).FirstOrDefault();
