@@ -219,8 +219,11 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
-                model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+                if (!SessionHelper.LoginUser.IsDistributor)
+                {
+                    int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
+                    model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+                }
             }
             return PartialView("List", model.ComplaintList);
         }
