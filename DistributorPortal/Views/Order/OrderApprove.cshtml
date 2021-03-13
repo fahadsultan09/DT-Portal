@@ -178,7 +178,10 @@
                     data: { 'DPID': Id, 'Comments': result.value },
                     cache: false,
                     success: function (response) {
-                        Swal.fire('Saved!', response.Message, 'success')
+                        Swal.fire('Saved!', response.Message, 'success');
+                        if (response.data.SignalRResponse !== null) {
+                            CallSignalR(response.data.SignalRResponse);
+                        }
                         setTimeout(function () {
                             window.location.reload();
                         }, 2000);
@@ -216,6 +219,9 @@
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
+                        if (response.data.SignalRResponse !== null) {
+                            CallSignalR(response.data.SignalRResponse);
+                        }
                         setTimeout(function () {
                             window.location.reload();
                         }, 2000);

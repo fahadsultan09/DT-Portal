@@ -1,4 +1,10 @@
-﻿<!-- jquery unobtrusive -->
+﻿<!-- Signal R Script -->
+<script src="~/microsoft-signalr/signalr.js"></script>
+<script type="text/javascript">
+    var UserId = @SessionHelper.LoginUser.Id;
+</script>
+<script src="~/microsoft-signalr/chat.js"></script>
+<!-- jquery unobtrusive -->
 <script src="~/jquery.blockUI/jquery.blockUI.js"></script>
 <script>
     $(".datepicker").datepicker({

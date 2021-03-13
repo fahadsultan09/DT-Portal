@@ -31,8 +31,6 @@ namespace Utility
         Draft = 1,
         [Display(Name = "Pending Approval")]
         PendingApproval = 2,
-        [Display(Name = "Payment Verified")]
-        PaymentVerified = 3,
         [Display(Name = "In Process")]
         InProcess = 4,
         [Display(Name = "Partially Processed")]
@@ -49,8 +47,32 @@ namespace Utility
         Cancel = 12,
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
-
     }
+
+    public enum DistributorOrderStatus
+    {
+        Draft = 1,
+        [Display(Name = "Pending Approval")]
+        PendingApproval = 2,
+        [Display(Name = "In Process")]
+        InProcess = 4,
+        [Display(Name = "Partially Processed")]
+        PartiallyProcessed = 5,
+        [Display(Name = "Completely Processed")]
+        CompletelyProcessed = 6,
+        Reject = 7,
+        Submit = 8,
+        [Display(Name = "On hold")]
+        Onhold = 9,
+        Approved = 10,
+        [Display(Name = "Not Yet Process")]
+        NotYetProcess = 11,
+        Cancel = 12,
+        [Display(Name = "Partially Approved")]
+        PartiallyApproved = 13
+    }
+
+
     public enum PaymentStatus
     {
         Verified = 1,

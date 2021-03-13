@@ -1,4 +1,5 @@
 using DataAccessLayer.WorkProcess;
+using DistributorPortal.SignalRNotification;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,7 @@ namespace DistributorPortal
 
             services.AddSingleton<ISapConnectionPool>(_ => new SapConnectionPool(Configuration.GetValue<string>("SAPSettings:SAPConnection")));
             services.AddScoped<ISapPooledConnection, SapPooledConnection>();
+            services.AddSignalR();
         }
 
         private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
@@ -66,7 +68,9 @@ namespace DistributorPortal
             var builder = new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson().Services.BuildServiceProvider();
             return builder.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First();
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        [Obsolete]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IHostingEnvironment env2)
         {
             app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
@@ -113,10 +117,14 @@ namespace DistributorPortal
             //app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseSignalR(endpoints =>
+            {
+                endpoints.MapHub<ChatHub>("/chatHub");
+            });
             app.UseMvc(route =>
             {
                 route.MapRoute("default", "{Controller=Login}/{Action=Index}/{Id?}");
+               
             });
             RotativaConfiguration.Setup(env2, "Rotativa");
         }
