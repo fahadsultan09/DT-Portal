@@ -101,6 +101,8 @@ namespace Utility
         Resolved = 2,
         Approved = 3,
         Reject = 4,
+        [Display(Name = "In Process")]
+        InProcess = 5,
     }
 
     public enum LicenseStatus

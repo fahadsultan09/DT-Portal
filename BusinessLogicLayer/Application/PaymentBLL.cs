@@ -96,6 +96,10 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
             }
+            if (model.PaymentNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.Id == model.PaymentNo);
+            }
             if (model.Status != null)
             {
                 LamdaId = LamdaId.And(e => e.Status == model.Status);

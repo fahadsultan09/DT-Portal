@@ -1,1 +1,280 @@
-﻿
+﻿@model OrderMaster
+@inject IUnitOfWork unitOfWork
+
+@{
+    Layout = null;
+    int i = 1;
+    int SalesTaxRate = SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+    <link rel="stylesheet" href="~/lib/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/lib/plugins/fontawesome-free/css/all.min.css">
+    <style>
+        .table-bordered > tbody > tr > td,
+        .table-bordered > tbody > tr > th,
+        .table-bordered > tfoot > tr > td,
+        .table-bordered > tfoot > tr > th,
+        .table-bordered > thead > tr > td,
+        .table-bordered > thead > tr > th {
+            border: 1px solid black !important;
+            padding: 0 0 0 5px;
+            font-family: Arial;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        td {
+            word-wrap: break-word;
+        }
+
+        p.pagebreakhere {
+            page-break-before: always
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div>
+                            <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                                <tbody style="font-size:10pt;">
+                                    <tr style="height:20pt;">
+                                        <td colspan="3" style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>SAMI Healthtek Phytek</span></strong></p>
+                                        </td>
+                                        <td colspan="5" style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>ORDER FORM</span></strong></p>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:17pt;">
+                                        <td colspan="2" style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Office: 34-C, Block-6, P.E.C.H.S., Karachi-75350, Pakistan</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span></span>Department: Distribution</strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Doc. No.: STR-F-05</span></strong></p>
+                                        </td>
+                                        <td colspan="2" style="vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Issue No. 02</span></strong></p>
+                                        </td>
+                                        <td colspan="2" style="vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Effective Date: 01 Jan, 2020</span></strong></p>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:8.7pt;">
+                                        <td colspan="2" style="vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>CUSTOMER DETAILS</span></strong></p>
+                                        </td>
+                                        <td colspan="2" style=" vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>ORDER REFERENCE</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span> ORDER VALUE </span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Supplies (1%)</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Supplies (4%)</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle; background-color:#bfbfbf;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Total</span></strong></p>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:17pt;">
+                                        <td style="width:10%; vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Code:</span></strong></p>
+                                        </td>
+                                        <td style="width: 20%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><span>@Model.Distributor.DistributorSAPCode</span></p>
+                                        </td>
+                                        <td style="width: 15%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Order No.:</span></strong></p>
+                                        </td>
+                                        <td style="width: 15%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><span></span>@string.Format("{0:1000000000}", Model.Id)</p>
+                                        </td>
+                                        <td style="width: 10%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>SAMI</span></strong></p>
+                                        </td>
+                                        <td style="width: 10%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.SAMISupplies1.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style="width: 10%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.SAMISupplies4.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style="width: 10%; vertical-align: middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.SAMITotalOrderValues.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:17pt;">
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Name:</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><span>@Model.Distributor.DistributorName</span></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Date:</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; " b>@DateTime.Now.ToString("dd/MMM/yyyy")</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Healthtek</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.HealthTekSupplies1.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.HealthTekSupplies4.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.HealthTekTotalOrderValues.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:17pt;">
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>City:</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><span>@Model.Distributor.City</span></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Ref No.:</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.ReferenceNo</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;"><strong><span>Phytek</span></strong></p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.PhytekSupplies1.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.PhytekSupplies4.ToString("#,##0.00")</p>
+                                        </td>
+                                        <td style=" vertical-align:middle;">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.OrderValueViewModel.PhytekTotalOrderValues.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; font-size:9pt; border-collapse:collapse;">
+                                <tbody>
+                                    <tr style="height:30.75pt; border-right-style:solid; border-right-width:0.75pt; vertical-align:middle;">
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>S.No.</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Code</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Name</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong> </strong><strong><span>Pack Size</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong> </strong><strong><span>Carton Size</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>SF Size</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Qty. (Units)</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Trade Price</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Net Value</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Qty. (Ctns)</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Qty. (SF)</span></strong></p>
+                                        </td>
+                                        <td>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><strong><span>Qty. (Loose)</span></strong></p>
+                                        </td>
+                                    </tr>
+                                    @foreach (var item in Model.OrderDetail)
+                                    {
+                                        <tr style="height:15pt; vertical-align:middle;">
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@(i++)</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.SAPProductCode</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.PackSize</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@item.ProductMaster.CartonSize</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@item.ProductMaster.SFSize</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@item.Quantity</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; padding-right:3pt; ">@item.ProductMaster.TradePrice.ToString("#,##0.00")</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; padding-right:3pt;">@( item.Quantity * item.ProductMaster.Rate * (1 - item.ProductMaster.Discount ) + (item.Quantity * item.ProductMaster.Rate * (1 - item.ProductMaster.Discount ) * (item.ProductMaster.SalesTaxRate + 0  )).ToString("#,##0.00"))</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@Math.Ceiling((item.Quantity / item.ProductMaster.CartonSize))</p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@Math.Ceiling((item.Quantity - ((item.Quantity / item.ProductMaster.CartonSize) * item.ProductMaster.CartonSize) / item.ProductMaster.SFSize)) </p>
+                                            </td>
+                                            <td>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@((item.Quantity - ((item.Quantity / item.ProductMaster.CartonSize) * item.ProductMaster.CartonSize ) + ( ( item.Quantity - ( (item.Quantity / item.ProductMaster.CartonSize) * item.ProductMaster.CartonSize )  / item.ProductMaster.SFSize) * item.ProductMaster.SFSize )) )</p>
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="8">
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center">Total Value of Order (TP less Discount) Including Sales Tax Where Applicable:</p>
+                                        </td>
+                                        <td colspan="4">
+                                            <p style="margin-top:0pt; margin-bottom:0pt;">@Model.TotalValue.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
+                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
+                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
+                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
+                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

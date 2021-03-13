@@ -40,14 +40,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                    <div class="form-group">
-                                        <label class="control-label">Status</label>
-                                        <select asp-for="Status" asp-items="Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
-                                            <option value="">--Select option--</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 @if (!SessionHelper.LoginUser.IsDistributor)
                                 {
                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
@@ -59,6 +51,22 @@
                                         </div>
                                     </div>
                                 }
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Status</label>
+                                        <select asp-for="Status" asp-items="Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
+                                            <option value="">--Select option--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Order No</label>
+                                        <input type="text" asp-for="OrderNo" id="OrderNo" autocomplete="off" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                     <div class="form-group">
                                         <label class="col-form-label font-weight-bold" for="Search"></label>
@@ -86,9 +94,10 @@
 
 <script>
     $('#btnClear').on('click', function () {
-
         $('.select2').val('');
         $('.select2').trigger('change');
+        $('#OrderNo').val('');
+        $('.form-control, .datepicker').val('');
         $('#frmOrderSearch').submit();
     });
 </script>

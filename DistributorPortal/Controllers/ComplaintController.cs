@@ -213,11 +213,6 @@ namespace DistributorPortal.Controllers
             {
                 model.ComplaintList = GetComplaintList();
             }
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                model.ComplaintList = model.ComplaintList.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                return View(model);
-            }
             if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "ComplaintSubCategory").Select(x => x.ApplicationAction.Id).Contains((int)ApplicationActions.IsAdmin))
             {
                 model.ComplaintList = model.ComplaintList;
@@ -227,7 +222,7 @@ namespace DistributorPortal.Controllers
                 int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
                 model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
             }
-            return PartialView();
+            return PartialView("List", model.ComplaintList);
         }
         public List<Complaint> GetComplaintList()
         {

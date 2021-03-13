@@ -25,6 +25,7 @@ namespace DistributorPortal.Controllers
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly PaymentBLL _PaymentBLL;
         private readonly ComplaintBLL _ComplaintBLL;
+        private readonly OrderValueBLL _OrderValueBLL;
         public ReportsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -34,7 +35,7 @@ namespace DistributorPortal.Controllers
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
-
+            _OrderValueBLL = new OrderValueBLL(_unitOfWork);
         }
 
         #region Order
@@ -188,7 +189,7 @@ namespace DistributorPortal.Controllers
                 {
                     case ApplicationPages.Order:
 
-                        return new ViewAsPdf("PrintOrder", GetOrderDetailList(DPID))
+                        return new ViewAsPdf("PrintOrder", BindOrderMaster(id))
                         {
                             PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,
                         };
@@ -234,6 +235,14 @@ namespace DistributorPortal.Controllers
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(new { data = jsonResponse });
             }
+        }
+
+        private OrderMaster BindOrderMaster(int Id)
+        {
+            OrderMaster model = _OrderBLL.GetOrderMasterById(Id);
+            model.OrderDetail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(Id);
+            model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
+            return model;
         }
         #endregion
     }

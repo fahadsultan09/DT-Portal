@@ -43,7 +43,8 @@
                             {
                                 @if (Model.Status == ComplaintStatus.Resolved)
                                 {
-                                    <span class="badge badge-warning pull-right" style="margin-left:5px;">@Model.Status</span>
+                                    string description = EnumHelper<ComplaintStatus>.GetDisplayValue(ComplaintStatus.InProcess);
+                                    <span class="badge badge-warning pull-right" style="margin-left:5px;">@Html.DisplayFor(e => description)</span>
                                 }
                                 else if (Model.Status == ComplaintStatus.Approved)
                                 {
@@ -219,7 +220,7 @@
                     }
                 }
             }).then(function (result) {
-                
+
                 if (result.value) {
                     BlockUI();
                     $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {

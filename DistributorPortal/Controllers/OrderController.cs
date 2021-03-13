@@ -342,20 +342,20 @@ namespace DistributorPortal.Controllers
             OrderMaster model = new OrderMaster();
             if (Id > 0)
             {
-                List<OrderDetail> OrderDetailList = _orderDetailBLL.GetAllOrderDetail().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+                List<OrderDetail> OrderDetailList = _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
                 model = _OrderBLL.GetOrderMasterById(Id);
-                List<OrderDetail> orderDetail = forApprove ? OrderDetailList.Where(e => e.OrderId == Id && e.OrderProductStatus is null).ToList() : OrderDetailList.Where(e => e.OrderId == Id).ToList();
+                List<OrderDetail> orderDetail = forApprove ? OrderDetailList.Where(e => e.OrderProductStatus is null).ToList() : OrderDetailList;
                 model.productDetails = _productDetailBLL.GetAllProductDetailById(OrderDetailList.Where(e => e.OrderId == Id && (forApprove ? e.OrderProductStatus == null : true)).ToList().Select(e => e.ProductId).ToArray(), Id);
                 model.productDetails.ForEach(e => e.OrderNumber = Id);
                 model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
-                if (model.Status == OrderStatus.PendingApproval)
+                if (model.Status == OrderStatus.PendingApproval || model.Status == OrderStatus.PartiallyApproved)
                 {
                     model.productDetails.ForEach(x => x.IsProductSelected = true);
                 }
                 else
                 {
                     model.productDetails.ForEach(x => x.IsProductSelected = orderDetail.First(y => y.ProductId == x.ProductMasterId).IsProductSelected);
-                    model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = (int)orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
+                    model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
                 List<SAPOrderPendingQuantity> _SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 model.productDetails.ForEach(x => x.PendingQuantity = _SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? _SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity : "0");

@@ -24,6 +24,7 @@
         .table-bordered > thead > tr > th {
             border: 1px solid black !important;
             padding: 0 0 0 5px;
+            font-family: Arial;
         }
 
         tr {
@@ -72,7 +73,7 @@
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Doc. No.: DIST/SOP/GEN/001-A</span></strong></p>
                                             </td>
                                             <td style="width:12.56%; vertical-align:middle;">
-                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Issue No. 02</span></strong></p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Issue No.: 01/20</span></strong></p>
                                             </td>
                                             <td style="width:16.42%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>Effective Date: 01 Jan, 2020</span></strong></p>
@@ -220,40 +221,40 @@
                                         @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "SITE").Id))
                                         {
                                             <tr style="height:15pt;">
-                                                <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; vertical-align:bottom;">
+                                                <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@(i++)</p>
                                                 </td>
-                                                <td style="width:17.26%; vertical-align:bottom;">
+                                                <td style="width:17.26%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</p>
                                                 </td>
-                                                <td style="width:4.82%; vertical-align:bottom;">
+                                                <td style="width:4.82%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.BatchNo</p>
                                                 </td>
-                                                <td style="width:5.96%; vertical-align:bottom;">
+                                                <td style="width:5.96%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.MRP</p>
                                                 </td>
-                                                <td style="width:6.86%; vertical-align:bottom;">
+                                                <td style="width:6.86%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Quantity</p>
                                                 </td>
-                                                <td style="width:8.12%; vertical-align:bottom;">
+                                                <td style="width:8.12%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.NetAmount</p>
                                                 </td>
-                                                <td style="width:6.34%; vertical-align:bottom;">
+                                                <td style="width:6.34%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ManufactureDate.ToString("MMM-yyyy")</p>
                                                 </td>/
-                                                <td style="width:6.22%; vertical-align:bottom;">
+                                                <td style="width:6.22%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ExpiryDate.ToString("MMM-yyyy")</p>
                                                 </td>
-                                                <td style="width:10.92%; vertical-align:bottom;">
+                                                <td style="width:10.92%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><span>@item.InvoiceNo</span></p>
                                                 </td>
-                                                <td style="width:7.36%; vertical-align:bottom;">
+                                                <td style="width:7.36%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.InvoiceDate.ToString("dd-MMM-yyyy")</p>
                                                 </td>
-                                                <td style="width:10.66%; vertical-align:bottom;">
+                                                <td style="width:10.66%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.IntimationDate.ToString("dd-MMM-yyyy") </p>
                                                 </td>
-                                                <td style="width:11.18%; vertical-align:bottom;">
+                                                <td style="width:11.18%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Remarks </p>
                                                 </td>
                                             </tr>
@@ -302,7 +303,7 @@
                                             </tr>
                                         }
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Distributor Sign Date:</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -311,7 +312,7 @@
                                             <td style="width:7.46%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Manager Sign:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -343,7 +344,7 @@
                                             </td>
                                         </tr>
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; vertical-align:middle;">
@@ -352,7 +353,7 @@
                                             <td style="width:7.46%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><span style="font-family:'Arial Narrow';">&nbsp;</span></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Name:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -384,7 +385,7 @@
                                             </td>
                                         </tr>
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Stamp:</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -393,7 +394,7 @@
                                             <td style="width:7.46%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Date:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -617,40 +618,40 @@
                                         @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "Korangi").Id))
                                         {
                                             <tr style="height:15pt;">
-                                                <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; vertical-align:bottom;">
+                                                <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@(j++)</p>
                                                 </td>
-                                                <td style="width:17.26%; vertical-align:bottom;">
+                                                <td style="width:17.26%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</p>
                                                 </td>
-                                                <td style="width:4.82%; vertical-align:bottom;">
+                                                <td style="width:4.82%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.BatchNo</p>
                                                 </td>
-                                                <td style="width:5.96%; vertical-align:bottom;">
+                                                <td style="width:5.96%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.MRP</p>
                                                 </td>
-                                                <td style="width:6.86%; vertical-align:bottom;">
+                                                <td style="width:6.86%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Quantity</p>
                                                 </td>
-                                                <td style="width:8.12%; vertical-align:bottom;">
+                                                <td style="width:8.12%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.NetAmount</p>
                                                 </td>
-                                                <td style="width:6.34%; vertical-align:bottom;">
+                                                <td style="width:6.34%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ManufactureDate.ToString("MMM-yyyy")</p>
                                                 </td>/
-                                                <td style="width:6.22%; vertical-align:bottom;">
+                                                <td style="width:6.22%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ExpiryDate.ToString("MMM-yyyy")</p>
                                                 </td>
-                                                <td style="width:10.92%; vertical-align:bottom;">
+                                                <td style="width:10.92%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><span>@item.InvoiceNo</span></p>
                                                 </td>
-                                                <td style="width:7.36%; vertical-align:bottom;">
+                                                <td style="width:7.36%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.InvoiceDate.ToString("dd-MMM-yyyy")</p>
                                                 </td>
-                                                <td style="width:10.66%; vertical-align:bottom;">
+                                                <td style="width:10.66%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.IntimationDate.ToString("dd-MMM-yyyy") </p>
                                                 </td>
-                                                <td style="width:11.18%; vertical-align:bottom;">
+                                                <td style="width:11.18%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Remarks </p>
                                                 </td>
                                             </tr>
@@ -699,7 +700,7 @@
                                             </tr>
                                         }
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Distributor Sign Date:</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -708,7 +709,7 @@
                                             <td style="width:7.46%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Manager Sign:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -740,7 +741,7 @@
                                             </td>
                                         </tr>
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; vertical-align:middle;">
@@ -749,7 +750,7 @@
                                             <td style="width:7.46%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><span style="font-family:'Arial Narrow';">&nbsp;</span></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Name:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -781,7 +782,7 @@
                                             </td>
                                         </tr>
                                         <tr style="height:15pt;">
-                                            <td style="width:14.14%; vertical-align:bottom;">
+                                            <td style="width:14.14%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Stamp:</span></strong></p>
                                             </td>
                                             <td style="width:7.88%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
@@ -790,7 +791,7 @@
                                             <td style="width:7.46%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">&nbsp;</span></strong></p>
                                             </td>
-                                            <td style="width:14.3%; vertical-align:bottom;">
+                                            <td style="width:14.3%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><strong><span style="font-family:'Arial Narrow';">Date:</span></strong></p>
                                             </td>
                                             <td style="width:10.02%; border-bottom-style:solid; border-bottom-width:0.75pt; vertical-align:middle;">

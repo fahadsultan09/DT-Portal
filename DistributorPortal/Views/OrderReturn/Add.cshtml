@@ -66,7 +66,7 @@
                                     <div class="card-body" style="padding: 10px 15px 0px 15px;">
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Transporter:</h6>
+                                                <h6>Transporter:<span class="text-danger"> *</span></h6>
                                                 <input type="text" asp-for="Transporter" placeholder="Enter Transporter" id="Transporter" class="form-control" />
                                                 <span asp-validation-for="Transporter" class="text-danger"></span>
                                             </div>
@@ -86,7 +86,7 @@
                                                 <span asp-validation-for="TRDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Debit Note No:</h6>
+                                                <h6>Debit Note No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
                                                 <span asp-validation-for="DebitNoteNo" class="text-danger"></span>
                                             </div>
@@ -101,7 +101,7 @@
                                                 <span asp-validation-for="DebitNoteDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 row" style="width:100%;">
-                                                <h6>Return Reason:</h6>
+                                                <h6>Return Reason:<span class="text-danger"> *</span></h6>
                                                 <select asp-for="OrderReturnReasonId" asp-items="Model.returnReasonList" class="form-control select2" id="ddlReturnReson">
                                                     <option value="">--Select option--</option>
                                                 </select>
@@ -142,29 +142,29 @@
                                           data-ajax-method="POST">
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 row" style="width:100%;">
-                                                <h6>Product Name:</h6>
+                                                <h6>Product Name:<span class="text-danger"> *</span></h6>
                                                 <select name="ProductId" asp-items="Model.ProductList" class="form-control select2" id="ddlProduct">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Quantity:</h6>
+                                                <h6>Quantity:<span class="text-danger"> *</span></h6>
                                                 <input type="number" name="Quantity" id="Quantity" min="0" oninput="validity.valid||(value='');" placeholder="Enter Quantity" class="form-control" />
                                                 <span id="ErrorQuantity" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>MRP:</h6>
+                                                <h6>MRP:<span class="text-danger"> *</span></h6>
                                                 <input type="number" name="MRP" id="MRP" min="0" oninput="validity.valid||(value='');" step="any" placeholder="Enter MRP" class="form-control" />
                                                 <span id="ErrorMRP" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Batch No:</h6>
+                                                <h6>Batch No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" class="form-control" />
                                                 <span id="ErrorBatchNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Earlier Intimation:</h6>
+                                                <h6>Earlier Intimation:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="IntimationDate" id="txtIntimationDate" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
@@ -177,12 +177,12 @@
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Invoice No:</h6>
+                                                <h6>Invoice No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
                                                 <span id="ErrorInvoiceNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Invoice Date:</h6>
+                                                <h6>Invoice Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="InvoiceDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="InvoiceDate" id="txtInvoiceDate" data-target="#InvoiceDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datepicker">
@@ -192,7 +192,7 @@
                                                 <span id="ErrorInvoiceDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Expiry Date:</h6>
+                                                <h6>Expiry Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="ExpiryDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="ExpiryDate" id="txtExpiryDate" data-target="#ExpiryDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datepicker">
@@ -202,7 +202,7 @@
                                                 <span id="ErrorExpiryDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Manufacture Date:</h6>
+                                                <h6>Manufacture Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="ManufactureDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="ManufactureDate" id="txtManufactureDate" data-target="#ManufactureDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datepicker">
@@ -212,7 +212,7 @@
                                                 <span id="ErrorManufactureDate" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                                <h6>Remarks:</h6>
+                                                <h6>Remarks:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
                                                 <span id="ErrorRemarks" class="text-danger"></span>
                                             </div>

@@ -39,7 +39,8 @@
                                 <td>
                                     @if (item.Status == ComplaintStatus.Resolved)
                                     {
-                                        <span class="badge badge-warning pull-right" style="margin-left:5px;">@item.Status</span>
+                                        string description = EnumHelper<ComplaintStatus>.GetDisplayValue(ComplaintStatus.InProcess);
+                                        <span class="badge badge-warning pull-right" style="margin-left:5px;">@Html.DisplayFor(e => description)</span>
                                     }
                                     else if (item.Status == ComplaintStatus.Approved)
                                     {
@@ -79,13 +80,6 @@
         });
 
         $('.select2').select2();
-
-        //Date range picker
-        $('.date').datetimepicker({
-            format: 'L',
-            todayHighlight: true,
-            maxDate: moment()
-        });
 
     });
 

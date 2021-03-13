@@ -96,6 +96,10 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.Status == model.Status);
             }
+            if (model.OrderReturnNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.Id == model.OrderReturnNo);
+            }
             if (model.FromDate != null)
             {
                 LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);

@@ -98,7 +98,7 @@ namespace BusinessLogicLayer.Application
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
 
             OrderValueViewModel viewModel = new OrderValueViewModel();
-            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
+            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
             List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
@@ -187,7 +187,7 @@ namespace BusinessLogicLayer.Application
         public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
         {
             List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId).ToList();
-            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId)).ToList();
+            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId)).ToList();
             List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
             OrderValueViewModel viewModel = new OrderValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);

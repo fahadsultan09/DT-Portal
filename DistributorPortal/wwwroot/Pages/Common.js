@@ -264,7 +264,7 @@ function BlockUI() {
 }
 
 function UnBlockUI() {
-    if($.blockUI != undefined) {
+    if ($.blockUI != undefined) {
         $.unblockUI();
     }
 }
@@ -279,33 +279,37 @@ function isEmailValidate(email) {
 function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
 
     $('#DPID').val(DPID);
+    if (ApplicationPage == "OrderReturn") {
 
-    if (Reason == 3) {
+        if (Reason == 3) {
+            window.open(window.location.origin + RedirectToUrl + "ApplicationPage=" + ApplicationPage + "&DPID=" + DPID, '_blank');
+        }
+        else {
+            $.post(window.location.origin + "/OrderReturn/GetTRNoById", { DPID: DPID }, function (data) {
+
+                if (data) {
+                    if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 1) != undefined) {
+                        $('#SiteTRNo').val(data.data.find(x => x.PlantLocationId == 1).TRNo);
+                    }
+                    else {
+                        debugger
+                        $('#SiteTRNo').remove();
+                    }
+                    if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 2) != undefined) {
+                        $('#KorangiTRNo').val(data.data.find(x => x.PlantLocationId == 2).TRNo);
+                    }
+                    else {
+                        debugger
+                        $('#KorangiTRNo').remove();
+                    }
+                    $('#modalTR').modal('toggle');
+                    $('#modalTR').modal('show');
+                } else {
+                    Toast.fire({ icon: 'error', title: 'Error occured.' });
+                }
+            });
+        }
+    } else if (ApplicationPage == "Order") {
         window.open(window.location.origin + RedirectToUrl + "ApplicationPage=" + ApplicationPage + "&DPID=" + DPID, '_blank');
-    }
-    else {
-        $.post(window.location.origin + "/OrderReturn/GetTRNoById", { DPID: DPID }, function (data) {
-
-            if (data) {
-                if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 1) != undefined) {
-                    $('#SiteTRNo').val(data.data.find(x => x.PlantLocationId == 1).TRNo);
-                }
-                else {
-                    debugger
-                    $('#SiteTRNo').remove();
-                }
-                if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 2) != undefined) {
-                    $('#KorangiTRNo').val(data.data.find(x => x.PlantLocationId == 2).TRNo);
-                }
-                else {
-                    debugger
-                    $('#KorangiTRNo').remove();
-                }
-                $('#modalTR').modal('toggle');
-                $('#modalTR').modal('show');
-            } else {
-                Toast.fire({ icon: 'error', title: 'Error occured.' });
-            }
-        });
     }
 }

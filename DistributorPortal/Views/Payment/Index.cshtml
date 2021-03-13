@@ -30,10 +30,11 @@
                                   data-ajax="true"
                                   data-ajax-method="POST"
                                   asp-controller="Payment"
-                                  asp-action="Search">
+                                  asp-action="Search"
+                                  id="frmPayment">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                             <div class="form-group">
                                                 <label class="control-label">From Date</label>
                                                 <div class="input-group date" data-target-input="nearest">
@@ -44,7 +45,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                             <div class="form-group">
                                                 <label class="control-label">To Date</label>
                                                 <div class="input-group date" data-target-input="nearest">
@@ -55,26 +56,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                            <div class="form-group">
-                                                <label class="control-label">Status</label>
-                                                <select asp-for="Status" asp-items="Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
-                                                    <option value="">--Select option--</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                            <div class="form-group">
-                                                <label class="control-label">Payment No</label>
-                                                <input type="text" asp-for="PaymentNo" autocomplete="off" class="form-control" />
-                                            </div>
-                                        </div>
                                         @if (!SessionHelper.LoginUser.IsDistributor)
                                         {
-                                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                                 <div class="form-group">
                                                     <label class="control-label">Distributor</label>
                                                     <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2">
@@ -83,6 +68,22 @@
                                                 </div>
                                             </div>
                                         }
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                            <div class="form-group">
+                                                <label class="control-label">Status</label>
+                                                <select asp-for="Status" asp-items="Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })" class="form-control select2">
+                                                    <option value="">--Select option--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                            <div class="form-group">
+                                                <label class="control-label">Payment No</label>
+                                                <input type="text" asp-for="PaymentNo" id="PaymentNo" autocomplete="off" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
                                             <div class="form-group">
                                                 <label class="col-form-label font-weight-bold" for="Search"></label>
@@ -120,6 +121,8 @@
 
         $('.select2').val('');
         $('.select2').trigger('change');
-        $('#frmHome').submit();
+        $('#PaymentNo').val('');
+        $('.form-control, .datepicker').val('');
+        $('#frmPayment').submit();
     });
 </script>
