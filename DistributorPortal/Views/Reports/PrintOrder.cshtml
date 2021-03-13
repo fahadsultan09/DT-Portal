@@ -4,7 +4,7 @@
 @{
     Layout = null;
     int i = 1;
-    int SalesTaxRate = SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20;
+    int SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(unitOfWork).Where(x=>x.Id == Model.DistributorId).First().IsFiler ? 17 : 20);
 }
 
 <!DOCTYPE html>

@@ -100,7 +100,9 @@ function OnSuccess(data) {
             title: data.data.Message
         })
     }
-    Ladda.create($("button[type=submit]", this)[0]).stop();
+    if ($("button[type=submit]", this)[0] != undefined) {
+        Ladda.create($("button[type=submit]", this)[0]).stop();
+    }
     $("body").removeClass("loading");
     
 }

@@ -559,7 +559,7 @@ namespace DistributorPortal.Controllers
         }
         public OrderSearch List(OrderSearch model)
         {
-            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null)
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.OrderNo is null)
             {
                 model.OrderMaster = GetOrderList();
             }

@@ -55,7 +55,7 @@ namespace DistributorPortal.Controllers
         }
         public OrderReturnViewModel List(OrderReturnViewModel model)
         {
-            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null)
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.OrderReturnNo is null)
             {
                 model.OrderReturnMaster = GetOrderReturnList();
             }
