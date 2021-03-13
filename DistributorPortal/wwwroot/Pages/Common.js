@@ -110,7 +110,9 @@ function OnSuccess(data) {
 function Complete() {
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
-    Ladda.create($("button[type=submit]", this)[0]).stop();
+    if ($("button[type=submit]", this)[0] != undefined) {
+        Ladda.create($("button[type=submit]", this)[0]).stop();
+    }
     if ($("#btnOrderNow", this)[0] != undefined) {
         Ladda.create($("#btnOrderNow", this)[0]).stop();
     }

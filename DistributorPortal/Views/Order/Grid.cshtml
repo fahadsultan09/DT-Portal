@@ -108,7 +108,7 @@
         $('.select2').select2();
 
         table = $("#example2").DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
@@ -171,7 +171,6 @@
                 $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
             }
         });
-
 
         //// Handle click on "Select all" control
         $('#example-select-all').on('click', function () {

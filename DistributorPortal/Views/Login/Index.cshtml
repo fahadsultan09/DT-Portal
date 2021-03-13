@@ -163,7 +163,9 @@
             $('#modal-default').modal('hide');
             $('#Spinner').hide('slow');
             $('button[type="submit"]').attr('disabled', false);
-            Ladda.create($("button[type=submit]", this)[0]).stop();
+            if ($("button[type=submit]", this)[0] != undefined) {
+                Ladda.create($("button[type=submit]", this)[0]).stop();
+            }
         }
 
         function LoginBegin() {
