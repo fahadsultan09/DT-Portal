@@ -103,6 +103,8 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order on hold";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order on hold", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+
                 }
                 return Json(jsonResponse);
             }
@@ -241,6 +243,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Status = result > 0;
                 jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order Has been Approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

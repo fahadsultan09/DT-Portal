@@ -34,6 +34,7 @@
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed text-sm">
+    <audio id="xyz" src="~/lib/dist/swiftly-610.mp3" preload="auto"></audio>
     <div class="wrapper">
         <partial name="Navigation" />
         @RenderBody()
@@ -43,7 +44,7 @@
         <div class="loading">
         </div>
     </div>
-    <partial name="FooterScripts" />    
+    <partial name="FooterScripts" />
     @RenderSection("Scripts", required: false)
 </body>
 </html>

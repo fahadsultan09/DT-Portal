@@ -79,9 +79,20 @@ function OnSuccess(data) {
             icon: 'success',
             title: data.data.Message
         })
-        setTimeout(function () {
-            window.location = data.data.RedirectURL;
-        }, 1000);
+        debugger;
+        if (data.data.SignalRResponse !== null) {
+            var result = CallSignalR(data.data.SignalRResponse);
+            if (result) {
+                setTimeout(function () {
+                    window.location = data.data.RedirectURL;
+                }, 1000);
+            }
+        }
+        else {
+            setTimeout(function () {
+                window.location = data.data.RedirectURL;
+            }, 1000);
+        }        
     }
     else {
         Toast.fire({
@@ -91,6 +102,7 @@ function OnSuccess(data) {
     }
     Ladda.create($("button[type=submit]", this)[0]).stop();
     $("body").removeClass("loading");
+    
 }
 
 function Complete() {
