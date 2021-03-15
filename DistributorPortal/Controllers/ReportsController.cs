@@ -57,7 +57,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                return PartialView("OrderList", new OrderMaster());
+                return PartialView("OrderList", GetOrderList(model));
             }
         }
         [HttpGet]
@@ -92,7 +92,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                return PartialView("OrderReturnList", new OrderMaster());
+                return PartialView("OrderReturnList", GetOrderReturnList(model));
             }
         }
         [HttpGet]
@@ -127,7 +127,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                return PartialView("PaymentList", new PaymentMaster());
+                return PartialView("PaymentList", GetPaymentList(model));
             }
         }
         #endregion
@@ -168,7 +168,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                return PartialView("ComplaintList", new Complaint());
+                return PartialView("ComplaintList", GetComplaintList(model));
             }
         }
         #endregion
@@ -192,6 +192,8 @@ namespace DistributorPortal.Controllers
                         return new ViewAsPdf("PrintOrder", BindOrderMaster(id))
                         {
                             PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,
+                            CustomSwitches = "--footer-left \" Use Controlled Copy Only \" --footer-center \" [page]/[toPage] \" --footer-right \" For Internal Use Only \"" +
+                            " --footer-line --footer-font-size \"12\" --footer-spacing 1 --footer-font-name \"Segoe UI\""
                         };
 
                     case ApplicationPages.OrderReturn:

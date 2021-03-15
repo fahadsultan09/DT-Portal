@@ -118,6 +118,14 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
+                         join u in _UserBLL.GetAllUser().ToList()
+                              on x.CreatedBy equals u.Id
+                         join ua in _UserBLL.GetAllUser().ToList()
+                              on x.ApprovedBy equals ua.Id into approvedGroup
+                         from a1 in approvedGroup.DefaultIfEmpty()
+                         join ur in _UserBLL.GetAllUser().ToList()
+                              on x.RejectedBy equals ur.Id into rejectedGroup
+                         from a2 in rejectedGroup.DefaultIfEmpty()
                          select new PaymentMaster
                          {
                              Id = x.Id,
@@ -126,7 +134,15 @@ namespace BusinessLogicLayer.Application
                              Amount = x.Amount,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
+                             CreatedBy = x.CreatedBy,
+                             CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,
+                             ApprovedBy = x.ApprovedBy,
+                             ApprovedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
+                             ApprovedDate = x.ApprovedDate,
+                             RejectedBy = x.RejectedBy,
+                             RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
+                             RejectedDate = x.RejectedDate
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();

@@ -53,7 +53,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">Order No</label>
-                                        <input type="text" asp-for="OrderNo" autocomplete="off" class="form-control" />
+                                        <input type="text" asp-for="OrderNo" id="OrderNo" autocomplete="off" class="form-control" />
                                     </div>
                                 </div>
                                 @if (!SessionHelper.LoginUser.IsDistributor)
@@ -98,17 +98,16 @@
 </section>
 
 <script>
-
     $(document).ready(function () {
 
         $('.select2').select2();
     });
-
     $('#btnClear').on('click', function () {
 
-        $('.form-control').val('');
         $('.select2').val('');
         $('.select2').trigger('change');
+        $('#OrderNo').val('');
+        $('.form-control, .datepicker').val('');
+        $('#frmOrderSearch').submit();
     });
-
 </script>

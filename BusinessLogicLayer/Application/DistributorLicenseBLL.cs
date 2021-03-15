@@ -2,6 +2,7 @@
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,6 +82,51 @@ namespace BusinessLogicLayer.Application
         public DistributorLicense FirstOrDefault(Expression<Func<DistributorLicense, bool>> predicate)
         {
             return _repository.FirstOrDefault(predicate);
+        }
+        public List<DistributorLicense> Search(DistributorLicenseViewModel model)
+        {
+            var LamdaId = (Expression<Func<DistributorLicense, bool>>)(x => x.IsDeleted == false);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.LicenseId != null)
+            {
+                LamdaId = LamdaId.And(e => e.LicenseId == model.LicenseId);
+            }
+            if (model.Status != null)
+            {
+                LamdaId = LamdaId.And(e => e.Status == model.Status);
+            }
+            if (model.FromDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
+            }
+            if (model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            if (model.FromDate != null && model.ToDate != null)
+            {
+                LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date || e.CreatedDate.Date <= Convert.ToDateTime(model.ToDate).Date);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         select new DistributorLicense
+                         {
+                             Id = x.Id,
+                             Distributor = x.Distributor,
+                             LicenseControl = x.LicenseControl,
+                             Type = x.Type,
+                             RequestType = x.RequestType,
+                             IssueDate = x.IssueDate,
+                             Expiry = x.Expiry,
+                             Status = x.Status,
+                             DistributorId = x.DistributorId,
+                             CreatedDate = x.CreatedDate,
+                         }).ToList();
+
+            return query.OrderByDescending(x => x.Id).ToList();
         }
     }
 }

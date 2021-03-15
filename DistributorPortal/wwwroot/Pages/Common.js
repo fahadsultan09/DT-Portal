@@ -11,8 +11,6 @@ $(document).ready(function () {
         $(this).next('.custom-file-label').html(fileName);
     });
 
-    $('.select2').select2();
-
     $('#Spinner').hide();
 
     $('.datetimepicker-input').keypress(function (e) {

@@ -31,6 +31,11 @@ namespace Models.Application
         [Range(1, 999999999)]
         [Column(TypeName = "double")]
         public double TotalValue { get; set; }
+        public int? RejectedBy { get; set; }
+        public DateTime? RejectedDate { get; set; }
+        public string RejectedComment { get; set; }
+        public int? ReceivedBy { get; set; }
+        public DateTime? ReceivedDate { get; set; }
         [NotMapped]
         public List<OrderReturnDetail> OrderReturnDetail { get; set; }
         [NotMapped]
@@ -43,5 +48,9 @@ namespace Models.Application
         public List<ProductDetail> ProductDetail { get; set; }
         [NotMapped]
         public string CreatedName { get; set; }
+        [NotMapped]
+        public string ReceivedName { get; set; }
+        [NotMapped]
+        public string RejectedName { get; set; }
     }
 }
