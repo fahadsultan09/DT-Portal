@@ -70,7 +70,7 @@ namespace DistributorPortal
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        [Obsolete]
+       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IHostingEnvironment env2)
         {
             app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
@@ -117,6 +117,16 @@ namespace DistributorPortal
             //app.UseRouting();
 
             app.UseAuthorization();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapDefaultControllerRoute();
+            //    // Which is the same as the template
+            //    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            //    //endpoints.MapControllers();
+            //    //endpoints.MapRazorPages();
+            //    endpoints.MapHub<ChatHub>("/chatHub");
+            //    //endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+            //});
             app.UseSignalR(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chatHub");
@@ -124,7 +134,7 @@ namespace DistributorPortal
             app.UseMvc(route =>
             {
                 route.MapRoute("default", "{Controller=Login}/{Action=Index}/{Id?}");
-               
+
             });
             RotativaConfiguration.Setup(env2, "Rotativa");
         }

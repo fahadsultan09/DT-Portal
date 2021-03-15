@@ -4,6 +4,7 @@ using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Controllers;
 using DistributorPortal.Resource;
+using Fingers10.ExcelExport.ActionResults;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
@@ -12,6 +13,8 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Utility;
 using Utility.HelperClasses;
 
 namespace ProductPortal.Controllers
@@ -147,6 +150,20 @@ namespace ProductPortal.Controllers
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });
+        }
+
+        public IActionResult ProductsExportToExcel(ProductEnum Id)
+        {
+            if (Id == ProductEnum.ProductMaster)
+            {
+                var data = _ProductMasterBLL.GetAllProductMaster();
+                return new ExcelResult<ProductMaster>(data, "Products", SessionHelper.LoginUser.FirstName + " " + SessionHelper.LoginUser.LastName + "_productlist");
+            }
+            else
+            {
+                var data = _ProductDetailBLL.GetViewModelForExcel();
+                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", SessionHelper.LoginUser.FirstName + " " + SessionHelper.LoginUser.LastName + "_productlist");
+            }           
         }
     }
 }

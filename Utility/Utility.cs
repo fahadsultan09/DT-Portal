@@ -26,6 +26,12 @@ namespace Utility
         Home = 2
     }
 
+    public enum ProductEnum
+    {
+        ProductMaster = 1,
+        ProductMapping = 2
+    }
+
     public enum OrderStatus
     {
         Draft = 1,
