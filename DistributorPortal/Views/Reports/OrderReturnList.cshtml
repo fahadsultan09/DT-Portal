@@ -30,10 +30,10 @@
                             <th>Status</th>
                             <th>Order Return By</th>
                             <th>Order Return Date</th>
-                            @*<th>Approved By</th>
-                                <th>Approved Date</th>
-                                <th>Rejected By</th>
-                                <th>Rejected Date</th>*@
+                            <th>Received By</th>
+                            <th>Received Date</th>
+                            <th>Rejected By</th>
+                            <th>Rejected Date</th>
                             <th>Action</th>
                         </tr>
                     <tbody>
@@ -51,6 +51,10 @@
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.CreatedName</td>
                                     <td>@item.CreatedDate</td>
+                                    <td>@item.ReceivedName</td>
+                                    <td>@item.ReceivedDate</td>
+                                    <td>@item.RejectedName</td>
+                                    <td>@item.RejectedDate</td>
                                     <td>
                                         <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>

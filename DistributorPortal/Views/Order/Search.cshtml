@@ -93,6 +93,10 @@
 </section>
 
 <script>
+    $(document).ready(function () {
+
+        $('.select2').select2();
+    });
     $('#btnClear').on('click', function () {
         $('.select2').val('');
         $('.select2').trigger('change');

@@ -40,9 +40,10 @@ namespace DistributorPortal.Controllers
         // GET: DistributorLicense
         public IActionResult Index()
         {
-            ViewBag.Distributor = _distributorBll.DropDownDistributorList(null);
-            ViewBag.License = _licenseControlBLL.DropDownLicenseControlList(0);
-            var model = _DistributorLicenseBLL.GetAllDistributorLicense();
+            DistributorLicenseViewModel model = new DistributorLicenseViewModel();
+            model.LicenseControlList = _licenseControlBLL.DropDownLicenseControlList(0);
+            model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
+            model.DistributorLicenseList = GetDistributorLicenseList();
             return View(model);
         }
         public IActionResult Add()
@@ -188,6 +189,35 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-
+        public DistributorLicenseViewModel List(DistributorLicenseViewModel model)
+        {
+            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.DistributorId is null)
+            {
+                model.DistributorLicenseList = GetDistributorLicenseList();
+            }
+            else
+            {
+                model.DistributorLicenseList = _DistributorLicenseBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            return model;
+        }
+        public List<DistributorLicense> GetDistributorLicenseList()
+        {
+            var list = _DistributorLicenseBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            return list;
+        }
+        [HttpPost]
+        public IActionResult Search(DistributorLicenseViewModel model, string Search)
+        {
+            if (!string.IsNullOrEmpty(Search))
+            {
+                model = List(model);
+            }
+            else
+            {
+                model.DistributorLicenseList = GetDistributorLicenseList();
+            }
+            return PartialView("List", model.DistributorLicenseList);
+        }
     }
 }

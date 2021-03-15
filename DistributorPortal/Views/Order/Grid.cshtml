@@ -4,6 +4,12 @@
     MultiSelectList companyList = new CompanyBLL(unitOfWork).DropDownCompanyList(Model.Where(x => x.IsProductSelected == true).Select(x => x.CompanyId).ToArray(), false);
 }
 
+<style type="text/css">
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #1ab8f2;
+    }
+</style>
+
 <form asp-controller="Order"
       asp-action="ApproveOrder"
       id="frmApproveOrder"
