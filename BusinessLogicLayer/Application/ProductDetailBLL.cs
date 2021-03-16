@@ -2,11 +2,13 @@
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Utility;
 
 namespace BusinessLogicLayer.Application
 {
@@ -102,6 +104,38 @@ namespace BusinessLogicLayer.Application
         public List<ProductDetail> Where(Expression<Func<ProductDetail, bool>> expression)
         {
             return _unitOfWork.GenericRepository<ProductDetail>().Where(expression);
+        }
+
+        public List<ProductMappingModel> GetViewModelForExcel()
+        {
+            var GetAllProduct = GetAllProductDetail();
+            List<ProductMappingModel> ProductMappingModel = new List<ProductMappingModel>();
+            foreach (var item in GetAllProduct)
+            {
+                ProductMappingModel.Add(new ProductMappingModel()
+                {
+                    PackCode = item.ProductMaster.PackCode,
+                    ProductName = item.ProductMaster.ProductName,
+                    PackSize = item.ProductMaster.PackSize,
+                    Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
+                    PlantLocation = item.PlantLocation.PlantLocationName,
+                    Company = item.Company.CompanyName,
+                    WTaxRate = item.WTaxRate,
+                    Factor = item.Factor,
+                    ParentDistributor = item.ParentDistributor,
+                    S_OrderType = item.S_OrderType,
+                    R_OrderType = item.R_OrderType,
+                    SaleOrganization = item.SaleOrganization,
+                    DistributionChannel = item.DistributionChannel,
+                    Division = item.Division,
+                    DispatchPlant = item.DispatchPlant,
+                    S_StorageLocation = item.S_StorageLocation,
+                    R_StorageLocation = item.R_StorageLocation,
+                    SalesItemCategory = item.SalesItemCategory,
+                    ReturnItemCategory = item.ReturnItemCategory
+                });
+            }
+            return ProductMappingModel;
         }
     }
 }

@@ -23,6 +23,14 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">Product List</h2>
+                <a asp-controller="Product"
+                   asp-action="ProductsExportToExcel"
+                   asp-route-Id="@ProductEnum.ProductMapping"
+                   id="frmImport"
+                   class="btn btn-info float-right">
+                    <i class="fa fa-download"></i>
+                    Export
+                </a>
             </div>
             <!-- /.card-header -->
             <div class="card-body scrollmenu">
