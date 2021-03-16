@@ -179,6 +179,7 @@ namespace DistributorPortal.Controllers
                         payment.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
                         payment.Status = PaymentStatus.Verified;
                         result = _PaymentBLL.Update(payment);
+                        _PaymentBLL.UpdateStatus(model, Status, Remarks);
 
                         jsonResponse.Status = result;
                         jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";

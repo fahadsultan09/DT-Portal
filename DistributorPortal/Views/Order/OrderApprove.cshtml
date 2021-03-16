@@ -255,13 +255,14 @@
 
 
     $('body').on('change', '#ddlCompany', function () {
-
+        BlockUI();
         $.post(window.location.origin + "/Order/GetCompanyProduct", { companyId: $('#ddlCompany').val().map(i => Number(i)), OrderId: '@Model.Id' }, function (response) {
 
             if (response.data.HtmlString != null) {
                 $("#approveGrid").html(response.data.HtmlString.Result);
                 $('#ddlCompany').val(response.companyId);
             }
+            UnBlockUI();
         });
     });
 

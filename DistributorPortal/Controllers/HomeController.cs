@@ -316,7 +316,7 @@ namespace DistributorPortal.Controllers
                 model.Draft = OrderMasterList.Where(x => x.Status == OrderStatus.Draft).Count();
                 model.VerifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount);
                 model.UnverifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
-
+                model.ReturnOrder = _OrderReturnBLL.GetAllOrderReturn().Count();
                 return View(model);
             }
             catch (Exception ex)

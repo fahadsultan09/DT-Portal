@@ -24,6 +24,7 @@
         margin-left: -4px;
         text-align: center;
         text-shadow: rgb(176, 190, 217) 1px 1px, rgb(176, 190, 217) -1px -1px, rgb(176, 190, 217) 1px -1px, rgb(176, 190, 217) -1px 1px;
+    }
 </style>
 
 <!-- Main content -->
@@ -155,7 +156,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Earlier Intimation:</h6>
-                                                <div class="input-group date"  data-target-input="nearest">
+                                                <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" id="IntimationDate" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -211,7 +212,7 @@
                                         </div>
 
                                         <br />
-                                        <div id="ProductGrid">
+                                        <div class="scrollmenu" id="ProductGrid">
                                             <partial name="ApproveGrid" data="@Model" />
                                         </div>
                                     </div>
@@ -244,13 +245,13 @@
             "responsive": true,
             "autoWidth": false,
             "order": [],
-            "scrollX": true,
-            "sScrollXInner": "200%",
+           "scrollX": true,
+           "sScrollXInner": "150%",
             "columnDefs": [{
                 "targets": 0,
                 "searchable": false,
                 "orderable": false,
-                "className": "dt-body-center"                
+                "className": "dt-body-center"
             }],
             'order': [1, 'asc']
        });

@@ -70,7 +70,22 @@ namespace DistributorPortal.Controllers
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             }
             SessionHelper.AddProduct = new List<ProductDetail>();
-            return View("AddDetail", BindOrderMaster(id));
+
+            OrderMaster model = _OrderBLL.GetOrderMasterById(id);
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+            }
+            else
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+            }
+            return View("AddDetail", BindOrderMaster(model, id));
         }
         [HttpGet]
         public IActionResult Approve(string DPID)
@@ -80,8 +95,21 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             }
-            var order = BindOrderMaster(id, true);
-            SessionHelper.DistributorBalance = _OrderBLL.GetBalance(order.Distributor.DistributorSAPCode, _Configuration);
+            OrderMaster model = _OrderBLL.GetOrderMasterById(id);
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+            }
+            else
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+            }
+            var order = BindOrderMaster(model, id, true);
             ViewBag.Status = order.Status;
             return View("OrderApprove", order);
         }
@@ -193,7 +221,21 @@ namespace DistributorPortal.Controllers
             int id = 0;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             ViewBag.View = true;
-            return View(BindOrderMaster(id));
+            OrderMaster model = _OrderBLL.GetOrderMasterById(id);
+
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+            }
+            else
+            {
+                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+            }
+            return View(BindOrderMaster(model, id));
         }
 
         [HttpPost]
@@ -203,6 +245,7 @@ namespace DistributorPortal.Controllers
             try
             {
                 var OrderId = model.First().OrderNumber;
+                var order = _OrderBLL.GetOrderMasterById(OrderId);
                 var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (companyId.Count() > 0)
                 {
@@ -221,27 +264,34 @@ namespace DistributorPortal.Controllers
                 IRestResponse response = Client.Execute(request);
                 var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
                 var detail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
-                foreach (var item in SAPProduct)
+                if (SAPProduct != null)
                 {
-                    var product = detail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
-                    if (product != null)
+                    foreach (var item in SAPProduct)
                     {
-                        if (!string.IsNullOrEmpty(item.SAPOrderNo))
+                        var product = detail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
+                        if (product != null)
                         {
-                            product.SAPOrderNumber = item.SAPOrderNo;
-                            product.OrderProductStatus = OrderStatus.NotYetProcess;
-                            _orderDetailBLL.Update(product);
+                            if (!string.IsNullOrEmpty(item.SAPOrderNo))
+                            {
+                                product.SAPOrderNumber = item.SAPOrderNo;
+                                product.OrderProductStatus = OrderStatus.NotYetProcess;
+                                _orderDetailBLL.Update(product);
+                            }
                         }
                     }
+                    var UpdatedOrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
+                    order.Status = UpdatedOrderDetail.Count > 0 ? OrderStatus.PartiallyApproved : OrderStatus.InProcess;
+                    order.ApprovedBy = SessionHelper.LoginUser.Id;
+                    order.ApprovedDate = DateTime.Now;
+                    var result = _OrderBLL.Update(order);
+                    jsonResponse.Status = result > 0;
+                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
                 }
-                var order = _OrderBLL.GetOrderMasterById(OrderId);
-                var UpdatedOrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
-                order.Status = UpdatedOrderDetail.Count > 0 ? OrderStatus.PartiallyApproved : OrderStatus.InProcess;
-                order.ApprovedBy = SessionHelper.LoginUser.Id;
-                order.ApprovedDate = DateTime.Now;
-                var result = _OrderBLL.Update(order);
-                jsonResponse.Status = result > 0;
-                jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Unable to approve order";
+                }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order Has been Approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                 return Json(new { data = jsonResponse });
@@ -340,13 +390,11 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        private OrderMaster BindOrderMaster(int Id, bool forApprove = false)
+        private OrderMaster BindOrderMaster(OrderMaster model, int Id, bool forApprove = false)
         {
-            OrderMaster model = new OrderMaster();
             if (Id > 0)
             {
                 List<OrderDetail> OrderDetailList = _orderDetailBLL.GetOrderDetailByIdByMasterId(Id);
-                model = _OrderBLL.GetOrderMasterById(Id);
                 List<OrderDetail> orderDetail = forApprove ? OrderDetailList.Where(e => e.OrderProductStatus is null).ToList() : OrderDetailList;
                 model.productDetails = _productDetailBLL.GetAllProductDetailById(OrderDetailList.Where(e => e.OrderId == Id && (forApprove ? e.OrderProductStatus == null : true)).ToList().Select(e => e.ProductId).ToArray(), Id);
                 model.productDetails.ForEach(e => e.OrderNumber = Id);
@@ -358,25 +406,17 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     model.productDetails.ForEach(x => x.IsProductSelected = orderDetail.First(y => y.ProductId == x.ProductMasterId).IsProductSelected);
+                    model.productDetails.ForEach(x => x.ProductMaster.Amount = orderDetail.First(y => y.ProductId == x.ProductMasterId).Amount);
                     model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
-                List<SAPOrderPendingQuantity> _SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
-                model.productDetails.ForEach(x => x.PendingQuantity = _SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? _SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity : "0");
+                model.productDetails.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
                 SessionHelper.AddProduct = model.productDetails;
             }
             else
             {
+                model = new OrderMaster();
                 model.productDetails = new List<ProductDetail>();
                 model.OrderValueViewModel = new OrderValueViewModel();
-            }
-
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-            }
-            else
-            {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
             }
             model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First();
             model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
@@ -572,10 +612,11 @@ namespace DistributorPortal.Controllers
         public IActionResult GetCompanyProduct(int[] companyId, int OrderId)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            object list = (dynamic)null;
+            List<ProductDetail> list = new List<ProductDetail>();
 
-            var order = BindOrderMaster(OrderId);
-            ViewBag.Status = order.Status;
+            OrderMaster model = _OrderBLL.GetOrderMasterById(OrderId);
+            OrderMaster orderMaster = _OrderBLL.GetOrderMasterById(OrderId);
+            ViewBag.Status = orderMaster.Status;
             if (companyId.Count() > 0)
 
             {
@@ -595,7 +636,7 @@ namespace DistributorPortal.Controllers
 
             if (DPID == "all")
             {
-                if (list.Any(x=>x.IsProductSelected == true))
+                if (list.Any(x => x.IsProductSelected == true))
                 {
                     list.ForEach(x => x.IsProductSelected = false);
                 }

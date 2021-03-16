@@ -1,21 +1,11 @@
 ﻿using DataAccessLayer.WorkProcess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.ApplicationContext;
 using Scheduler.SAPBAPIIntegration;
-using System;
-using Utility.HelperClasses;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.FileExtensions;
 using System.Threading;
+using Utility.HelperClasses;
 
 namespace Scheduler
 {

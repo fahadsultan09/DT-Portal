@@ -53,7 +53,7 @@ namespace BusinessLogicLayer.Application
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
-        public void UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
+        public bool UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
             if (PaymentStatus.Verified == paymentStatus)
 
@@ -72,6 +72,7 @@ namespace BusinessLogicLayer.Application
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
             _repository.Update(model);
+            return _unitOfWork.Save() > 0;
         }
         public PaymentMaster GetById(int id)
         {

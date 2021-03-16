@@ -221,6 +221,7 @@ namespace BusinessLogicLayer.Application
                     {
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                         var detail = SessionHelper.AddReturnProduct;
+                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
                         Update(model);
                         var list = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id).ToList();
                         _OrderReturnDetailBLL.DeleteRange(list);

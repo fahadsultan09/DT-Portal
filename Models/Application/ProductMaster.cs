@@ -33,6 +33,8 @@ namespace Models.Application
         [NotMapped]
         public int ApprovedQuantity { get; set; }
         [NotMapped]
+        public double Amount { get; set; }
+        [NotMapped]
         public SelectList ProductList { get; set; }
     }
 }

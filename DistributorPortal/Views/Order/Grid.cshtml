@@ -22,9 +22,9 @@
         <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
             <thead>
                 <tr>
-                    <th colspan="2" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                    <th colspan="@(SessionHelper.LoginUser.IsDistributor ? "13" : "14")" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                         Company:
-                        <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies" style="width: 85%;">
+                        <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies" style="width: 25%;">
                             <option disabled>--Select company--</option>
                         </select>
                     </th>
@@ -32,7 +32,7 @@
                 <tr>
                     <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                         <div class="icheck-success d-inline">
-                            <input type="checkbox" name="select_all" value="all" id="example-select-all" />
+                            <input type="checkbox" name="select_all" id="example-select-all" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
                             <label for="example-select-all"></label>
                         </div>
                     </th>
@@ -70,15 +70,15 @@
                         </td>
                         <td>@Model[i].ProductMaster.ProductName @Model[i].ProductMaster.ProductDescription</td>
                         <td>@Model[i].ProductMaster.PackSize</td>
-                        <td>@Model[i].ProductMaster.Quantity.ToString("#,##0")</td>
+                        <td>@Model[i].ProductMaster.Quantity</td>
                         <td>
                             @if (ViewBag.View == true)
                             {
-                                @Model[i].ProductMaster.ApprovedQuantity.ToString("#,##0")
+                                @Model[i].ProductMaster.ApprovedQuantity
                             }
                             else
                             {
-                                <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity numeric" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
+                                <input type="number" asp-for="@Model[i].ProductMaster.ApprovedQuantity" value="@Model[i].ProductMaster.Quantity" class="form-control ApproveQuantity" min="0" max="9999999" step="any" oninput="validity.valid||(value='');" _ProductId="@Model[i].ProductMasterId" _OrderId="@Model[i].OrderNumber" />
                             }
                         </td>
                         <td>@Model[i].PendingQuantity</td>
@@ -86,7 +86,7 @@
                         <td>@Model[i].ProductMaster.Rate</td>
                         <td>@Model[i].ProductMaster.Discount %</td>
                         <td><span id="CurtonQty">@(Math.Ceiling(Model[i].ProductMaster.Quantity / Model[i].ProductMaster.CartonSize))</span></td>
-                        <td>@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</td>
+                        <td><span class="Amount">@(Model[i].ProductMaster.Quantity * Model[i].ProductMaster.Rate)</span></td>
                         <td>@Model[i].WTaxRate %</td>
                         <td>
                             @Model[i].Company.CompanyName
@@ -95,6 +95,12 @@
                     </tr>
                 }
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "10" : "11")"><span class="float-right">Grand Total</span></td>
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "4" : "3")"><strong><span class="TotalNetValue"></span></strong></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </form>
@@ -119,8 +125,10 @@
             "autoWidth": false,
             "order": [],
             "scrollX": true,
-            "sScrollXInner": "200%",
+            "sScrollXInner": "150%",
         });
+        CalculateTotal();
+
         //$('.numeric').mask('000,000,000,000');
 
         $('.ApproveQuantity').bind('keyup mouseup',function (data) {
@@ -200,6 +208,16 @@
         });
     });
 
+    function CalculateTotal() {
+        var sum = 0;
+        $(".Amount").each(function () {
+
+            if ($(this).text() != "") {
+                sum += parseFloat($(this).text());
+            }
+        });
+        $('.TotalNetValue').text(parseFloat(sum).toLocaleString(window.document.documentElement.lang));
+    }
 </script>
 
 

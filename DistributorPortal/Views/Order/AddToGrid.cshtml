@@ -29,10 +29,10 @@
                         <input type="number" asp-for="@item.ProductMaster.Quantity" value="@item.ProductMaster.Quantity" min="0" oninput="validity.valid||(value='');" class="form-control ApproveQuantity numeric" _ProductId="@item.ProductMaster.Id" />
                     </td>
                     <td width="12%"><span id="CurtonSize">@item.ProductMaster.CartonSize</span></td>
-                    <td width="5%" >@item.ProductMaster.Rate</td>
-                    <td width="5%" >@item.ProductMaster.Discount %</td>
+                    <td width="5%">@item.ProductMaster.Rate</td>
+                    <td width="5%">@item.ProductMaster.Discount %</td>
                     <td width="20%"><span id="CurtonQty">@(Math.Ceiling(item.ProductMaster.Quantity / item.ProductMaster.CartonSize))</span></td>
-                    <td width="5%" >@(item.ProductMaster.Quantity * item.ProductMaster.Rate)</td>
+                    <td width="5%"><span class="Amount">@((item.ProductMaster.Quantity * item.ProductMaster.Rate))</span></td>
                     <td width="10%">@item.WTaxRate %</td>
                     <td width="10%">@item.Company.CompanyName</td>
                     <td>
@@ -48,19 +48,34 @@
                 </tr>
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "11")"><span class="float-right">Grand Total</span></td>
+                @if (Model.Count() > 0 && Model != null)
+                {
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "4" : "3")"><strong><span class="TotalNetValue">@SessionHelper.AddProduct.Select(e => e.ProductMaster.Amount).Sum()</span></strong></td>
+                }
+                else
+                {
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "4" : "3")"><strong><span class="TotalNetValue"></span></strong></td>
+                }
+            </tr>
+        </tfoot>
     </table>
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#example2").DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
             "scrollX": true,
-            "scrollY": true,
-            "sScrollXInner": "130%"
+            "sScrollXInner": "150%"
         });
+
+        CalculateTotal();
+        CalculateTotalNetValue();
 
 
         $('.ChangeQuantity').bind('keyup mouseup',function (data) {
@@ -85,8 +100,8 @@
                 }
                 else {
                     $(this).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
-                }   
-                
+                }
+
                     $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "Order")',
@@ -121,7 +136,16 @@
 
     });
 
+    function CalculateTotalNetValue() {
+        var sum = 0;
+        $(".Amount").each(function () {
 
+            if ($(this).text() != "") {
+                sum += parseFloat($(this).text());
+            }
+        });
+        $('.TotalNetValue').text(parseFloat(sum).toLocaleString(window.document.documentElement.lang));
+    }
 
 </script>
 
