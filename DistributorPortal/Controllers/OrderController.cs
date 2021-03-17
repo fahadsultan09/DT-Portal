@@ -131,7 +131,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order on hold";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order on hold", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order marked on hold by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
 
                 }
                 return Json(jsonResponse);
@@ -159,6 +159,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order Rejected";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                 }
                 return Json(jsonResponse);
             }

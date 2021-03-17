@@ -199,11 +199,13 @@ function UpdateStatus(e, controllerName, actionName, id) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
 
                     if (data) {
-
                         if (data.data.Status) {
                             Toast.fire({ icon: 'success', title: data.data.Message });
                         } else {
                             Toast.fire({ icon: 'error', title: data.data.Message });
+                        }
+                        if (data.data.SignalRResponse !== null) {
+                            CallSignalR(data.data.SignalRResponse);
                         }
                         setTimeout(function () {
                             window.location.reload();
@@ -233,6 +235,9 @@ function UpdateStatus(e, controllerName, actionName, id) {
                             Toast.fire({ icon: 'success', title: data.data.Message });
                         } else {
                             Toast.fire({ icon: 'error', title: data.data.Message });
+                        }
+                        if (data.data.SignalRResponse !== null) {
+                            CallSignalR(data.data.SignalRResponse);
                         }
                         setTimeout(function () {
                             window.location.reload();

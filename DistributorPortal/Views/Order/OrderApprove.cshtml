@@ -92,21 +92,27 @@
                                             </div>
                                             @if (!SessionHelper.LoginUser.IsDistributor)
                                             {
-                                                <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="Approve('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="ladda-button btn btn-success float-right" id="Approve">
-                                                        Approve
-                                                    </button>
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="OnHold('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-warning float-right">
-                                                        On Hold
-                                                    </button>
-                                                </div>
-                                                <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
-                                                    <button onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-primary float-right">
-                                                        Reject
-                                                    </button>
-                                                </div>
+                                                if (Model.Status == OrderStatus.PendingApproval || Model.Status == OrderStatus.PartiallyApproved || Model.Status == OrderStatus.Onhold)
+                                                {
+                                                    <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                        <button onclick="Approve('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="ladda-button btn btn-success float-right" id="Approve">
+                                                            Approve
+                                                        </button>
+                                                    </div>
+                                                }
+                                                if (Model.Status == OrderStatus.PendingApproval)
+                                                {
+                                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                        <button onclick="OnHold('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-warning float-right">
+                                                            On Hold
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 mt-2">
+                                                        <button onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-primary float-right">
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                }
                                             }
                                         </div>
                                     </div>
@@ -177,10 +183,11 @@
                     url: '@Url.Action("OnHold", "Order")',
                     data: { 'DPID': Id, 'Comments': result.value },
                     cache: false,
-                    success: function (response) {
+                        success: function (response) {
+                            debugger;
                         Swal.fire('Saved!', response.Message, 'success');
-                        if (response.data.SignalRResponse !== null) {
-                            CallSignalR(response.data.SignalRResponse);
+                        if (response.SignalRResponse !== null) {
+                            CallSignalR(response.SignalRResponse);
                         }
                         setTimeout(function () {
                             window.location.reload();
@@ -219,8 +226,8 @@
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
-                        if (response.data.SignalRResponse !== null) {
-                            CallSignalR(response.data.SignalRResponse);
+                        if (response.SignalRResponse !== null) {
+                            CallSignalR(response.SignalRResponse);
                         }
                         setTimeout(function () {
                             window.location.reload();
@@ -231,7 +238,7 @@
             }
         })
     }
-    function Approve(Id) {        
+    function Approve(Id) {
         $('#example2').dataTable().fnDestroy();
         $("#example2").DataTable({
             "lengthMenu": [[-1], ["All"]]

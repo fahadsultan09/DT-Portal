@@ -15,6 +15,7 @@ using SapNwRfc.Pooling;
 using System;
 using System.Linq;
 using Utility.HelperClasses;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace DistributorPortal
 {
@@ -70,8 +71,8 @@ namespace DistributorPortal
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-       
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IHostingEnvironment env2)
+        [Obsolete]
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostingEnvironment env2)
         {
             app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
             if (env.IsDevelopment())

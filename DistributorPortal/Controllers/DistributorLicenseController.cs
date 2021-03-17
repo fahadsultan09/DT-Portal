@@ -169,16 +169,17 @@ namespace DistributorPortal.Controllers
 
                 if (Status == LicenseStatus.Verified)
                 {
-                    jsonResponse.Message = "License approved successfully.";
+                    jsonResponse.Message = model.LicenseControl.LicenseName + " License approved successfully.";
                 }
                 else
                 {
-                    jsonResponse.Message = "License has been rejected.";
+                    jsonResponse.Message = model.LicenseControl.LicenseName + " License has been rejected.";
                 }
                 _unitOfWork.Save();
 
                 jsonResponse.Status = true;
                 jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
+                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "License #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(LicenseStatus), model.Status) };
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
