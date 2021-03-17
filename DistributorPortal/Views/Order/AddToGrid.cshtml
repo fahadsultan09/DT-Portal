@@ -64,6 +64,7 @@
     </table>
 </div>
 <script type="text/javascript">
+
     $(document).ready(function () {
         $("#example2").DataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -75,8 +76,6 @@
         });
 
         CalculateTotal();
-        CalculateTotalNetValue();
-
 
         $('.ChangeQuantity').bind('keyup mouseup',function (data) {
             debugger;
@@ -136,7 +135,7 @@
 
     });
 
-    function CalculateTotalNetValue() {
+    function CalculateTotal() {
         var sum = 0;
         $(".Amount").each(function () {
 
