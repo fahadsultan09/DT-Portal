@@ -19,7 +19,7 @@
 
     .ordervalue > tr {
         padding: 0;
-        font-size:11px
+        font-size: 11px
     }
 </style>
 
@@ -106,3 +106,20 @@
         </tr>
     </tbody>
 </table>
+
+<script>
+
+    $(document).ready(function () {
+
+        CalculateTotalOrderValue();
+    });
+
+    function CalculateTotalOrderValue() {
+
+        var sami = $('#SAMITotalOrderValues').val();
+        var HealthTek = $('#HealthTekTotalOrderValues').val();
+        var Phytek = $('#PhytekTotalOrderValues').val();
+        var total = parseFloat(sami) + parseFloat(HealthTek) + parseFloat(Phytek);
+        $('#TotalValue').text(parseFloat(total).toLocaleString(window.document.documentElement.lang));
+    }
+</script>

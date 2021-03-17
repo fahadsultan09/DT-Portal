@@ -255,9 +255,14 @@
         </div>
     </section>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 <script>
+
     var SAPOrderPendingQuantity = [];
+    var ProductArr = [];
+    var response = [];
 
     function obj(Id, PendingQuantity) {
         this.Id = Id;
@@ -315,9 +320,6 @@
         }
     });
 
-    var ProductArr = [];
-    var response = [];
-
     function CheckQuantity() {
         $('#ErrorQuantity').empty();
         $('#ErrorProductName').empty();
@@ -338,16 +340,7 @@
             }
         }
 
-        function CalculateTotal() {
-            debugger;
-            var sami = $('#SAMITotalOrderValues').val();
-            var HealthTek = $('#HealthTekTotalOrderValues').val();
-            var Phytek = $('#PhytekTotalOrderValues').val();
-            var total = parseFloat(sami) + parseFloat(HealthTek) + parseFloat(Phytek);
-            $('#TotalValue').text(parseFloat(total).toLocaleString(window.document.documentElement.lang));
-        }
-
-        function SubmitForm() {
+    function SubmitForm() {
 
             Swal.fire({
                 title: 'Are you sure?',
@@ -370,6 +363,7 @@
         Ladda.create($("#btnOrderNow", this)[0]).start();
         Ladda.create($("#btnDraft", this)[0]).start();
     }
+
     $(document).ready(function () {
 
         $('.select2').select2();

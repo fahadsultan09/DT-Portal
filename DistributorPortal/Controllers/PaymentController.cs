@@ -141,7 +141,7 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
+                model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(SessionHelper.LoginUser.Distributor.Id);
             }
             else
             {

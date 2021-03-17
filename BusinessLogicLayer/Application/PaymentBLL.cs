@@ -223,26 +223,29 @@ namespace BusinessLogicLayer.Application
         }
         public PaymentValueViewModel GetOrderValueModel(int DistributorId)
         {
-            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-            List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
-            List<OrderDetail> orderDetails = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
             PaymentValueViewModel viewModel = new PaymentValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
-            var SAMIproductDetails = productDetails.Where(e => e.CompanyId == sami).ToList();
+
+            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
+            List<OrderDetail> orderDetails = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
+            List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
+
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
                                                         join p in productDetails on od.ProductId equals p.ProductMasterId
                                                         where od.ProductId == p.ProductMasterId && p.CompanyId == 1
                                                         group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                         let Amount = odp.Sum(m => m.od.Amount)
                                                         select Amount).Sum(x => x);
+
             viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
                                                              join p in productDetails on od.ProductId equals p.ProductMasterId
                                                              where od.ProductId == p.ProductMasterId && p.CompanyId == 3
                                                              group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                              let Amount = odp.Sum(m => m.od.Amount)
                                                              select Amount).Sum(x => x);
+
             viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
                                                           join p in productDetails on od.ProductId equals p.ProductMasterId
                                                           where od.ProductId == p.ProductMasterId && p.CompanyId == 2
@@ -259,7 +262,7 @@ namespace BusinessLogicLayer.Application
             {
                 viewModel.SAMIUnConfirmedPayment = Where(x => x.CompanyId == sami && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.SAMINetPayable = (viewModel.SAMITotalUnapprovedOrderValues - SessionHelper.DistributorBalance.SAMI) > 0 ? viewModel.SAMITotalUnapprovedOrderValues - SessionHelper.DistributorBalance.SAMI : 0;
+            viewModel.SAMINetPayable = viewModel.SAMITotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment <= 0 ? 0 : viewModel.SAMITotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
             if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
@@ -271,7 +274,7 @@ namespace BusinessLogicLayer.Application
             {
                 viewModel.HealthTekUnConfirmedPayment = Where(x => x.CompanyId == HealthTek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.HealthTekNetPayable = (viewModel.HealthTekTotalUnapprovedOrderValues - SessionHelper.DistributorBalance.HealthTek) > 0 ? viewModel.HealthTekTotalUnapprovedOrderValues - SessionHelper.DistributorBalance.HealthTek : 0;
+            viewModel.HealthTekNetPayable = viewModel.HealthTekTotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment <= 0 ? 0 : viewModel.HealthTekTotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
             if (SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
@@ -283,7 +286,7 @@ namespace BusinessLogicLayer.Application
             {
                 viewModel.PhytekUnConfirmedPayment = Where(x => x.CompanyId == Phytek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.PhytekNetPayable = (viewModel.PhytekTotalUnapprovedOrderValues - SessionHelper.DistributorBalance.PhyTek) > 0 ? viewModel.PhytekTotalUnapprovedOrderValues - SessionHelper.DistributorBalance.PhyTek : 0;
+            viewModel.PhytekNetPayable = viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;
         }
     }
