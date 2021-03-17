@@ -48,6 +48,7 @@ namespace Models.Application
         public DateTime? RejectedDate { get; set; }
         public int? ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
+        [Required(ErrorMessage = "Attachment is required")]
         public string File { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }

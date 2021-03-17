@@ -1,15 +1,5 @@
 ﻿@model OrderReturnMaster
 
-<style type="text/css">
-    table.dataTable tr th.select-checkbox.selected::after {
-        content: "✔";
-        margin-top: -11px;
-        margin-left: -4px;
-        text-align: center;
-        text-shadow: rgb(176, 190, 217) 1px 1px, rgb(176, 190, 217) -1px -1px, rgb(176, 190, 217) 1px -1px, rgb(176, 190, 217) -1px 1px;
-</style>
-
-
 @if (Model.OrderReturnDetail.Count > 0)
 {
     <div class="table-responsive-sm">
@@ -18,7 +8,7 @@
                 <tr>
                     <th>
                         <div class="icheck-success d-inline">
-                            <input type="checkbox" name="select_all" value="1" id="example-select-all" />
+                            <input type="checkbox" name="select_all" id="example-select-all" value="true" />
                             <label for="example-select-all"></label>
                         </div>
                     </th>
@@ -26,7 +16,7 @@
                     <th>Company</th>
                     <th>Location</th>
                     <th>Batch No</th>
-                    <th width="15%">MRP</th>
+                    <th>MRP</th>
                     <th>Total Price</th>
                     <th>Quantity</th>
                     <th>Received Qty</th>
@@ -43,20 +33,23 @@
                 @for (int i = 0; i < Model.OrderReturnDetail.Count(); i++)
                 {
                     <tr>
-                        <input type="hidden" asp-for="@Model.OrderReturnDetail[i].ProductId" />
                         <td>
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" id="checkbox@(i)" asp-for="@Model.OrderReturnDetail[i].IsProductSelected" />
-                                <label for="checkbox@(i)"></label>
+                                <input type="checkbox" id="checkbox@(Model.OrderReturnDetail[i].Id)" asp-for="@Model.OrderReturnDetail[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model.OrderReturnDetail[i].ProductId.ToString())" checked="@(Model.OrderReturnDetail[i].IsProductSelected == true ? "checked" : null)" />
+                                <label for="checkbox@(Model.OrderReturnDetail[i].Id)">
+                                </label>
                             </div>
                         </td>
-                        <td>@Model.OrderReturnDetail[i].ProductMaster.ProductName @Model.OrderReturnDetail[i].ProductMaster.ProductDescription</td>
+                        <td>
+                            <input type="hidden" asp-for="@Model.OrderReturnDetail[i].ProductId" />
+                            @Model.OrderReturnDetail[i].ProductMaster.ProductName @Model.OrderReturnDetail[i].ProductMaster.ProductDescription
+                        </td>
                         <td>@Model.OrderReturnDetail[i].Company.CompanyName</td>
                         <td>@Model.OrderReturnDetail[i].PlantLocation.PlantLocationName</td>
                         <td>
                             <input type="number" asp-for="@Model.OrderReturnDetail[i].BatchNo" value="@Model.OrderReturnDetail[i].BatchNo" class="form-control" />
                         </td>
-                        <td width="15%">
+                        <td>
                             <input type="number" asp-for="@Model.OrderReturnDetail[i].MRP" width="100" value="@Model.OrderReturnDetail[i].MRP" class="form-control" />
                         </td>
                         <td>@Model.OrderReturnDetail[i].TotalPrice</td>
@@ -83,20 +76,70 @@
         </table>
     </div>
 }
-<script>
+<script type="text/javascript">
+
+    var table;
 
     $(document).ready(function () {
 
-        $("#example2").DataTable({
+        $('.select2').select2();
+
+        table = $("#example2").DataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
             "scrollX": true,
-            "sScrollXInner": "150%"
+            "sScrollXInner": "150%",
         });
 
         CalculateTotal();
+
+        $("input[type='checkbox']").change(function (e) {
+
+            if ($(this).attr('Id') != "example-select-all") {
+                $.post(window.location.origin + "/OrderReturn/SelectProduct", { DPID: $(this).val() }, function (response) {
+                });
+                if ($(this).is(':checked') == false) {
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').val(0);
+                } else {
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+                }
+            }
+        });
+        $("#example-select-all").change(function (e) {
+            
+            $.post(window.location.origin + "/OrderReturn/SelectAllProduct", { IsSelected: $('#example-select-all').is(':checked') }, function (response) {
+            });
+            if ($(this).is(':checked') == false) {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').val(0);
+            } else {
+                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+            }
+        });
+        //// Handle click on "Select all" control
+        $('#example-select-all').on('click', function () {
+            
+            // Check/uncheck all checkboxes in the table
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        //// Handle click on checkbox to set state of "Select all" control
+        $('#example2 tbody').on('change', 'input[type="checkbox"]', function () {
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#example-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
     });
 
     function CalculateTotal() {

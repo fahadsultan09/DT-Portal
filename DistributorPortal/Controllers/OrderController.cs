@@ -248,6 +248,12 @@ namespace DistributorPortal.Controllers
                 var OrderId = model.First().OrderNumber;
                 var order = _OrderBLL.GetOrderMasterById(OrderId);
                 var OrderDetail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
+                if (SessionHelper.AddProduct.Where(x => x.IsProductSelected == true).Count() == 0)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Atlest select one product.";
+                    return Json(new { data = jsonResponse });
+                }
                 if (companyId.Count() > 0)
                 {
                     model = model.Where(x => companyId.Contains(x.Company.Id)).ToList();
@@ -256,7 +262,7 @@ namespace DistributorPortal.Controllers
                 {
                     var Detail = OrderDetail.First(e => e.ProductId == item.ProductMasterId);
                     Detail.ApprovedQuantity = item.ProductMaster.ApprovedQuantity;
-                    Detail.IsProductSelected = Detail.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
+                    Detail.IsProductSelected = item.ProductMaster.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
                 var Client = new RestClient(_Configuration.PostOrder);
@@ -309,6 +315,10 @@ namespace DistributorPortal.Controllers
         public JsonResult AddProduct(int Quantity, int Product)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            if (SessionHelper.AddProduct is null)
+            {
+                SessionHelper.AddProduct = new List<ProductDetail>();
+            }
             if (!SessionHelper.AddProduct.Any(e => e.ProductMasterId == Product))
             {
                 var master = _productDetailBLL.GetProductDetailByMasterId(Product);
@@ -411,6 +421,7 @@ namespace DistributorPortal.Controllers
                     model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
                 model.productDetails.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
+                model.productDetails.ForEach(x => x.DispatchQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).DispatchQuantity)).ToString() : "0");
                 SessionHelper.AddProduct = model.productDetails;
             }
             else
@@ -619,48 +630,42 @@ namespace DistributorPortal.Controllers
             OrderMaster orderMaster = _OrderBLL.GetOrderMasterById(OrderId);
             ViewBag.Status = orderMaster.Status;
             if (companyId.Count() > 0)
-
             {
                 list = SessionHelper.AddProduct.Where(x => companyId.Contains(x.CompanyId)).ToList();
-            }
-            else
-            {
-                list = SessionHelper.AddProduct.ToList();
             }
             jsonResponse.HtmlString = RenderRazorViewToString("Grid", list);
             return Json(new { data = jsonResponse, companyId = companyId });
         }
         public void SelectProduct(string DPID)
         {
-            int id = 0;
             var list = SessionHelper.AddProduct;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+            var product = list.FirstOrDefault(e => e.ProductMasterId == id);
 
-            if (DPID == "all")
+            if (product != null)
             {
-                if (list.Any(x => x.IsProductSelected == true))
+                if (product.IsProductSelected)
                 {
-                    list.ForEach(x => x.IsProductSelected = false);
+                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = false;
                 }
                 else
                 {
-                    list.ForEach(x => x.IsProductSelected = true);
+                    list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = true;
                 }
+            }
+
+            SessionHelper.AddProduct = list;
+        }
+        public void SelectAllProduct(bool IsSelected)
+        {
+            var list = SessionHelper.AddProduct;
+            if (IsSelected)
+            {
+                list.ForEach(x => x.IsProductSelected = true);
             }
             else
             {
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
-                var product = list.FirstOrDefault(e => e.ProductMasterId == id);
-                if (product != null)
-                {
-                    if (product.IsProductSelected)
-                    {
-                        list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = false;
-                    }
-                    else
-                    {
-                        list.FirstOrDefault(e => e.ProductMasterId == id).IsProductSelected = true;
-                    }
-                }
+                list.ForEach(x => x.IsProductSelected = false);
             }
             SessionHelper.AddProduct = list;
         }

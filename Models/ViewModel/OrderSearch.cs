@@ -12,9 +12,5 @@ namespace Models.ViewModel
         public OrderStatus? Status { get; set; }
         public int? OrderNo { get; set; }
         public List<OrderMaster> OrderMaster { get; set; }
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
-        public int? DistributorId { get; set; }
-        public SelectList DistributorList { get; set; }
     }
 }

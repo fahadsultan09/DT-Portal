@@ -60,7 +60,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -70,9 +70,14 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult PaymentApproval(string DPID)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return View("PaymentApproval", BindPaymentMaster(id));
+        }
+        [HttpGet]
+        public IActionResult PaymentView(string DPID)
+        {
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+            return View("PaymentView", BindPaymentMaster(id));
         }
         [HttpPost]
         public JsonResult SaveEdit(PaymentMaster model)
@@ -136,12 +141,13 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
             }
             else
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
             }
-            model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel();
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
             model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId, true);
             model.DepostitorBankList = new BankBLL(_unitOfWork).DropDownBankList(model.CompanyId, model.DepositorBankName);
@@ -152,7 +158,6 @@ namespace DistributorPortal.Controllers
         public JsonResult UpdateStatus(int id, PaymentStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            bool result = false;
             try
             {
                 PaymentMaster model = _PaymentBLL.GetById(id);
@@ -170,15 +175,14 @@ namespace DistributorPortal.Controllers
                     var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
                     IRestResponse restResponse = Client.Execute(request);
                     var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
-                    var payment = _PaymentBLL.Where(e => e.Id == id).FirstOrDefault();
 
-                    if (payment != null)
+                    if (SAPPaymentStatus != null)
                     {
-                        payment.SAPCompanyCode = SAPPaymentStatus.SAPCompanyCode;
-                        payment.SAPDocumentNumber = SAPPaymentStatus.SAPDocumentNumber;
-                        payment.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
-                        payment.Status = PaymentStatus.Verified;
-                        result = _PaymentBLL.Update(payment);
+                        model.SAPCompanyCode = SAPPaymentStatus.SAPCompanyCode;
+                        model.SAPDocumentNumber = SAPPaymentStatus.SAPDocumentNumber;
+                        model.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
+                        model.Status = PaymentStatus.Verified;
+                        bool result = _PaymentBLL.Update(model);
                         _PaymentBLL.UpdateStatus(model, Status, Remarks);
 
                         jsonResponse.Status = result;
@@ -198,7 +202,7 @@ namespace DistributorPortal.Controllers
                 {
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Payment rejected successfully.";
+                    jsonResponse.Message = "Payment "+ Status + " successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 }
                 _unitOfWork.Save();

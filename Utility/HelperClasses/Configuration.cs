@@ -40,12 +40,11 @@ namespace Utility.HelperClasses
                 DistributorFiler = configuration["Distributor:Filer"].ParseToInt32();
                 DistributorNonFiler = configuration["Distributor:NonFiler"].ParseToInt32();
                 GetPendingOrderValue = configuration["AppSettings:GetPendingOrderValue"];
-                int portnumber;
                 BaseFilePath = configuration["Settings:FolderPath"];
                 FromEmail = configuration["Settings:FromEmail"];
                 Password = configuration["Settings:Password"];
                 ServerAddress = configuration["Settings:ServerAddress"];
-                int.TryParse(configuration["Settings:Port"], out portnumber);
+                int.TryParse(configuration["Settings:Port"], out int portnumber);
                 Port = portnumber;
             }
         }

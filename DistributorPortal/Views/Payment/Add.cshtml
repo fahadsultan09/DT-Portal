@@ -188,9 +188,10 @@
                                                 <span asp-validation-for="CompanyBankCode" class="text-danger"></span>
                                             </div>
                                         </div><br />
+                                        <input type="text" asp-for="File" style="width: 0.01em; height: 0.01em;" readonly="readonly" />
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Attachment</h6>
+                                                <h6>Attachment<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="form-group">
@@ -198,12 +199,14 @@
                                                         <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
                                                         <label class="custom-file-label" for="customFile">Choose file</label>
                                                     </div>
+                                                    <span asp-validation-for="File" class="text-danger"></span>
                                                 </div>
                                                 <span class="caption">
                                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
                                                 </span>
                                             </div>
                                         </div>
+                                        <br />
                                         <div class="row">
                                             <div class="col-6">
                                             </div>
@@ -228,6 +231,14 @@
 </div>
 
 <script>
+
+    $('#customFile').on("change", function () {
+        if (this.files[0].size > 5242880) {
+        }
+        else {
+            $('#File').val($(this).val().split("\\").pop());
+        }
+    });
 
     $(document).ready(function () {
 

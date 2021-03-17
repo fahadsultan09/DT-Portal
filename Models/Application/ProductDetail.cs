@@ -45,6 +45,8 @@ namespace Models.Application
         [NotMapped]
         public string PendingQuantity { get; set; }
         [NotMapped]
+        public string DispatchQuantity { get; set; }
+        [NotMapped]
         public double Discount { get; set; }
     }
 }
