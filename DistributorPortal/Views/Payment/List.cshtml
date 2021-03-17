@@ -54,9 +54,21 @@
                                 </td>
                                 <td>@item.CreatedDate.ToString("dd/MM/yyyy hh:mm:ss")</td>
                                 <td>
-                                    <a asp-controller="Payment" asp-action="PaymentApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" method="GET" class="btn btn-info btn-sm">
+                                    <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="View" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @if (item.Status == PaymentStatus.Unverified && !SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        <a asp-controller="Payment" asp-action="PaymentApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </a>
+                                    }
+                                    @if (item.Status == PaymentStatus.Unverified && SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @item.Id);" value="@PaymentStatus.Canceled" title="Cancel" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -71,7 +83,7 @@
     $(document).ready(function () {
 
         $("#example1").DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],

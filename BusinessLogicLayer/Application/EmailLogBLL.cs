@@ -1,12 +1,10 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
-using Microsoft.AspNetCore.Hosting;
 using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Utility.HelperClasses;
 
@@ -14,9 +12,9 @@ namespace BusinessLogicLayer.Application
 {
     public class EmailLogBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<EmailLog> repository;
-        private Configuration _Configuration;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<EmailLog> repository;
+        private readonly Configuration _Configuration;
 
         public EmailLogBLL(IUnitOfWork unitOfWork, Configuration _configuration)
         {

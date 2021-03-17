@@ -115,6 +115,10 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                if (SessionHelper.AddReturnProduct is null)
+                {
+                    SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+                }
                 if (!SessionHelper.AddReturnProduct.Any(e => e.ProductId == model.ProductId && e.BatchNo == model.BatchNo))
                 {
                     ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(model.ProductId);
@@ -161,13 +165,12 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
             return View("Approve", BindOrderReturnMaster(id, true));
         }
-
         public void SelectProduct(string DPID)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             var list = SessionHelper.AddReturnProduct;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             var product = list.FirstOrDefault(e => e.ProductId == id);
+
             if (product != null)
             {
                 if (product.IsProductSelected)
@@ -181,27 +184,39 @@ namespace DistributorPortal.Controllers
             }
             SessionHelper.AddReturnProduct = list;
         }
-
+        public void SelectAllProduct(bool IsSelected)
+        {
+            var list = SessionHelper.AddReturnProduct;
+            if (IsSelected)
+            {
+                list.ForEach(x => x.IsProductSelected = true);
+            }
+            else
+            {
+                list.ForEach(x => x.IsProductSelected = false);
+            }
+            SessionHelper.AddReturnProduct = list;
+        }
         [HttpPost]
         public JsonResult ApprovedQuantity(OrderReturnMaster model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                _unitOfWork.Begin();
-                //var ProductIds = model.OrderReturnDetail.Where(e => e.OrderReturnId == model.Id).Select(e => e.ProductId).ToArray();
-                var ProductIds = model.OrderReturnDetail.Select(e => e.ProductId).ToList();
-                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && ProductIds.Contains(e.ProductId)).ToList();
-                var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
-                if (master != null)
+                if (SessionHelper.AddReturnProduct.Where(x => x.IsProductSelected == true).Count() == 0)
                 {
-
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Atlest select one product.";
+                    return Json(new { data = jsonResponse });
                 }
-                foreach (var item in model.OrderReturnDetail.Where(x => x.IsProductSelected == true))
+                _unitOfWork.Begin();
+                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && model.OrderReturnDetail.Select(e => e.ProductId).Contains(e.ProductId)).ToList();
+                var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == model.Id);
+                foreach (var item in model.OrderReturnDetail)
                 {
                     var product = OrderreturnProduct.First(e => e.ProductId == item.ProductId);
-                    product.IsProductSelected = true;
                     product.ReceivedQty = item.ReceivedQty;
+                    product.IsProductSelected = SessionHelper.AddReturnProduct.FirstOrDefault(x => x.ProductId == item.ProductId).IsProductSelected;
                     product.ReceivedBy = SessionHelper.LoginUser.Id;
                     product.ReceivedDate = DateTime.Now;
                     _OrderReturnDetailBLL.Update(product);
@@ -224,25 +239,27 @@ namespace DistributorPortal.Controllers
                             _OrderReturnDetailBLL.Update(product);
                         }
                     }
-                }
-                if (_OrderReturnDetailBLL.Where(e => e.ReturnOrderNumber == null && e.OrderReturnId == model.Id).ToList().Count > 0)
-                {
-                    master.Status = OrderReturnStatus.PartiallyReceived;
+                    var UpdatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && e.ReturnOrderNumber == null).ToList();
+                    master.Status = UpdatedOrderDetail.Count > 0 ? OrderReturnStatus.PartiallyReceived : OrderReturnStatus.Received;
+                    master.ReceivedBy = SessionHelper.LoginUser.Id;
+                    master.ReceivedDate = DateTime.Now;
+                    var result = _OrderReturnBLL.Update(master);
+                    jsonResponse.Status = result;
+                    jsonResponse.Message = result ? NotificationMessage.ReceivedReturn : "Unable to received order";
                 }
                 else
                 {
-                    master.Status = OrderReturnStatus.Received;
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Unable to received order";
                 }
-                _OrderReturnBLL.Update(master);
                 _unitOfWork.Commit();
-                jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.ReceivedReturn;
                 jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 _unitOfWork.Rollback();
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.FailedReturn;
                 return Json(new { data = jsonResponse });
@@ -290,24 +307,26 @@ namespace DistributorPortal.Controllers
                 model = _OrderReturnBLL.GetById(Id);
                 model.Distributor = model.Distributor;
                 model.OrderReturnDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == Id && (forApprove ? string.IsNullOrEmpty(e.ReturnOrderNumber) : true)).ToList();
-                var allproducts = _ProductMasterBLL.GetAllProductMaster();
+                var allproducts = _ProductMasterBLL.Where(x => model.OrderReturnDetail.Select(x => x.ProductId).Contains(x.Id));
                 List<ProductDetail> allproductDetail;
                 if (SessionHelper.LoginUser.IsStoreKeeper)
                 {
-                    allproductDetail = _ProductDetailBLL.Where(e => e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).ToList();
+                    allproductDetail = _ProductDetailBLL.Where(e => e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && model.OrderReturnDetail.Select(x => x.ProductId).Contains(e.ProductMasterId)).ToList();
                 }
                 else
                 {
-                    allproductDetail = _ProductDetailBLL.GetAllProductDetail();
+                    allproductDetail = _ProductDetailBLL.Where(e => model.OrderReturnDetail.Select(x => x.ProductId).Contains(e.ProductMasterId)).ToList();
                 }
-                OrderReturnDetail detail = new OrderReturnDetail();
                 foreach (var item in model.OrderReturnDetail)
                 {
                     ProductMaster productMaster = allproducts.FirstOrDefault(e => e.Id == item.ProductId);
                     ProductDetail productDetail = allproductDetail.FirstOrDefault(e => e.ProductMasterId == item.ProductId);
+                    OrderReturnDetail detail = new OrderReturnDetail();
+
                     if (productMaster != null && productDetail != null)
                     {
                         var list = SessionHelper.AddReturnProduct;
+                        detail.Id = item.Id;
                         detail.BatchNo = item.BatchNo;
                         detail.MRP = item.MRP;
                         detail.TotalPrice = item.TotalPrice;
@@ -331,6 +350,7 @@ namespace DistributorPortal.Controllers
                         detail.Company = productDetail.Company;
                         detail.ReturnOrderNumber = item.ReturnOrderNumber;
                         detail.ReturnOrderStatus = item.ReturnOrderStatus;
+                        detail.IsProductSelected = true;
                         list.Add(detail);
                         SessionHelper.AddReturnProduct = list;
                     }
@@ -386,6 +406,7 @@ namespace DistributorPortal.Controllers
             }
             catch (Exception ex)
             {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 response.Message = "Unable to add Product";
                 response.Status = false;
                 return Json(new { data = response });

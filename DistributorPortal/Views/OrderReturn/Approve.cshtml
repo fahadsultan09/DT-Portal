@@ -17,14 +17,6 @@
     .swal-modal .swal-text {
         text-align: center;
     }
-
-    table.dataTable tr th.select-checkbox.selected::after {
-        content: "✔";
-        margin-top: -11px;
-        margin-left: -4px;
-        text-align: center;
-        text-shadow: rgb(176, 190, 217) 1px 1px, rgb(176, 190, 217) -1px -1px, rgb(176, 190, 217) 1px -1px, rgb(176, 190, 217) -1px 1px;
-    }
 </style>
 
 <!-- Main content -->
@@ -212,7 +204,7 @@
                                         </div>
 
                                         <br />
-                                        <div class="scrollmenu" id="ProductGrid">
+                                        <div id="ProductGrid">
                                             <partial name="ApproveGrid" data="@Model" />
                                         </div>
                                     </div>
@@ -227,55 +219,8 @@
 </div>
 
 <script>
-    var table;
+
     $(document).ready(function () {
-        $("tr > input[type='checkbox']").change(function (e) {
-            $.post(window.location.origin + "/OrderReturn/SelectProduct", { DPID: $(this).val() }, function (response) {
-            });
-            if ($(this).is(':checked') == false) {
-                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
-                $(this).closest('td').closest('tr').find('.ApproveQuantity').val(0);
-            } else {
-                $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
-            }
-        });
-
-       table = $("#example").DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-            "responsive": true,
-            "autoWidth": false,
-            "order": [],
-           "scrollX": true,
-           "sScrollXInner": "150%",
-            "columnDefs": [{
-                "targets": 0,
-                "searchable": false,
-                "orderable": false,
-                "className": "dt-body-center"
-            }],
-            'order': [1, 'asc']
-       });
-
-        //// Handle click on "Select all" control
-        $('#example-select-all').on('click', function () {
-            // Check/uncheck all checkboxes in the table
-            var rows = table.rows({ 'search': 'applied' }).nodes();
-            $('input[type="checkbox"]', rows).prop('checked', this.checked);
-        });
-
-        //// Handle click on checkbox to set state of "Select all" control
-        $('#example tbody').on('change', 'input[type="checkbox"]', function () {
-            // If checkbox is not checked
-            if (!this.checked) {
-                var el = $('#example-select-all').get(0);
-                // If "Select all" control is checked and has 'indeterminate' property
-                if (el && el.checked && ('indeterminate' in el)) {
-                    // Set visual state of "Select all" control
-                    // as 'indeterminate'
-                    el.indeterminate = true;
-                }
-            }
-        });
 
         $('#frm-example').on('submit', function (e) {
             var form = this;
@@ -296,13 +241,6 @@
                     }
                 }
             });
-
-            // FOR TESTING ONLY
-
-            // Output form data to a console
-            $('#example-console').text($(form).serialize());
-            console.log("Form submission", $(form).serialize());
-
             // Prevent actual form submission
             e.preventDefault();
         });
@@ -316,11 +254,7 @@
     }
 
     function SubmitForm() {
-        debugger;
-        $('#example2').dataTable().fnDestroy();
-        $("#example2").DataTable({
-            "lengthMenu": [[-1], ["All"]]
-        });
+
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',
@@ -329,6 +263,12 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Order Received!'
         }).then((result) => {
+
+            $('#example2').dataTable().fnDestroy();
+            $("#example2").DataTable({
+                "lengthMenu": [[-1], ["All"]]
+            });
+
             if (result.value == true) {
                 $('#frmOrderReturnMaster').submit();
             }
@@ -337,7 +277,7 @@
     }
 
     function AddToGrid() {
-        debugger;
+
         var ddlProduct = $("#ddlProduct option:selected").text();
         var productId = $('#ddlProduct').val();
         var Quantity = $('#Quantity').val();

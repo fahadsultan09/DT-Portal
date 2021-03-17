@@ -299,6 +299,7 @@ namespace DistributorPortal.Controllers
                 List<OrderMaster> OrderMasterList = _OrderMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 _PaymentMaster = _PaymentMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 _Complaint = _Complaint.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                _OrderReturnMaster = _OrderReturnBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
 
                 model.UnverifiedPaymentAllCount = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Count();
                 model.UnverifiedPaymentAll = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
@@ -316,7 +317,7 @@ namespace DistributorPortal.Controllers
                 model.Draft = OrderMasterList.Where(x => x.Status == OrderStatus.Draft).Count();
                 model.VerifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount);
                 model.UnverifiedPayment = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
-                model.ReturnOrder = _OrderReturnBLL.GetAllOrderReturn().Count();
+                model.ReturnOrder = _OrderReturnMaster.Count();
                 return View(model);
             }
             catch (Exception ex)

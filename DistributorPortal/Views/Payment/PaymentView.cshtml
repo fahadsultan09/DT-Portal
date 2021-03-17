@@ -1,5 +1,5 @@
 ﻿@model PaymentMaster
-@{ ViewBag.Title = "Approve Payment | Distributor Portal"; }
+@{ ViewBag.Title = "View Payment | Distributor Portal"; }
 
 <style type="text/css">
     .select2-container .select2-selection--single {
@@ -214,15 +214,6 @@
                                 <div class="col-6">
                                 </div>
                                 <div class="col-6 pull-right">
-                                    @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 16))
-                                    {
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
-                                            Verify
-                                        </button>
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
-                                            Reject
-                                        </button>
-                                    }
                                     <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
                                         Back
                                     </a>

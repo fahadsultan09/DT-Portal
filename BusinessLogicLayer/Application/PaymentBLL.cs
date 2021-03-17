@@ -221,11 +221,11 @@ namespace BusinessLogicLayer.Application
             };
             return model;
         }
-        public PaymentValueViewModel GetOrderValueModel()
+        public PaymentValueViewModel GetOrderValueModel(int DistributorId)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
             List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
-            List<OrderDetail> orderDetails = _OrderDetailBLL.GetAllOrderDetail();
+            List<OrderDetail> orderDetails = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
             PaymentValueViewModel viewModel = new PaymentValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);

@@ -6,9 +6,23 @@ var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eigh
 $(document).ready(function () {
 
     //File upload
-    $('.custom-file-input').on("change", function () {
-        var fileName = $(this).val().split("\\").pop();
-        $(this).next('.custom-file-label').html(fileName);
+    $('.custom-file-input, input[type=file]').on("change", function () {
+
+        const fsize = this.files[0].size;
+
+        if (this.files[0].name.length > 100) {
+            this.value = null;
+            Swal.fire('Failed', 'File name characters should not be greater than 100.', 'error');
+            return false;
+        }
+        if (fsize >= 5242880) {
+            this.value = null;
+            Swal.fire('Failed', 'File size should not be greater than 5mb.', 'error');
+        }
+        else {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        }
     });
 
     $('#Spinner').hide();
@@ -72,12 +86,13 @@ function Begin() {
 }
 
 function OnSuccess(data) {
+
     if (data.data.Status) {
         Toast.fire({
             icon: 'success',
             title: data.data.Message
-        })
-        debugger;
+        });
+
         if (data.data.SignalRResponse !== null) {
             var result = CallSignalR(data.data.SignalRResponse);
             if (result) {
@@ -90,22 +105,23 @@ function OnSuccess(data) {
             setTimeout(function () {
                 window.location = data.data.RedirectURL;
             }, 1000);
-        }        
+        }
     }
     else {
         Toast.fire({
             icon: 'error',
             title: data.data.Message
-        })
+        });
     }
     if ($("button[type=submit]", this)[0] != undefined) {
         Ladda.create($("button[type=submit]", this)[0]).stop();
     }
     $("body").removeClass("loading");
-    
+
 }
 
 function Complete() {
+
     $('#Spinner').hide('slow');
     $('button[type="submit"]').attr('disabled', false);
     if ($("button[type=submit]", this)[0] != undefined) {
@@ -114,9 +130,11 @@ function Complete() {
     if ($("#btnOrderNow", this)[0] != undefined) {
         Ladda.create($("#btnOrderNow", this)[0]).stop();
     }
-
     if ($("#btnDraft", this)[0] != undefined) {
         Ladda.create($("#btnDraft", this)[0]).stop();
+    }
+    if ($(".ladda-button")[0] != undefined) {
+        Ladda.create($(".ladda-button")[0]).stop();
     }
     UnBlockUI();
 }
@@ -306,14 +324,12 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
                         $('#SiteTRNo').val(data.data.find(x => x.PlantLocationId == 1).TRNo);
                     }
                     else {
-                        debugger
                         $('#SiteTRNo').remove();
                     }
                     if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 2) != undefined) {
                         $('#KorangiTRNo').val(data.data.find(x => x.PlantLocationId == 2).TRNo);
                     }
                     else {
-                        debugger
                         $('#KorangiTRNo').remove();
                     }
                     $('#modalTR').modal('toggle');

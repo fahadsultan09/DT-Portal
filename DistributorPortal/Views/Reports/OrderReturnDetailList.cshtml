@@ -21,7 +21,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.ProductMaster.ProductName</td>
+                                <td>@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.ReceivedQty</td>
                                 <td>@item.ReturnOrderNumber</td>

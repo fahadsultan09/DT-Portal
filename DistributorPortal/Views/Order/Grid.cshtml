@@ -32,7 +32,7 @@
                 <tr>
                     <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                         <div class="icheck-success d-inline">
-                            <input type="checkbox" name="select_all" id="example-select-all" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
+                            <input type="checkbox" name="select_all" id="example-select-all" value="true" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
                             <label for="example-select-all"></label>
                         </div>
                     </th>
@@ -112,7 +112,7 @@
     var table;
 
     function LaddaBegin() {
-        debugger;
+        
         Ladda.create($("#Approve")[0]).start();
     }
 
@@ -176,7 +176,20 @@
 
         $("input[type='checkbox']").change(function (e) {
 
-            $.post(window.location.origin + "/Order/SelectProduct", { DPID: $(this).val() }, function (response) {
+            if ($(this).attr('Id') != "example-select-all") {
+                $.post(window.location.origin + "/Order/SelectProduct", { DPID: $(this).val() }, function (response) {
+                });
+                if ($(this).is(':checked') == false) {
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').val(0);
+                } else {
+                    $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
+                }
+            }
+        });
+        $("#example-select-all").change(function (e) {
+
+            $.post(window.location.origin + "/Order/SelectAllProduct", { IsSelected: $('#example-select-all').is(':checked') }, function (response) {
             });
             if ($(this).is(':checked') == false) {
                 $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', true);
@@ -185,7 +198,6 @@
                 $(this).closest('td').closest('tr').find('.ApproveQuantity').prop('readonly', false);
             }
         });
-
         //// Handle click on "Select all" control
         $('#example-select-all').on('click', function () {
             // Check/uncheck all checkboxes in the table

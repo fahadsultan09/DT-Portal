@@ -63,6 +63,7 @@ namespace BusinessLogicLayer.HelperClasses
                 emailLog.IsSend = false;
                 emailLog.CreatedBy = CreatedBy;
                 await new EmailLogBLL(_unitOfWork, null).UpdateEmailLog(emailLog.Id);
+                throw ex;
             }
         }
     }
