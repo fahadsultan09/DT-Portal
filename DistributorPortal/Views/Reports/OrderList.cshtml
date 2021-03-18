@@ -32,7 +32,9 @@
                             <th>Order Date</th>
                             <th>Approved By</th>
                             <th>Approved Date</th>
-                            <th>Rejected By</th>
+                            <th>Comment On Hold</th>
+                            <th>On Hold Date</th>
+                            <th>Comment On Reject</th>
                             <th>Rejected Date</th>
                             <th>Action</th>
                         </tr>
@@ -53,7 +55,9 @@
                                     <td>@item.CreatedDate</td>
                                     <td>@item.ApprovedName</td>
                                     <td>@item.ApprovedDate</td>
-                                    <td>@item.RejectedName</td>
+                                    <td>@item.OnHoldComment</td>
+                                    <td>@item.OnHoldDate</td>
+                                    <td>@item.RejectedComment</td>
                                     <td>@item.RejectedDate</td>
                                     <td>
                                         <a asp-controller="Order" asp-action="OrderView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">

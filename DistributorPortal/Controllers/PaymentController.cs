@@ -188,6 +188,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Status = result;
                         jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
                         jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
                         return Json(new { data = jsonResponse });
                     }
                     else
@@ -204,6 +205,8 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Payment "+ Status + " successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+
                 }
                 _unitOfWork.Save();
                 return Json(new { data = jsonResponse });

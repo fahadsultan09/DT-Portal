@@ -246,6 +246,7 @@ namespace DistributorPortal.Controllers
                     var result = _OrderReturnBLL.Update(master);
                     jsonResponse.Status = result;
                     jsonResponse.Message = result ? NotificationMessage.ReceivedReturn : "Unable to received order";
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = master.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", master.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(OrderReturnStatus), model.Status) };
                 }
                 else
                 {
