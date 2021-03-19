@@ -6,6 +6,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Application
 {
@@ -119,6 +120,10 @@ namespace BusinessLogicLayer.Application
             });
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+        }
+        public User FirstOrDefault(Expression<Func<User, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
         }
     }
 }

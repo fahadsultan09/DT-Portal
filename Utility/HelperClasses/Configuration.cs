@@ -4,6 +4,7 @@ namespace Utility.HelperClasses
 {
     public class Configuration
     {
+        public string FileSize { get; set; }
         public string ResetPassword { get; set; }
         public string SAPConnection { get; set; }
         public string SyncDistributorURL { get; set; }
@@ -28,6 +29,7 @@ namespace Utility.HelperClasses
         {
             if (configuration != null)
             {
+                FileSize = configuration["Settings:FileSize"];
                 ResetPassword = configuration["AppSettings:ResetPassword"];
                 SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
                 SyncProductURL = configuration["AppSettings:SyncProductURL"];

@@ -142,8 +142,9 @@ namespace DistributorPortal.Controllers
                 EmailUserModel.ComplaintNo = string.Format("{0:1000000000}", model.Id);
                 EmailUserModel.DistributorName = SessionHelper.LoginUser.Distributor.DistributorName;
                 EmailUserModel.ComplaintDetail = model.Description;
-                EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MM/yyyy");
+                EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MMM/yyyy");
                 EmailUserModel.CreatedBy = SessionHelper.LoginUser.Id;
+                EmailUserModel.Subject = "New Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
                 EmailUserModel.CCEmail = string.Join(',', _ComplaintUserEmailBLL.Where(x => x.ComplaintSubCategoryId == model.ComplaintSubCategoryId && x.EmailType == EmailType.CC).Select(x => x.UserEmailId).ToArray());
 
                 _EmailLogBLL.EmailSend(UserList, EmailUserModel);

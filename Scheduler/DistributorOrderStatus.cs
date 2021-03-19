@@ -1,23 +1,22 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
-using Models.Application;
+using Models.ViewModel;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Utility.HelperClasses;
 
-namespace Scheduler.SAPBAPIIntegration
+namespace Scheduler
 {
-    public class OrderBAPI
+    public class DistributorOrderStatus
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly OrderDetailBLL _OrderDetailBLL;
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly Configuration _Configuration;
-        public OrderBAPI(IUnitOfWork unitOfWork, Configuration _configuration)
+        public DistributorOrderStatus(IUnitOfWork unitOfWork, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
@@ -25,7 +24,7 @@ namespace Scheduler.SAPBAPIIntegration
             _Configuration = _configuration;
         }
 
-        public bool GetInProcessOrderStatus()
+        public void GetInProcessOrderProductStatus()
         {
             try
             {
@@ -33,23 +32,18 @@ namespace Scheduler.SAPBAPIIntegration
                 var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
                 var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
                 IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<List<OrderDetail>>(response.Content);
-                if (resp == null)
+                var resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                if (resp != null && resp.Count > 0)
                 {
-                    return true;
-                }
-                else
-                {
-                    return true;
+                    _OrderDetailBLL.UpdateProductOrderStatus(resp);
                 }
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return false;
             }
         }
-        public bool GetInProcessOrderReturnStatus()
+        public void GetInProcessOrderReturnProductStatus()
         {
             try
             {
@@ -57,20 +51,15 @@ namespace Scheduler.SAPBAPIIntegration
                 var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
                 var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
                 IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<List<OrderReturnDetail>>(response.Content);
-                if (resp == null)
+                List<SAPOrderStatus> resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                if (resp != null && resp.Count > 0)
                 {
-                    return true;
-                }
-                else
-                {
-                    return true;
+                    _OrderReturnDetailBLL.UpdateProductOrderStatus(resp);
                 }
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return false;
             }
         }
     }

@@ -15,6 +15,7 @@ namespace Models.ViewModel
         public string URL { get; set; }
         public string ToAcceptTemplate { get; set; }
         public string CCEmail { get; set; }
+        public string Subject { get; set; }
         public int CreatedBy { get; set; }
     }
 }

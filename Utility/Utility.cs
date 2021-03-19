@@ -54,6 +54,12 @@ namespace Utility
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
+    public enum SAPProductOrderStatus
+    {
+        NotYetProcessed = 'A',
+        PartiallyProcessed = 'B',
+        CompletelyProcessed = 'C',
+    }
 
     public enum DistributorOrderStatus
     {
@@ -77,8 +83,6 @@ namespace Utility
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
-
-
     public enum PaymentStatus
     {
         Verified = 1,

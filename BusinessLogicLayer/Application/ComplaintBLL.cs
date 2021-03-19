@@ -28,21 +28,21 @@ namespace BusinessLogicLayer.Application
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<Complaint>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public int Update(Complaint module)
         {
-            var item = _unitOfWork.GenericRepository<Complaint>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<Complaint>().Update(item);
+            _repository.Update(item);
             return _unitOfWork.Save();
         }
         public int Delete(int id)
         {
-            var item = _unitOfWork.GenericRepository<Complaint>().GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
@@ -75,15 +75,15 @@ namespace BusinessLogicLayer.Application
         }
         public Complaint GetById(int id)
         {
-            return _unitOfWork.GenericRepository<Complaint>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<Complaint> GetAllComplaint()
         {
-            return _unitOfWork.GenericRepository<Complaint>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<Complaint> Where(Expression<Func<Complaint, bool>> predicate)
         {
-            return _repository.Where(predicate);
+            return _repository.Where(predicate).ToList();
         }
         public Complaint FirstOrDefault(Expression<Func<Complaint, bool>> predicate)
         {
@@ -133,7 +133,6 @@ namespace BusinessLogicLayer.Application
 
             return query.OrderByDescending(x => x.Id).ToList();
         }
-
         public List<Complaint> SearchReport(ComplaintSearch model)
         {
             var LamdaId = (Expression<Func<Complaint, bool>>)(x => x.IsDeleted == false);
@@ -193,6 +192,10 @@ namespace BusinessLogicLayer.Application
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
+        }
+        public List<Complaint> GetPendingComplaint() 
+        {
+            return _repository.GetAllList().Where(x => x.Status == ComplaintStatus.Pending).ToList();
         }
     }
 }

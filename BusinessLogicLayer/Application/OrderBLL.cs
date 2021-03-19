@@ -51,8 +51,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<OrderMaster>().Insert(module);
             return _unitOfWork.Save();
         }
-
-
         public int Update(OrderMaster module)
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(module.Id);
@@ -92,7 +90,6 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<OrderMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-
         public OrderValueViewModel GetOrderValueModel(List<ProductDetail> productDetails)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
@@ -183,7 +180,6 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekNetPayable = viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;
         }
-
         public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
         {
             List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId).ToList();
@@ -303,7 +299,6 @@ namespace BusinessLogicLayer.Application
             });
             return model;
         }
-
         public List<OrderMaster> Where(Expression<Func<OrderMaster, bool>> predicate)
         {
             return _repository.Where(predicate);
@@ -312,19 +307,16 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.FirstOrDefault(predicate);
         }
-
         public int AddRange(List<OrderValue> module)
         {
             _OrderValuerepository.AddRange(module);
             return _unitOfWork.Save();
         }
-
         public int DeleteRange(List<OrderValue> module)
         {
             _OrderValuerepository.DeleteRange(module);
             return _unitOfWork.Save();
         }
-
         public JsonResponse Save(OrderMaster model, IConfiguration configuration, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -395,7 +387,6 @@ namespace BusinessLogicLayer.Application
             }
             return jsonResponse;
         }
-
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
@@ -482,7 +473,6 @@ namespace BusinessLogicLayer.Application
 
             return query.OrderByDescending(x => x.Id).ToList();
         }
-
         public DistributorBalance GetBalance(string DistributorCode, Configuration configuration)
         {
             try
