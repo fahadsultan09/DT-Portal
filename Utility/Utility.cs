@@ -165,7 +165,9 @@ namespace Utility
         Draft = 1,
         Submitted = 2,
         Received = 3,
+        [Display(Name = "Completely Processed")]
         CompletelyProcessed = 4,
+        [Display(Name = "Partially Received")]
         PartiallyReceived = 5,
     }
     public enum ApplicationActions

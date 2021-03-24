@@ -46,11 +46,21 @@ namespace BusinessLogicLayer.Application
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.RegisteredAddress = module.RegisteredAddress;
+            item.CPUID = module.CPUID;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
             return _unitOfWork.Save() > 0;
+        }
+        public void UpdateCPUID(User module) 
+        {
+            var item = repository.Where(x=>x.UserName == module.UserName).FirstOrDefault();
+            if (item != null)
+            {
+                item.CPUID = module.CPUID;
+                _unitOfWork.Save();
+            }
         }
         public bool DeleteUser(int id)
         {

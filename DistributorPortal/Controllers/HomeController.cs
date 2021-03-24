@@ -431,7 +431,9 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorPendingQuantity()
         {
-            SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
+            SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration).ToList();
+            SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
+            SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration).ToList();
             var pendingQuantity = SessionHelper.SAPOrderPendingQuantity;
             pendingQuantity.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id : 0);
             pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);

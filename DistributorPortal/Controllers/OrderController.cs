@@ -35,7 +35,7 @@ namespace DistributorPortal.Controllers
         private readonly DistributorLicenseBLL _DistributorLicenseBLL;
         private readonly LicenseControlBLL _licenseControlBLL;
         private readonly IConfiguration _IConfiguration;
-        private ICompositeViewEngine _viewEngine;
+        private readonly ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
 
         public OrderController(IUnitOfWork unitOfWork, Configuration _configuration, IConfiguration configuration, ICompositeViewEngine viewEngine)
@@ -55,6 +55,27 @@ namespace DistributorPortal.Controllers
         // GET: Order
         public ActionResult Index()
         {
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                DistributorLicense DistributorLicense = _DistributorLicenseBLL.FirstOrDefault(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified);
+                if (DistributorLicense != null)
+                {
+                    int Days = (DistributorLicense.Expiry - DateTime.Now).Days;
+                    if (Days <= 0)
+                    {
+                        ViewBag.Expired = true;
+                    }
+
+                    if (Days <= _licenseControlBLL.FirstOrDefault(x => x.IsActive == true && x.IsDeleted == false && x.LicenseName == "Drugs").DaysIntimateBeforeExpiry)
+                    {
+                        ViewBag.Days = Days;
+                    }
+                    else
+                    {
+                        ViewBag.Days = string.Empty;
+                    }
+                }
+            }
             return View(GetOrderList());
         }
         public IActionResult List()
@@ -73,13 +94,7 @@ namespace DistributorPortal.Controllers
 
             OrderMaster model = _OrderBLL.GetOrderMasterById(id);
 
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-            }
-            else
+            if (!SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
@@ -97,13 +112,7 @@ namespace DistributorPortal.Controllers
             }
             OrderMaster model = _OrderBLL.GetOrderMasterById(id);
 
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-            }
-            else
+            if (!SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
@@ -223,13 +232,7 @@ namespace DistributorPortal.Controllers
             ViewBag.View = true;
             OrderMaster model = _OrderBLL.GetOrderMasterById(id);
 
-            if (SessionHelper.LoginUser.IsDistributor)
-            {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-            }
-            else
+            if (!SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
@@ -489,21 +492,6 @@ namespace DistributorPortal.Controllers
                 {
                     var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
-
-                    //foreach (var item in LicenseControlList)
-                    //{
-                    //    if (item.IsMandatory)
-                    //    {
-                    //        var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
-
-                    //        if (resultChallan is null && License == null)
-                    //        {
-                    //            jsonResponse.Status = false;
-                    //            jsonResponse.Message = "Add verified license or challan before placing the order.";
-                    //            return Json(new { data = jsonResponse });
-                    //        }
-                    //    }
-                    //}
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => License != null && x.Id == License.LicenseId);
 
                     if (Challan != null)
@@ -534,7 +522,6 @@ namespace DistributorPortal.Controllers
                 {
                     var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
-                    var ProductLicense = LicenseControlList.Select(x => x.Id).Contains((int)Product.LicenseControlId);
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == Product.LicenseControlId);
 
                     foreach (var item in LicenseControlList)
@@ -550,14 +537,48 @@ namespace DistributorPortal.Controllers
                             }
                         }
                     }
+
+                    if (LicenseControl != null)
+                    {
+                        if (LicenseControl.IsMandatory)
+                        {
+                            var result = DistributorLicenseList.Where(x => x.LicenseId == LicenseControl.Id).FirstOrDefault();
+                            if (result is null)
+                            {
+                                jsonResponse.Status = false;
+                                jsonResponse.Message = "Add verified " + LicenseControl.LicenseName + " license or challan before placing the order.";
+                                return Json(new { data = jsonResponse });
+                            }
+                        }
+                    }
+
                     if (Challan is null && License is null)
                     {
                         jsonResponse.Status = false;
                         jsonResponse.Message = "Add verified license or challan before placing the order.";
                     }
-                    if (Challan != null)
+                    if (Challan != null || License != null)
                     {
-                        jsonResponse.Status = true;
+                        if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Your " + License.LicenseControl.LicenseName + " license has been expired.";
+                        }
+                        else if (License != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                        }
+                        else if (License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay) < DateTime.Now)
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Add verified " + License.LicenseControl.LicenseName + " license or challan before placing the order.";
+
+                        }
+                        else
+                        {
+                            jsonResponse.Status = true;
+                        }
                     }
                     else if (Challan == null && LicenseControl != null && License != null && DateTime.Now < License.Expiry)
                     {

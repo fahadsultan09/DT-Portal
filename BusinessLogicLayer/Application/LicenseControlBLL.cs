@@ -80,10 +80,13 @@ namespace BusinessLogicLayer.Application
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
-
         public List<LicenseControl> Where(Expression<Func<LicenseControl, bool>> predicate)
         {
             return repository.Where(predicate);
+        }
+        public LicenseControl FirstOrDefault(Expression<Func<LicenseControl, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
         }
     }
 }

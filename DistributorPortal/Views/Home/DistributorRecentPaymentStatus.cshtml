@@ -26,7 +26,7 @@
                                         <tr>
                                             <td>@String.Format("{0:1000000000}", item.OrderNo)</td>
                                             <td>@item.Amount.ToString("#,##0.00")</td>
-                                            <td>@item.Status</td>
+                                            <td>@Html.DisplayFor(x => item.Status)</td>
                                             <td>
                                                 <a asp-controller="Order" asp-action="OrderView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.OrderNo.ToString())" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                             </td>
@@ -101,7 +101,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="row d-none">
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
