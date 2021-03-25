@@ -93,6 +93,13 @@ namespace DistributorPortal.Controllers
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
             return View("ComplaintApproval", BindComplaint(id));
         }
+
+        public IActionResult ComplaintView(string DPID)
+        {
+            int id = 0;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            return View("ComplaintView", BindComplaint(id));
+        }
         [HttpPost]
         public JsonResult SaveEdit(Complaint model)
         {

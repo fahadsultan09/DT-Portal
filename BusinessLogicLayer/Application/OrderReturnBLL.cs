@@ -159,10 +159,7 @@ namespace BusinessLogicLayer.Application
                               on x.CreatedBy equals u.Id
                          join ua in _UserBLL.GetAllUser().ToList()
                               on x.ReceivedBy equals ua.Id into receivedGroup
-                         from a1 in receivedGroup.DefaultIfEmpty()
-                         join ur in _UserBLL.GetAllUser().ToList()
-                              on x.RejectedBy equals ur.Id into rejectedGroup
-                         from a2 in rejectedGroup.DefaultIfEmpty()
+                         from a1 in receivedGroup.DefaultIfEmpty()                         
                          select new OrderReturnMaster
                          {
                              Id = x.Id,
@@ -175,10 +172,7 @@ namespace BusinessLogicLayer.Application
                              CreatedDate = x.CreatedDate,
                              ReceivedBy = x.ReceivedBy,
                              ReceivedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
-                             ReceivedDate = x.ReceivedDate,
-                             RejectedBy = x.RejectedBy,
-                             RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
-                             RejectedDate = x.RejectedDate
+                             ReceivedDate = x.ReceivedDate,                             
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();

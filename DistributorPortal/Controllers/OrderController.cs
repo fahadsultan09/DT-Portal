@@ -471,6 +471,7 @@ namespace DistributorPortal.Controllers
                 return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).OrderByDescending(x => x.Id).ToList();
             }
         }
+
         public JsonResult CheckProductLicense(int ProductMasterId)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -490,21 +491,6 @@ namespace DistributorPortal.Controllers
                 {
                     var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
-
-                    //foreach (var item in LicenseControlList)
-                    //{
-                    //    if (item.IsMandatory)
-                    //    {
-                    //        var resultChallan = DistributorLicenseList.Where(x => x.LicenseId == item.Id && Challan != null && DateTime.Now < Challan.Expiry.AddDays(Challan.LicenseControl.LicenseAcceptanceInDay)).FirstOrDefault();
-
-                    //        if (resultChallan is null && License == null)
-                    //        {
-                    //            jsonResponse.Status = false;
-                    //            jsonResponse.Message = "Add verified license or challan before placing the order.";
-                    //            return Json(new { data = jsonResponse });
-                    //        }
-                    //    }
-                    //}
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => License != null && x.Id == License.LicenseId);
 
                     if (Challan != null)
@@ -535,7 +521,6 @@ namespace DistributorPortal.Controllers
                 {
                     var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
-                    var ProductLicense = LicenseControlList.Select(x => x.Id).Contains((int)Product.LicenseControlId);
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == Product.LicenseControlId);
 
                     foreach (var item in LicenseControlList)
@@ -551,14 +536,49 @@ namespace DistributorPortal.Controllers
                             }
                         }
                     }
+
+                    if (LicenseControl != null)
+                    {
+                        if (LicenseControl.IsMandatory)
+                        {
+                            var result = DistributorLicenseList.Where(x => x.LicenseId == LicenseControl.Id).FirstOrDefault();
+                            if (result is null)
+                            {
+                                jsonResponse.Status = false;
+                                jsonResponse.Message = "Add verified " + LicenseControl.LicenseName + " license or challan before placing the order.";
+                                return Json(new { data = jsonResponse });
+                            }
+                        }
+                    }
+
                     if (Challan is null && License is null)
                     {
                         jsonResponse.Status = false;
                         jsonResponse.Message = "Add verified license or challan before placing the order.";
                     }
-                    if (Challan != null)
+                    if (Challan != null || License != null)
                     {
-                        jsonResponse.Status = true;
+                        if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Your " + License.LicenseControl.LicenseName + " license has been expired.";
+                        }
+                        else if (License != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
+                        {
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                        }
+                        else if (License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay) < DateTime.Now)
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Add verified " + License.LicenseControl.LicenseName + " license or challan before placing the order.";
+
+                        }
+                        else
+                        {
+                            jsonResponse.Status = true;
+                        }
+
                     }
                     else if (Challan == null && LicenseControl != null && License != null && DateTime.Now < License.Expiry)
                     {
@@ -596,6 +616,69 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+
+
+        //public JsonResult CheckProductLicense(int ProductMasterId)
+        //{
+        //    JsonResponse jsonResponse = new JsonResponse();
+        //    try
+        //    {
+        //        ProductMaster productMaster = new ProductMaster();
+        //        ProductDetail Product = _productDetailBLL.Where(x => x.ProductMasterId == ProductMasterId).First();
+        //        List<DistributorLicense> DistributorLicenseList = _DistributorLicenseBLL.Where(x => x.Status == LicenseStatus.Verified && x.DistributorId == SessionHelper.LoginUser.DistributorId);
+
+        //        if (Product.LicenseControlId == null)
+        //        {
+        //            var LicenseControlList = _licenseControlBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.IsMandatory).Select(e => e.Id).ToList();
+        //            var MandatoryLicense = DistributorLicenseList.Where(e => LicenseControlList.Contains((int)e.LicenseId)).ToList();
+        //            if (MandatoryLicense.Where(e => e.Expiry > DateTime.Now).Count() > 0)
+        //            {
+        //                var ExpireLicense = MandatoryLicense.Where(e => e.Expiry > DateTime.Now).First();
+        //                if (ExpireLicense.Expiry.AddDays(ExpireLicense.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+        //                {
+        //                    jsonResponse.Status = true;
+        //                    jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+        //                }
+        //            }
+        //            return Json(new { data = jsonResponse });
+        //        }
+        //        else
+        //        {
+        //            var LicenseControlList = _licenseControlBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.IsMandatory).Select(e => e.Id).ToList();
+        //            var MandatoryLicense = DistributorLicenseList.Where(e => LicenseControlList.Contains((int)e.LicenseId)).ToList();
+        //            if (MandatoryLicense.Where(e => e.Expiry > DateTime.Now).Count() > 0)
+        //            {
+        //                var ExpireLicense = MandatoryLicense.Where(e => e.Expiry > DateTime.Now).First();
+        //                if (ExpireLicense.Expiry.AddDays(ExpireLicense.LicenseControl.LicenseAcceptanceInDay) > DateTime.Now)
+        //                {
+        //                    jsonResponse.Status = true;
+        //                    jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+        //                    return Json(new { data = jsonResponse });
+        //                }
+        //                else
+        //                {
+        //                    jsonResponse.Status = false;
+        //                    jsonResponse.Message = "Please add " + ExpireLicense.LicenseControl.LicenseName + " License before placing the order";
+        //                    return Json(new { data = jsonResponse });
+        //                }
+        //            }
+        //        }
+
+        //        if (jsonResponse.Status)
+        //        {
+        //            productMaster = _ProductMasterBLL.GetProductMasterById(ProductMasterId);
+        //        }
+        //        return Json(new { data = jsonResponse, productMaster = productMaster });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        jsonResponse.Status = false;
+        //        jsonResponse.Message = ex.Message;
+        //        jsonResponse.RedirectURL = string.Empty;
+        //        new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+        //        return Json(new { data = jsonResponse });
+        //    }
+        //}
 
         public IActionResult Search(OrderSearch model, string Search)
         {

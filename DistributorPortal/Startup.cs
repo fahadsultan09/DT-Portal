@@ -61,7 +61,11 @@ namespace DistributorPortal
 
             services.AddSingleton<ISapConnectionPool>(_ => new SapConnectionPool(Configuration.GetValue<string>("SAPSettings:SAPConnection")));
             services.AddScoped<ISapPooledConnection, SapPooledConnection>();
-            services.AddSignalR();
+            services.AddSignalR(option =>
+            {
+                option.KeepAliveInterval = TimeSpan.FromMinutes(1);
+                option.EnableDetailedErrors = true;
+            });
         }
 
         private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
@@ -111,23 +115,9 @@ namespace DistributorPortal
                     await next();
                 }
             });
-
-            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-            //app.UseRouting();
-
             app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapDefaultControllerRoute();
-            //    // Which is the same as the template
-            //    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            //    //endpoints.MapControllers();
-            //    //endpoints.MapRazorPages();
-            //    endpoints.MapHub<ChatHub>("/chatHub");
-            //    //endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-            //});
             app.UseSignalR(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chatHub");

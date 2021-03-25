@@ -31,9 +31,6 @@ namespace Models.Application
         [Range(1, 999999999)]
         [Column(TypeName = "double")]
         public double TotalValue { get; set; }
-        public int? RejectedBy { get; set; }
-        public DateTime? RejectedDate { get; set; }
-        public string RejectedComment { get; set; }
         public int? ReceivedBy { get; set; }
         public DateTime? ReceivedDate { get; set; }
         [NotMapped]

@@ -11,7 +11,14 @@
     string CCEmail = string.Join(',', Model.UserEmailCC.ToArray());
     string KPIEmail = string.Join(',', Model.UserEmailKPI.ToArray());
 }
+
 <link href="~/lib/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+<style>
+    .bootstrap-tagsinput .tag {
+        margin-right: 2px;
+        color: #00d0ff;
+    }
+</style>
 <div class="content-wrapper">
     <section class="content-header" disabled>
         <div class="container-fluid">
