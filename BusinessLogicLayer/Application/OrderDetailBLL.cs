@@ -73,8 +73,18 @@ namespace BusinessLogicLayer.Application
         }
         public List<SAPOrderStatus> GetInProcessOrderStatus()
         {
-            List<SAPOrderStatus> list = _repository.Where(x => x.OrderProductStatus == OrderStatus.NotYetProcess || x.OrderProductStatus == OrderStatus.PartiallyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.SAPOrderNumber }).ToList();
+            List<SAPOrderStatus> list = _repository.Where(x => x.SAPOrderNumber != null && x.OrderProductStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.SAPOrderNumber }).ToList();
             return list;
+        }
+        public void UpdateProductOrderStatus(List<SAPOrderStatus> SAPOrderStatusList)
+        {
+            foreach (var item in SAPOrderStatusList)
+            {
+                var model = _repository.Where(x=>x.SAPOrderNumber == item.SAPOrderNo).First();
+                model.OrderProductStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess);
+                _repository.Update(model);
+                _unitOfWork.Save();
+            }
         }
     }
 }

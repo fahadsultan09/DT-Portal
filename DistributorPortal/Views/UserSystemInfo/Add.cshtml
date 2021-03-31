@@ -1,0 +1,103 @@
+﻿@model UserSystemInfo
+@{
+    var viewdata = (string)TempData["Message"];
+    if (!string.IsNullOrEmpty(viewdata))
+    {
+        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            @viewdata <a class="alert-link" href="#"></a>
+        </div>
+    }
+}
+
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">System Info</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-controller="UserSystemInfo"
+                      asp-action="SaveEdit"
+                      id="frmUserSystemInfo"
+                      data-ajax-update="#divform"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="MessageDisappear"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      autocomplete="off">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox ">
+                                <input asp-for="Id" type="hidden" />
+                                <div class="ibox-content">
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Module Name<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Please Select--", htmlAttributes: new { @class = "form-control select2" })
+                                            <span asp-validation-for="DistributorId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Processor Id<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="ProcessorId" type="text" placeholder="Processor Id" class="form-control" />
+                                            <span asp-validation-for="ProcessorId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Host Name<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="HostName" type="text" placeholder="Host Name" class="form-control" />
+                                            <span asp-validation-for="HostName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">MAC Address<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="MACAddress" type="text" placeholder="MAC Address" class="form-control" />
+                                            <span asp-validation-for="MACAddress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Other MAC Address<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="OtherMACAddress" type="text" placeholder="MAC Address" class="form-control" />
+                                            <span asp-validation-for="OtherMACAddress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Is Active</label>
+                                        <div class="col-lg-9">
+                                            <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 ">
+                                            <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
+                                                @(Model.Id > 0 ? "Update" : "Add")
+                                            </button>
+                                            <a data-ajax-update="#divform"
+                                               data-ajax="true"
+                                               data-ajax-method="GET"
+                                               asp-controller="UserSystemInfo" asp-action="List"
+                                               class="btn btn-sm btn-default float-right mr-3">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('.select2').select2()
+    });
+</script>

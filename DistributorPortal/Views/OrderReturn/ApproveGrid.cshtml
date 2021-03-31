@@ -42,7 +42,7 @@
                         </td>
                         <td>
                             <input type="hidden" asp-for="@Model.OrderReturnDetail[i].ProductId" />
-                            @Model.OrderReturnDetail[i].ProductMaster.ProductName @Model.OrderReturnDetail[i].ProductMaster.ProductDescription
+                            @Model.OrderReturnDetail[i].ProductMaster.ProductDescription
                         </td>
                         <td>@Model.OrderReturnDetail[i].Company.CompanyName</td>
                         <td>@Model.OrderReturnDetail[i].PlantLocation.PlantLocationName</td>
@@ -109,7 +109,7 @@
             }
         });
         $("#example-select-all").change(function (e) {
-            
+
             $.post(window.location.origin + "/OrderReturn/SelectAllProduct", { IsSelected: $('#example-select-all').is(':checked') }, function (response) {
             });
             if ($(this).is(':checked') == false) {
@@ -121,7 +121,7 @@
         });
         //// Handle click on "Select all" control
         $('#example-select-all').on('click', function () {
-            
+
             // Check/uncheck all checkboxes in the table
             var rows = table.rows({ 'search': 'applied' }).nodes();
             $('input[type="checkbox"]', rows).prop('checked', this.checked);

@@ -22,21 +22,21 @@ namespace BusinessLogicLayer.Application
             repository = _unitOfWork.GenericRepository<EmailLog>();
             _Configuration = _configuration;
         }
-        public async Task<int> AddEmailLog(EmailLog module)
+        public int AddEmailLog(EmailLog module)
         {
             module.CreatedBy = module.CreatedBy;
             module.CreatedDate = DateTime.Now;
             repository.Insert(module);
-            return await _unitOfWork.SaveAsync();
+            return _unitOfWork.Save();
         }
-        public async Task UpdateEmailLog(int id)
+        public int UpdateEmailLog(int id)
         {
             EmailLog module = GetEmailLogById(id);
             module.CreatedBy = module.CreatedBy;
             module.CreatedDate = DateTime.Now;
             module.IsSend = false;
             repository.Update(module);
-            await _unitOfWork.SaveAsync();
+            return _unitOfWork.Save();
         }
         public EmailLog GetEmailLogById(int id)
         {
@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Application
                 SendEmail(user, EmailUserModel);
             }
         }
-        public async Task SendEmail(User User, EmailUserModel EmailUserModel)
+        public void SendEmail(User User, EmailUserModel EmailUserModel)
         {
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Name}}", User.FirstName + " " + User.LastName);
@@ -62,8 +62,7 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Attachment}}", EmailUserModel.Attachment);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintDetail}}", EmailUserModel.ComplaintDetail);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
-            await EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, "New Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")", ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
-
+            EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
     }
 }

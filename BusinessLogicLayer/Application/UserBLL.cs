@@ -6,6 +6,7 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Application
 {
@@ -25,7 +26,6 @@ namespace BusinessLogicLayer.Application
             module.FirstName.Trim();
             module.LastName.Trim();
             module.DistributorId = module.IsDistributor ? module.DistributorId : null;
-            module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
@@ -119,6 +119,14 @@ namespace BusinessLogicLayer.Application
             });
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
+        }
+        public User FirstOrDefault(Expression<Func<User, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
+        }
+        public List<User> Where(Expression<Func<User, bool>> predicate)
+        {
+            return repository.Where(predicate);
         }
     }
 }

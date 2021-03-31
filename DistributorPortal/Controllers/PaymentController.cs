@@ -98,13 +98,23 @@ namespace DistributorPortal.Controllers
                     if (model.FormFile != null)
                     {
                         var ext = Path.GetExtension(model.FormFile.FileName).ToLowerInvariant();
-                        if (permittedExtensions.Contains(ext) && model.FormFile.Length < Convert.ToInt64(5242880))
+
+                        if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                         {
-                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
-                            if (tuple.Item1)
-                            {
-                                model.File = tuple.Item2;
-                            }
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileTypeAllowed;
+                            return Json(new { data = jsonResponse });
+                        }
+                        if (model.FormFile.Length > Convert.ToInt64(_Configuration.FileSize))
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileSizeAllowed;
+                            return Json(new { data = jsonResponse });
+                        }
+                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
+                        if (tuple.Item1)
+                        {
+                            model.File = tuple.Item2;
                         }
                     }
                     model.Status = PaymentStatus.Unverified;
@@ -203,7 +213,7 @@ namespace DistributorPortal.Controllers
                 {
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Payment "+ Status + " successfully.";
+                    jsonResponse.Message = "Payment " + Status + " successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
 

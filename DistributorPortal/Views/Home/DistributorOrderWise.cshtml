@@ -9,80 +9,80 @@
 </div>
 
 <script>
-           $(function () {
-            'use strict'
+    $(function () {
+        'use strict'
 
-            var ticksStyle = {
-                fontColor: '#495057',
-                fontStyle: 'bold'
-            }
+        var ticksStyle = {
+            fontColor: '#495057',
+            fontStyle: 'bold'
+        }
 
-            var mode = 'index'
-            var intersect = true
+        var mode = 'index'
+        var intersect = true
 
 
-            var $visitorsChart = $('#visitors-chart')
-            var visitorsChart = new Chart($visitorsChart, {
-                data: {
-                    labels: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.Month)))'),
-                    datasets: [
-                        {
-                            type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.CurrentYear)))'),
-                            backgroundColor: 'transparent',
-                            borderColor: '#007bff',
-                            pointBorderColor: '#007bff',
-                            pointBackgroundColor: '#007bff',
-                            fill: false
-                        },
-                        {
-                            type: 'line',
-                            data: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.LastYear)))'),
-                            backgroundColor: 'tansparent',
-                            borderColor: '#ced4da',
-                            pointBorderColor: '#ced4da',
-                            pointBackgroundColor: '#ced4da',
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    tooltips: {
-                        mode: mode,
-                        intersect: intersect
+        var $visitorsChart = $('#visitors-chart');
+        var visitorsChart = new Chart($visitorsChart, {
+            data: {
+                labels: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.Month)))'),
+                datasets: [
+                    {
+                        type: 'line',
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.CurrentYear)))'),
+                        backgroundColor: 'transparent',
+                        borderColor: '#007bff',
+                        pointBorderColor: '#007bff',
+                        pointBackgroundColor: '#007bff',
+                        fill: false
                     },
-                    hover: {
-                        mode: mode,
-                        intersect: intersect
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            // display: false,
-                            gridLines: {
-                                display: true,
-                                lineWidth: '4px',
-                                color: 'rgba(0, 0, 0, .2)',
-                                zeroLineColor: 'transparent'
-                            },
-                            ticks: $.extend({
-                                beginAtZero: true,
-                                suggestedMax: 10
-                            }, ticksStyle)
-                        }],
-                        xAxes: [{
-                            display: true,
-                            gridLines: {
-                                display: false
-                            },
-                            ticks: ticksStyle
-                        }]
+                    {
+                        type: 'line',
+                        data: JSON.parse('@Html.Raw(Json.Serialize(Model.Select(e => e.LastYear)))'),
+                        backgroundColor: 'tansparent',
+                        borderColor: '#ced4da',
+                        pointBorderColor: '#ced4da',
+                        pointBackgroundColor: '#ced4da',
+                        fill: false
                     }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                hover: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        // display: false,
+                        gridLines: {
+                            display: true,
+                            lineWidth: '4px',
+                            color: 'rgba(0, 0, 0, .2)',
+                            zeroLineColor: 'transparent'
+                        },
+                        ticks: $.extend({
+                            beginAtZero: true,
+                            suggestedMax: 10
+                        }, ticksStyle)
+                    }],
+                    xAxes: [{
+                        display: true,
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: ticksStyle
+                    }]
                 }
-            })
-           })
+            }
+        });
+    });
 
 </script>

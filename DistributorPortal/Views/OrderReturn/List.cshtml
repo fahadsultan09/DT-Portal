@@ -28,7 +28,7 @@
                             <tr>
                                 <td>@string.Format("{0:1000000000}", item.Id)</td>
                                 <td>@item.Distributor.DistributorName</td>
-                                <td>@item.Status</td>
+                                <td>@Html.DisplayFor(x => item.Status)</td>
                                 <td>@item.CreatedDate</td>
                                 <td>
                                     <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">

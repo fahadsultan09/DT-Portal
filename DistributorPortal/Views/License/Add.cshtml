@@ -19,13 +19,13 @@
             <div class="col-md-12">
                 <form asp-controller="License"
                       asp-action="SaveEdit"
-                      id="frmDosageForm"
-                      data-ajax-begin="Begin"
-                      data-ajax-update="#divform"
-                      data-ajax-success="OnSuccess"
-                      data-ajax-complete="MessageDisappear"
-                      data-ajax="true"
-                      data-ajax-method="POST">
+                          id="frmLicenseControl"
+                          data-ajax-update="#divform"
+                          data-ajax-begin="Begin"
+                          data-ajax-success="OnSuccess"
+                          data-ajax-complete="Complete"
+                          data-ajax="true"
+                          data-ajax-method="POST">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="ibox ">
@@ -84,13 +84,3 @@
         </div>
     </div>
 </div>
-<!-- /.card -->
-
-@*<script>
-    var OnSuccess = function () {
-        Toast.fire({
-            icon: 'success',
-            title: '@NotificationMessage.SaveSuccessfully'
-        })
-    }
-</script>*@

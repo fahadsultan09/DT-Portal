@@ -19,7 +19,7 @@ namespace BusinessLogicLayer.Application
         }
         private int AddAuditLog(AuditLog module)
         {
-            module.CreatedBy = SessionHelper.LoginUser is null ? "1" : SessionHelper.LoginUser.UserName;
+            module.CreatedBy = SessionHelper.LoginUser is null || SessionHelper.LoginUser.Id is 0 ? "1" : SessionHelper.LoginUser.UserName;
             module.CreatedDate = DateTime.Now;
             repository.Insert(module);
             return _unitOfWork.Save();

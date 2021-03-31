@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Utility;
 
 namespace BusinessLogicLayer.Application
 {
@@ -76,8 +77,18 @@ namespace BusinessLogicLayer.Application
         }
         public List<SAPOrderStatus> GetInProcessOrderReturnStatus()
         {
-            List<SAPOrderStatus> list = _repository.GetAllList().Select(x => new SAPOrderStatus { SAPOrderNo = x.OrderReturnNumber.ToString() }).ToList();
+            List<SAPOrderStatus> list = _repository.GetAllList().Where(x => x.ReturnOrderNumber != null && x.ReturnOrderStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.ReturnOrderNumber }).ToList();
             return list;
+        }
+        public void UpdateProductOrderStatus(List<SAPOrderStatus> SAPOrderStatusList)
+        {
+            foreach (var item in SAPOrderStatusList)
+            {
+                var model = _repository.Where(x => x.ReturnOrderNumber == item.SAPOrderNo).First();
+                model.ReturnOrderStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess);
+                _repository.Update(model);
+                _unitOfWork.Save();
+            }
         }
     }
 }

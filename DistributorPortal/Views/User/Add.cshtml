@@ -1,5 +1,4 @@
 ﻿@model User
-
 <!-- Main content -->
 <div class="card card-default">
     <div class="card-header">
@@ -205,11 +204,15 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12">
-                                            <div class="form-group row">
-                                                <label class="col-lg-2 col-form-label">Registered Address</label>
-                                                <div class="col-lg-10">
-                                                    <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
-                                                    <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Registered Address</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
+                                                            <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

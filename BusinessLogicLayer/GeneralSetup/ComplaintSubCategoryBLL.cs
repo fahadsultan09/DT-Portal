@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
@@ -12,9 +13,11 @@ namespace BusinessLogicLayer.GeneralSetup
     public class ComplaintSubCategoryBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<ComplaintSubCategory> _repository;
         public ComplaintSubCategoryBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            _repository = _unitOfWork.GenericRepository<ComplaintSubCategory>();
         }
         public int AddComplaintSubCategory(ComplaintSubCategory module)
         {
@@ -22,48 +25,48 @@ namespace BusinessLogicLayer.GeneralSetup
             module.IsDeleted = false;
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<ComplaintSubCategory>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public int UpdateComplaintSubCategory(ComplaintSubCategory module)
         {
-            var item = _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
             item.ComplaintSubCategoryName = module.ComplaintSubCategoryName;
             item.UserEmailTo = module.UserEmailTo;
             item.KPIDay = module.KPIDay;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<ComplaintSubCategory>().Update(item);
+            _repository.Update(item);
             return _unitOfWork.Save();
         }
         public int DeleteComplaintSubCategory(int id)
         {
-            var item = _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
-            _unitOfWork.GenericRepository<ComplaintSubCategory>().Delete(item);
+            _repository.Delete(item);
             return _unitOfWork.Save();
         }
         public ComplaintSubCategory GetComplaintSubCategoryById(int id)
         {
-            return _unitOfWork.GenericRepository<ComplaintSubCategory>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<ComplaintSubCategory> GetAllComplaintSubCategory()
         {
-            return _unitOfWork.GenericRepository<ComplaintSubCategory>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<ComplaintSubCategory> Where(Expression<Func<ComplaintSubCategory, bool>> predicate)
         {
-            return _unitOfWork.GenericRepository<ComplaintSubCategory>().Where(predicate);
+            return _repository.Where(predicate);
         }
         public ComplaintSubCategory FirstOrDefault(Expression<Func<ComplaintSubCategory, bool>> predicate)
         {
-            return _unitOfWork.GenericRepository<ComplaintSubCategory>().FirstOrDefault(predicate);
+            return _repository.FirstOrDefault(predicate);
         }
         public bool CheckComplaintSubCategoryName(int Id, string ComplaintSubCategoryName)
         {
             int? ComplaintSubCategoryId = Id == 0 ? null : (int?)Id;
-            var model = _unitOfWork.GenericRepository<ComplaintSubCategory>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.ComplaintSubCategoryName == ComplaintSubCategoryName && x.Id != ComplaintSubCategoryId || (ComplaintSubCategoryId == null && x.Id == null)).FirstOrDefault();
+            var model = _repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.ComplaintSubCategoryName == ComplaintSubCategoryName && x.Id != ComplaintSubCategoryId || (ComplaintSubCategoryId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;

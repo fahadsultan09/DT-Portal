@@ -138,5 +138,9 @@ namespace BusinessLogicLayer.ApplicationSetup
         {
             return repository.Where(predicate);
         }
+        public Distributor FirstOrDefault(Expression<Func<Distributor, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
+        }
     }
 }

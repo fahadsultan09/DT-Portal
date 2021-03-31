@@ -32,7 +32,8 @@
                 <tr>
                     <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                         <div class="icheck-success d-inline">
-                            <input type="checkbox" name="select_all" id="example-select-all" value="true" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
+                            @*<input type="checkbox" name="select_all" id="example-select-all" value="true" checked="checked" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />*@
+                            <input type="checkbox" name="select_all" id="example-select-all" value="true" checked="checked" disabled="disabled" />
                             <label for="example-select-all"></label>
                         </div>
                     </th>
@@ -57,7 +58,8 @@
                     <tr>
                         <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
                             <div class="icheck-success d-inline">
-                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model[i].ProductMasterId.ToString())" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />
+                                @*<input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model[i].ProductMasterId.ToString())" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="@((ViewBag.Status != OrderStatus.PendingApproval && ViewBag.Status != OrderStatus.PartiallyApproved)  ? "disabled" : null)" />*@
+                                <input type="checkbox" id="checkbox@(Model[i].Id)" asp-for="@Model[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model[i].ProductMasterId.ToString())" checked="@(Model[i].IsProductSelected == true ? "checked" : null)" disabled="disabled" />
                                 <label for="checkbox@(Model[i].Id)">
                                 </label>
                             </div>
@@ -68,7 +70,7 @@
                             <input type="hidden" asp-for="@Model[i].OrderNumber" />
                             @Model[i].ProductMaster.SAPProductCode
                         </td>
-                        <td>@Model[i].ProductMaster.ProductName @Model[i].ProductMaster.ProductDescription</td>
+                        <td>@Model[i].ProductMaster.ProductDescription</td>
                         <td>@Model[i].ProductMaster.PackSize</td>
                         <td>@Model[i].ProductMaster.Quantity</td>
                         <td>

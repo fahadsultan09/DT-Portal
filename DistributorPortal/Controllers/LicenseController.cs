@@ -4,6 +4,7 @@ using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.ViewModel;
 using System;
 using System.Linq;
 using Utility.HelperClasses;
@@ -31,7 +32,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -41,6 +42,7 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult SaveEdit(LicenseControl model)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
             {
                 ModelState.Remove("Id");
@@ -56,27 +58,29 @@ namespace DistributorPortal.Controllers
                         if (model.Id > 0)
                         {
                             _LicenseControlBLL.UpdateLicenseControl(model);
-                            TempData["Message"] = NotificationMessage.UpdateSuccessfully;
                         }
                         else
                         {
                             _LicenseControlBLL.AddLicenseControl(model);
-                            TempData["Message"] = NotificationMessage.SaveSuccessfully;
                         }
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                        jsonResponse.RedirectURL = Url.Action("Index", "License");
                     }
                     else
                     {
-                        TempData["Message"] = "LicenseControl name already exist";
-                        return PartialView("Add", model);
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "License name already exist";
                     }
                 }
-                return RedirectToAction("List");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                TempData["Message"] = NotificationMessage.ErrorOccurred;
-                return RedirectToAction("List");
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
             }
         }
         [HttpPost]
@@ -84,7 +88,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
+                int id = 0;
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 _LicenseControlBLL.DeleteLicenseControl(id);
                 return Json(new { Result = true });

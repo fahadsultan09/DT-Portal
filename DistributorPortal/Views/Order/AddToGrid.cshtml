@@ -23,7 +23,7 @@
             {
                 <tr>
                     <td width="8%">@item.ProductMaster.SAPProductCode</td>
-                    <td width="15%">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</td>
+                    <td width="15%">@item.ProductMaster.ProductDescription</td>
                     <td width="12%">@item.ProductMaster.PackSize</td>
                     <td width="7%">
                         <input type="number" asp-for="@item.ProductMaster.Quantity" value="@item.ProductMaster.Quantity" min="0" oninput="validity.valid||(value='');" class="form-control ApproveQuantity numeric" _ProductId="@item.ProductMaster.Id" />

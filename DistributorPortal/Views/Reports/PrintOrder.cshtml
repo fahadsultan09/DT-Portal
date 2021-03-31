@@ -223,7 +223,7 @@
                                                 <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.SAPProductCode</p>
                                             </td>
                                             <td>
-                                                <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.ProductName @item.ProductMaster.ProductDescription</p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.ProductDescription</p>
                                             </td>
                                             <td>
                                                 <p style="margin-top:0pt; margin-bottom:0pt;">@item.ProductMaster.PackSize</p>
@@ -238,7 +238,7 @@
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;">@item.Quantity</p>
                                             </td>
                                             <td>
-                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; padding-right:3pt; ">@item.ProductMaster.TradePrice.ToString("#,##0.00")</p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; padding-right:3pt; ">@item.Amount.ToString("#,##0.00")</p>
                                             </td>
                                             <td>
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; padding-right:3pt;">@( item.Quantity * item.ProductMaster.Rate * (1 - item.ProductMaster.Discount ) + (item.Quantity * item.ProductMaster.Rate * (1 - item.ProductMaster.Discount ) * (item.ProductMaster.SalesTaxRate + 0  )).ToString("#,##0.00"))</p>

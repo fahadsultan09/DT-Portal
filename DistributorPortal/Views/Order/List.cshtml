@@ -7,12 +7,14 @@
                 <h2 class="card-title">Order List</h2>
                 @if (SessionHelper.LoginUser.IsDistributor == true)
                 {
-                    <a asp-action="Add"
-                       asp-controller="Order"
-                       class="btn btn-info float-right">Add</a>
+                    <form asp-controller="Order"
+                          asp-action="Add"
+                          id="frmAdd"
+                          method="GET">
+                        <button type="submit" class="btn btn-info float-right" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</button>
+                    </form>
                 }
             </div>
-            <!-- /.card-header -->
             <div class="card-body scrollmenu">
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
@@ -69,14 +71,45 @@
                     </tbody>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
+<div class="modal fade" id="modal-intimation" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h4 class="modal-title">License Expiry Intimation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="expirecontent">
+
+                </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function () {
+
+        var days = '@ViewBag.Days';
+        if (days != '') {
+            if (parseInt(days) <= 0) {
+                $('#expirecontent').text('Your license has been expired, please upload your renewal license.');
+                $('#modal-intimation').modal('toggle');
+                $('#modal-intimation').modal('show');
+            } else if (parseInt(days) > 0) {
+                $('#expirecontent').text('Your license will be expired within ' + days +' days, please upload your license before the expiry date, other wise you can not place the order.');
+                $('#modal-intimation').modal('toggle');
+                $('#modal-intimation').modal('show');
+
+            }
+        }
         $("#example1").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,

@@ -17,7 +17,8 @@ namespace Utility
     public enum LoginStatus
     {
         Success,
-        Failed
+        Failed,
+        NotRegistered
     }
 
     public enum DistributorStatus
@@ -54,6 +55,12 @@ namespace Utility
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
+    public enum SAPProductOrderStatus
+    {
+        NotYetProcessed = 'A',
+        PartiallyProcessed = 'B',
+        CompletelyProcessed = 'C',
+    }
 
     public enum DistributorOrderStatus
     {
@@ -77,8 +84,6 @@ namespace Utility
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
-
-
     public enum PaymentStatus
     {
         Verified = 1,
@@ -161,7 +166,9 @@ namespace Utility
         Draft = 1,
         Submitted = 2,
         Received = 3,
+        [Display(Name = "Completely Processed")]
         CompletelyProcessed = 4,
+        [Display(Name = "Partially Received")]
         PartiallyReceived = 5,
     }
     public enum ApplicationActions
