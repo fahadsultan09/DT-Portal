@@ -1,0 +1,58 @@
+﻿@model OrderValueViewModel
+@{ 
+    ViewBag.Title = "Add Product | Distributor Portal";
+ }
+<table class="table table-bordered table-striped ordervalue" style="font-size: 13px; padding: 0;">
+    <thead>
+        <tr>
+            <th>Values</th>
+            <th>@Html.LabelFor(e => e.Supplies0)</th>
+            <th>@Html.LabelFor(e => e.Supplies1)</th>
+            <th>@Html.LabelFor(e => e.Supplies4)</th>
+            <th>@Html.LabelFor(e => e.TotalOrderValues)</th>
+            <th>@Html.LabelFor(e => e.TotalUnapprovedOrderValues)</th>
+            <th>@Html.LabelFor(e => e.PendingOrderValues)</th>
+            <th>@Html.LabelFor(e => e.CurrentBalance)</th>
+            <th>@Html.LabelFor(e => e.UnConfirmedPayment)</th>
+            <th>@Html.LabelFor(e => e.NetPayable)</th>
+        </tr>
+    </thead>
+    <tbody style="font-size: 11px">
+        <tr>
+            <td>SAMI</td>
+            <td>@Convert.ToDecimal(Model.SAMISupplies0).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMISupplies1).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMISupplies4).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMITotalOrderValues).ToString("#,##0.00")</td>
+            <td><span>@Convert.ToDecimal(Model.SAMITotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td>@Convert.ToDecimal(Model.SAMIPendingOrderValues).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMICurrentBalance).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMIUnConfirmedPayment).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.SAMINetPayable).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>Healthtek</td>
+            <td>@Convert.ToDecimal(Model.HealthTekSupplies0).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekSupplies1).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekSupplies4).ToString("#,##0.00")</td>
+            <td><span>@Convert.ToDecimal(Model.HealthTekTotalOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.HealthTekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td>@Convert.ToDecimal(Model.HealthTekPendingOrderValues).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekCurrentBalance).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekUnConfirmedPayment).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.HealthTekNetPayable).ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td>Phytek</td>
+            <td>@Convert.ToDecimal(Model.PhytekSupplies0).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekSupplies1).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekSupplies4).ToString("#,##0.00")</td>
+            <td><span>@Convert.ToDecimal(Model.PhytekTotalOrderValues).ToString("#,##0.00")</span></td>
+            <td><span>@Convert.ToDecimal(Model.PhytekTotalUnapprovedOrderValues).ToString("#,##0.00")</span></td>
+            <td>@Convert.ToDecimal(Model.PhytekPendingOrderValues).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekCurrentBalance).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekUnConfirmedPayment).ToString("#,##0.00")</td>
+            <td>@Convert.ToDecimal(Model.PhytekNetPayable).ToString("#,##0.00")</td>
+        </tr>
+    </tbody>
+</table>
