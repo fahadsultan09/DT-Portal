@@ -1,0 +1,129 @@
+﻿@model List<ProductDetail>
+@{ 
+    ViewBag.Title = "Add Product | Distributor Portal";
+   var order =  Model.OrderBy(e => e.ProductMaster.ProductDescription).ToList();
+ }
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Products</h1>
+                    
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Add Products</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="container-fluid" id="divform">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Product List</h2>
+                            <a asp-controller="Product"
+                               asp-action="ProductsExportToExcel"
+                               asp-route-Id="@ProductEnum.ProductMapping"
+                               id="frmImport"
+                               class="btn btn-info float-right">
+                                Next&nbsp;
+                                <i class="fa fa-arrow-alt-circle-right"></i>
+                            </a>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-responsive table-bordered table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Product Name</th>
+                                        <th>Pack Size</th>
+                                        <th>Order Qty</th>
+                                        <th>Pending Qty</th>
+                                        <th>Stock Qty</th>
+                                        <th>Carton Size</th>
+                                        <th>Rate</th>
+                                        <th>Discount</th>
+                                        <th>Cartons</th>
+                                        <th>Total</th>
+                                        <th>Supplies</th>
+                                        <th>Company</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < order.Count(); i++)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" asp-for="@order[i].ProductMasterId" />
+                                            @order[i].ProductMaster.SAPProductCode
+                                        </td>
+                                        <td>@order[i].ProductMaster.ProductDescription</td>
+                                        <td>@order[i].ProductMaster.PackSize</td>
+                                        <td>
+                                            <input type="number" asp-for="@order[i].ProductMaster.Quantity" value="@order[i].ProductMaster.Quantity" class="form-control ApproveQuantity" min="0" max="9999999" step="any" />
+                                        </td>
+                                        <td>@order[i].PendingQuantity</td>
+                                        <td></td>
+                                        <td><span id="CurtonSize">@order[i].ProductMaster.CartonSize</span></td>
+                                        <td>@order[i].ProductMaster.Rate</td>
+                                        <td>@order[i].ProductMaster.Discount %</td>
+                                        <td><span id="CurtonQty">@(Math.Ceiling(order[i].ProductMaster.Quantity / order[i].ProductMaster.CartonSize))</span></td>
+                                        <td><span class="Amount">@(order[i].ProductMaster.Quantity * order[i].ProductMaster.Rate)</span></td>
+                                        <td>@order[i].WTaxRate %</td>
+                                        <td>
+                                            @order[i].Company.CompanyName
+                                            <input type="text" asp-for="@order[i].Company.Id" value="@order[i].Company.Id" class="form-control d-none" />
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            //columnDefs: [
+            //    { "width": "4%", "targets": 0 },
+            //    { "width": "15%", "targets": 1 },
+            //    { "width": "5%", "targets": 2 },
+            //    { "width": "5%", "targets": 3 },
+            //    { "width": "6%", "targets": 4 },
+            //    { "width": "5%", "targets": 5 },
+            //    { "width": "6%", "targets": 6 },
+            //    { "width": "4%", "targets": 7 },
+            //    { "width": "5%", "targets": 8 },
+            //    { "width": "4%", "targets": 9 },
+            //    { "width": "4%", "targets": 10 },
+            //    { "width": "5%", "targets": 11 },
+            //    { "width": "24%", "targets": 12 }
+            //],
+            scrollX: true,
+            sScrollXInner: "150%",
+            scrollCollapse: true,
+            paging: false,
+            fixedColumns: {
+                leftColumns: 4
+            },
+            lengthMenu: [[14, 25, 50, -1], [14, 25, 50, "All"]],
+            responsive: true,
+            autoWidth: false,
+            order: []
+        });
+    });
+</script>
