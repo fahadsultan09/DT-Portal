@@ -13,14 +13,18 @@ using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
 using RestSharp;
+using SalesOrder;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
 using System.Threading.Tasks;
+using System.Xml;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
+using static SalesOrder.DisPortalPORequest_OutClient;
 
 namespace DistributorPortal.Controllers
 {
@@ -37,6 +41,7 @@ namespace DistributorPortal.Controllers
         private readonly IConfiguration _IConfiguration;
         private readonly ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
+        //private readonly IDisPortalPORequest_OutRepository _temp;
 
         public OrderController(IUnitOfWork unitOfWork, Configuration _configuration, IConfiguration configuration, ICompositeViewEngine viewEngine)
         {
@@ -51,6 +56,7 @@ namespace DistributorPortal.Controllers
             _IConfiguration = configuration;
             _viewEngine = viewEngine;
             _Configuration = _configuration;
+            //_temp = temp;
         }
         // GET: Order
         public ActionResult Index()
@@ -267,6 +273,23 @@ namespace DistributorPortal.Controllers
                     Detail.IsProductSelected = item.ProductMaster.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
+                //BasicHttpBinding binding = new BasicHttpBinding
+                //{
+                //    SendTimeout = TimeSpan.FromSeconds(10000),
+                //    MaxBufferSize = int.MaxValue,
+                //    MaxReceivedMessageSize = int.MaxValue,
+                //    AllowCookies = true,
+                //    ReaderQuotas = XmlDictionaryReaderQuotas.Max,
+                //};
+                //binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+                //binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+                //EndpointAddress address = new EndpointAddress("http://10.0.3.35:51000/dir/wsdl?p=ic/976f5f674fb63cd2ae8be448fdd82af8");
+                //DisPortalPORequest_OutClient disPortalPORequest_OutClient = new DisPortalPORequest_OutClient(binding, address);
+                //disPortalPORequest_OutClient.ClientCredentials.UserName.UserName = "SAMI_PO";
+                //disPortalPORequest_OutClient.ClientCredentials.UserName.Password = "wasay123";
+                //DisPortalPORequest_OutRequest disPortalPORequest_OutRequest = new DisPortalPORequest_OutRequest(PlaceOrderToSAPPO(OrderId).ToArray());
+                //disPortalPORequest_OutClient.OpenAsync();
+                //DisPortalPORequest_OutResponse list = disPortalPORequest_OutClient.DisPortalPORequest_Out(disPortalPORequest_OutRequest);
                 var Client = new RestClient(_Configuration.PostOrder);
                 var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
                 var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
@@ -433,7 +456,7 @@ namespace DistributorPortal.Controllers
                 model.OrderValueViewModel = new OrderValueViewModel();
             }
             model.Distributor = SessionHelper.LoginUser.Distributor ?? new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First();
-            model.ProductList = new ProductMasterBLL(_unitOfWork).DropDownProductList();
+            model.ProductList = _productDetailBLL.DropDownProductList();
             return model;
         }
         public ActionResult UpdateOrderValue()
@@ -505,7 +528,7 @@ namespace DistributorPortal.Controllers
                     else if (Challan == null && LicenseControl != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
                     {
                         jsonResponse.Status = true;
-                        jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                        jsonResponse.Message = NotificationMessage.OrderTemporarilyAllowed;
                     }
                     else if (Challan == null && LicenseControl != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
                     {
@@ -515,7 +538,7 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Add verified license or challan before placing the order.";
+                        jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
                     }
                 }
                 if (Product.LicenseControlId != null)
@@ -555,7 +578,7 @@ namespace DistributorPortal.Controllers
                     if (Challan is null && License is null)
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Add verified license or challan before placing the order.";
+                        jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
                     }
                     if (Challan != null || License != null)
                     {
@@ -567,7 +590,7 @@ namespace DistributorPortal.Controllers
                         else if (License != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
                         {
                             jsonResponse.Status = true;
-                            jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                            jsonResponse.Message = NotificationMessage.OrderTemporarilyAllowed;
                         }
                         else if (License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay) < DateTime.Now)
                         {
@@ -587,7 +610,7 @@ namespace DistributorPortal.Controllers
                     else if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry && DateTime.Now < License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
                     {
                         jsonResponse.Status = true;
-                        jsonResponse.Message = "Your license has been expired, but your are temporay allowed to place the order.";
+                        jsonResponse.Message = NotificationMessage.OrderTemporarilyAllowed;
                     }
                     else if (Challan == null && LicenseControl != null && License != null && DateTime.Now > License.Expiry.AddDays(License.LicenseControl.LicenseAcceptanceInDay))
                     {
@@ -597,7 +620,7 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Add verified license or challan before placing the order.";
+                        jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
                     }
                 }
 
@@ -688,6 +711,36 @@ namespace DistributorPortal.Controllers
                 list.ForEach(x => x.IsProductSelected = false);
             }
             SessionHelper.AddProduct = list;
+        }
+        public List<ZST_SALE_ORDER_CREATE_IN> PlaceOrderToSAPPO(int OrderId)
+        {
+            List<ZST_SALE_ORDER_CREATE_IN> model = new List<ZST_SALE_ORDER_CREATE_IN>();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0 && e.SAPOrderNumber == null).ToList();
+            var ProductDetail = _productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new ZST_SALE_ORDER_CREATE_IN()
+                {
+                    SNO = string.Format("{0:1000000000}", item.OrderId),
+                    ITEMNO = "",
+                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderMaster.ReferenceNo,
+                    PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+                    PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+                    ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    BATCH = "",
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    REQ_QTY = item.ApprovedQuantity.ToString()
+                });
+            }
+            return model;
         }
     }
 }

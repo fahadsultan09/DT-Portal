@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Company>
+﻿@model IEnumerable<UserSystemInfo>
 @{
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
@@ -14,8 +14,8 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Company List</h2>
-                <form asp-controller="Company"
+                <h2 class="card-title">System Info List</h2>
+                <form asp-controller="UserSystemInfo"
                       asp-action="Add"
                       id="frmAdd"
                       data-ajax-update="#divform"
@@ -25,15 +25,16 @@
                     <button type="submit" class="btn btn-info float-right">Add</button>
                 </form>
             </div>
+            <!-- /.card-header -->
             <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Name</th>
-                            <th>Payment Allowed</th>
-                            <th>Return Order Allowed</th>
-                            <th>Active</th>
+                            <th>Distributor Name</th>
+                            <th>Processor Id</th>
+                            <th>Host Name</th>
+                            <th>MAC Address</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,30 +43,15 @@
                         {
                             <tr>
                                 <td>@item.Id</td>
-                                <td>@item.CompanyName</td>
-                                <td>
-                                    @if (item.IsPaymentAllowed)
-                                    {<i class="fa fa-check text-navy"></i> }
-                                    else
-                                    {<i class="fa fa-times text-danger"></i>}
-                                </td>
-                                <td>
-                                    @if (item.IsReturnOrderAllowed)
-                                    {<i class="fa fa-check text-navy"></i> }
-                                    else
-                                    {<i class="fa fa-times text-danger"></i>}
-                                </td>
-                                <td>
-                                    @if (item.IsActive)
-                                    {<i class="fa fa-check text-navy"></i> }
-                                    else
-                                    {<i class="fa fa-times text-danger"></i>}
-                                </td>
+                                <td>@item.Distributor.DistributorName</td>
+                                <td>@item.ProcessorId</td>
+                                <td>@item.HostName</td>
+                                <td>@item.MACAddress</td>
                                 <td>
                                     <a data-ajax-update="#divform"
                                        data-ajax="true"
                                        data-ajax-method="GET"
-                                       asp-controller="Company" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                       asp-controller="UserSystemInfo" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                     <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
@@ -80,6 +66,7 @@
         </div>
     </div>
 </div>
+
 <script>
 
     $(document).ready(function () {
@@ -102,7 +89,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post('@Url.Action("Delete", "Company")?DPID=' + e.id, null, function (data) {
+                $.post('@Url.Action("Delete", "UserSystemInfo")?DPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
                         setTimeout(function () {

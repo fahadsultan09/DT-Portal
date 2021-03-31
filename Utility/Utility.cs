@@ -17,7 +17,8 @@ namespace Utility
     public enum LoginStatus
     {
         Success,
-        Failed
+        Failed,
+        NotRegistered
     }
 
     public enum DistributorStatus

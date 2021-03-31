@@ -120,6 +120,9 @@
   <data name="AddLicense" xml:space="preserve">
     <value>License Uploaded Successfully</value>
   </data>
+  <data name="AddVerifiedLicense" xml:space="preserve">
+    <value>Add verified license or challan before placing the order</value>
+  </data>
   <data name="DeletedSuccessfully" xml:space="preserve">
     <value>Deleted successfully.</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="OrderSaved" xml:space="preserve">
     <value>Order Successfully Saved</value>
+  </data>
+  <data name="OrderTemporarilyAllowed" xml:space="preserve">
+    <value>Your license has been expired, but you are temporarily allowed to place the order.</value>
   </data>
   <data name="PaymentSaved" xml:space="preserve">
     <value>Payment Saved Successfully.</value>

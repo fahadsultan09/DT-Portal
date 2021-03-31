@@ -11,6 +11,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Utility;
 using Utility.HelperClasses;
 
@@ -46,6 +47,8 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public JsonResult Index(User model)
         {
+            Tuple<string,string> item = GetClientIPAndMacAddress();
+            model.RegisteredAddress = item.Item2;
             JsonResponse jsonResponse = new JsonResponse();
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             if (model.Password != null && model.Password.Equals(password) && login.CheckUserPassword(model, password))
@@ -64,6 +67,13 @@ namespace DistributorPortal.Controllers
                 new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Index", "End Click on Login Button of ");
                 return Json(new { data = jsonResponse });
             }
+            else if(login.CheckLogin(model) == LoginStatus.NotRegistered)
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = "You are not registered.";
+                jsonResponse.RedirectURL = string.Empty;
+                return Json(new { data = jsonResponse });
+            }
             else
             {
                 jsonResponse.Status = false;
@@ -76,6 +86,8 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult ChangePassword(User model)
         {
+            Tuple<string, string> item = GetClientIPAndMacAddress();
+            model.RegisteredAddress = item.Item2;
             JsonResponse jsonResponse = new JsonResponse();
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             try
@@ -120,6 +132,61 @@ namespace DistributorPortal.Controllers
             new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
+        }
+        [DllImport("Iphlpapi.dll")]
+        private static extern int SendARP(int dest, int host, ref long mac, ref int length);
+
+        [DllImport("Ws2_32.dll")]
+        private static extern Int32 inet_addr(string ip);
+        public Tuple<string, string> GetClientIPAndMacAddress()
+        {
+            string IPAddress = string.Empty;
+            string MacAddress = string.Empty;
+            try
+            {
+                string userip = this.HttpContext.Connection.RemoteIpAddress.ToString();
+                string strClientIP = this.HttpContext.Connection.RemoteIpAddress.ToString();
+                Int32 ldest = inet_addr(strClientIP);
+                Int32 lhost = inet_addr("");
+                Int64 macinfo = new Int64();
+                Int32 len = 6;
+                int res = SendARP(ldest, 0, ref macinfo, ref len);
+                string mac_src = macinfo.ToString("X");
+                if (mac_src == "0")
+                {
+                    IPAddress = userip;
+                    return new Tuple<string, string>(IPAddress, MacAddress);
+                }
+                while (mac_src.Length < 12)
+                {
+                    mac_src = mac_src.Insert(0, "0");
+                }
+
+                string mac_dest = "";
+
+                for (int i = 0; i < 11; i++)
+                {
+                    if (0 == (i % 2))
+                    {
+                        if (i == 10)
+                        {
+                            mac_dest = mac_dest.Insert(0, mac_src.Substring(i, 2));
+                        }
+                        else
+                        {
+                            mac_dest = "-" + mac_dest.Insert(0, mac_src.Substring(i, 2));
+                        }
+                    }
+                }
+                IPAddress = userip;
+                MacAddress = mac_dest;
+                return new Tuple<string, string>(IPAddress, MacAddress);
+            }
+            catch (Exception err)
+            {
+                Response.WriteAsync(err.Message);
+            }
+            return new Tuple<string, string>(IPAddress, MacAddress);
         }
     }
 }

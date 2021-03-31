@@ -26,7 +26,6 @@ namespace BusinessLogicLayer.Application
             module.FirstName.Trim();
             module.LastName.Trim();
             module.DistributorId = module.IsDistributor ? module.DistributorId : null;
-            module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
@@ -46,21 +45,11 @@ namespace BusinessLogicLayer.Application
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.RegisteredAddress = module.RegisteredAddress;
-            item.CPUID = module.CPUID;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
             return _unitOfWork.Save() > 0;
-        }
-        public void UpdateCPUID(User module) 
-        {
-            var item = repository.Where(x=>x.UserName == module.UserName).FirstOrDefault();
-            if (item != null)
-            {
-                item.CPUID = module.CPUID;
-                _unitOfWork.Save();
-            }
         }
         public bool DeleteUser(int id)
         {
@@ -134,6 +123,10 @@ namespace BusinessLogicLayer.Application
         public User FirstOrDefault(Expression<Func<User, bool>> predicate)
         {
             return repository.FirstOrDefault(predicate);
+        }
+        public List<User> Where(Expression<Func<User, bool>> predicate)
+        {
+            return repository.Where(predicate);
         }
     }
 }

@@ -70,6 +70,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add verified license or challan before placing the order.
+        /// </summary>
+        public static string AddVerifiedLicense {
+            get {
+                return ResourceManager.GetString("AddVerifiedLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted successfully..
         /// </summary>
         public static string DeletedSuccessfully {
@@ -165,6 +174,15 @@ namespace DistributorPortal.Resource {
         public static string OrderSaved {
             get {
                 return ResourceManager.GetString("OrderSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your license has been expired, but you are temporarily allowed to place the order..
+        /// </summary>
+        public static string OrderTemporarilyAllowed {
+            get {
+                return ResourceManager.GetString("OrderTemporarilyAllowed", resourceCulture);
             }
         }
         

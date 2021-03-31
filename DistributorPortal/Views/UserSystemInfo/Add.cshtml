@@ -1,4 +1,4 @@
-﻿@model Company
+﻿@model UserSystemInfo
 @{
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
@@ -10,19 +10,16 @@
     }
 }
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Company</h3>
+        <h3 class="card-title">System Info</h3>
     </div>
-    <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <form asp-controller="Company"
+                <form asp-controller="UserSystemInfo"
                       asp-action="SaveEdit"
-                      id="frmDosageForm"
+                      id="frmUserSystemInfo"
                       data-ajax-update="#divform"
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
@@ -36,35 +33,44 @@
                                 <input asp-for="Id" type="hidden" />
                                 <div class="ibox-content">
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Company Name<span class="text-danger"> * </span></label>
+                                        <label class="col-lg-3 col-form-label">Module Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <input asp-for="CompanyName" type="text" placeholder="Company Name" class="form-control" />
-                                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                            @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Please Select--", htmlAttributes: new { @class = "form-control select2" })
+                                            <span asp-validation-for="DistributorId" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">SAP Company Name<span class="text-danger"> * </span></label>
+                                        <label class="col-lg-3 col-form-label">Processor Id<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <input asp-for="SAPCompanyCode" type="text" placeholder="SAP Company Code" class="form-control" />
-                                            <span asp-validation-for="SAPCompanyCode" class="text-danger"></span>
+                                            <input asp-for="ProcessorId" type="text" placeholder="Processor Id" class="form-control" />
+                                            <span asp-validation-for="ProcessorId" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Is Payment Allowed</label>
+                                        <label class="col-lg-3 col-form-label">Host Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsPaymentAllowed" type="checkbox"><i></i></div>
+                                            <input asp-for="HostName" type="text" placeholder="Host Name" class="form-control" />
+                                            <span asp-validation-for="HostName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Is Return Order Allowed</label>
+                                        <label class="col-lg-3 col-form-label">MAC Address<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsReturnOrderAllowed" type="checkbox"><i></i></div>
+                                            <input asp-for="MACAddress" type="text" placeholder="MAC Address" class="form-control" />
+                                            <span asp-validation-for="MACAddress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Other MAC Address<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="OtherMACAddress" type="text" placeholder="MAC Address" class="form-control" />
+                                            <span asp-validation-for="OtherMACAddress" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">Is Active</label>
                                         <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsActive" type="checkbox"><i></i></div>
+                                            <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -75,7 +81,7 @@
                                             <a data-ajax-update="#divform"
                                                data-ajax="true"
                                                data-ajax-method="GET"
-                                               asp-controller="Company" asp-action="List"
+                                               asp-controller="UserSystemInfo" asp-action="List"
                                                class="btn btn-sm btn-default float-right mr-3">Back</a>
                                         </div>
                                     </div>
@@ -88,5 +94,10 @@
         </div>
     </div>
 </div>
-<!-- /.card -->
 
+<script>
+
+    $(document).ready(function () {
+        $('.select2').select2()
+    });
+</script>

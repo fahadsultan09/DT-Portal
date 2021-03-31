@@ -1,12 +1,14 @@
-﻿using System.Linq;
+﻿using BusinessLogicLayer.Application;
+using BusinessLogicLayer.GeneralSetup;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
+using Models.Application;
+using System.Collections.Generic;
+using System.Linq;
+using System.Management;
+using System.Net.NetworkInformation;
 using Utility;
 using Utility.HelperClasses;
-using Models.Application;
-using BusinessLogicLayer.HelperClasses;
-using BusinessLogicLayer.GeneralSetup;
-using System.Management;
-using BusinessLogicLayer.Application;
 
 namespace BusinessLogicLayer.Login
 {
@@ -14,35 +16,35 @@ namespace BusinessLogicLayer.Login
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserBLL _UserBLL;
+        private readonly UserSystemInfoBLL _UserSystemInfoBLL;
         public LoginBLL(IUnitOfWork Repository)
         {
             _unitOfWork = Repository;
             _UserBLL = new UserBLL(_unitOfWork);
+            _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
         }
-        
+
         public LoginStatus CheckLogin(User user)
         {
-            string CPUID = string.Empty;
+            List<string> UserSystemInfoList = new List<string>();
             var Password = EncryptDecrypt.Encrypt(user.Password);
-            User LoginUser = _unitOfWork.GenericRepository<User>().Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
-            if (LoginUser.IsDistributor)
+            User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
+            if (LoginUser != null)
             {
-                ManagementClass mc = new ManagementClass("win32_processor");
-                ManagementObjectCollection moc = mc.GetInstances();
-                foreach (ManagementObject mo in moc)
+                UserSystemInfoList = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId) != null ? _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).Select(x => x.MACAddress).ToList() : new List<string>();
+
+                if (LoginUser.IsDistributor)
                 {
-                    CPUID = user.CPUID = mo.Properties["processorID"].Value.ToString();
-                    break;
-                }
-                if (string.IsNullOrEmpty(LoginUser.CPUID))
-                {
-                    _UserBLL.UpdateCPUID(user);
-                }
-                else
-                {
-                    if (LoginUser.CPUID != CPUID)
+                    if (UserSystemInfoList != null && !UserSystemInfoList.Contains(user.RegisteredAddress.Replace("-", "")) || UserSystemInfoList.Count() == 0)
                     {
-                        LoginUser = new User();
+                        LoginUser = null;
+                    }
+                    if (LoginUser != null)
+                    {
+                    }
+                    else
+                    {
+                        return LoginStatus.NotRegistered;
                     }
                 }
             }
@@ -57,7 +59,8 @@ namespace BusinessLogicLayer.Login
                 return LoginStatus.Failed;
             }
         }
-        public bool CheckUserPassword(User user,string password)
+
+        public bool CheckUserPassword(User user, string password)
         {
             var Password = EncryptDecrypt.Encrypt(user.Password);
             if (_unitOfWork.GenericRepository<User>().Any(e => e.UserName == user.UserName && e.Password == Password))
