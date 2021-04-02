@@ -26,16 +26,29 @@ namespace BusinessLogicLayer.Login
 
         public LoginStatus CheckLogin(User user)
         {
-            List<string> UserSystemInfoList = new List<string>();
+            List<string> MACAddresses = new List<string>();
             var Password = EncryptDecrypt.Encrypt(user.Password);
             User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
+            List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).ToList();
             if (LoginUser != null)
             {
-                UserSystemInfoList = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId) != null ? _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).Select(x => x.MACAddress).ToList() : new List<string>();
-
+                foreach (var item1 in UserSystemInfoList.Select(x => x.OtherMACAddress).ToList())
+                {
+                    if (!string.IsNullOrEmpty(item1))
+                    {
+                        MACAddresses.Add(item1);
+                    }
+                }
+                foreach (var item2 in UserSystemInfoList.Select(x => x.MACAddress).ToList())
+                {
+                    if (!string.IsNullOrEmpty(item2))
+                    {
+                        MACAddresses.Add(item2);
+                    }
+                }
                 if (LoginUser.IsDistributor)
                 {
-                    if (UserSystemInfoList != null && !UserSystemInfoList.Contains(user.RegisteredAddress.Replace("-", "")) || UserSystemInfoList.Count() == 0)
+                    if (MACAddresses != null && !MACAddresses.Contains(user.RegisteredAddress.Replace("-", "")) || MACAddresses.Count() == 0)
                     {
                         LoginUser = null;
                     }

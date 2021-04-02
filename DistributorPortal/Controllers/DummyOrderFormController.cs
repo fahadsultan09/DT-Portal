@@ -2,6 +2,7 @@
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
+using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,11 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddProduct = list;
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
+        }
+        [HttpPost]
+        public IActionResult SaveEdit(List<ProductDetail> model, OrderMaster master)
+        {
+            return View();
         }
     }
 }

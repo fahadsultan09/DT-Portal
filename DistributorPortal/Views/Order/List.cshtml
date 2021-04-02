@@ -7,8 +7,8 @@
                 <h2 class="card-title">Order List</h2>
                 @if (SessionHelper.LoginUser.IsDistributor == true)
                 {
-                    <form asp-controller="Order"
-                          asp-action="Add"
+                    <form asp-controller="DummyOrderForm"
+                          asp-action="Dummy"
                           id="frmAdd"
                           method="GET">
                         <button type="submit" class="btn btn-info float-right" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</button>

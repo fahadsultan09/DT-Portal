@@ -49,6 +49,7 @@ namespace DistributorPortal.Controllers
         {
             Tuple<string,string> item = GetClientIPAndMacAddress();
             model.RegisteredAddress = item.Item2;
+            new AuditLogBLL(_unitOfWork).AddAuditLog(item.Item2.ToString(), item.Item1.ToString(), "");
             JsonResponse jsonResponse = new JsonResponse();
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             if (model.Password != null && model.Password.Equals(password) && login.CheckUserPassword(model, password))

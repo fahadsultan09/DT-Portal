@@ -71,14 +71,17 @@ namespace DistributorPortal.Controllers
                     {
                         ViewBag.Expired = true;
                     }
-
-                    if (Days <= _licenseControlBLL.FirstOrDefault(x => x.IsActive == true && x.IsDeleted == false && x.LicenseName == "Drugs").DaysIntimateBeforeExpiry)
+                    var license = _licenseControlBLL.FirstOrDefault(x => x.IsActive == true && x.IsDeleted == false && x.IsMandatory);
+                    if (license != null)
                     {
-                        ViewBag.Days = Days;
-                    }
-                    else
-                    {
-                        ViewBag.Days = string.Empty;
+                        if (Days <= license.DaysIntimateBeforeExpiry)
+                        {
+                            ViewBag.Days = Days;
+                        }
+                        else
+                        {
+                            ViewBag.Days = string.Empty;
+                        }
                     }
                 }
             }
