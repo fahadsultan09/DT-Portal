@@ -13,13 +13,13 @@ namespace Models.ViewModel
         public double Supplies1 { get; set; }
         [Display(Name = "4% Supplies")]
         public double Supplies4 { get; set; }
-        [Display(Name = "Total Order Value")]
+        [Display(Name = "This Order Value")]
         public double TotalOrderValues { get; set; }
-        [Display(Name = "Pending Order Values")]
+        [Display(Name = "Approved Order Values")]
         public double PendingOrderValues { get; set; }
         [Display(Name = "Current Balance")]
         public double CurrentBalance { get; set; }
-        [Display(Name = "UnConfirmed Payment")]
+        [Display(Name = "Unapproved Payments")]
         public double UnConfirmedPayment { get; set; }
         [Display(Name = "Net Payable")]
         public double NetPayable { get; set; }
