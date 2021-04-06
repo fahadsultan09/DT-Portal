@@ -1,9 +1,7 @@
-﻿@model List<ProductDetail>
+﻿@model OrderViewModel
 @{
     ViewData["Title"] = "Dummy";
-    var order = Model.OrderBy(e => e.ProductMaster.ProductDescription).ToList();
     var m = new OrderValueViewModel();
-    var master = new OrderMaster();
     var id = 1;
 }
 
@@ -33,8 +31,13 @@
         position: -webkit-sticky;
         position: sticky;
         top: 0;
-        font-size: 20px;
         z-index: 1
+    }
+    body {
+        overflow-x: hidden;
+    }
+    .col-lg-2{
+        flex-basis: 10.6667%
     }
 </style>
 <!-- Main content -->
@@ -79,8 +82,10 @@
                                 </div>
                             </div>
                             <div class="card-body">
+
                                 <div class="row">
                                     <div class="col-lg-12">
+                                        @Html.HiddenFor(e => Model.SubmitStatus, htmlAttributes: new { id = "btnstatus" })
                                         <table id="example1" class="table table-bordered table-condensed table-hover table-striped table-sm" style="width:100%">
                                             <thead>
                                                 <tr>
@@ -98,61 +103,85 @@
                                                     <th>QTY. (CTN)</th>
                                                     <th>QTY. (SF)</th>
                                                     <th>QTY. (Loose)</th>
-                                                    @*<th>Supplies</th>
-                                                        <th>Company</th>*@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @for (int i = 0; i < order.Count(); i++)
+
+                                                @for (int i = 0; i < Model.ProductDetails.Count(); i++)
                                                 {
                                                     <tr>
                                                         <td>
-                                                            <input type="hidden" asp-for="@order[i].ProductMasterId" />
-                                                            @order[i].ProductMaster.SAPProductCode
+                                                            @*<input type="hidden" asp-for="@Model.ProductDetails[i].ProductMasterId" />*@
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].Id)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductMasterId)
+                                                            @Model.ProductDetails[i].ProductMaster.SAPProductCode
                                                         </td>
-                                                        <td>@order[i].ProductMaster.ProductDescription</td>
-                                                        <td>@order[i].ProductMaster.PackSize</td>
-                                                        <td><span id="CurtonSize">@order[i].ProductMaster.CartonSize</span></td>
-                                                        <th>SF Size</th>
+                                                        <td>@Model.ProductDetails[i].ProductMaster.ProductDescription</td>
+                                                        <td>@Model.ProductDetails[i].ProductMaster.PackSize</td>
+                                                        <td><span id="CurtonSize">@Model.ProductDetails[i].ProductMaster.CartonSize</span></td>
+                                                        <td>SF Size</td>
                                                         <td>
-                                                            <input type="number" tabindex="@id" asp-for="@order[i].ProductMaster.Quantity" value="@order[i].ProductMaster.Quantity" _ProductId="@order[i].ProductMaster.Id" onchange="LoadOrderValue(this);" class="form-control ApproveQuantity" min="0" max="9999999" step="any" />
+                                                            @Html.TextBoxFor(e => Model.ProductDetails[i].ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "number", value = Model.ProductDetails[i].ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductMaster.Id, onchange = "LoadOrderValue(this);", @class = "form-control ApproveQuantity", min = "0", max = "9999999", step = "any" })
+                                                            @*<input type="number" tabindex="@id" asp-for="@Model.ProductDetails[i].ProductMaster.Quantity" value="@Model.ProductDetails[i].ProductMaster.Quantity" _ProductId="@Model.ProductDetails[i].ProductMaster.Id" onchange="LoadOrderValue(this);" class="form-control ApproveQuantity" min="0" max="9999999" step="any" />*@
                                                         </td>
-                                                        <td>@order[i].PendingQuantity</td>
+                                                        <td>@Model.ProductDetails[i].PendingQuantity</td>
                                                         <td>(Stock)</td>
-                                                        <td><span id="TradePrice">@order[i].ProductMaster.Rate</span></td>
-                                                        <td><span id="Discount">@order[i].ProductMaster.Discount</span> %</td>
+                                                        <td><span id="TradePrice">@Model.ProductDetails[i].ProductMaster.Rate</span></td>
+                                                        <td><span id="Discount">@Model.ProductDetails[i].ProductMaster.Discount</span> %</td>
                                                         <td><span id="NetValue"></span></td>
-                                                        <td><span id="CurtonQty">@(Math.Ceiling(order[i].ProductMaster.Quantity / order[i].ProductMaster.CartonSize))</span></td>
-                                                        <td><span class="Amount">@(order[i].ProductMaster.Quantity * order[i].ProductMaster.Rate)</span></td>
+                                                        <td><span id="CurtonQty">@(Math.Ceiling(Model.ProductDetails[i].ProductMaster.Quantity / Model.ProductDetails[i].ProductMaster.CartonSize))</span></td>
+                                                        <td><span class="Amount">@(Model.ProductDetails[i].ProductMaster.Quantity * Model.ProductDetails[i].ProductMaster.Rate)</span></td>
                                                         <td>(Loose)</td>
-                                                        @*<td>@order[i].WTaxRate %</td>
-                                                            <td>
-                                                                @order[i].Company.CompanyName
-                                                                <input type="text" asp-for="@order[i].Company.Id" value="@order[i].Company.Id" class="form-control d-none" />
-                                                            </td>*@
                                                     </tr>
                                                     id++;
                                                 }
+
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-12 offset-11">
-                                        <button type="button" onclick="LoadModal();" class="btn btn-success pull-right"><i class="fas fa-arrow-right"></i>&nbsp;Next</button>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <h6>Reference No</h6>
+                                        <input type="text" asp-for="ReferenceNo" id="ReferenceNo" class="form-control" />
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <h6>Attachment</h6>
+                                        <div class="form-group">
+                                            <div class="custom-file">
+                                                <input type="file" asp-for="AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                <label class="custom-file-label" for="customFile">Choose file</label>
+                                                <span asp-validation-for="AttachmentFormFile" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <span class="caption">
+                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <h6>Remarks</h6>
+                                        <input type="text" asp-for="Remarks" id="Remarks" class="form-control" />
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <button type="submit" name="btnSubmit" value="@SubmitStatus.OrderNow" class="btn btn-success pull-right" style="margin-top: 28px">&nbsp;Order Now</button>
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <button type="submit" name="btnSubmit" value="@SubmitStatus.Draft" class="btn btn-primary pull-right" style="margin-top: 28px">&nbsp;Draft</button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
 
                     </div>
                 </div>
             </div>
+
         </section>
     </div>
 
 
-    <div class="modal fade" id="modal-OrderModal" aria-modal="true">
+    @*<div class="modal fade" id="modal-OrderModal" aria-modal="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
@@ -172,7 +201,7 @@
 
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <h6>Reference No</h6>
-                                <input type="text" asp-for="@master.ReferenceNo" id="ReferenceNo" class="form-control" />
+                                <input type="text" asp-for="@Model.ReferenceNo" id="ReferenceNo" class="form-control" />
                             </div>
                         </div>
                         <div class="row">
@@ -180,20 +209,20 @@
                                 <h6>Attachment</h6>
                                 <div class="form-group">
                                     <div class="custom-file">
-                                        <input type="file" asp-for="@master.AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                        <input type="file" asp-for="@Model.AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
                                         <label class="custom-file-label" for="customFile">Choose file</label>
-                                        <span asp-validation-for="@master.AttachmentFormFile" class="text-danger"></span>
+                                        <span asp-validation-for="@Model.AttachmentFormFile" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <span class="caption">
-                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(master.Attachment) ? master.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(master.Attachment) ? master.Attachment.Split('_')[1] : "")</a>
+                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
                                 </span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <h6>Remarks</h6>
-                                <input type="text" asp-for="@master.Remarks" id="Remarks" class="form-control" />
+                                <input type="text" asp-for="@Model.Remarks" id="Remarks" class="form-control" />
                             </div>
                         </div>
                     </div>
@@ -205,7 +234,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>*@
 </form>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
@@ -215,14 +244,14 @@
     }
     function LaddaBegin() {
         BlockUI();
-        Ladda.create($("#btnOrderNow", this)[0]).start();
-        Ladda.create($("#btnDraft", this)[0]).start();
+        Ladda.create($(".btn-success", this)[0]).start();
+        Ladda.create($(".btn-primary", this)[0]).start();
     }
 
     function SaveEdit(e) {
         if (e == 'OrderNow') {
+            $("#btnstatus").val('1');
             Swal.fire({
-                title: 'Are you sure?',
                 html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
                 icon: 'warning',
                 showCancelButton: true,
@@ -236,6 +265,7 @@
             });
         }
         else {
+            $("#btnstatus").val('2');
             $('#frmOrderMaster').submit();
         }
     }
@@ -243,7 +273,7 @@
     $(document).ready(function () {
         $("#example1").DataTable({
             scrollX: true,
-            scrollY: "430px",
+            scrollY: "410px",
             sScrollXInner: "150%",
             scrollCollapse: true,
             paging: false,
@@ -275,7 +305,7 @@
         debugger;
             var intmaxvalue = @Int32.MaxValue;
             var Quantity = data.value;
-            var Product = data.getAttribute("_ProductId");
+            var Product = data.getAttribute("ProductId");
             if (Quantity > intmaxvalue) {
                 Toast.fire({
                     icon: 'error',

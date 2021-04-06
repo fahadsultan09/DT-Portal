@@ -543,5 +543,79 @@ namespace BusinessLogicLayer.Application
                 return new List<SAPOrderPendingValue>();
             }
         }
+
+        #region Update Order
+        public JsonResponse UpdateOrder(OrderViewModel model, IConfiguration configuration, IUrlHelper Url)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            OrderMaster master = new OrderMaster();
+            string FolderPath = configuration.GetSection("Settings").GetSection("FolderPath").Value;
+            string[] permittedExtensions = Common.permittedExtensions;
+            if (model.AttachmentFormFile != null)
+            {
+                var ext = Path.GetExtension(model.AttachmentFormFile.FileName).ToLowerInvariant();
+                if (permittedExtensions.Contains(ext) && model.AttachmentFormFile.Length < Convert.ToInt64(5242880))
+                {
+                    Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
+                    if (tuple.Item1)
+                    {
+                        master.Attachment = tuple.Item2;
+                    }
+                }
+            }
+            if (model.Id == 0)
+            {                
+                master.TotalValue = model.ProductDetails.Select(e => e.TotalPrice).Sum();
+                master.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
+                Add(master);
+                List<OrderDetail> details = new List<OrderDetail>();
+                foreach (var item in model.ProductDetails)
+                {
+                    details.Add(new OrderDetail()
+                    {
+                        Amount = item.TotalPrice,
+                        OrderId = master.Id,
+                        ProductId = item.ProductMasterId,
+                        Quantity = item.ProductMaster.Quantity,
+                        CreatedBy = SessionHelper.LoginUser.Id,
+                        CreatedDate = DateTime.Now,
+                        ApprovedQuantity = 0
+                    });
+                }
+                _orderDetailBLL.AddRange(details);
+                AddRange(GetValues(GetOrderValueModel(model.ProductDetails), master.Id));
+                jsonResponse.Status = true;
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
+            }
+            else
+            {
+                master.TotalValue = model.ProductDetails.Select(e => e.TotalPrice).Sum();
+                master.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
+                Update(master);
+                _orderDetailBLL.DeleteRange(_orderDetailBLL.Where(e => e.OrderId == model.Id).ToList());
+                List<OrderDetail> details = new List<OrderDetail>();
+                foreach (var item in SessionHelper.AddProduct)
+                {
+                    details.Add(new OrderDetail()
+                    {
+                        Amount = item.TotalPrice,
+                        OrderId = model.Id,
+                        ProductId = item.ProductMasterId,
+                        Quantity = item.ProductMaster.Quantity,
+                        CreatedBy = SessionHelper.LoginUser.Id,
+                        CreatedDate = DateTime.Now
+                    });
+                }
+                _orderDetailBLL.AddRange(details);
+                DeleteRange(_orderValueBLL.GetOrderValueByOrderId(model.Id));
+                AddRange(GetValues(GetOrderValueModel(SessionHelper.AddProduct), model.Id));
+                jsonResponse.Status = true;
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
+                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Add", "Order", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
+            }
+            return jsonResponse;
+        }
+        #endregion
     }
 }
