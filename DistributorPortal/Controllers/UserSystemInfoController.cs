@@ -1,12 +1,14 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Utility.HelperClasses;
 
@@ -16,10 +18,12 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserSystemInfoBLL _UserSystemInfoBLL;
+        private readonly UserSystemInfoDetailBLL _UserSystemInfoDetailBLL;
         public UserSystemInfoController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
+            _UserSystemInfoDetailBLL = new UserSystemInfoDetailBLL(_unitOfWork);
         }
         public IActionResult Index()
         {
@@ -53,25 +57,34 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    if (_UserSystemInfoBLL.Check(model.Id, model.MACAddress))
+                    if (model.Id > 0)
                     {
-                        if (model.Id > 0)
-                        {
-                            _UserSystemInfoBLL.Update(model);
-                        }
-                        else
-                        {
-                            _UserSystemInfoBLL.Add(model);
-                        }
-                        jsonResponse.Status = true;
-                        jsonResponse.Message = NotificationMessage.SaveSuccessfully;
-                        jsonResponse.RedirectURL = Url.Action("Index", "UserSystemInfo");
+                        List<UserSystemInfoDetail> UserSystemInfoDetailList = _UserSystemInfoDetailBLL.Where(x => x.UserSystemInfoId == model.Id).ToList();
+                        _unitOfWork.GenericRepository<UserSystemInfoDetail>().DeleteRange(UserSystemInfoDetailList);
+
+                        _UserSystemInfoBLL.Update(model);
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "System Info name already exist";
+                        _UserSystemInfoBLL.Add(model);
                     }
+                    if (model.UserSystemInfoDetail != null)
+                    {
+                        foreach (var item in model.UserSystemInfoDetail)
+                        {
+                            UserSystemInfoDetail userSystemInfoDetail = new UserSystemInfoDetail()
+                            {
+                                UserSystemInfoId = model.Id,
+                                MACAddress = item.MACAddress,
+                                CreatedBy = SessionHelper.LoginUser.Id,
+                                CreatedDate = DateTime.Now,
+                            };
+                            _UserSystemInfoDetailBLL.Add(userSystemInfoDetail);
+                        }
+                    }
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                    jsonResponse.RedirectURL = Url.Action("Index", "UserSystemInfo");
                 }
                 return Json(new { data = jsonResponse });
             }
@@ -105,6 +118,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _UserSystemInfoBLL.GetById(Id);
+                model.UserSystemInfoDetail = _UserSystemInfoDetailBLL.Where(x => x.UserSystemInfoId == model.Id).ToList();
             }
             else
             {
