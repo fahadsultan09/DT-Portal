@@ -33,7 +33,7 @@
                                 <input asp-for="Id" type="hidden" />
                                 <div class="ibox-content">
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Module Name<span class="text-danger"> * </span></label>
+                                        <label class="col-lg-3 col-form-label">Distributor Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
                                             @Html.DropDownListFor(e => e.DistributorId, Model.DistributorList, "--Please Select--", htmlAttributes: new { @class = "form-control select2" })
                                             <span asp-validation-for="DistributorId" class="text-danger"></span>

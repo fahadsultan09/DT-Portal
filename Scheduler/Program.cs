@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.WorkProcess;
+﻿using BusinessLogicLayer.ErrorLog;
+using DataAccessLayer.WorkProcess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +50,7 @@ namespace Scheduler
                 KPIEmailScheduler.GetPendingComplaints();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
