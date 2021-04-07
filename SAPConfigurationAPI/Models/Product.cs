@@ -16,5 +16,6 @@ namespace SAPConfigurationAPI.Models
         public double Rate { get; set; }
         public double Discount { get; set; }
         public string LicenseType { get; set; }
+        public string SFSize { get; set; }
     }
 }
