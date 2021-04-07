@@ -18,30 +18,20 @@ namespace BusinessLogicLayer.Application
             _unitOfWork = unitOfWork;
             repository = _unitOfWork.GenericRepository<UserSystemInfo>();
         }
-        public bool Add(UserSystemInfo module)
+        public void Add(UserSystemInfo module)
         {
-            //module.IsActive = true;
-            var item = repository.FirstOrDefault(x => x.MACAddress == module.MACAddress);
-            if (item is null)
-            {
-                module.IsDeleted = false;
-                module.CreatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
-                module.CreatedDate = DateTime.Now;
-                repository.Insert(module);
-                return _unitOfWork.Save() > 0;
-            }
-            else
-            {
-                return false;
-            }
+
+            module.IsDeleted = false;
+            module.CreatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
+            module.CreatedDate = DateTime.Now;
+            repository.Insert(module);
+            _unitOfWork.Save();
         }
         public bool Update(UserSystemInfo module)
         {
             var item = repository.GetById(module.Id);
             item.ProcessorId = module.ProcessorId;
             item.HostName = module.HostName;
-            item.MACAddress = module.MACAddress;
-            item.OtherMACAddress = module.OtherMACAddress;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
@@ -67,7 +57,7 @@ namespace BusinessLogicLayer.Application
         public bool Check(int Id, string MACAddress)
         {
             int? UserSystemInfoId = Id == 0 ? null : (int?)Id;
-            var model = _unitOfWork.GenericRepository<UserSystemInfo>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.MACAddress == MACAddress && x.Id != UserSystemInfoId || (UserSystemInfoId == null && x.Id == null)).FirstOrDefault();
+            var model = _unitOfWork.GenericRepository<UserSystemInfo>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.Id != UserSystemInfoId || (UserSystemInfoId == null && x.Id == null)).FirstOrDefault();
             if (model != null)
             {
                 return false;

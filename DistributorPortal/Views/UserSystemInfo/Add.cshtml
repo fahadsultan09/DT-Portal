@@ -55,23 +55,44 @@
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">MAC Address<span class="text-danger"> * </span></label>
-                                        <div class="col-lg-9">
-                                            <input asp-for="MACAddress" type="text" placeholder="MAC Address" class="form-control" />
-                                            <span asp-validation-for="MACAddress" class="text-danger"></span>
+                                        <div class="col-lg-8">
+                                            <input type="text" placeholder="Enter MAC Address" id="MACAddress" class="form-control" maxlength="50" />
+                                            <span id="MACAddressRequired" class="text-danger"></span>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Other MAC Address</label>
-                                        <div class="col-lg-9">
-                                            <input asp-for="OtherMACAddress" type="text" placeholder="Other MAC Address" class="form-control" />
-                                            <span asp-validation-for="OtherMACAddress" class="text-danger"></span>
-                                        </div>
+                                        <button type="button" id="LclAddRow" class="btn btn-sm btn-info col-lg-1">Add</button>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">Is Active</label>
                                         <div class="col-lg-9">
                                             <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
                                         </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <table id="example1" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">MAC Address</th>
+                                                    <th class="text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    if (Model.UserSystemInfoDetail != null)
+                                                    {
+                                                        for (int i = 0; i < Model.UserSystemInfoDetail.Count; i++)
+                                                        {
+                                                            <tr class="@(Model.UserSystemInfoDetail[i].IsRowDeleted == true ? "d-none" : null )">
+                                                                <td class="text-center">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].MACAddress, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].MACAddress</td>
+                                                                <td class="d-none">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].IsRowDeleted</td>
+                                                                <td class="row justify-content-center">
+                                                                    <button type="button" id="btnDeleteLcl" class="btn btn-default float-right" value="Delete" _id="@Model.UserSystemInfoDetail[i].Id">Delete</button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-lg-12 ">
@@ -97,7 +118,55 @@
 
 <script>
 
+    var MACAddressArr = [];
+
     $(document).ready(function () {
-        $('.select2').select2()
+
+        $('.select2').select2();
+
+        @if (Model.UserSystemInfoDetail != null)
+	    {
+            @foreach (var d in Model.UserSystemInfoDetail.Where(x => x.IsRowDeleted == false))
+            {
+                @:MACAddressArr.push("@d.MACAddress");
+            }
+	    }
+
+        //add mac address to grid
+        $("#LclAddRow").click(function () {
+            var LclCount = $('#example1 tbody tr').length;
+            $("#MACAddressRequired").empty();
+
+            var MACAddress = $("#MACAddress").val().trim();
+            var IsRowDeleted = false;
+
+            if (MACAddress === '') {
+                $("#MACAddressRequired").text('MAC Address is required');
+                return false;
+            }
+            if (MACAddressArr.indexOf(MACAddress) !== -1) {
+                $("#MACAddress").text('MAC Address already exists');
+                return false;
+            } else {
+                MACAddressArr.push(MACAddress);
+            }
+
+            var LclMarkup = '<tr> \
+            <td class="text-center"><label id="' + LclCount + '">' + MACAddress + '</label><input style="display:none;" id="UserSystemInfoDetail_' + LclCount + '__MACAddress" name="UserSystemInfoDetail[' + LclCount + '].MACAddress" type="text" value="' + MACAddress + '" ></td> \
+          <td class="d-none"><label id="' + LclCount + '">' + IsRowDeleted + '</label><input style="display:none;" id="UserSystemInfoDetail_' + LclCount + '__IsRowDeleted" name="UserSystemInfoDetail[' + LclCount + '].IsRowDeleted" type="text" value="' + IsRowDeleted + '" ></td> \
+            <td class="row justify-content-center"><button type="button" id="btnDeleteLcl" class="btn btn-default float-right"" value="Delete">Delete</button></td></tr>';
+            $("#example1 tbody").append(LclMarkup);
+
+            $("#MACAddress").val('');
+        });
+
+        $("#example1").on("click", "#btnDeleteLcl", function () {
+            debugger
+            var LclcurrentRow = $(this).closest("tr");
+            MACAddressArr.splice(MACAddressArr.indexOf(LclcurrentRow.find('td:nth-child(1)').find(':input').val()), 1);
+            LclcurrentRow.find('td:nth-child(2)').find(':input').val(true);
+            $(LclcurrentRow).hide();
+        });
+
     });
 </script>
