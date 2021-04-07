@@ -9,21 +9,21 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Utility;
 using Utility.Constant;
+using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
 {
     public class DummyOrderFormController : Controller
     {
-        private readonly ProductDetailBLL _productDetailBLL;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly OrderBLL _OrderBLL;
-        private readonly IConfiguration _IConfiguration;
-        private readonly Configuration _Configuration;
+        private ProductDetailBLL _productDetailBLL;
+        private IUnitOfWork _unitOfWork;
+        private OrderBLL _OrderBLL;
+        private IConfiguration _IConfiguration;
+        private Configuration _Configuration;
         public DummyOrderFormController(IUnitOfWork unitOfWork, Configuration _configuration, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
@@ -44,7 +44,10 @@ namespace DistributorPortal.Controllers
         {
             OrderViewModel model = new OrderViewModel();
             model.ProductDetails = _productDetailBLL.GetAllProductDetail();
-            model.ProductDetails.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
+            if (SessionHelper.SAPOrderPendingQuantity != null)
+            {
+                model.ProductDetails.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
+            }
             SessionHelper.AddProduct = model.ProductDetails;
             return View(model);
         }
@@ -62,6 +65,10 @@ namespace DistributorPortal.Controllers
         public JsonResult SaveEdit(OrderViewModel model, SubmitStatus btnSubmit)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            OrderMaster master = new OrderMaster();
+            master.productDetails = model.ProductDetails.Where(e => e.ProductMaster.Quantity != 0).ToList();
+            master.ReferenceNo = model.ReferenceNo;
+            master.Remarks = model.Remarks;
             try
             {
                 ModelState.Remove("Id");
@@ -76,13 +83,13 @@ namespace DistributorPortal.Controllers
                     {
                         if (btnSubmit == SubmitStatus.Draft)
                         {
-                            model.Status = OrderStatus.Draft;
+                            master.Status = OrderStatus.Draft;
                         }
                         else
                         {
-                            model.Status = OrderStatus.PendingApproval;
+                            master.Status = OrderStatus.PendingApproval;
                         }
-                        jsonResponse = _OrderBLL.UpdateOrder(model, _IConfiguration, Url);
+                        jsonResponse = _OrderBLL.Save(master, _IConfiguration, Url);
                     }
                     else
                     {

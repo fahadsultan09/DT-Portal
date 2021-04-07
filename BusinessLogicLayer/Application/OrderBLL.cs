@@ -569,7 +569,7 @@ namespace BusinessLogicLayer.Application
                 master.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                 Add(master);
                 List<OrderDetail> details = new List<OrderDetail>();
-                foreach (var item in model.ProductDetails)
+                foreach (var item in model.ProductDetails.Where(e => e.ProductMaster.Quantity != 0))
                 {
                     details.Add(new OrderDetail()
                     {

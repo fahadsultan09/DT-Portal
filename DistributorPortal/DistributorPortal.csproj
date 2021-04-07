@@ -14,6 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="360_F_274355324_ghBFagPQUXHUtFGfjVJbryqca0PMIe6p.jpg" />
+    <None Remove="center-2064940_1920.jpg" />
+    <None Remove="login-banner.png" />
+    <None Remove="login.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Fingers10.ExcelExport" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />

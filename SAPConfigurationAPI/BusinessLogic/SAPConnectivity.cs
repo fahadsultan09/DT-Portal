@@ -245,5 +245,30 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
             }
         }
+
+
+        public IRfcTable GetDistributorWiseProductDiscount(string Function, string DistributorId)
+        {
+            SAPSystemConnect sapCfg = new SAPSystemConnect();
+            try
+            {
+                RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
+                RfcDestination rfcDest = null;
+                rfcDest = RfcDestinationManager.GetDestination(SystemId);
+                RfcRepository repo = rfcDest.Repository;
+                IRfcFunction companyBapi = repo.CreateFunction(Function);
+                companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                companyBapi.Invoke(rfcDest);
+                return companyBapi.GetTable("PRICES");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+            }
+        }
     }
 }

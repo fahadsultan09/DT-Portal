@@ -85,7 +85,6 @@
 
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        @Html.HiddenFor(e => Model.SubmitStatus, htmlAttributes: new { id = "btnstatus" })
                                         <table id="example1" class="table table-bordered table-condensed table-hover table-striped table-sm" style="width:100%">
                                             <thead>
                                                 <tr>
@@ -111,7 +110,6 @@
                                                 {
                                                     <tr>
                                                         <td>
-                                                            @*<input type="hidden" asp-for="@Model.ProductDetails[i].ProductMasterId" />*@
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].Id)
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductMasterId)
                                                             @Model.ProductDetails[i].ProductMaster.SAPProductCode
@@ -122,7 +120,6 @@
                                                         <td>SF Size</td>
                                                         <td>
                                                             @Html.TextBoxFor(e => Model.ProductDetails[i].ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "number", value = Model.ProductDetails[i].ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductMaster.Id, onchange = "LoadOrderValue(this);", @class = "form-control ApproveQuantity", min = "0", max = "9999999", step = "any" })
-                                                            @*<input type="number" tabindex="@id" asp-for="@Model.ProductDetails[i].ProductMaster.Quantity" value="@Model.ProductDetails[i].ProductMaster.Quantity" _ProductId="@Model.ProductDetails[i].ProductMaster.Id" onchange="LoadOrderValue(this);" class="form-control ApproveQuantity" min="0" max="9999999" step="any" />*@
                                                         </td>
                                                         <td>@Model.ProductDetails[i].PendingQuantity</td>
                                                         <td>(Stock)</td>
@@ -250,7 +247,6 @@
 
     function SaveEdit(e) {
         if (e == 'OrderNow') {
-            $("#btnstatus").val('1');
             Swal.fire({
                 html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
                 icon: 'warning',
@@ -265,7 +261,6 @@
             });
         }
         else {
-            $("#btnstatus").val('2');
             $('#frmOrderMaster').submit();
         }
     }
