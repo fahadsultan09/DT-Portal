@@ -7,6 +7,7 @@ using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,20 +19,20 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserSystemInfoBLL _UserSystemInfoBLL;
-        private readonly UserSystemInfoDetailBLL _UserSystemInfoDetailBLL;
         public UserSystemInfoController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
-            _UserSystemInfoDetailBLL = new UserSystemInfoDetailBLL(_unitOfWork);
         }
         public IActionResult Index()
         {
-            return View(_UserSystemInfoBLL.GetAllUserSystemInfo().ToList());
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().DistinctBy(e => e.HostName).ToList();
+            return View(list);
         }
         public IActionResult List()
         {
-            return PartialView("List", _UserSystemInfoBLL.GetAllUserSystemInfo().ToList());
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().DistinctBy(e => e.HostName).ToList();
+            return PartialView("List", list);
         }
         [HttpGet]
         public IActionResult Add(string DPID)
@@ -57,31 +58,11 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    if (model.Id > 0)
-                    {
-                        List<UserSystemInfoDetail> UserSystemInfoDetailList = _UserSystemInfoDetailBLL.Where(x => x.UserSystemInfoId == model.Id).ToList();
-                        _unitOfWork.GenericRepository<UserSystemInfoDetail>().DeleteRange(UserSystemInfoDetailList);
 
-                        _UserSystemInfoBLL.Update(model);
-                    }
-                    else
-                    {
-                        _UserSystemInfoBLL.Add(model);
-                    }
-                    if (model.UserSystemInfoDetail != null)
-                    {
-                        foreach (var item in model.UserSystemInfoDetail)
-                        {
-                            UserSystemInfoDetail userSystemInfoDetail = new UserSystemInfoDetail()
-                            {
-                                UserSystemInfoId = model.Id,
-                                MACAddress = item.MACAddress,
-                                CreatedBy = SessionHelper.LoginUser.Id,
-                                CreatedDate = DateTime.Now,
-                            };
-                            _UserSystemInfoDetailBLL.Add(userSystemInfoDetail);
-                        }
-                    }
+                    List<UserSystemInfo> UserSystemInfoDetailList = _UserSystemInfoBLL.Where(x => x.ProcessorId == model.ProcessorId && x.HostName == model.HostName).ToList();
+                    _unitOfWork.GenericRepository<UserSystemInfo>().DeleteRange(UserSystemInfoDetailList);
+                    _UserSystemInfoBLL.Add(model);
+
                     jsonResponse.Status = true;
                     jsonResponse.Message = NotificationMessage.SaveSuccessfully;
                     jsonResponse.RedirectURL = Url.Action("Index", "UserSystemInfo");
@@ -118,7 +99,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _UserSystemInfoBLL.GetById(Id);
-                model.UserSystemInfoDetail = _UserSystemInfoDetailBLL.Where(x => x.UserSystemInfoId == model.Id).ToList();
+                model.UserSystemInfoDetail = _UserSystemInfoBLL.Where(x => x.ProcessorId == model.ProcessorId && x.HostName == model.HostName).Select(x => new UserSystemInfoViewModel { MACAddress = x.MACAddress, IsRowDeleted = x.IsDeleted }).ToList();
             }
             else
             {

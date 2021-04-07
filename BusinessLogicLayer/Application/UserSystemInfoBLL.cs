@@ -20,12 +20,16 @@ namespace BusinessLogicLayer.Application
         }
         public void Add(UserSystemInfo module)
         {
-
-            module.IsDeleted = false;
-            module.CreatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
-            module.CreatedDate = DateTime.Now;
-            repository.Insert(module);
-            _unitOfWork.Save();
+            foreach (var item in module.UserSystemInfoDetail)
+            {
+                module.Id = 0;
+                module.MACAddress = item.MACAddress;
+                module.IsDeleted = false;
+                module.CreatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
+                module.CreatedDate = DateTime.Now;
+                repository.Insert(module);
+                _unitOfWork.Save();
+            }
         }
         public bool Update(UserSystemInfo module)
         {

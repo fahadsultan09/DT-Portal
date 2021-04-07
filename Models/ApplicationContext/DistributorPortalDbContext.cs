@@ -59,6 +59,5 @@ namespace Models.ApplicationContext
         public DbSet<EmailLog> EmailLog { get; set; }
         public DbSet<LicenseForm> LicenseForm { get; set; }
         public DbSet<UserSystemInfo> UserSystemInfo { get; set; }
-        public DbSet<UserSystemInfoDetail> UserSystemInfoDetail { get; set; }
     }
 }
