@@ -24,6 +24,7 @@ namespace Utility.HelperClasses
         public string Password { get; set; }
         public int Port { get; set; }
         public string ServerAddress { get; set; }
+        public string DistributorWiseProduct { get; set; }
 
         public Configuration(IConfiguration configuration)
         {
@@ -46,6 +47,7 @@ namespace Utility.HelperClasses
                 FromEmail = configuration["Settings:FromEmail"];
                 Password = configuration["Settings:Password"];
                 ServerAddress = configuration["Settings:ServerAddress"];
+                DistributorWiseProduct = configuration["AppSettings:DistributorWiseProduct"];
                 int.TryParse(configuration["Settings:Port"], out int portnumber);
                 Port = portnumber;
             }

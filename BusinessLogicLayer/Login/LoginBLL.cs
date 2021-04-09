@@ -30,11 +30,10 @@ namespace BusinessLogicLayer.Login
             User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
             if (LoginUser != null && LoginUser.DistributorId != null)
             {
-                int UserSystemInfoId = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).Select(x => x.Id).FirstOrDefault();
-                if (UserSystemInfoId > 0)
+                int[] UserSystemInfoId = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).Select(x => x.Id).ToArray();
+                if (UserSystemInfoId != null)
                 {
-                    List<UserSystemInfoDetail> UserSystemInfoDetailList = _UserSystemInfoDetailBLL.Where(e => e.UserSystemInfoId == UserSystemInfoId).ToList();
-
+                    List<UserSystemInfoDetail> UserSystemInfoDetailList = _UserSystemInfoDetailBLL.Where(e => UserSystemInfoId.Contains(e.UserSystemInfoId)).ToList();
                     foreach (var item in UserSystemInfoDetailList.Select(x => x.MACAddress).ToList())
                     {
                         if (!string.IsNullOrEmpty(item))
@@ -45,15 +44,17 @@ namespace BusinessLogicLayer.Login
                 }
                 if (LoginUser.IsDistributor)
                 {
-                    if (MACAddresses != null && !MACAddresses.Contains(user.RegisteredAddress.Replace("-", "")) || MACAddresses.Count() == 0)
+                    bool check = false;
+                    if (MACAddresses.Count > 0)
+                    {
+                        if(MACAddresses.Contains(user.RegisteredAddress.Replace("-","")))
+                        {
+                            check = true;
+                        }
+                    }
+                    if(check == false)
                     {
                         LoginUser = null;
-                    }
-                    if (LoginUser != null)
-                    {
-                    }
-                    else
-                    {
                         return LoginStatus.NotRegistered;
                     }
                 }

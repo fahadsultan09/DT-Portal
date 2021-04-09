@@ -60,5 +60,6 @@ namespace Models.ApplicationContext
         public DbSet<LicenseForm> LicenseForm { get; set; }
         public DbSet<UserSystemInfo> UserSystemInfo { get; set; }
         public DbSet<UserSystemInfoDetail> UserSystemInfoDetail { get; set; }
+        public DbSet<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices { get; set; }  
     }
 }

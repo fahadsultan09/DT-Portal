@@ -52,5 +52,7 @@ namespace Models.Application
         public double Amount { get; set; }
         [NotMapped]
         public SelectList ProductList { get; set; }
+        [NotMapped]
+        public int DistributorId { get; set; }
     }
 }

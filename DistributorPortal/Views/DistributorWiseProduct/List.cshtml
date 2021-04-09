@@ -1,0 +1,70 @@
+﻿@model IEnumerable<DistributorWiseProductDiscountAndPrices>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Product List</h2>
+                <form asp-controller="DistributorWiseProduct"
+                      asp-action="Sync"
+                      id="frmAdd"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="Complete"
+                      data-ajax-update="#divform"
+                      data-ajax="true"
+                      data-ajax-method="GET"
+                      method="GET">
+                    <button type="submit" class="btn btn-success float-right"><i class="fa fa-sync"></i> Sync</button>
+                </form>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body scrollmenu">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Product Name</th>
+                            <th>Product Description</th>
+                            <th>SAP Product Code</th>
+                            <th>Discount</th>
+                            <th>Carton Size</th>
+                            <th>Pack Size</th>
+                            <th>Product Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.ProductName</td>
+                                <td>@item.ProductDescription</td>
+                                <td>@item.SAPProductCode</td>
+                                <td>@item.Discount</td>
+                                <td>@item.CartonSize</td>
+                                <td>@item.PackSize</td>
+                                <td>@item.ProductPrice</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+<script>
+
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+        });
+    });
+
+</script>
