@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
+using Models.ViewModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,9 +19,11 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter Host Name.")]
         [StringLength(50)]
         public string HostName { get; set; }
+        [StringLength(50)]
+        public string MACAddress { get; set; }
         [NotMapped]
         public SelectList DistributorList { get; set; }
         [NotMapped]
-        public List<UserSystemInfoDetail> UserSystemInfoDetail { get; set; }
+        public List<UserSystemInfoViewModel> UserSystemInfoDetail { get; set; }
     }
 }

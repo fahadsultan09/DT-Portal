@@ -59,7 +59,7 @@
                                             <input type="text" placeholder="Enter MAC Address" id="MACAddress" class="form-control" maxlength="50" />
                                             <span id="MACAddressRequired" class="text-danger"></span>
                                         </div>
-                                        <button type="button" id="LclAddRow" class="btn btn-sm btn-info col-lg-1">Add</button>
+                                        <button type="button" id="LclAddRow" class="btn btn-sm btn-info col-lg-1" style=" height: 38px;">Add</button>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">Is Active</label>
@@ -85,7 +85,7 @@
                                                                 <td class="text-center">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].MACAddress, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].MACAddress</td>
                                                                 <td class="d-none">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].IsRowDeleted</td>
                                                                 <td class="row justify-content-center">
-                                                                    <button type="button" id="btnDeleteLcl" class="btn btn-default float-right" value="Delete" _id="@Model.UserSystemInfoDetail[i].Id">Delete</button>
+                                                                    <button type="button" id="btnDeleteLcl" class="btn btn-default float-right" value="Delete">Delete</button>
                                                                 </td>
                                                             </tr>
                                                         }
@@ -145,7 +145,7 @@
                 return false;
             }
             if (MACAddressArr.indexOf(MACAddress) !== -1) {
-                $("#MACAddress").text('MAC Address already exists');
+                $("#MACAddressRequired").text('MAC Address already exists');
                 return false;
             } else {
                 MACAddressArr.push(MACAddress);

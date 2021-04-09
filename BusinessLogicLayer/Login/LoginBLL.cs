@@ -15,13 +15,11 @@ namespace BusinessLogicLayer.Login
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserBLL _UserBLL;
         private readonly UserSystemInfoBLL _UserSystemInfoBLL;
-        private readonly UserSystemInfoDetailBLL _UserSystemInfoDetailBLL;
         public LoginBLL(IUnitOfWork Repository)
         {
             _unitOfWork = Repository;
             _UserBLL = new UserBLL(_unitOfWork);
             _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
-            _UserSystemInfoDetailBLL = new UserSystemInfoDetailBLL(_unitOfWork);
         }
         public LoginStatus CheckLogin(User user)
         {
@@ -30,11 +28,12 @@ namespace BusinessLogicLayer.Login
             User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
             if (LoginUser != null && LoginUser.DistributorId != null)
             {
-                int[] UserSystemInfoId = _UserSystemInfoBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.DistributorId == LoginUser.DistributorId).Select(x => x.Id).ToArray();
-                if (UserSystemInfoId != null)
+                List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(e => e.DistributorId == LoginUser.DistributorId).ToList();
+                
+                if (UserSystemInfoList != null)
                 {
-                    List<UserSystemInfoDetail> UserSystemInfoDetailList = _UserSystemInfoDetailBLL.Where(e => UserSystemInfoId.Contains(e.UserSystemInfoId)).ToList();
-                    foreach (var item in UserSystemInfoDetailList.Select(x => x.MACAddress).ToList())
+
+                    foreach (var item in UserSystemInfoList.Select(x => x.MACAddress).ToList())
                     {
                         if (!string.IsNullOrEmpty(item))
                         {
