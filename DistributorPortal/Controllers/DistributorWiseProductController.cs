@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using BusinessLogicLayer.ApplicationSetup;
 using Utility.HelperClasses;
+using System.Linq;
 
 namespace DistributorPortal.Controllers
 {
@@ -30,11 +31,14 @@ namespace DistributorPortal.Controllers
         // GET: Product
         public IActionResult Index()
         {
-            return View(_DistributorWiseProductDiscountAndPricesBLL.GetAllDistributorWiseProductDiscountAndPrices());
+            List<DistributorWiseProductDiscountAndPrices> list = new List<DistributorWiseProductDiscountAndPrices>();
+
+            return View(list);
         }
-        public IActionResult List()
+        public PartialViewResult List(int DistributorId)
         {
-            return PartialView("List", _DistributorWiseProductDiscountAndPricesBLL.GetAllDistributorWiseProductDiscountAndPrices());
+            ViewBag.DistributorId = DistributorId;
+            return PartialView("List", _DistributorWiseProductDiscountAndPricesBLL.Where(x => x.DistributorId == DistributorId).ToList());
         }
         [HttpGet]
         public IActionResult Sync()

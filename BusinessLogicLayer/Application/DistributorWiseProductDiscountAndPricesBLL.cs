@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
@@ -61,17 +62,17 @@ namespace BusinessLogicLayer.Application
             }
             
         }
-
         public List<DistributorWiseProductDiscountAndPrices> GetAllDistributorWiseProductDiscountAndPrices()
         {
             return _repository.GetAllList().ToList();
         }
-
         public void DeleteDistributorWiseProductDiscountAndPrices(List<DistributorWiseProductDiscountAndPrices> distributorData)
         {
             _repository.DeleteRange(distributorData);
         }
-
-
+        public List<DistributorWiseProductDiscountAndPrices> Where(Expression<Func<DistributorWiseProductDiscountAndPrices, bool>> predicate)
+        {
+            return _repository.Where(predicate);
+        }
     }
 }

@@ -1,24 +1,40 @@
-﻿@model IEnumerable<DistributorWiseProductDiscountAndPrices>
+﻿@model List<DistributorWiseProductDiscountAndPrices>
+@inject IUnitOfWork iUnitOfWork
+@{
+    var DistributorList = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
+}
 
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Product List</h2>
-                <form asp-controller="DistributorWiseProduct"
-                      asp-action="Sync"
-                      id="frmAdd"
-                      data-ajax-begin="Begin"
-                      data-ajax-success="OnSuccess"
-                      data-ajax-complete="Complete"
-                      data-ajax-update="#divform"
-                      data-ajax="true"
-                      data-ajax-method="GET"
-                      method="GET">
-                    <button type="submit" class="btn btn-success float-right"><i class="fa fa-sync"></i> Sync</button>
-                </form>
+                <div class="col-md-4">
+                    <h2 class="card-title">Product List</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="DistributorId" asp-items="@(new SelectList(DistributorList, "Value", "Text"))" id="ddlDistributorId" class="form-control select2">
+                            <option value="">--Select option--</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <form asp-controller="DistributorWiseProduct"
+                              asp-action="Sync"
+                              id="frmAdd"
+                              data-ajax-begin="Begin"
+                              data-ajax-success="OnSuccess"
+                              data-ajax-complete="Complete"
+                              data-ajax-update="#divform"
+                              data-ajax="true"
+                              data-ajax-method="GET"
+                              method="GET">
+                            <button type="submit" class="btn btn-success float-right"><i class="fa fa-sync"></i> Sync</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <!-- /.card-header -->
             <div class="card-body scrollmenu">
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
@@ -50,15 +66,17 @@
                     </tbody>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
+
 <script>
 
     $(document).ready(function () {
+
+        var DistributorId = '@ViewBag.DistributorId';
+        $('#ddlDistributorId').val(DistributorId);
+        $('.select2').select2();
 
         $("#example1").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
