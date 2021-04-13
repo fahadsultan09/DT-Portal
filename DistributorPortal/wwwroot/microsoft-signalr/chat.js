@@ -15,12 +15,10 @@ connection.on("ReceiveMessage", function (userId, message) {
             title: message.number,
             body: message.message
         });
-        //var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        //var encodedMsg = UserId.toString() + " says: " + msg;
-        //var li = document.createElement("li");
-        //li.textContent = encodedMsg;
-        //document.getElementById("messagesList").appendChild(li);
-    }    
+        $('#OrderNum').append('<a href="/Order/OrderView' + message.number + '" class="dropdown-item"><div class="media">  \
+        <div class="media-body"><h6 class="dropdown-item-">'+ message.number + ': ' + message.message + '<span class="float-right text-sm text-danger"> \
+        <i class="fas fa-star"></i></span></h6></div></div></a>');
+    }
 });
 
 connection.start();
