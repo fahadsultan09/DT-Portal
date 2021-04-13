@@ -21,6 +21,8 @@ namespace Models.Application
         public OrderStatus? OrderProductStatus { get; set; }
         public int ApprovedQuantity { get; set; }
         public bool IsProductSelected { get; set; }
+        public double ProductPrice { get; set; }
+        public double Discount { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }
     }

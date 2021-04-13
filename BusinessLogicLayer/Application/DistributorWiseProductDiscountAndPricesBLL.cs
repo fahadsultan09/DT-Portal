@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
@@ -46,7 +47,8 @@ namespace BusinessLogicLayer.Application
                         SAPProductCode = item.SAPProductCode,
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
-                        DistributorId = item.DistributorId
+                        DistributorId = item.DistributorId,
+                        ProductDetailId = item.ProductDetailId
                     });
                 }
                 _repository.AddRange(distributorWiseProductDiscountAndPricesList); 
@@ -65,6 +67,11 @@ namespace BusinessLogicLayer.Application
         public List<DistributorWiseProductDiscountAndPrices> GetAllDistributorWiseProductDiscountAndPrices()
         {
             return _repository.GetAllList().ToList();
+        }
+
+        public List<DistributorWiseProductDiscountAndPrices> Where(Expression<Func<DistributorWiseProductDiscountAndPrices, bool>> model)
+        {
+            return _repository.Where(model).ToList();
         }
 
         public void DeleteDistributorWiseProductDiscountAndPrices(List<DistributorWiseProductDiscountAndPrices> distributorData)

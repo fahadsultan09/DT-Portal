@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BusinessLogicLayer.ApplicationSetup;
 using Utility.HelperClasses;
 
@@ -20,12 +21,14 @@ namespace DistributorPortal.Controllers
         private readonly DistributorWiseProductDiscountAndPricesBLL _DistributorWiseProductDiscountAndPricesBLL;
         private readonly DistributorBLL _distributorBll;
         private readonly Configuration _configuration;
+        private readonly ProductDetailBLL _productDetailBll;
         public DistributorWiseProductController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _DistributorWiseProductDiscountAndPricesBLL = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
             _distributorBll = new DistributorBLL(_unitOfWork);
             _configuration = configuration;
+            _productDetailBll = new ProductDetailBLL(_unitOfWork);
         }
         // GET: Product
         public IActionResult Index()
@@ -46,12 +49,14 @@ namespace DistributorPortal.Controllers
                 var client = new RestClient(_configuration.DistributorWiseProduct);
                 var request = new RestRequest(Method.GET);
                 var distributors = _distributorBll.Where(e => e.IsActive && !e.IsDeleted);
+                var productDetail = _productDetailBll.GetAllProductDetail();
                 foreach (var item in distributors)
                 {
                     client.AddDefaultParameter("DistributorId", item.DistributorCode);
                     IRestResponse response = client.Execute(request);
                     var distributorsProduct = JsonConvert.DeserializeObject<List<DistributorWiseProductViewModel>>(response.Content);
                     distributorsProduct.ForEach(e => e.DistributorId = item.Id);
+                    distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
                     master.AddRange(distributorsProduct);
                 }
                 _DistributorWiseProductDiscountAndPricesBLL.AddRange(master);

@@ -10,7 +10,7 @@ namespace Models.ViewModel
     public class OrderViewModel
     {
         public int Id { get; set; }
-        public List<ProductDetail> ProductDetails { get; set; }
+        public List<DistributorWiseProductDiscountAndPrices> ProductDetails { get; set; }
         public string ReferenceNo { get; set; }
         public IFormFile AttachmentFormFile { get; set; }
         public string Remarks { get; set; }

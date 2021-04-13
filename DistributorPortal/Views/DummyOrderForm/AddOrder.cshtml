@@ -1,6 +1,6 @@
 ﻿@model OrderViewModel
 @{
-    ViewData["Title"] = "Dummy";
+    ViewData["Title"] = "Add Order";
     var m = new OrderValueViewModel();
     var id = 1;
 }
@@ -33,10 +33,12 @@
         top: 0;
         z-index: 1
     }
+
     body {
         overflow-x: hidden;
     }
-    .col-lg-2{
+
+    .col-lg-2 {
         flex-basis: 10.6667%
     }
 </style>
@@ -51,6 +53,8 @@
       data-ajax="true"
       data-ajax-method="POST"
       enctype="multipart/form-data">
+    @Html.HiddenFor(e => e.SubmitStatus, htmlAttributes: new { Id = "SubmitStatus" })
+    @Html.HiddenFor(e => e.Id)
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid sticky" id="pageHeader">
@@ -85,7 +89,7 @@
 
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped table-sm" style="width:100%">
+                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped table-sm" style="width: 100%">
                                             <thead>
                                                 <tr>
                                                     <th>Code</th>
@@ -105,30 +109,30 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-
                                                 @for (int i = 0; i < Model.ProductDetails.Count(); i++)
                                                 {
                                                     <tr>
                                                         <td>
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].Id)
-                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductMasterId)
-                                                            @Model.ProductDetails[i].ProductMaster.SAPProductCode
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.ProductMasterId)
+                                                            @Model.ProductDetails[i].ProductDetail.ProductMaster.SAPProductCode
                                                         </td>
-                                                        <td>@Model.ProductDetails[i].ProductMaster.ProductDescription</td>
-                                                        <td>@Model.ProductDetails[i].ProductMaster.PackSize</td>
-                                                        <td><span id="CurtonSize">@Model.ProductDetails[i].ProductMaster.CartonSize</span></td>
-                                                        <td>SF Size</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.ProductDescription</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.PackSize</td>
+                                                        <td><span class="CurtonSize">@Model.ProductDetails[i].ProductDetail.ProductMaster.CartonSize</span></td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.SFSize</td>
                                                         <td>
-                                                            @Html.TextBoxFor(e => Model.ProductDetails[i].ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "number", value = Model.ProductDetails[i].ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductMaster.Id, onchange = "LoadOrderValue(this);", @class = "form-control ApproveQuantity", min = "0", max = "9999999", step = "any" })
+                                                            @Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "number", value = Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductDetail.ProductMaster.Id, onchange = "LoadOrderValue(this);", @class = "form-control ApproveQuantity", min = "0", max = "9999999", step = "any" })
                                                         </td>
-                                                        <td>@Model.ProductDetails[i].PendingQuantity</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.PendingQuantity</td>
                                                         <td>(Stock)</td>
-                                                        <td><span id="TradePrice">@Model.ProductDetails[i].ProductMaster.Rate</span></td>
-                                                        <td><span id="Discount">@Model.ProductDetails[i].ProductMaster.Discount</span> %</td>
-                                                        <td><span id="NetValue"></span></td>
-                                                        <td><span id="CurtonQty">@(Math.Ceiling(Model.ProductDetails[i].ProductMaster.Quantity / Model.ProductDetails[i].ProductMaster.CartonSize))</span></td>
-                                                        <td><span class="Amount">@(Model.ProductDetails[i].ProductMaster.Quantity * Model.ProductDetails[i].ProductMaster.Rate)</span></td>
-                                                        <td>(Loose)</td>
+                                                        <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
+                                                        <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
+                                                        @*<td><span class="TotalPrice"></span></td>*@
+                                                        <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
+                                                        <td><span class="CurtonQty"></span></td>
+                                                        <td><span class="QtySF"></span></td>
+                                                        <td><span class="QtyLoose"></span></td>
                                                     </tr>
                                                     id++;
                                                 }
@@ -138,47 +142,18 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                        <h6>Reference No</h6>
-                                        <input type="text" asp-for="ReferenceNo" id="ReferenceNo" class="form-control" />
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                        <h6>Attachment</h6>
-                                        <div class="form-group">
-                                            <div class="custom-file">
-                                                <input type="file" asp-for="AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
-                                                <label class="custom-file-label" for="customFile">Choose file</label>
-                                                <span asp-validation-for="AttachmentFormFile" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <span class="caption">
-                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
-                                        </span>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                        <h6>Remarks</h6>
-                                        <input type="text" asp-for="Remarks" id="Remarks" class="form-control" />
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <button type="submit" name="btnSubmit" value="@SubmitStatus.OrderNow" class="btn btn-success pull-right" style="margin-top: 28px">&nbsp;Order Now</button>
-                                    </div>
-                                    <div class="col-lg-1">
-                                        <button type="submit" name="btnSubmit" value="@SubmitStatus.Draft" class="btn btn-primary pull-right" style="margin-top: 28px">&nbsp;Draft</button>
+                                    <div class="col-lg-1 offset-11">
+                                        <button type="button" onclick="LoadModal();" class="btn btn-primary pull-right" style="margin-top: 28px"><i class="fa fa-arrow-right"></i>&nbsp;Next</button>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-
         </section>
     </div>
-
-
-    @*<div class="modal fade" id="modal-OrderModal" aria-modal="true">
+    <div class="modal fade" id="modal-OrderModal" aria-modal="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
@@ -231,7 +206,7 @@
                 </div>
             </div>
         </div>
-    </div>*@
+    </div>
 </form>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
@@ -241,12 +216,13 @@
     }
     function LaddaBegin() {
         BlockUI();
-        Ladda.create($(".btn-success", this)[0]).start();
-        Ladda.create($(".btn-primary", this)[0]).start();
+        Ladda.create($("#btnOrderNow", this)[0]).start();
+        Ladda.create($("#btnDraft", this)[0]).start();
     }
 
     function SaveEdit(e) {
         if (e == 'OrderNow') {
+            $('#SubmitStatus').val('1');
             Swal.fire({
                 html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
                 icon: 'warning',
@@ -261,6 +237,7 @@
             });
         }
         else {
+            $('#SubmitStatus').val('2');
             $('#frmOrderMaster').submit();
         }
     }
@@ -298,49 +275,55 @@
 
     function LoadOrderValue(data){
         debugger;
+        BlockUI();
             var intmaxvalue = @Int32.MaxValue;
-            var Quantity = data.value;
-            var Product = data.getAttribute("ProductId");
-            if (Quantity > intmaxvalue) {
+            var quantity = data.value;
+            var product = data.getAttribute("ProductId");
+            if (quantity > intmaxvalue) {
                 Toast.fire({
                     icon: 'error',
                     title: "Quantity cannot be greater than " + intmaxvalue
                 });
             }
             else {
-                var qty = parseInt(Quantity);
-                var size = parseInt($(data).parent('td').parent('tr').find('#CurtonSize').text());
-                var TradePrice = parseInt($(data).parent('td').parent('tr').find('#TradePrice').text());
-                var Discount = parseInt($(data).parent('td').parent('tr').find('#Discount').text());
-                var NetValue = (TradePrice * qty) + (((TradePrice * qty) / 100) * Discount)
-                $(data).parent('td').parent('tr').find('#NetValue').val(NetValue);
+                var qty = parseInt(quantity);
+                var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
+                var tradePrice = parseInt($(data).parent('td').parent('tr').find('.TradePrice').val());
+                var discount = parseInt($(data).parent('td').parent('tr').find('.Discount').text());
+                var netValue = (tradePrice * qty) + (((tradePrice * qty) / 100) * discount);
+                $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue);
                 //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
 
 
-                if (Quantity == "" || Quantity == "0") {
+                if (quantity == "" || quantity == "0") {
                     $(date).val('1');
-                    Quantity = data.currentTarget.value;
+                    quantity = data.currentTarget.value;
                 }
-                if (Quantity != "" && Quantity != undefined) {
-                    $(data).parent('td').parent('tr').find('#CurtonQty')[0].innerText = Math.ceil(parseInt(Quantity) / size).toString();
+                if (quantity != "" && quantity != undefined) {
+                    if (size != 0) {
+                        $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / size).toString();
+                    }
+                    else {
+                        $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
+                    }
                 }
                 else {
-                    $(data).parent('td').parent('tr').find('#CurtonQty')[0].innerText = "";
+                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = "";
                 }
 
-                    $.ajax({
+                $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "DummyOrderForm")',
-                    data: { 'Quantity': Quantity, 'Product': Product },
+                    data: { 'Quantity': quantity, 'Product': product },
                     cache: false,
-                    success: function (response) {
+                    success: function(response) {
                         debugger;
                         $("#UpdateOrderValueId").html(response);
                     },
-                    complete: function (response) {
-
+                    complete: function(response) {
+                        UnBlockUI();
                     }
-                })
+                });
             }
     }
     function SubmitForm() {

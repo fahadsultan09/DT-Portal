@@ -14,7 +14,9 @@ using Rotativa.AspNetCore;
 using SapNwRfc.Pooling;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Features;
 using Utility.HelperClasses;
+using IComponent = Microsoft.AspNetCore.Components.IComponent;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace DistributorPortal
@@ -37,7 +39,10 @@ namespace DistributorPortal
                 option.Cookie.HttpOnly = true;
                 option.Cookie.IsEssential = true;
             });
-
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+            });
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings

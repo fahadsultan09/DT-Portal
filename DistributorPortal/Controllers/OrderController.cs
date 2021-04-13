@@ -277,23 +277,6 @@ namespace DistributorPortal.Controllers
                     Detail.IsProductSelected = item.ProductMaster.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
-                //BasicHttpBinding binding = new BasicHttpBinding
-                //{
-                //    SendTimeout = TimeSpan.FromSeconds(10000),
-                //    MaxBufferSize = int.MaxValue,
-                //    MaxReceivedMessageSize = int.MaxValue,
-                //    AllowCookies = true,
-                //    ReaderQuotas = XmlDictionaryReaderQuotas.Max,
-                //};
-                //binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
-                //binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                //EndpointAddress address = new EndpointAddress("http://10.0.3.35:51000/dir/wsdl?p=ic/976f5f674fb63cd2ae8be448fdd82af8");
-                //DisPortalPORequest_OutClient disPortalPORequest_OutClient = new DisPortalPORequest_OutClient(binding, address);
-                //disPortalPORequest_OutClient.ClientCredentials.UserName.UserName = "SAMI_PO";
-                //disPortalPORequest_OutClient.ClientCredentials.UserName.Password = "wasay123";
-                //DisPortalPORequest_OutRequest disPortalPORequest_OutRequest = new DisPortalPORequest_OutRequest(PlaceOrderToSAPPO(OrderId).ToArray());
-                //disPortalPORequest_OutClient.OpenAsync();
-                //DisPortalPORequest_OutResponse list = disPortalPORequest_OutClient.DisPortalPORequest_Out(disPortalPORequest_OutRequest);
                 var Client = new RestClient(_Configuration.PostOrder);
                 var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
                 var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");

@@ -40,6 +40,8 @@ namespace Models.Application
         [NotMapped]
         public List<ProductDetail> productDetails { get; set; }
         [NotMapped]
+        public List<DistributorWiseProductDiscountAndPrices> DistributorWiseProduct { get; set; }
+        [NotMapped]
         public string CreatedName { get; set; }
         [NotMapped]
         public string ApprovedName { get; set; }
