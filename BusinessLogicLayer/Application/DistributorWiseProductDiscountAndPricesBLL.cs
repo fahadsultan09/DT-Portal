@@ -77,9 +77,5 @@ namespace BusinessLogicLayer.Application
         {
             _repository.DeleteRange(distributorData);
         }
-        public List<DistributorWiseProductDiscountAndPrices> Where(Expression<Func<DistributorWiseProductDiscountAndPrices, bool>> predicate)
-        {
-            return _repository.Where(predicate);
-        }
     }
 }
