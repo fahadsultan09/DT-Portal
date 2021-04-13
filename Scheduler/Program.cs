@@ -12,6 +12,7 @@ namespace Scheduler
     public class Program
     {
         private static DistributorPortalDbContext _DistributorPortalDbContext;
+        private static IUnitOfWork _unitOfWork;
 
         static void Main(string[] args)
         {
@@ -38,20 +39,21 @@ namespace Scheduler
                 services.AddDbContextPool<DistributorPortalDbContext>(option => option.UseLazyLoadingProxies().UseMySQL(config.ConnectionString));
                 var serviceProvider = services.BuildServiceProvider();
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
-                IUnitOfWork unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
+                _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
 
                 ////Order and Order Return Produc Status
-                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(unitOfWork, config);
+                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
                 //distributorOrderStatus.GetInProcessOrderProductStatus();
                 //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
 
                 //Order and Order Return Produc Status
-                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(unitOfWork, config);
+                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config);
                 KPIEmailScheduler.GetPendingComplaints();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
             }
         }
     }

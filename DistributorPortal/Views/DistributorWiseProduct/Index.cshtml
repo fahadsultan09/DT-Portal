@@ -26,3 +26,19 @@
         </div>
     </section>
 </div>
+<script>
+
+    $('body').on('change', '#ddlDistributorId', function () {
+
+        BlockUI();
+        var params = { DistributorId: $(this).val() };
+        var url = '@Url.Action("List", "DistributorWiseProduct")';
+        $.get(url, params, function (context) {
+            }).done(function (context) {
+                $("#divform").html("");
+                $('#divform').html(context);
+                UnBlockUI();
+            });
+
+    });
+</script>

@@ -63,7 +63,6 @@ namespace BusinessLogicLayer.Application
             }
             
         }
-
         public List<DistributorWiseProductDiscountAndPrices> GetAllDistributorWiseProductDiscountAndPrices()
         {
             return _repository.GetAllList().ToList();
@@ -78,7 +77,9 @@ namespace BusinessLogicLayer.Application
         {
             _repository.DeleteRange(distributorData);
         }
-
-
+        public List<DistributorWiseProductDiscountAndPrices> Where(Expression<Func<DistributorWiseProductDiscountAndPrices, bool>> predicate)
+        {
+            return _repository.Where(predicate);
+        }
     }
 }

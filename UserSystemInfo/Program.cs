@@ -75,12 +75,12 @@ namespace UserSystemInfo
 
             // pattern to get all connections
             var pattern = @"(?xis) 
-(?<Header>
-     (\r|\n) [^\r]+ :  \r\n\r\n
-)
-(?<content>
-    .+? (?= ( (\r\n\r\n)|($)) )
-)";
+            (?<Header>
+                 (\r|\n) [^\r]+ :  \r\n\r\n
+            )
+            (?<content>
+                .+? (?= ( (\r\n\r\n)|($)) )
+            )";
 
             List<Match> matches = new List<Match>();
 
