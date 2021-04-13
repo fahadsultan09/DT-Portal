@@ -221,6 +221,10 @@
     }
 
     function SaveEdit(e) {
+        $('#example1').dataTable().fnDestroy();
+        $("#example1").DataTable({
+            "lengthMenu": [[-1], ["All"]]
+        });
         if (e == 'OrderNow') {
             $('#SubmitStatus').val('1');
             Swal.fire({
@@ -274,8 +278,6 @@
     });
 
     function LoadOrderValue(data){
-        debugger;
-        BlockUI();
             var intmaxvalue = @Int32.MaxValue;
             var quantity = data.value;
             var product = data.getAttribute("ProductId");
@@ -321,7 +323,7 @@
                         $("#UpdateOrderValueId").html(response);
                     },
                     complete: function(response) {
-                        UnBlockUI();
+
                     }
                 });
             }

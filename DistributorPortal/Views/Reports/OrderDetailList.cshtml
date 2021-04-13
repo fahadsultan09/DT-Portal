@@ -27,7 +27,7 @@
                                 <td>@item.SAPOrderNumber</td>
                                 <td>@Html.DisplayFor(e => item.OrderProductStatus)</td>
                                 <td>
-                                    @if (item.IsProductSelected)
+                                    @if (!string.IsNullOrEmpty(item.SAPOrderNumber))
                                     {
                                         <span class="badge badge-success">Approved</span>
                                     }

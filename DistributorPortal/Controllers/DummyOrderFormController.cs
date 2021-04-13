@@ -55,9 +55,11 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
+                var orderDetails = _orderDetailBll.Where(e => e.OrderId == id);
                 if (SessionHelper.SAPOrderPendingQuantity != null)
                 {
                     distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode)?.PendingQuantity)).ToString() : "0");
+                    distributorProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).Quantity : 0);
                 }
                 SessionHelper.AddDistributorWiseProduct = distributorProduct;
                 model.ProductDetails = distributorProduct;
@@ -65,7 +67,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                
+
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
                 if (SessionHelper.SAPOrderPendingQuantity != null)
                 {
