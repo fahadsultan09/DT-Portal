@@ -58,7 +58,14 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(OrderReturnMaster module)
         {
             var item = _repository.GetById(module.Id);
-            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            if (_repository.GetAllList().Any())
+            {
+                item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            }
+            else
+            {
+                item.SNo = 200000001;
+            }
             _repository.Update(item);
             return _unitOfWork.Save();
         }

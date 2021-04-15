@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
@@ -77,7 +78,15 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(OrderMaster module)
         {
             var item = _repository.GetById(module.Id);
-            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            if (_repository.GetAllList().Any())
+            {
+                item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            }
+            else
+            {
+                item.SNo = 100000001;
+            }
+            
             _repository.Update(item);
             return _unitOfWork.Save();
         }
