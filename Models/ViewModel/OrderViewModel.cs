@@ -17,5 +17,6 @@ namespace Models.ViewModel
         public string Attachment { get; set; }
         public SubmitStatus SubmitStatus { get; set; }
         public OrderStatus Status { get; set; }
+        public OrderValueViewModel OrderValues { get; set; }
     }
 }

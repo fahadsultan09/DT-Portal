@@ -1,7 +1,7 @@
 ﻿@model OrderViewModel
 @{
     ViewData["Title"] = "Add Order";
-    var m = new OrderValueViewModel();
+    var m =  new OrderValueViewModel();
     var id = 1;
 }
 
@@ -24,7 +24,7 @@
     }
 
     .card-header {
-        padding: 5px 15px 0px 15px;
+        padding: 5px 15px 0px 46%;
     }
 
     div.sticky {
@@ -62,13 +62,21 @@
                     <div class="col-12">
                         <div class="card card-primary h-90">
                             <div class="card-header">
-                                <h3 class="card-title">Order Form</h3>
+                                <h3 class="card-title text-center">Order Form</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                             <div class="card-body p-0" id="UpdateOrderValueId">
-                                <partial name="OrderValue" model="m" />
+                                @if (Model.Id > 0)
+                                {
+                                    <partial name="OrderValue" model="Model.OrderValues"/>
+                                }
+                                else
+                                {
+                                    <partial name="OrderValue" model="m"/>
+                                }
+                                
                             </div>
                         </div>
                     </div>
@@ -125,7 +133,7 @@
                                                             @Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "number", value = Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductDetail.ProductMaster.Id, onchange = "LoadOrderValue(this);", @class = "form-control ApproveQuantity", min = "0", max = "9999999", step = "any" })
                                                         </td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.PendingQuantity</td>
-                                                        <td>(Stock)</td>
+                                                        <td></td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
                                                         @*<td><span class="TotalPrice"></span></td>*@
