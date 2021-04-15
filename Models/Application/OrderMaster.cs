@@ -21,6 +21,7 @@ namespace Models.Application
         public IFormFile AttachmentFormFile { get; set; }
         public double TotalValue { get; set; }
         public OrderStatus Status { get; set; }
+        public int SNo { get; set; }
         public int? OnHoldBy { get; set; }
         public DateTime? OnHoldDate { get; set; }
         public string OnHoldComment { get; set; }

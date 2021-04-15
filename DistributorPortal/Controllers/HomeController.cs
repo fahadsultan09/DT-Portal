@@ -33,7 +33,6 @@ namespace DistributorPortal.Controllers
         private List<OrderMaster> _OrderMaster;
         private List<OrderDetail> _OrderDetail;
         private List<OrderReturnMaster> _OrderReturnMaster;
-        private List<OrderReturnDetail> _OrderReturnDetail;
         private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
         private List<Distributor> _Distributor;
@@ -53,7 +52,6 @@ namespace DistributorPortal.Controllers
             _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
             _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
             _OrderReturnMaster = _OrderReturnBLL.GetAllOrderReturn().ToList();
-            _OrderReturnDetail = _OrderReturnDetailBLL.GetAllOrderReturnDetail().ToList();
             _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
             _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             _Distributor = _DistributorBLL.GetAllDistributor().ToList();

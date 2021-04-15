@@ -47,6 +47,13 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<PaymentMaster>().Update(item);
             return _unitOfWork.Save() > 0;
         }
+        public int UpdateSNo(PaymentMaster module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            _repository.Update(item);
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
@@ -99,7 +106,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.PaymentNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.PaymentNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.PaymentNo);
             }
             if (model.Status != null)
             {
@@ -130,6 +137,7 @@ namespace BusinessLogicLayer.Application
                          select new PaymentMaster
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              PaymentMode = x.PaymentMode,
                              Amount = x.Amount,
@@ -157,7 +165,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.PaymentNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.PaymentNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.PaymentNo);
             }
             if (model.Status != null)
             {
@@ -184,6 +192,7 @@ namespace BusinessLogicLayer.Application
                          select new PaymentMaster
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Company = x.Company,
                              PaymentMode = x.PaymentMode,
                              Distributor = x.Distributor,

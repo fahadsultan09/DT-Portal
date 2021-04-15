@@ -32,7 +32,7 @@
                         @foreach (var item in Model.Where(x => SessionHelper.LoginUser.IsDistributor ? x.Status != ComplaintStatus.Resolved : true))
                         {
                             <tr>
-                                <td>@string.Format("{0:1000000000}", item.Id)</td>
+                                <td>@item.SNo</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.ComplaintCategory.ComplaintCategoryName</td>
                                 <td>@item.ComplaintSubCategory.ComplaintSubCategoryName</td>

@@ -38,6 +38,7 @@ namespace Models.Application
         public virtual PaymentMode PaymentMode { get; set; }
         [Required(ErrorMessage = "Payment Mode No is required.")]
         public string PaymentModeNo { get; set; }
+        public int SNo { get; set; }
         [StringLength(255)]
         public string Remarks { get; set; }
         public PaymentStatus Status { get; set; }

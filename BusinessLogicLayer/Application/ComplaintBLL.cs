@@ -40,6 +40,13 @@ namespace BusinessLogicLayer.Application
             _repository.Update(item);
             return _unitOfWork.Save();
         }
+        public int UpdateSNo(Complaint module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            _repository.Update(item);
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _repository.GetById(id);
@@ -98,7 +105,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.ComplaintNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.ComplaintNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.ComplaintNo);
             }
             if (model.Status != null)
             {
@@ -121,6 +128,7 @@ namespace BusinessLogicLayer.Application
                          select new Complaint
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              ComplaintCategory = x.ComplaintCategory,
                              ComplaintCategoryId = x.ComplaintCategoryId,
@@ -142,7 +150,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.ComplaintNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.ComplaintNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.ComplaintNo);
             }
             if (model.Status != null)
             {
@@ -172,6 +180,7 @@ namespace BusinessLogicLayer.Application
                          select new Complaint
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              ComplaintCategory = x.ComplaintCategory,
                              ComplaintSubCategory = x.ComplaintSubCategory,
@@ -193,7 +202,7 @@ namespace BusinessLogicLayer.Application
 
             return query.OrderByDescending(x => x.Id).ToList();
         }
-        public List<Complaint> GetPendingComplaint() 
+        public List<Complaint> GetPendingComplaint()
         {
             return _repository.GetAllList().Where(x => x.Status == ComplaintStatus.Pending).ToList();
         }

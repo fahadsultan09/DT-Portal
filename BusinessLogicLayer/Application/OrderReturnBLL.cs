@@ -55,6 +55,13 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<OrderReturnMaster>().Update(item);
             return _unitOfWork.Save() > 0;
         }
+        public int UpdateSNo(OrderReturnMaster module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            _repository.Update(item);
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<OrderReturnMaster>().GetById(id);
@@ -98,7 +105,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.OrderReturnNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.OrderReturnNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.OrderReturnNo);
             }
             if (model.FromDate != null)
             {
@@ -119,6 +126,7 @@ namespace BusinessLogicLayer.Application
                          select new OrderReturnMaster
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
@@ -139,7 +147,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.OrderReturnNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.OrderReturnNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.OrderReturnNo);
             }
             if (model.Status != null)
             {
@@ -163,6 +171,7 @@ namespace BusinessLogicLayer.Application
                          select new OrderReturnMaster
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
@@ -203,6 +212,10 @@ namespace BusinessLogicLayer.Application
                         var detail = SessionHelper.AddReturnProduct;
                         model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
                         Add(model);
+                        if (model.Id > 0)
+                        {
+                            UpdateSNo(model);
+                        }
                         detail.ForEach(e => e.OrderReturnId = model.Id);
                         detail.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
                         detail.ForEach(e => e.CreatedDate = DateTime.Now);

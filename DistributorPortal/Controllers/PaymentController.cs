@@ -120,6 +120,10 @@ namespace DistributorPortal.Controllers
                     model.Status = PaymentStatus.Unverified;
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _PaymentBLL.Add(model);
+                    if (model.Id > 0)
+                    {
+                        _PaymentBLL.UpdateSNo(model);
+                    }
                     jsonResponse.Status = true;
                     jsonResponse.Message = NotificationMessage.PaymentSaved;
                 }

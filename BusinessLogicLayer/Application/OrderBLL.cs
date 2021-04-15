@@ -74,6 +74,13 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<OrderMaster>().Update(item);
             return _unitOfWork.Save();
         }
+        public int UpdateSNo(OrderMaster module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
+            _repository.Update(item);
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(id);
@@ -342,6 +349,10 @@ namespace BusinessLogicLayer.Application
                 model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductDetail.TotalPrice).Sum();
                 model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                 Add(model);
+                if (model.Id > 0)
+                {
+                    UpdateSNo(model);
+                }
                 List<OrderDetail> details = new List<OrderDetail>();
                 foreach (var item in model.DistributorWiseProduct)
                 {
@@ -443,7 +454,7 @@ namespace BusinessLogicLayer.Application
             }
             if (model.OrderNo != null)
             {
-                LamdaId = LamdaId.And(e => e.Id == model.OrderNo);
+                LamdaId = LamdaId.And(e => e.SNo == model.OrderNo);
             }
             if (model.Status != null)
             {
@@ -474,6 +485,7 @@ namespace BusinessLogicLayer.Application
                          select new OrderMaster
                          {
                              Id = x.Id,
+                             SNo = x.SNo,
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,

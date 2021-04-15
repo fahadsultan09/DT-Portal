@@ -45,7 +45,7 @@
                             {
                                 <tr>
                                     <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" /></td>
-                                    <td>@string.Format("{0:1000000000}", item.Id)</td>
+                                    <td>@item.SNo</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <td>@item.Distributor.DistributorName</td>

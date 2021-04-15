@@ -131,6 +131,10 @@ namespace DistributorPortal.Controllers
                     model.Status = ComplaintStatus.Pending;
                     model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                     _ComplaintBLL.Add(model);
+                    if (model.Id > 0)
+                    {
+                        _ComplaintBLL.UpdateSNo(model);
+                    }
                 }
 
                 //Sending Email

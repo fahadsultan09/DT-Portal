@@ -18,13 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.ServiceModel;
 using System.Threading.Tasks;
-using System.Xml;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
-using static SalesOrder.DisPortalPORequest_OutClient;
 
 namespace DistributorPortal.Controllers
 {
