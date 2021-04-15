@@ -1,7 +1,7 @@
 ﻿@model OrderViewModel
 @{
     ViewData["Title"] = "Add Order";
-    var m = new OrderValueViewModel();
+    var m =  new OrderValueViewModel();
     var id = 1;
 }
 
@@ -68,7 +68,15 @@
                                 </div>
                             </div>
                             <div class="card-body p-0" id="UpdateOrderValueId">
-                                <partial name="OrderValue" model="m" />
+                                @if (Model.Id > 0)
+                                {
+                                    <partial name="OrderValue" model="Model.OrderValues"/>
+                                }
+                                else
+                                {
+                                    <partial name="OrderValue" model="m"/>
+                                }
+                                
                             </div>
                         </div>
                     </div>

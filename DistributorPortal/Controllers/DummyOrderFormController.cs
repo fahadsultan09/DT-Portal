@@ -59,12 +59,18 @@ namespace DistributorPortal.Controllers
                 if (SessionHelper.SAPOrderPendingQuantity != null)
                 {
                     distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode)?.PendingQuantity)).ToString() : "0");
-                    distributorProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).Quantity : 0);
                 }
-
+                distributorProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id)?.Quantity ?? 0);
+                foreach (var item in orderDetails)
+                {
+                    distributorProduct.First(e => e.ProductDetail.ProductMasterId == item.ProductId).ProductDetail
+                        .ProductMaster.Quantity = (int)item.Discount;
+                }
+                
+                model.OrderValues = _OrderBLL.GetOrderValueModel(_orderValueBll.GetOrderValueByOrderId(id));
                 model.Id = id;
                 SessionHelper.AddDistributorWiseProduct = distributorProduct;
-                model.ProductDetails = distributorProduct;
+                 model.ProductDetails = distributorProduct;
                 return View("AddOrder", model);
             }
             else
@@ -99,6 +105,7 @@ namespace DistributorPortal.Controllers
             master.ReferenceNo = model.ReferenceNo;
             master.Remarks = model.Remarks;
             master.AttachmentFormFile = model.AttachmentFormFile;
+            master.Id = model.Id;
             try
             {
                 ModelState.Remove("Id");

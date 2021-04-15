@@ -372,21 +372,24 @@ namespace BusinessLogicLayer.Application
             }
             else
             {
-                model.TotalValue = model.productDetails.Select(e => e.TotalPrice).Sum();
+                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductDetail.TotalPrice).Sum();
                 model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                 Update(model);
                 _orderDetailBLL.DeleteRange(_orderDetailBLL.Where(e => e.OrderId == model.Id).ToList());
                 List<OrderDetail> details = new List<OrderDetail>();
-                foreach (var item in model.productDetails)
+                foreach (var item in model.DistributorWiseProduct)
                 {
                     details.Add(new OrderDetail()
                     {
-                        Amount = item.TotalPrice,
+                        Amount = item.ProductDetail.TotalPrice,
                         OrderId = model.Id,
-                        ProductId = item.ProductMasterId,
-                        Quantity = item.ProductMaster.Quantity,
+                        ProductId = item.ProductDetail.ProductMasterId,
+                        Quantity = item.ProductDetail.ProductMaster.Quantity,
                         CreatedBy = SessionHelper.LoginUser.Id,
-                        CreatedDate = DateTime.Now
+                        CreatedDate = DateTime.Now,
+                        ApprovedQuantity = 0,
+                        ProductPrice = item.ProductPrice,
+                        Discount = item.Discount
                     });
                 }
                 _orderDetailBLL.AddRange(details);
@@ -565,7 +568,7 @@ namespace BusinessLogicLayer.Application
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
 
             OrderValueViewModel viewModel = new OrderValueViewModel();
-            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
+            List<OrderDetail> orderDetails = _orderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
             List<ProductDetail> productDetailList = ProductDetailBLL.Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
