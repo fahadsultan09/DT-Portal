@@ -70,7 +70,7 @@
                                 <td class="d-none"><input type="text" asp-for="@item.Id" class="form-control" /></td>
                                 <td class="d-none"><input type="text" asp-for="@item.ProductDetail.Id" class="form-control" /></td>
                                 <td>@item.SAPProductCode</td>
-                                <td>@item.ProductName</td>
+                                <td>@item.ProductDescription</td>
                                 <td>@item.PackSize</td>
                                 <td>
                                     @(Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId))

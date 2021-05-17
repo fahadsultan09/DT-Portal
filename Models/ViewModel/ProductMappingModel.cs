@@ -8,7 +8,7 @@ namespace Models.ViewModel
     public class ProductMappingModel
     {
         [IncludeInReport(Order = 1)]
-        public string PackCode { get; set; }
+        public string ProductCode { get; set; }
         [IncludeInReport(Order = 2)]
         public string ProductName { get; set; }
         [IncludeInReport(Order = 3)]

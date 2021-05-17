@@ -114,8 +114,8 @@ namespace BusinessLogicLayer.Application
             {
                 ProductMappingModel.Add(new ProductMappingModel()
                 {
-                    PackCode = item.ProductMaster.PackCode,
-                    ProductName = item.ProductMaster.ProductName,
+                    ProductCode = item.ProductMaster.SAPProductCode,
+                    ProductName = item.ProductMaster.ProductDescription,
                     PackSize = item.ProductMaster.PackSize,
                     Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
                     PlantLocation = item.PlantLocation.PlantLocationName,
