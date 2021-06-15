@@ -76,11 +76,20 @@
                                                 <span id="ErrorTRNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>TR Date:</h6>
+                                                @*<h6>TR Date:</h6>
                                                 <div class="input-group date" id="TRDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>*@
+                                                <div class="form-group">
+                                                    <label class="control-label">To Date</label>
+                                                    <div class="input-group date" data-target-input="nearest">
+                                                        <input type="text" name="TRDate" readonly="readonly" id="TRDate" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
+                                                        <div class="input-group-append" data-target="#TRDate" id="input-group-append-To" data-toggle="datepicker">
+                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <span asp-validation-for="TRDate" class="text-danger error"></span>
