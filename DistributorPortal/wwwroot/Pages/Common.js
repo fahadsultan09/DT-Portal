@@ -43,13 +43,12 @@ $(document).ready(function () {
 
         if (d1.getTime() < d2.getTime()) {
             $('button[type=submit]').attr('disabled', true);
-            Toast.fire({ icon: 'error', title: 'To date cannot be small than from date.' });
+            Toast.fire({ icon: 'error', title: 'To date cannot be less than from date.' });
         } else {
             $('button[type=submit]').attr('disabled', false);
         }
 
     });
-
 
     $('#FromDate').on('change', function () {
 
@@ -58,10 +57,18 @@ $(document).ready(function () {
 
         if (d1.getTime() < d2.getTime()) {
             $('button[type=submit]').attr('disabled', true);
-            Toast.fire({ icon: 'error', title: 'To Date can not be greater than from date.' });
+            Toast.fire({ icon: 'error', title: 'To date can not be greater than from date.' });
         } else {
             $('button[type=submit]').attr('disabled', false);
         }
+    });
+
+    $('#input-group-append-From').click(function () {
+        $("#FromDate").focus();
+    });
+
+    $('#input-group-append-To').click(function () {
+        $("#ToDate").focus();
     });
 });
 
@@ -71,79 +78,81 @@ $(function () {
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
-        timer: 3000
+        timerProgressBar: true,
+        timer: 7000
     });
 });
 
 function Begin() {
-
-    $('#Spinner').show();
-    $('button[type="submit"]').attr('disabled', true);
-    if ($("button[type=submit]", this)[0] != undefined) {
-        Ladda.create($("button[type=submit]", this)[0]).start();
-    }
     BlockUI();
+    $('#Spinner').show();
+    $('.ladda-button').attr('disabled', true);
+    if ($(".ladda-button")[0] != undefined) {
+        Ladda.create($(".ladda-button")[0]).start();
+    }
 }
 
 function OnSuccess(data) {
 
-    if (data.data.Status) {
-        Toast.fire({
-            icon: 'success',
-            title: data.data.Message
-        });
-
-        if (data.data.SignalRResponse !== null) {
-            var result = CallSignalR(data.data.SignalRResponse);
-            if (result) {
+    if (data.data != undefined) {
+        if (data.data.Status && data.data != undefined) {
+            Toast.fire({
+                icon: 'success',
+                title: data.data.Message
+            });
+            if (data.data.SignalRResponse !== null) {
+                var result = CallSignalR(data.data.SignalRResponse);
+                if (result) {
+                    setTimeout(function () {
+                        window.location = data.data.RedirectURL;
+                    }, 1000);
+                }
+            }
+            else {
                 setTimeout(function () {
                     window.location = data.data.RedirectURL;
                 }, 1000);
             }
-        }
-        else {
-            setTimeout(function () {
-                window.location = data.data.RedirectURL;
-            }, 1000);
-        }
-    }
-    else {
-        Toast.fire({
-            icon: 'error',
-            title: data.data.Message
-        });
-    }
-    if ($("button[type=submit]", this)[0] != undefined) {
-        Ladda.create($("button[type=submit]", this)[0]).stop();
-    }
-    $("body").removeClass("loading");
+        } else {
+            Toast.fire({
+                icon: 'error',
+                title: data.data.Message
+            });
 
+            $('button[type="submit"]').attr('disabled', false);
+            $('button[type="button"]').attr('disabled', false);
+
+            if ($("button[type=submit]", this)[0] != undefined) {
+                Ladda.create($("button[type=submit]", this)[0]).stop();
+            }
+            if ($("button[type=button]", this)[0] != undefined) {
+                Ladda.create($("button[type=button]", this)[0]).stop();
+            }
+            if ($(".ladda-button")[0] != undefined) {
+                Ladda.create($(".ladda-button")[0]).stop();
+            }
+            UnBlockUI();
+            $("body").removeClass("loading");
+        }
+    }
 }
 
 function Complete() {
-
+    UnBlockUI();
     $('#Spinner').hide('slow');
+
     $('button[type="submit"]').attr('disabled', false);
     if ($("button[type=submit]", this)[0] != undefined) {
         Ladda.create($("button[type=submit]", this)[0]).stop();
     }
-    if ($("#btnOrderNow", this)[0] != undefined) {
-        Ladda.create($("#btnOrderNow", this)[0]).stop();
+    $('button[type="button]"]').attr('disabled', false);
+    if ($("button[type=button]", this)[0] != undefined) {
+        Ladda.create($("button[type=button]", this)[0]).stop();
     }
-    if ($("#btnDraft", this)[0] != undefined) {
-        Ladda.create($("#btnDraft", this)[0]).stop();
-    }
+    $('.ladda-button').attr('disabled', false);
     if ($(".ladda-button")[0] != undefined) {
         Ladda.create($(".ladda-button")[0]).stop();
     }
-    UnBlockUI();
-}
-
-function MessageDisappear() {
-    setInterval(function () {
-        $("#alertmessage").hide('slow');
-    }, 5000);
-    UnBlockUI();
 }
 
 function Save() {
@@ -175,7 +184,6 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
         contentType: "application/json",
         dataType: "json",
         data: params,
-        async: false,
         success: function (response) {
             dropdown.empty();
             dropdown.append($("<option readonly disabled></option>").val(defaultvalue).html("--Select option--"));
@@ -187,6 +195,7 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 }
 
 function UpdateStatus(e, controllerName, actionName, id) {
+    debugger
     var val = '';
     if (e.value == undefined) {
         val = e;

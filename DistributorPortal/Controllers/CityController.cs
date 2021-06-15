@@ -115,7 +115,7 @@ namespace DistributorPortal.Controllers
             {
                 model.IsActive = true;
             }
-            model.SubRegionList = new SubRegionBLL(_unitOfWork).DropDownSubRegionList(model.SubRegionId);
+            model.SubRegionList = new SubRegionBLL(_unitOfWork).DropDownSubRegionList(0);
             return model;
         }
         public JsonResult GetCityList()

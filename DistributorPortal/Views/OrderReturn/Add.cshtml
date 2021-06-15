@@ -24,10 +24,10 @@
                           asp-action="SaveEdit"
                           id="frmOrderReturnMaster"
                           data-ajax-begin="Begin"
-                          data-ajax-success="OnSuccess"
-                          data-ajax-complete="Complete"
                           data-ajax="true"
-                          data-ajax-method="POST">
+                          data-ajax-success="OnSuccess"
+                          data-ajax-method="POST"
+                          enctype="multipart/form-data">
                         <input asp-for="Id" type="hidden" />
                         <div class="row">
                             <div class="col-12">
@@ -61,64 +61,79 @@
                                 </div>
                                 <div class="card card-primary">
                                     <div class="card-header">
-                                        <h3 class="card-title">Return Order Details</h3>
+                                        <h3 class="card-title">Details for Return Claim</h3>
                                     </div>
                                     <div class="card-body" style="padding: 10px 15px 0px 15px;">
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Transporter:<span class="text-danger"> *</span></h6>
                                                 <input type="text" asp-for="Transporter" placeholder="Enter Transporter" id="Transporter" class="form-control" />
-                                                <span asp-validation-for="Transporter" class="text-danger"></span>
+                                                <span asp-validation-for="Transporter" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Number:</h6>
                                                 <input type="text" asp-for="TRNo" placeholder="Enter TR Number" id="TRNo" class="form-control" />
-                                                <span id="ErrorTRNo" class="text-danger"></span>
+                                                <span id="ErrorTRNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Date:</h6>
                                                 <div class="input-group date" id="TRDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("dd/MM/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
-                                                <span asp-validation-for="TRDate" class="text-danger"></span>
+                                                <span asp-validation-for="TRDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
-                                                <span asp-validation-for="DebitNoteNo" class="text-danger"></span>
+                                                <span asp-validation-for="DebitNoteNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note Date:</h6>
                                                 <div class="input-group date" id="DebitNoteDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" asp-for="DebitNoteDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("dd/MM/yyyy") : Convert.ToDateTime(Model.DebitNoteDate).ToString("dd/MM/yyyy"))" data-target="#DebitNoteDate" class="form-control datepicker" />
+                                                    <input type="text" readonly="readonly" asp-for="DebitNoteDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.DebitNoteDate).ToString("MM/dd/yyyy"))" data-target="#DebitNoteDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#DebitNoteDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
-                                                <span asp-validation-for="DebitNoteDate" class="text-danger"></span>
+                                                <span asp-validation-for="DebitNoteDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 row" style="width:100%;">
                                                 <h6>Return Reason:<span class="text-danger"> *</span></h6>
                                                 <select asp-for="OrderReturnReasonId" asp-items="Model.returnReasonList" class="form-control select2" id="ddlReturnReson">
                                                     <option value="">--Select option--</option>
                                                 </select>
-                                                <span asp-validation-for="OrderReturnReasonId" class="text-danger"></span>
+                                                <span asp-validation-for="OrderReturnReasonId" class="text-danger error"></span>
                                             </div>
-                                        </div><br />
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                                <h6>Attachment</h6>
+                                                <div class="form-group">
+                                                    <div class="custom-file">
+                                                        <input type="file" asp-for="@Model.AttachmentFormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                                    </div>
+                                                    <span id="ErrorAttachment" class="text-danger error"></span>
+                                                </div>
+                                                <span class="caption">
+                                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                                </span>
+                                                <input type="hidden" asp-for="Attachment" />
+                                            </div>
+                                        </div>
                                         <div class="row">
                                             <div class="col-6">
                                                 <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp; </label><strong><span id="TotalValue"></span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" onclick="return SubmitForm();" name="btnSubmit" value="@SubmitStatus.OrderNow" id="btnOrderNow" class="ladda-button btn btn-success mr-1 float-right">
-                                                    Submit
-                                                </button>
-                                                <button type="submit" name="btnSubmit" value="@SubmitStatus.Draft" class="ladda-button btn btn-info float-right mr-3" id="btnDraft">
-                                                    Draft
-                                                </button>
+                                                <button type="submit" onclick="return SubmitForm(this);" name="Submit" value="@SubmitStatus.Submit" class="btn btn-success float-right">Submit</button>
+                                                <button type="submit" onclick="return DraftForm(this);" name="Draft" value="@SubmitStatus.Draft" class="btn btn-info float-right mr-3">Draft</button>
+                                                <a asp-controller="OrderReturn" asp-action="Index" class="btn btn-secondary float-right mr-3">Back</a>
+                                                <input type="hidden" name="btnSubmit" value="" class="btn btn-success float-right">
                                             </div>
                                         </div>
                                     </div>
@@ -138,7 +153,6 @@
                                           id="frmOrderDetails"
                                           data-ajax="true"
                                           data-ajax-success="GetResponse"
-                                          data-ajax-complete="Complete"
                                           data-ajax-method="POST">
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 row" style="width:100%;">
@@ -146,32 +160,32 @@
                                                 <select name="ProductId" asp-items="Model.ProductList" class="form-control select2" id="ddlProduct">
                                                     <option value="">--Select option--</option>
                                                 </select>
-                                                <span id="ErrorProductName" class="text-danger"></span>
+                                                <span id="ErrorProductName" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:<span class="text-danger"> *</span></h6>
-                                                <input type="number" name="Quantity" id="Quantity" min="0" oninput="validity.valid||(value='');" placeholder="Enter Quantity" class="form-control" />
-                                                <span id="ErrorQuantity" class="text-danger"></span>
+                                                <input type="text" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" />
+                                                <span id="ErrorQuantity" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>MRP:<span class="text-danger"> *</span></h6>
-                                                <input type="number" name="MRP" id="MRP" min="0" oninput="validity.valid||(value='');" step="any" placeholder="Enter MRP" class="form-control" />
-                                                <span id="ErrorMRP" class="text-danger"></span>
+                                                <input type="text" name="MRP" id="MRP" placeholder="Enter MRP" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" />
+                                                <span id="ErrorMRP" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Batch No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" class="form-control" />
-                                                <span id="ErrorBatchNo" class="text-danger"></span>
+                                                <span id="ErrorBatchNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Earlier Intimation:<span class="text-danger"> *</span></h6>
+                                                <h6>Intimation Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="IntimationDate" id="txtIntimationDate" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
-                                                <span id="ErrorIntimationDate" class="text-danger"></span>
+                                                <span id="ErrorIntimationDate" class="text-danger error"></span>
                                             </div>
                                         </div>
                                         <br />
@@ -179,7 +193,7 @@
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
-                                                <span id="ErrorInvoiceNo" class="text-danger"></span>
+                                                <span id="ErrorInvoiceNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice Date:<span class="text-danger"> *</span></h6>
@@ -189,42 +203,42 @@
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
-                                                <span id="ErrorInvoiceDate" class="text-danger"></span>
+                                                <span id="ErrorInvoiceDate" class="text-danger error"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <h6>Mfg. Date:<span class="text-danger"> *</span></h6>
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" readonly="readonly" name="ManufactureDate" id="ManufactureDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ManufactureDate" id="input-group-append-From" data-toggle="datepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                                <span id="ErrorManufactureDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Expiry Date:<span class="text-danger"> *</span></h6>
-                                                <div class="input-group date" id="ExpiryDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="ExpiryDate" id="txtExpiryDate" data-target="#ExpiryDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ExpiryDate" data-toggle="datepicker">
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" name="ExpiryDate" readonly="readonly" id="ExpiryDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#ExpiryDate" id="input-group-append-To" data-toggle="datepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
-                                                <span id="ErrorExpiryDate" class="text-danger"></span>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Manufacture Date:<span class="text-danger"> *</span></h6>
-                                                <div class="input-group date" id="ManufactureDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" name="ManufactureDate" id="txtManufactureDate" data-target="#ManufactureDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datepicker">
-                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                    </div>
-                                                </div>
-                                                <span id="ErrorManufactureDate" class="text-danger"></span>
+                                                <span id="ErrorExpiryDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                                 <h6>Remarks:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
-                                                <span id="ErrorRemarks" class="text-danger"></span>
+                                                <span id="ErrorRemarks" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                                                 <h6></h6>
-                                                <button type="submit" id="AddProducts" onclick="return AddToGrid();" class="ladda-button btn btn-primary float-right" style="margin-top: 20px;">
+                                                <button type="submit" id="AddProducts" onclick="return AddToGrid();" class="btn btn-primary float-right" style="margin-top: 20px;">
                                                     Add
                                                 </button>
                                             </div>
                                         </div>
                                     </form><br />
-                                    <div class="scrollmenu" id="ProductGrid">
+                                    <div class="" id="ProductGrid">
                                         @if (Model.OrderReturnDetail.Count > 0)
                                         {
                                             <partial name="ProductGrid" model="Model.OrderReturnDetail" />
@@ -239,28 +253,55 @@
         </div>
     </section>
 </div>
+
 <script>
+
+    $(".datepicker").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'auto',
+    });
 
     $(document).ready(function () {
 
-        $('.select2').select2();
-        $('.datepicker').datepicker({
-            format: 'L',
-            todayHighlight: true,
-            maxDate: moment(),
-            orientation: "auto",
+        $('#ManufactureDate').on('change', function () {
+
+            var d1 = new Date($('#ExpiryDate').val());
+            var d2 = new Date($('#ManufactureDate').val());
+
+            if (d1.getTime() < d2.getTime()) {
+                $('button[type=submit]').attr('disabled', true);
+                Toast.fire({ icon: 'error', title: 'Expiry Date can not be greater than Mfg. Date.' });
+                $('#ManufactureDate').val('');
+            } else {
+                $('button[type=submit]').attr('disabled', false);
+            }
         });
 
-    });
+        $('#ExpiryDate').on('change', function () {
 
-    function LaddaBegin() {
-        Ladda.create($("#btnOrderNow", this)[0]).start();
-        Ladda.create($("#btnDraft", this)[0]).start();
-    }
+            var d1 = new Date($('#ExpiryDate').val());
+            var d2 = new Date($('#ManufactureDate').val());
+
+            if (d1.getTime() < d2.getTime()) {
+                $('button[type=submit]').attr('disabled', true);
+                Toast.fire({ icon: 'error', title: 'Expiry Date cannot be less than Mfg. Date.' });
+                $('#ExpiryDate').val('');
+            } else {
+                $('button[type=submit]').attr('disabled', false);
+            }
+
+        });
+
+
+        $('.select2').select2({
+            width: '100%',
+        });
+    });
 
     function AddToGrid() {
 
-        $(".text-danger").empty();
+        $(".error").empty();
 
         var ddlProduct = $("#ddlProduct option:selected").text();
         var ddlPlantLocation = $("#ddlPlantLocation option:selected").text();
@@ -307,7 +348,7 @@
             return false;
         }
         if ($('#txtManufactureDate').val() === '') {
-            $("#ErrorManufactureDate").text('Manufacture Date is required');
+            $("#ErrorManufactureDate").text('Mfg. Date is required');
             return false;
         }
         if (Remarks === '') {
@@ -318,11 +359,15 @@
 
     function SubmitForm() {
 
-        $('#ErrorTRNo').empty();
-        if ($("#ddlReturnReson option:selected").text() == "Leaked and breakage" && $('#TRNo').val().trim() == "") {
+        $('.error').empty();
+        if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && $('#TRNo').val().trim() == "") {
             $('#ErrorTRNo').text('TR No is mandatory.');
             return false;
-        };
+        }
+        if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && $('.custom-file-input').val() == "") {
+            $('#ErrorAttachment').text('Attachment is mandatory.');
+            return false;
+        }
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',
@@ -332,29 +377,39 @@
             confirmButtonText: 'Yes, Return Order Place!'
         }).then((result) => {
             if (result.value == true) {
+                debugger
+                $('[name="btnSubmit"]').val("Submitted");
                 $('#frmOrderReturnMaster').submit();
             }
-        })
+        });
         return false;
+    }
+
+    function DraftForm() {
+        $("#frmOrderReturnMaster").submit(function () {
+            $('[name="btnSubmit"]').val("Draft");
+        });
     }
 
     function GetResponse(data) {
 
-        if (data.data.HtmlString != null) {
+        if (data != null && data.data != undefined && data.data.HtmlString != null) {
             $("#ProductGrid").html(data.data.HtmlString.Result);
         }
-        if (data.data.Status) {
+        if (data != null && data.data != undefined && data.data.Status) {
+            $('#frmOrderDetails input[type="text"],input[type="date"],input[type="number"]').val('');
             Toast.fire({
                 icon: 'success',
                 title: data.data.Message
             });
-            //$('#TotalValue').text(parseFloat(total).toLocaleString(window.document.documentElement.lang));
         }
         else {
-            Toast.fire({
-                icon: 'error',
-                title: data.data.Message
-            });
+            if (data != null && data.data != undefined) {
+                Toast.fire({
+                    icon: 'error',
+                    title: data.data.Message
+                });
+            }
         }
     }
 

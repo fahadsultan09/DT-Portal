@@ -11,7 +11,7 @@ namespace DistributorPortal.Controllers
 {
     public class BaseController : Controller 
     {
-        private string[] CommonUrls = { "/Home/Index" };
+        private readonly string[] CommonUrls = { "/Home/Index" };
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {            
             // our code before action executes

@@ -17,15 +17,14 @@
                     <button type="submit" class="btn btn-success float-right">Sync</button>
                 </form>
             </div>
-            <!-- /.card-header -->
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped"   >
                     <thead>
                         <tr>
                             <th>S.No</th>
                             <th>Region</th>
                             <th>City</th>
-                            <th>Distributor Code</th>
+                            @*<th>Distributor Code</th>*@
                             <th>SAP Distributor Code</th>
                             <th>Name</th>
                             <th>Address</th>
@@ -39,41 +38,64 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Region.RegionName</td>
-                            <td>@item.City</td>
-                            <td>@item.DistributorCode</td>
-                            <td>@item.DistributorSAPCode</td>
-                            <td>@item.DistributorName</td>
-                            <td>@item.DistributorAddress</td>
-                            <td>@item.NTN</td>
-                            <td>@item.CNIC</td>
-                            <td>@item.EmailAddress</td>
-                            <td>@item.CustomerGroup</td>                           
-                            <td>
-                                @if (item.IsFiler)
-                                {<i class="fa fa-check text-navy"></i> }
-                                else
-                                {<i class="fa fa-times text-danger"></i>}
-                            </td>                           
-                        </tr>
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Region.RegionName</td>
+                                <td>@item.City</td>
+                                @*<td>@item.DistributorCode</td>*@
+                                <td>@item.DistributorSAPCode</td>
+                                <td>@item.DistributorName</td>
+                                <td>@item.DistributorAddress</td>
+                                <td>@item.NTN</td>
+                                <td>@item.CNIC</td>
+                                <td>@item.EmailAddress</td>
+                                <td>@item.CustomerGroup</td>
+                                <td>
+                                    <div class="icheck-success d-inline">
+                                        <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsFiler" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" checked="@(item.IsFiler ? "checked" : null)" />
+                                        <label for="checkbox@(item.Id)">
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
 <script>
-        $(document).ready(function () {
-            $("#example1").DataTable({
-                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                "responsive": true,
-                "autoWidth": false,
-            });
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [],
         });
+
+        $("input[type='checkbox']").change(function (e) {
+             
+            if ($(this).attr('Id') != "example-select-all") {
+                $.post(window.location.origin + "/Distributor/RegisterDistributor", { DPID: $(this).val() }, function (data) {
+                     
+                    if (data.data != undefined) {
+                        if (data.data.Status && data.data != undefined) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: data.data.Message
+                            });
+                        }
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.data.Message
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+
 </script>

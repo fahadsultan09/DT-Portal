@@ -34,6 +34,7 @@ namespace BusinessLogicLayer.GeneralSetup
             item.BranchCode = module.BranchCode;
             item.AccountNo = module.AccountNo;
             item.IBANNo = module.IBANNo;
+            item.GLAccount = module.GLAccount;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
@@ -43,7 +44,9 @@ namespace BusinessLogicLayer.GeneralSetup
         public int DeleteBank(int id)
         {
             var item = _unitOfWork.GenericRepository<Bank>().GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
+            item.DeletedBy = SessionHelper.LoginUser.Id;
+            item.DeletedDate = DateTime.Now;
             _unitOfWork.GenericRepository<Bank>().Delete(item);
             return _unitOfWork.Save();
         }

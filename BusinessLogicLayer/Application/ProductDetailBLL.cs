@@ -27,7 +27,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductDetail>().Insert(module);
             return _unitOfWork.Save();
         }
-
         public int UpdateProductDetail(ProductDetail module)
         {
             var item = _unitOfWork.GenericRepository<ProductDetail>().GetById(module.Id);
@@ -53,7 +52,6 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductDetail>().Update(item);
             return _unitOfWork.Save();
         }
-
         public int DeleteProductDetail(int id)
         {
             var item = _unitOfWork.GenericRepository<ProductDetail>().GetById(id);
@@ -61,17 +59,14 @@ namespace BusinessLogicLayer.Application
             _unitOfWork.GenericRepository<ProductDetail>().Delete(item);
             return _unitOfWork.Save();
         }
-
         public ProductDetail GetProductDetailById(int id)
         {
             return _unitOfWork.GenericRepository<ProductDetail>().GetById(id);
         }
-
         public ProductDetail GetProductDetailByMasterId(int id)
         {
             return _unitOfWork.GenericRepository<ProductDetail>().Where(e => e.ProductMasterId == id).FirstOrDefault();
         }
-
         public List<ProductDetail> GetAllProductDetail()
         {
             return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false).ToList();
@@ -86,10 +81,9 @@ namespace BusinessLogicLayer.Application
             }
             return detail;
         }
-
         public SelectList DropDownProductList()
         {
-            var selectList = GetAllProductDetail().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllProductDetail().Where(x => x.IsActive == true).OrderBy(x => x.ProductMaster.ProductName).Select(x => new SelectListItem
             {
                 Value = x.ProductMasterId.ToString(),
                 Text = x.ProductMaster.ProductName.Trim() + " " + x.ProductMaster.ProductDescription.Trim()
@@ -105,7 +99,6 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<ProductDetail>().Where(expression);
         }
-
         public List<ProductMappingModel> GetViewModelForExcel()
         {
             var GetAllProduct = GetAllProductDetail();
@@ -114,7 +107,7 @@ namespace BusinessLogicLayer.Application
             {
                 ProductMappingModel.Add(new ProductMappingModel()
                 {
-                    PackCode = item.ProductMaster.PackCode,
+                    ProductCode = item.ProductMaster.SAPProductCode,
                     ProductName = item.ProductMaster.ProductName,
                     PackSize = item.ProductMaster.PackSize,
                     Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
@@ -132,7 +125,9 @@ namespace BusinessLogicLayer.Application
                     S_StorageLocation = item.S_StorageLocation,
                     R_StorageLocation = item.R_StorageLocation,
                     SalesItemCategory = item.SalesItemCategory,
-                    ReturnItemCategory = item.ReturnItemCategory
+                    ReturnItemCategory = item.ReturnItemCategory,
+                    IsTaxApplicable = item.IsTaxApplicable,
+                    LicenseType = item.LicenseControl is null ? "" : item.LicenseControl.LicenseName,
                 });
             }
             return ProductMappingModel;

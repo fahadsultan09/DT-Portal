@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<OrderDetail>
-
+@{ int i = 1; }
 <div class="row">
     <div class="col-12 p-0" style="height: 300px;">
         <div class="card">
@@ -10,9 +10,10 @@
                             <th colspan="6" style="text-align: center; vertical-align: middle; font-size:medium;">Order No: <span>@string.Format("{0:1000000000}", Model.FirstOrDefault().OrderId)</span></th>
                         </tr>
                         <tr>
+                            <th>S No</th>
                             <th>Product Name</th>
                             <th>Ordered Quantity</th>
-                            <th>Approved Quantity</th>
+                            @*<th>Approved Quantity</th>*@
                             <th>SAP Order Number</th>
                             <th>SAP Order Status</th>
                             <th>Status</th>
@@ -21,9 +22,10 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>@(i++)</td>
                                 <td>@item.ProductMaster.ProductDescription</td>
                                 <td>@item.Quantity</td>
-                                <td>@item.ApprovedQuantity</td>
+                                @*<td>@item.ApprovedQuantity</td>*@
                                 <td>@item.SAPOrderNumber</td>
                                 <td>@Html.DisplayFor(e => item.OrderProductStatus)</td>
                                 <td>

@@ -12,6 +12,10 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Utility.HelperClasses;
 
 namespace DistributorPortal.Controllers
@@ -21,11 +25,13 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly DistributorBLL _DistributorBLL;
         private readonly Configuration _configuration;
+        private readonly RegionBLL regionBLL;
         public DistributorController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _DistributorBLL = new DistributorBLL(_unitOfWork);
             _configuration = configuration;
+            regionBLL = new RegionBLL(_unitOfWork);
         }
         // GET: Distributor
         public IActionResult Index()
@@ -40,12 +46,23 @@ namespace DistributorPortal.Controllers
         public IActionResult Sync()
         {
             JsonResponse jsonResponse = new JsonResponse();
+            List<Distributor> SAPDistributor = new List<Distributor>();
+            Root root = new Root();
             try
-            {                
-                var Client = new RestClient(_configuration.SyncDistributorURL);
-                var request = new RestRequest(Method.GET);
-                IRestResponse response = Client.Execute(request);
-                var SAPDistributor = JsonConvert.DeserializeObject<List<Distributor>>(response.Content);
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getHRMS")).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                    }
+                }
                 var alldist = _DistributorBLL.GetAllDistributor();
                 var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
                 addDistributor.ForEach(e =>
@@ -53,17 +70,19 @@ namespace DistributorPortal.Controllers
                     e.CreatedBy = SessionHelper.LoginUser.Id; e.MobileNumber = e.MobileNumber.Replace("-", ""); e.CNIC = e.CNIC.Replace("-", ""); e.IsDeleted = false; e.IsActive = true; e.CreatedDate = DateTime.Now;
                 });
                 _DistributorBLL.AddRange(addDistributor);
-                var UpdateDistributor = alldist.Where(e => SAPDistributor.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup)));
+                var UpdateDistributor = SAPDistributor.Where(e => alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup)));
                 foreach (var item in UpdateDistributor)
                 {
                     var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);
                     if (distributor != null)
                     {
-                        _DistributorBLL.UpdateDistributor(distributor);
+                        var region = regionBLL.GetAllRegion();
+                        item.Region = region.First(c => c.SAPId == distributor.Region.SAPId);
+                        _DistributorBLL.UpdateDistributor(item);
                     }
                 }
 
-                jsonResponse.Message = "Distributor Sync Successfully";
+                jsonResponse.Message = "Distributor sync successfully";
                 jsonResponse.Status = true;
                 jsonResponse.RedirectURL = Url.Action("Index", "Distributor");
                 return Json(new { data = jsonResponse });
@@ -79,7 +98,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -138,8 +157,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 _DistributorBLL.DeleteDistributor(id);
                 return Json(new { Result = true });
             }
@@ -167,6 +185,34 @@ namespace DistributorPortal.Controllers
         public JsonResult GetDistributorList()
         {
             return Json(_DistributorBLL.GetAllDistributor().ToList());
+        }
+        public JsonResult RegisterDistributor(string DPID)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+            var distributor = _DistributorBLL.GetAllDistributor().FirstOrDefault(e => e.Id == id);
+
+            if (distributor != null)
+            {
+                if (distributor.IsFiler)
+                {
+                    distributor.IsFiler = false;
+                    _DistributorBLL.UpdateDistributor(distributor);
+                }
+                else
+                {
+                    distributor.IsFiler = true;
+                    _DistributorBLL.UpdateDistributor(distributor);
+                }
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
+            }
+            else
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.Error;
+            }
+            return Json(new { data = jsonResponse });
         }
     }
 }

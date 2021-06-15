@@ -3,7 +3,7 @@
     
 }
 <div class="table-responsive-sm">
-    <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+    <table id="example2" class="table table-bordered table-condensed table-hover table-striped"   >
         <thead>
             <tr>
                 <th width="8%">Code</th>
@@ -81,7 +81,7 @@
         CalculateTotal();
 
         $('.ChangeQuantity').bind('keyup mouseup',function (data) {
-            debugger;
+             ;
             var intmaxvalue = @Int32.MaxValue;
             var Quantity = data.currentTarget.value;
             var Product = data.currentTarget.getAttribute("_ProductId");
@@ -110,7 +110,7 @@
                     data: { 'Quantity': Quantity, 'Product': Product },
                     cache: false,
                     success: function (response) {
-                        debugger;
+                         ;
                         $("#UpdateOrderValueId").html(response);
                     },
                     complete: function (response) {

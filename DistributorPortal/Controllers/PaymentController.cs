@@ -10,11 +10,13 @@ using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
@@ -27,6 +29,7 @@ namespace DistributorPortal.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly PaymentBLL _PaymentBLL;
         private readonly OrderBLL _OrderBLL;
+        private readonly NotificationBLL _NotificationBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
         public PaymentController(IUnitOfWork unitOfWork, IConfiguration _iconfiguration, Configuration _configuration)
@@ -34,6 +37,7 @@ namespace DistributorPortal.Controllers
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _OrderBLL = new OrderBLL(_unitOfWork);
+            _NotificationBLL = new NotificationBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
         }
@@ -74,8 +78,9 @@ namespace DistributorPortal.Controllers
             return View("PaymentApproval", BindPaymentMaster(id));
         }
         [HttpGet]
-        public IActionResult PaymentView(string DPID)
+        public IActionResult PaymentView(string DPID, string RedirectURL)
         {
+            TempData["RedirectURL"] = RedirectURL;
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return View("PaymentView", BindPaymentMaster(id));
         }
@@ -98,20 +103,15 @@ namespace DistributorPortal.Controllers
                     if (model.FormFile != null)
                     {
                         var ext = Path.GetExtension(model.FormFile.FileName).ToLowerInvariant();
-
                         if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                         {
-                            jsonResponse.Status = false;
-                            jsonResponse.Message = NotificationMessage.FileTypeAllowed;
-                            return Json(new { data = jsonResponse });
+                            return Json(new { Result = false, Message = NotificationMessage.FileTypeAllowed });
                         }
-                        if (model.FormFile.Length > Convert.ToInt64(_Configuration.FileSize))
+                        if (model.FormFile.Length >= Convert.ToInt64(_Configuration.FileSize))
                         {
-                            jsonResponse.Status = false;
-                            jsonResponse.Message = NotificationMessage.FileSizeAllowed;
-                            return Json(new { data = jsonResponse });
+                            return Json(new { Result = false, Message = NotificationMessage.FileSizeAllowed });
                         }
-                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
+                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Payment, FolderPath);
                         if (tuple.Item1)
                         {
                             model.File = tuple.Item2;
@@ -172,6 +172,8 @@ namespace DistributorPortal.Controllers
         public JsonResult UpdateStatus(int id, PaymentStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
+            SAPPaymentStatus SAPPaymentStatus = new SAPPaymentStatus();
             try
             {
                 PaymentMaster model = _PaymentBLL.GetById(id);
@@ -179,16 +181,30 @@ namespace DistributorPortal.Controllers
                 if (model.Status == PaymentStatus.Verified || model.Status == PaymentStatus.Rejected)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Payment alread " + model.Status;
+                    jsonResponse.Message = "Payment already " + model.Status;
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     return Json(new { data = jsonResponse });
                 }
                 if (Status == PaymentStatus.Verified)
                 {
-                    var Client = new RestClient(_Configuration.PostPayment);
-                    var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
-                    IRestResponse restResponse = Client.Execute(request);
-                    var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
+                    //var Client = new RestClient(_Configuration.PostPayment);
+                    //var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
+                    //IRestResponse restResponse = Client.Execute(request);
+                    //var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
+                    SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(id);
+                    using (var client = new HttpClient())
+                    {
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123")); //("Username:Password")  
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                        var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/payment?REF=" + sAPPaymentViewModel.REF + "&COMPANY=" + sAPPaymentViewModel.COMPANY + "&AMOUNT=" + sAPPaymentViewModel.AMOUNT + "&DISTRIBUTOR=" + sAPPaymentViewModel.DISTRIBUTOR + "&B_CODE=" + sAPPaymentViewModel.B_CODE + "&PAY_ID=" + sAPPaymentViewModel.PAY_ID)).Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            var JsonContent = result.Content.ReadAsStringAsync().Result;
+                            SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(JsonContent);
+                        }
+                    }
 
                     if (SAPPaymentStatus != null)
                     {
@@ -202,7 +218,14 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Status = result;
                         jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
                         jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                        notification.DistributorId = model.DistributorId;
+                        notification.RequestId = model.SNo;
+                        notification.Status = model.Status.ToString();
+                        notification.Message = jsonResponse.SignalRResponse.Message;
+                        notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                        _NotificationBLL.Add(notification);
                         return Json(new { data = jsonResponse });
                     }
                     else
@@ -217,10 +240,16 @@ namespace DistributorPortal.Controllers
                 {
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Payment " + Status + " successfully.";
+                    jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                    notification.DistributorId = model.DistributorId;
+                    notification.RequestId = model.SNo;
+                    notification.Status = model.Status.ToString();
+                    notification.Message = jsonResponse.SignalRResponse.Message;
+                    notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                    _NotificationBLL.Add(notification);
                 }
                 _unitOfWork.Save();
                 return Json(new { data = jsonResponse });
@@ -255,18 +284,30 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-
-                var Client = new RestClient(_Configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + DistributorSAPCode);
-                var request = new RestRequest(Method.GET);
-                IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
-                if (resp == null)
+                DistributorBalance distributorBalance = new DistributorBalance();
+                Root root = new Root();
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorSAPCode)).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent);
+                    }
+                }
+                if (distributorBalance == null)
                 {
                     return new DistributorBalance();
                 }
                 else
                 {
-                    return resp;
+                    distributorBalance.SAMI = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_SAMI;
+                    distributorBalance.HealthTek = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_HTL;
+                    return distributorBalance;
                 }
             }
             catch (Exception ex)

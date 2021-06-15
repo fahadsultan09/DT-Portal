@@ -1,5 +1,5 @@
 ﻿@model Complaint
-@{ ViewBag.Title = "Approve Complaint | Distributor Portal"; }
+@{ ViewBag.Title = "Approve Complaint "; }
 
 <div class="content-wrapper">
     <section class="content-header" disabled>
@@ -129,10 +129,19 @@
                             </div>
                             <br />
                             <div class="row">
-                                <div class="col-12 pull-right">                                   
-                                    <a asp-controller="Complaint" asp-action="Index" class="btn btn-secondary float-right mr-3">
-                                        Back
-                                    </a>
+                                <div class="col-12 pull-right">
+                                    @if (TempData["RedirectURL"] != null)
+                                    {
+                                        <a href="@((string)TempData["RedirectURL"])" class="btn btn-secondary float-right mr-3">
+                                            Back
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Complaint" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                            Back
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -149,7 +158,9 @@
 
         $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
     });
 
      function Delete(e) {

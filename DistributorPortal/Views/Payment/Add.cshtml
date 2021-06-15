@@ -1,15 +1,7 @@
 ﻿@model PaymentMaster
-@{ ViewBag.Title = "Add Payment | Distributor Portal"; }
+@{ ViewBag.Title = "Add Payment "; }
 
 <style type="text/css">
-    .select2-container .select2-selection--single {
-        box-sizing: border-box;
-        cursor: pointer;
-        display: block;
-        height: 40px;
-        user-select: none;
-        -webkit-user-select: none;
-    }
 
     .card-header {
         padding: 5px 15px 0 15px
@@ -17,6 +9,10 @@
 
     .swal-modal .swal-text {
         text-align: center;
+    }
+
+    .txtColor {
+        border: white;
     }
 </style>
 
@@ -92,40 +88,39 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Deposit Date</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
-                                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" readonly="readonly" id="DepositDate" class="form-control datepicker" style="background: white;" />
-                                                    <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
+                                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" readonly="readonly" id="DepositDate" class="form-control datepickerDeposite" style="background: white;" />
+                                                    <div class="input-group-append" data-target="#DepositDate" data-toggle="datepickerDeposite" id="input-group-append-DepositDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Value Clearing Date</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" readonly="readonly" id="ValueClearingDate" class="form-control datepicker" style="background: white;" />
-                                                    <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
+                                                    <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-ValueClearingDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div><br />
                                         <div class=" row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Mode of Payment<span class="text-danger"> * </span></h6>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Mode Of Payment<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <select asp-for="PaymentModeId" asp-items="@(new SelectList(Model.PaymentModeList, "Value", "Text"))" class="form-control select2">
-                                                    <option value="">--Select option--</option>
+                                                <select asp-for="PaymentModeId" asp-items="@(new SelectList(Model.PaymentModeList, "Value", "Text"))" class="form-control select2" id="PaymentModeId">
                                                 </select><br />
                                                 <span asp-validation-for="PaymentModeId" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Company<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -136,24 +131,24 @@
                                             </div>
                                         </div><br />
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Payment Mode No.<span class="text-danger"> * </span></h6>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6 id="PaymentModeIdTitle"><span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <input type="text" asp-for="PaymentModeNo" class="form-control" />
                                                 <span asp-validation-for="PaymentModeNo" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Amount<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="number" asp-for="Amount" min="0" max="9999999999" oninput="validity.valid||(value='');" value="@(Model.Id == 0 ? "" : Model.Amount.ToString())" class="form-control" id="Amount" />
+                                                <input type="text" asp-for="Amount" value="@(Model.Id == 0 ? "" : Model.Amount.ToString())" min="0" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" id="Amount" />
                                                 <span asp-validation-for="Amount" class="text-danger"></span>
                                                 <span class="text-info" id="AmountInWords"></span>
                                             </div>
                                         </div><br />
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Depositor Bank Name<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -162,16 +157,16 @@
                                                 </select><br />
                                                 <span asp-validation-for="DepositorBankName" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="DepositorBankCode" id="DepositorBankCode" class="form-control" />
+                                                <input type="text" asp-for="DepositorBankCode" maxlength="64" id="DepositorBankCode" class="form-control" />
                                                 <span asp-validation-for="DepositorBankCode" class="text-danger"></span>
                                             </div>
                                         </div><br />
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Company Bank Name<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -180,7 +175,7 @@
                                                 </select><br />
                                                 <span asp-validation-for="CompanyBankName" class="text-danger"></span>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Company Bank Code<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -188,9 +183,9 @@
                                                 <span asp-validation-for="CompanyBankCode" class="text-danger"></span>
                                             </div>
                                         </div><br />
-                                        <input type="text" asp-for="File" style="width: 0.01em; height: 0.01em;" readonly="readonly" />
+                                        <input type="text" asp-for="File" style="width: 0.01em; height: 0.01em;" readonly="readonly" class="txtColor" />
                                         <div class="row">
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Attachment<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -240,13 +235,67 @@
         }
     });
 
+    $(".datepicker").datepicker({
+        autoclose: true,
+        orientation: 'bottom',
+        endDate: new Date()
+    });
+    $(".datepickerDeposite").datepicker({
+        autoclose: true,
+        orientation: 'bottom',
+        endDate: new Date()
+    });
+
+    $('#input-group-append-DepositDate').click(function () {
+        $("#DepositDate").focus();
+    });
+
+    $('#input-group-append-ValueClearingDate').click(function () {
+        $("#ValueClearingDate").focus();
+    });
+
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
 
         $('body').on('keyup change', '#Amount', function () {
             $('#AmountInWords').html(inWords($('#Amount').val()));
         });
+
+        $('body').on('change', '#PaymentModeId', function () {
+
+            var value = $(this).val();
+            if (value == "1") {
+                $("#PaymentModeIdTitle").text('Cheque No. *');
+
+            } else if (value == "2") {
+                $("#PaymentModeIdTitle").text('PO No. *');
+
+            } else if (value == "3") {
+                $("#PaymentModeIdTitle").text('RTGS No. *');
+
+            } else if (value == "4") {
+                $("#PaymentModeIdTitle").text('Online Transaction No. *');
+            }
+        });
+
+        var value = $('#PaymentModeId').val();
+        if (value == "1") {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+
+        } else if (value == "2") {
+            $("#PaymentModeIdTitle").text('PO No. *');
+
+        } else if (value == "3") {
+            $("#PaymentModeIdTitle").text('RTGS No. *');
+
+        } else if (value == "4") {
+            $("#PaymentModeIdTitle").text('Online Transaction No. *');
+        } else {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+        }
 
         $('body').on('change', '#ddlCompany', function () {
 
@@ -274,7 +323,6 @@
         //        contentType: "application/json",
         //        dataType: "json",
         //        data: { Id: $(".ddlDepostitorBank").val() },
-        //        async: false,
         //        success: function (response) {
         //            $('#DepositorBankCode').val(response[0]);
         //        },
@@ -288,7 +336,6 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: { id: $(".ddlCompanyBank").val() },
-                async: false,
                 success: function (response) {
                     $('#CompanyBankCode').val(response[0]);
                 },

@@ -27,12 +27,12 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped"   >
                     <thead>
                         <tr>
                             <th>S.No</th>
                             <th>License Name</th>
-                            <th>License Acceptance In Day(s)</th>
+                            @*<th>License Acceptance In Day(s)</th>*@
                             <th>Day(s) Intimate Before Expiry</th>
                             <th>Mandatory</th>
                             <th>Active</th>
@@ -45,7 +45,7 @@
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.LicenseName</td>
-                            <td>@item.LicenseAcceptanceInDay</td>
+                            @*<td>@item.LicenseAcceptanceInDay</td>*@
                             <td>@item.DaysIntimateBeforeExpiry</td>
                             <td>
                                 @if (item.IsMandatory)
@@ -89,6 +89,7 @@
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
+            "order": [],
         });
     });
 
@@ -103,7 +104,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post('@Url.Action("Delete", "License")?GPID=' + e.id, null, function (data) {
+                $.post('@Url.Action("Delete", "License")?DPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
                         setTimeout(function () {

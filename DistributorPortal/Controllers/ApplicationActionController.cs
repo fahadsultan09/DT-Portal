@@ -1,10 +1,10 @@
-﻿using BusinessLogicLayer.Application;
-using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserRights;
+using Models.ViewModel;
 using System;
 using System.Linq;
 using Utility.HelperClasses;
@@ -42,8 +42,10 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult SaveEdit(ApplicationAction model)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -57,27 +59,32 @@ namespace DistributorPortal.Controllers
                         if (model.Id > 0)
                         {
                             _ApplicationActionBLL.UpdateApplicationAction(model);
-                            TempData["Message"] = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ApplicationAction");
                         }
                         else
                         {
                             _ApplicationActionBLL.AddApplicationAction(model);
-                            TempData["Message"] = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "ApplicationAction");
                         }
                     }
                     else
                     {
-                        TempData["Message"] = "ApplicationAction name already exist";
+                        TempData["Message"] = "Application Action name already exist";
                         return PartialView("Add", model);
                     }
                 }
-                return RedirectToAction("List");
+                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                TempData["Message"] = NotificationMessage.ErrorOccurred;
-                return RedirectToAction("List");
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
             }
         }
         [HttpPost]

@@ -45,6 +45,7 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -69,8 +70,8 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "License name already exist";
+                        TempData["Message"] = "License name already exist";
+                        return PartialView("Add", model);
                     }
                 }
                 return Json(new { data = jsonResponse });

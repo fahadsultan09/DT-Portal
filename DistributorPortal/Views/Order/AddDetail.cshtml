@@ -292,7 +292,6 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: { ProductMasterId: $("#ddlProduct").val() },
-                async: false,
                 success: function (response) {
                     if (response.data.Status == false) {
                         $('#PendingQuantity').val('');
@@ -365,7 +364,10 @@
 
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
+
         $("#example3").DataTable();
 
         $('#DI').click();

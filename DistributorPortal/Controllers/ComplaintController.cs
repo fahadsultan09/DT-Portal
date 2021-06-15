@@ -27,11 +27,12 @@ namespace DistributorPortal.Controllers
         private readonly ComplaintBLL _ComplaintBLL;
         private readonly ComplaintSubCategoryBLL _ComplaintSubCategoryBLL;
         private readonly ComplaintUserEmailBLL _ComplaintUserEmailBLL;
+        private readonly NotificationBLL _NotificationBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
         private readonly EmailLogBLL _EmailLogBLL;
-        private readonly IHostingEnvironment _env;
-        public ComplaintController(IUnitOfWork unitOfWork, IConfiguration IConfiguration, Configuration configuration, IHostingEnvironment env)
+        private readonly IWebHostEnvironment _env;
+        public ComplaintController(IUnitOfWork unitOfWork, IConfiguration IConfiguration, Configuration configuration, IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
@@ -39,6 +40,7 @@ namespace DistributorPortal.Controllers
             _Configuration = configuration;
             _ComplaintSubCategoryBLL = new ComplaintSubCategoryBLL(_unitOfWork);
             _ComplaintUserEmailBLL = new ComplaintUserEmailBLL(_unitOfWork);
+            _NotificationBLL = new NotificationBLL(_unitOfWork);
             _env = env;
             _EmailLogBLL = new EmailLogBLL(_unitOfWork, _Configuration);
         }
@@ -89,15 +91,13 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult ComplaintApproval(string DPID)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return View("ComplaintApproval", BindComplaint(id));
         }
-
-        public IActionResult ComplaintView(string DPID)
+        public IActionResult ComplaintView(string DPID, string RedirectURL)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            TempData["RedirectURL"] = RedirectURL;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return View("ComplaintView", BindComplaint(id));
         }
         [HttpPost]
@@ -111,7 +111,9 @@ namespace DistributorPortal.Controllers
                 if (!ModelState.IsValid)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
+                    var message = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    jsonResponse.Message = message;
+                    return Json(new { data = jsonResponse });
                 }
                 else
                 {
@@ -119,13 +121,24 @@ namespace DistributorPortal.Controllers
                     if (model.FormFile != null)
                     {
                         var ext = Path.GetExtension(model.FormFile.FileName).ToLowerInvariant();
-                        if (permittedExtensions.Contains(ext) && model.FormFile.Length < Convert.ToInt64(5242880))
+
+                        if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                         {
-                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
-                            if (tuple.Item1)
-                            {
-                                model.File = tuple.Item2;
-                            }
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileTypeAllowed;
+                            return Json(new { data = jsonResponse });
+                        }
+                        if (model.FormFile.Length >= Convert.ToInt64(_Configuration.FileSize))
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileSizeAllowed;
+                            return Json(new { data = jsonResponse });
+                        }
+
+                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
+                        if (tuple.Item1)
+                        {
+                            model.File = tuple.Item2;
                         }
                     }
                     model.Status = ComplaintStatus.Pending;
@@ -139,7 +152,7 @@ namespace DistributorPortal.Controllers
 
                 //Sending Email
                 string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\NewComplaint.html";
-                EmailUserModel EmailUserModel = new EmailUserModel();
+                ComplaintEmailUserModel EmailUserModel = new ComplaintEmailUserModel();
                 List<User> UserList = new List<User>();
 
                 ComplaintSubCategory complaintSubCategory = _ComplaintSubCategoryBLL.Where(x => x.Id == model.ComplaintSubCategoryId).FirstOrDefault();
@@ -150,15 +163,17 @@ namespace DistributorPortal.Controllers
                     EmailUserModel.ComplaintCategory = complaintSubCategory.ComplaintCategory.ComplaintCategoryName + " - " + complaintSubCategory.ComplaintSubCategoryName;
                 }
                 EmailUserModel.ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate);
-                EmailUserModel.ComplaintNo = string.Format("{0:1000000000}", model.Id);
+                EmailUserModel.ComplaintNo = model.SNo.ToString();
                 EmailUserModel.DistributorName = SessionHelper.LoginUser.Distributor.DistributorName;
-                EmailUserModel.ComplaintDetail = model.Description;
+                EmailUserModel.ComplaintDetail = model.Description.Trim();
+                EmailUserModel.URL = _Configuration.URL + "Other/GetFile?filepath=" + model.File;
+                EmailUserModel.Attachment = model.File != null ? model.File.Split('_')[1] : "";
                 EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MMM/yyyy");
                 EmailUserModel.CreatedBy = SessionHelper.LoginUser.Id;
                 EmailUserModel.Subject = "New Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
                 EmailUserModel.CCEmail = string.Join(',', _ComplaintUserEmailBLL.Where(x => x.ComplaintSubCategoryId == model.ComplaintSubCategoryId && x.EmailType == EmailType.CC).Select(x => x.UserEmailId).ToArray());
 
-                _EmailLogBLL.EmailSend(UserList, EmailUserModel);
+                _EmailLogBLL.ComplaintEmail(UserList, EmailUserModel);
 
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SaveSuccessfully;
@@ -193,12 +208,25 @@ namespace DistributorPortal.Controllers
         public JsonResult UpdateStatus(int Id, ComplaintStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
             try
             {
                 Complaint model = _ComplaintBLL.GetById(Id);
                 if (model != null)
                 {
                     _ComplaintBLL.UpdateStatus(model, Status, Remarks);
+                }
+                jsonResponse.Message = Status == ComplaintStatus.Resolved ? NotificationMessage.Resolved : Status == ComplaintStatus.Approved ? NotificationMessage.ComplaintApproved : NotificationMessage.ComplaintRejected;
+                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                notification.ApplicationPageId = (int)ApplicationPages.Complaint;
+                if (Status != ComplaintStatus.Resolved)
+                {
+                    notification.DistributorId = model.DistributorId;
+                    notification.RequestId = model.SNo;
+                    notification.Status = model.Status.ToString();
+                    notification.Message = jsonResponse.SignalRResponse.Message;
+                    notification.URL = "/Complaint/ComplaintView?DPID=" + EncryptDecrypt.Encrypt(Id.ToString());
+                    _NotificationBLL.Add(notification);
                 }
                 _unitOfWork.Save();
                 jsonResponse.Status = true;

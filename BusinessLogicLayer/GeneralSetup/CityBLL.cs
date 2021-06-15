@@ -31,7 +31,7 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             var item = repository.GetById(module.Id);
             item.CityName = module.CityName.Trim();
-            item.SubRegionId = module.SubRegionId;
+            //item.SubRegionId = module.SubRegionId;
             item.IsActive = module.IsActive;
             repository.Update(item);
             return _unitOfWork.Save() > 0;
@@ -39,7 +39,9 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeleteCity(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
+            item.DeletedBy = SessionHelper.LoginUser.Id;
+            item.DeletedDate = DateTime.Now;
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }
@@ -86,7 +88,7 @@ namespace BusinessLogicLayer.GeneralSetup
         }
         public SelectList DropDownCityList(int? SubRegionId, int? SelectedValue)
         {
-            var selectList = GetAllCity().Where(x => x.IsActive == true && x.SubRegionId == SubRegionId).Select(x => new SelectListItem
+            var selectList = GetAllCity().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CityName.ToString()

@@ -44,7 +44,9 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeleteCompany(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
+            item.DeletedBy = SessionHelper.LoginUser.Id;
+            item.DeletedDate = DateTime.Now;
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }

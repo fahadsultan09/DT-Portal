@@ -27,6 +27,7 @@
                             <th>Approved Date</th>
                             <th>Rejected By</th>
                             <th>Rejected Date</th>
+                            <th>Rejected Remarks</th>
                             <th>Action</th>
                         </tr>
                     <tbody>
@@ -47,13 +48,14 @@
                                     <td>@item.SAPDocumentNumber</td>
                                     <td>@item.SAPFiscalYear</td>
                                     <td>@item.CreatedName</td>
-                                    <td>@item.CreatedDate</td>
+                                    <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
                                     <td>@item.ApprovedName</td>
                                     <td>@item.ApprovedDate</td>
                                     <td>@item.RejectedName</td>
                                     <td>@item.RejectedDate</td>
+                                    <td>@item.Remarks</td>
                                     <td>
-                                        <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                        <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" asp-route-RedirectURL="/Reports/Payment" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>
@@ -71,6 +73,7 @@
 
     $(document).ready(function () {
 
+        $("#example1").dataTable().fnDestroy();
         $('[Id$=example1]').DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,

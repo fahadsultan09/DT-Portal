@@ -4,6 +4,7 @@ namespace Utility.HelperClasses
 {
     public class Configuration
     {
+        public string URL { get; set; }
         public string FileSize { get; set; }
         public string ResetPassword { get; set; }
         public string SAPConnection { get; set; }
@@ -25,11 +26,13 @@ namespace Utility.HelperClasses
         public int Port { get; set; }
         public string ServerAddress { get; set; }
         public string DistributorWiseProduct { get; set; }
-
+        public string POUserName { get; set; }
+        public string POPassword { get; set; }
         public Configuration(IConfiguration configuration)
         {
             if (configuration != null)
             {
+                URL = configuration["Settings:URL"];
                 FileSize = configuration["Settings:FileSize"];
                 ResetPassword = configuration["AppSettings:ResetPassword"];
                 SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
@@ -48,6 +51,8 @@ namespace Utility.HelperClasses
                 Password = configuration["Settings:Password"];
                 ServerAddress = configuration["Settings:ServerAddress"];
                 DistributorWiseProduct = configuration["AppSettings:DistributorWiseProduct"];
+                POUserName = configuration["AppSettings:POUserName"];
+                POPassword = configuration["AppSettings:POPassword"];
                 int.TryParse(configuration["Settings:Port"], out int portnumber);
                 Port = portnumber;
             }

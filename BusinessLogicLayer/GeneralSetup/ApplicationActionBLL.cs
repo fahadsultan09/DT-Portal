@@ -40,7 +40,9 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeleteApplicationAction(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
+            item.CreatedBy = SessionHelper.LoginUser.Id;
+            item.CreatedDate = DateTime.Now; 
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }

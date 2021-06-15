@@ -13,7 +13,6 @@ using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
 using RestSharp;
-using SalesOrder;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +21,7 @@ using System.Threading.Tasks;
 using Utility;
 using Utility.Constant;
 using Utility.HelperClasses;
+using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {
@@ -35,12 +35,11 @@ namespace DistributorPortal.Controllers
         private readonly ProductDetailBLL _productDetailBLL;
         private readonly DistributorLicenseBLL _DistributorLicenseBLL;
         private readonly LicenseControlBLL _licenseControlBLL;
-        private readonly IConfiguration _IConfiguration;
         private readonly ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
+        private readonly IConfiguration _IConfiguration;
         //private readonly IDisPortalPORequest_OutRepository _temp;
-
-        public OrderController(IUnitOfWork unitOfWork, Configuration _configuration, IConfiguration configuration, ICompositeViewEngine viewEngine)
+        public OrderController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration)
         {
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
@@ -50,9 +49,9 @@ namespace DistributorPortal.Controllers
             _OrderValueBLL = new OrderValueBLL(_unitOfWork);
             _DistributorLicenseBLL = new DistributorLicenseBLL(_unitOfWork);
             _licenseControlBLL = new LicenseControlBLL(_unitOfWork);
-            _IConfiguration = configuration;
             _viewEngine = viewEngine;
-            _Configuration = _configuration;
+            _Configuration = configuration;
+            _IConfiguration = iConfiguration;
             //_temp = temp;
         }
         // GET: Order
@@ -63,7 +62,7 @@ namespace DistributorPortal.Controllers
                 DistributorLicense DistributorLicense = _DistributorLicenseBLL.FirstOrDefault(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified);
                 if (DistributorLicense != null)
                 {
-                    int Days = (DistributorLicense.Expiry - DateTime.Now).Days;
+                    int Days = (DistributorLicense.Expiry.Date - DateTime.Now.Date).Days;
                     if (Days <= 0)
                     {
                         ViewBag.Expired = true;
@@ -146,7 +145,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order on hold";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order marked on hold by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order marked on hold by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
 
                 }
                 return Json(jsonResponse);
@@ -172,9 +171,9 @@ namespace DistributorPortal.Controllers
                 if (result > 0)
                 {
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Order Rejected";
+                    jsonResponse.Message = "Order rejected";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                 }
                 return Json(jsonResponse);
             }
@@ -232,10 +231,10 @@ namespace DistributorPortal.Controllers
                 throw;
             }
         }
-        public IActionResult OrderView(string DPID)
+        public IActionResult OrderView(string DPID, string RedirectURL)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            TempData["RedirectURL"] = RedirectURL;
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             ViewBag.View = true;
             OrderMaster model = _OrderBLL.GetOrderMasterById(id);
 
@@ -247,7 +246,6 @@ namespace DistributorPortal.Controllers
             }
             return View(BindOrderMaster(model, id));
         }
-
         [HttpPost]
         public IActionResult ApproveOrder(List<ProductDetail> model, int[] companyId)
         {
@@ -260,7 +258,7 @@ namespace DistributorPortal.Controllers
                 if (SessionHelper.AddProduct.Where(x => x.IsProductSelected == true).Count() == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Atlest select one product.";
+                    jsonResponse.Message = "Select at least one product";
                     return Json(new { data = jsonResponse });
                 }
                 if (companyId.Count() > 0)
@@ -290,7 +288,7 @@ namespace DistributorPortal.Controllers
                             if (!string.IsNullOrEmpty(item.SAPOrderNo))
                             {
                                 product.SAPOrderNumber = item.SAPOrderNo;
-                                product.OrderProductStatus = OrderStatus.NotYetProcess;
+                                product.OrderProductStatus = OrderStatus.InProcess;
                                 _orderDetailBLL.Update(product);
                             }
                         }
@@ -301,15 +299,15 @@ namespace DistributorPortal.Controllers
                     order.ApprovedDate = DateTime.Now;
                     var result = _OrderBLL.Update(order);
                     jsonResponse.Status = result > 0;
-                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
+                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approved order";
                 }
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to approve order";
+                    jsonResponse.Message = "Unable to approved order";
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
-                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + string.Format("{0:1000000000}", order.Id), Message = "Order Has been Approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -341,7 +339,7 @@ namespace DistributorPortal.Controllers
                     list.Add(master);
                     SessionHelper.AddProduct = list;
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Product Added Successfully";
+                    jsonResponse.Message = "Product added successfully";
                     jsonResponse.RedirectURL = string.Empty;
                     jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber).ToList());
                 }
@@ -349,7 +347,7 @@ namespace DistributorPortal.Controllers
             else
             {
                 jsonResponse.Status = false;
-                jsonResponse.Message = "Product Already Exists";
+                jsonResponse.Message = "Product already exists";
                 jsonResponse.RedirectURL = string.Empty;
                 jsonResponse.HtmlString = RenderRazorViewToString("AddToGrid", SessionHelper.AddProduct.OrderByDescending(e => e.OrderNumber).ToList());
             }
@@ -392,7 +390,21 @@ namespace DistributorPortal.Controllers
                         {
                             model.Status = OrderStatus.PendingApproval;
                         }
-                        jsonResponse = _OrderBLL.Save(model, _IConfiguration, Url);
+                        string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
+                        string[] permittedExtensions = Common.permittedExtensions;
+                        if (model.AttachmentFormFile != null)
+                        {
+                            var ext = Path.GetExtension(model.AttachmentFormFile.FileName).ToLowerInvariant();
+                            if (model.AttachmentFormFile.Length >= Convert.ToInt64(_Configuration.FileSize))
+                            {
+                                Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
+                                if (tuple.Item1)
+                                {
+                                    model.Attachment = tuple.Item2;
+                                }
+                            }
+                        }
+                        jsonResponse = _OrderBLL.Save(model, Url);
                     }
                     else
                     {
@@ -448,7 +460,6 @@ namespace DistributorPortal.Controllers
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
             return PartialView("OrderValue", OrderVal);
         }
-
         public ActionResult ApprovedOrderValue(int Product, int Quantity)
         {
             var list = SessionHelper.AddProduct;
@@ -480,7 +491,6 @@ namespace DistributorPortal.Controllers
                 return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).OrderByDescending(x => x.Id).ToList();
             }
         }
-
         public JsonResult CheckProductLicense(int ProductMasterId)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -625,7 +635,6 @@ namespace DistributorPortal.Controllers
             }
         }
 
-
         //public JsonResult CheckProductLicense(int ProductMasterId)
         //{
         //    JsonResponse jsonResponse = new JsonResponse();
@@ -760,35 +769,35 @@ namespace DistributorPortal.Controllers
             }
             SessionHelper.AddProduct = list;
         }
-        public List<ZST_SALE_ORDER_CREATE_IN> PlaceOrderToSAPPO(int OrderId)
-        {
-            List<ZST_SALE_ORDER_CREATE_IN> model = new List<ZST_SALE_ORDER_CREATE_IN>();
-            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0 && e.SAPOrderNumber == null).ToList();
-            var ProductDetail = _productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
-            foreach (var item in orderproduct)
-            {
-                model.Add(new ZST_SALE_ORDER_CREATE_IN()
-                {
-                    SNO = string.Format("{0:1000000000}", item.OrderId),
-                    ITEMNO = "",
-                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
-                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
-                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
-                    PURCH_NO = item.OrderMaster.ReferenceNo,
-                    PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
-                    PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
-                    ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
-                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
-                    BATCH = "",
-                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
-                    REQ_QTY = item.ApprovedQuantity.ToString()
-                });
-            }
-            return model;
-        }
+        //public List<ZST_SALE_ORDER_CREATE_IN> PlaceOrderToSAPPO(int OrderId)
+        //{
+        //    List<ZST_SALE_ORDER_CREATE_IN> model = new List<ZST_SALE_ORDER_CREATE_IN>();
+        //    var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0 && e.SAPOrderNumber == null).ToList();
+        //    var ProductDetail = _productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+        //    foreach (var item in orderproduct)
+        //    {
+        //        model.Add(new ZST_SALE_ORDER_CREATE_IN()
+        //        {
+        //            SNO = string.Format("{0:1000000000}", item.OrderId),
+        //            ITEMNO = "",
+        //            PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
+        //            DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
+        //            SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+        //            DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+        //            DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+        //            PURCH_NO = item.OrderMaster.ReferenceNo,
+        //            PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+        //            PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+        //            ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
+        //            MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+        //            PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+        //            STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+        //            BATCH = "",
+        //            ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+        //            REQ_QTY = item.ApprovedQuantity.ToString()
+        //        });
+        //    }
+        //    return model;
+        //}
     }
 }

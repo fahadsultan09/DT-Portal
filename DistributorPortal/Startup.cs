@@ -2,6 +2,8 @@ using DataAccessLayer.WorkProcess;
 using DistributorPortal.SignalRNotification;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +16,7 @@ using Rotativa.AspNetCore;
 using SapNwRfc.Pooling;
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Http.Features;
 using Utility.HelperClasses;
-using IComponent = Microsoft.AspNetCore.Components.IComponent;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace DistributorPortal
@@ -31,6 +31,11 @@ namespace DistributorPortal
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+                options.MultipartBodyLengthLimit = 109255200;
+            });
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(option =>
@@ -48,7 +53,8 @@ namespace DistributorPortal
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
-                options.LoginPath = "/Login/Index";
+                options.LoginPath = new PathString("/Login/Index");
+                options.LogoutPath = "/Login/Logout";
                 options.AccessDeniedPath = "/Login/Index";
                 options.Cookie.Name = "DistributorPortalSessionExpire";
             });
@@ -119,10 +125,9 @@ namespace DistributorPortal
                     context.Request.Path = "/Login/Index";
                     await next();
                 }
-            });
+            }); 
             app.UseStaticFiles();
             app.UseSession();
-            app.UseAuthorization();
             app.UseSignalR(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chatHub");

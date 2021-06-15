@@ -29,11 +29,13 @@ namespace SAPConfigurationAPI.Controllers
                     ProductName = table[i].GetString("MVGR4T"),
                     ProductDescription = table[i].GetString("MAKTX"),
                     ProductPrice = table[i].GetDouble("KBETR"),
-                    CartonSize = table[i].GetString("Carton"),
+                    CartonSize = table[i].GetString("CARTON"),
                     Rate = table[i].GetDouble("KBETR"),
                     Discount = table[i].GetDouble("DISCOUNT"),
                     LicenseType = table[i].GetString("MTPOS"),
-                    SFSize = table[i].GetString("SF")
+                    SFSize = table[i].GetString("SF"),
+                    Strength = table[i].GetString("WRKST"),
+                    //ProductOrigin = table[i].GetString(""),
                 });
             }
             return products;
@@ -43,24 +45,30 @@ namespace SAPConfigurationAPI.Controllers
         [Route("api/Product/GetProductWiseDiscount")]
         public List<Product> GetProductWiseDiscount(string DistributorId)
         {
-            var table = connectivity.GetDistributorWiseProductDiscount("ZWAS_IT_DP_PRICE_DISCOUNT", DistributorId);
-            List<Product> products = new List<Product>();
-            for (int i = 0; i < table.RowCount; i++)
+            try
             {
-                products.Add(new Product()
+                var table = connectivity.GetDistributorWiseProductDiscount("ZWAS_IT_DP_PRICE_DISCOUNT", DistributorId);
+                List<Product> products = new List<Product>();
+                for (int i = 0; i < table.RowCount; i++)
                 {
-                    SAPProductCode = table[i].GetString("MATNR").TrimStart(new char[] { '0' }),
-                    PackSize = table[i].GetString("MVGR2T"),
-                    ProductName = table[i].GetString("MVGR4T"),
-                    ProductDescription = table[i].GetString("MAKTX"),
-                    ProductPrice = table[i].GetDouble("KBETR"),
-                    CartonSize = table[i].GetString("Carton"),
-                    Rate = table[i].GetDouble("KBETR"),
-                    Discount = table[i].GetDouble("DISCOUNT"),
-                    LicenseType = table[i].GetString("MTPOS")
-                });
+                    products.Add(new Product()
+                    {
+                        SAPProductCode = table[i].GetString("MATNR").TrimStart(new char[] { '0' }),
+                        PackSize = table[i].GetString("MVGR2T"),
+                        ProductDescription = table[i].GetString("MAKTX"),
+                        ProductPrice = table[i].GetDouble("KBETR"),
+                        CartonSize = table[i].GetString("CARTON"),
+                        Rate = table[i].GetDouble("KBETR"),
+                        Discount = table[i].GetDouble("DISCOUNT"),
+                        LicenseType = table[i].GetString("MTPOS")
+                    });
+                }
+                return products;
             }
-            return products;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

@@ -7,16 +7,17 @@
                 <h2 class="card-title">License List</h2>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped"  >
                     <thead>
                         <tr>
                             <th>Distributor</th>
                             <th>License</th>
                             <th>Type</th>
-                            <th>RequestType</th>
-                            <th>Attachment</th>
+                            <th>Request Type</th>
+                            <th width="15%">Attachment</th>
                             <th>Issue</th>
                             <th>Expiry</th>
+                            <th>Uploaded Date</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -28,12 +29,13 @@
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.LicenseControl.LicenseName</td>
                                 <td>@item.Type</td>
-                                <td>@item.RequestType</td>
+                                <td>@Html.DisplayFor(x => item.RequestType)</td>
                                 <td>
                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ? item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
                                 </td>
                                 <td>@item.IssueDate.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Expiry.ToString("dd/MM/yyyy")</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
                                 <td>
                                     @if (item.Status == LicenseStatus.Verified)
                                     {
@@ -48,9 +50,13 @@
                                         <span class="badge badge-danger">@item.Status</span>
                                     }
                                 </td>
-                                <td>
-                                    <select asp-for="@item.Status" asp-items="Html.GetEnumSelectList<LicenseStatus>()" value="(this.options[this.selectedIndex].text" onchange="UpdateStatus(this.options[this.selectedIndex].text, 'DistributorLicense', 'UpdateStatus', @item.Id);" disabled="@(item.Status != LicenseStatus.Submitted)" class="form-control">
-                                    </select>
+                                <td class="p-1">
+                                    <a onclick="UpdateStatus('Verified', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Approve" class="btn btn-success btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </a>
+                                    <a onclick="UpdateStatus('Rejected', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Reject" class="btn btn-danger btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                        <i class="fas fa-thumbs-down"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
@@ -64,6 +70,7 @@
 
     $(document).ready(function () {
 
+        $("#example1").dataTable().fnDestroy();
         $("#example1").DataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
@@ -71,8 +78,9 @@
             "order": [],
         });
 
-        $('.select2').select2();
-
+        $('.select2').select2({
+            width: '100%',
+        });
     });
 
 </script>

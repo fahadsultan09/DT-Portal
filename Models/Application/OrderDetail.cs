@@ -1,8 +1,5 @@
 ﻿using Models.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Utility;
 
 namespace Models.Application
@@ -23,7 +20,12 @@ namespace Models.Application
         public bool IsProductSelected { get; set; }
         public double ProductPrice { get; set; }
         public double Discount { get; set; }
+        public double QuanityCarton { get; set; }
+        public double QuanitySF { get; set; }
+        public double QuanityLoose { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }
+        [NotMapped]
+        public ProductDetail ProductDetail { get; set; }
     }
 }

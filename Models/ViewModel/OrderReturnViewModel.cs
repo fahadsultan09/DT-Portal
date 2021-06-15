@@ -10,6 +10,7 @@ namespace Models.ViewModel
     {
         public List<OrderReturnMaster> OrderReturnMaster { get; set; }
         public int? OrderReturnNo { get; set; }
+        public string TRNo { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public OrderReturnStatus? Status { get; set; }

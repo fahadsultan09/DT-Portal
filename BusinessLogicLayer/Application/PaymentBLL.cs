@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(PaymentMaster module)
         {
             var item = _repository.GetById(module.Id);
-            if (_repository.GetAllList().Any())
+            if (_repository.GetAllList().Count() > 1)
             {
                 item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
             }
@@ -216,7 +216,8 @@ namespace BusinessLogicLayer.Application
                              ApprovedDate = x.ApprovedDate,
                              RejectedBy = x.RejectedBy,
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
-                             RejectedDate = x.RejectedDate
+                             RejectedDate = x.RejectedDate,
+                             Remarks = x.Remarks,
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
@@ -278,6 +279,10 @@ namespace BusinessLogicLayer.Application
             {
                 viewModel.SAMIUnConfirmedPayment = Where(x => x.CompanyId == sami && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
+            else
+            {
+                viewModel.SAMIUnConfirmedPayment = Where(x => x.CompanyId == sami && x.DistributorId == DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
             viewModel.SAMINetPayable = viewModel.SAMITotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment <= 0 ? 0 : viewModel.SAMITotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
@@ -290,6 +295,10 @@ namespace BusinessLogicLayer.Application
             {
                 viewModel.HealthTekUnConfirmedPayment = Where(x => x.CompanyId == HealthTek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
+            else
+            {
+                viewModel.HealthTekUnConfirmedPayment = Where(x => x.CompanyId == HealthTek && x.DistributorId == DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
             viewModel.HealthTekNetPayable = viewModel.HealthTekTotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment <= 0 ? 0 : viewModel.HealthTekTotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
@@ -301,6 +310,10 @@ namespace BusinessLogicLayer.Application
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 viewModel.PhytekUnConfirmedPayment = Where(x => x.CompanyId == Phytek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+            }
+            else
+            {
+                viewModel.PhytekUnConfirmedPayment = Where(x => x.CompanyId == Phytek && x.DistributorId == DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             viewModel.PhytekNetPayable = viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;

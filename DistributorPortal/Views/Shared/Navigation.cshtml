@@ -8,7 +8,7 @@
     </ul>
     @if (SessionHelper.LoginUser.IsDistributor)
     {
-        <span style="width:95.5%; cursor: pointer;" class="text-danger" id="disclaimer">
+        <span style="width:95%; cursor: pointer;" class="text-danger" id="disclaimer">
             <marquee direction="left" scrollamount="3">
                 All information or data contained on this web portal is limited, unconfirmed and is not intended to be relied upon. The Company do not endorse the accuracy or reliability of any information or statement and shall not be liable to any user or anyone else for any inaccuracy, error, disclosure, omission, interruption, failure, deletion, defect, alteration of or use of any content or record herein or for any loss or damage suffered by any person or organization arising from matters or information expressed on this web portal.
                 Information, is intended only for the use of the individual or entity to which it is given access and may contain information that is confidential and subject to copyright. All users are self-responsible to safeguard their system access login and password credentials to protect unauthorized access to their account information.
@@ -17,14 +17,30 @@
             </marquee>
         </span>
     }
-
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto @(SessionHelper.LoginUser.IsDistributor ? null : "d-none")">
         <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
+            <a class="nav-link" data-toggle="dropdown" id="NotificationCount">
                 <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
+                <span class="badge badge-warning navbar-badge" id="NotificationCountValue">@(SessionHelper.Notification != null ? SessionHelper.Notification.Where(x => !x.IsView).Count().ToString() : "")</span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="OrderNum">
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right scrollmenu" id="AppendNotification" style="height: 600px;">
+                @if (SessionHelper.Notification != null)
+                {
+                    @foreach (var item in SessionHelper.Notification)
+                    {
+
+                        <a href="@(SessionHelper.URL + item.URL)" class="dropdown-item" style="background-color:@(item.Status == "Verified" ||item.Status ==  "Approved" ||item.Status ==  "InProcess" || item.Status == "Received" || item.Status == "PartiallyApproved" ? "#28a745cc" : item.Status == "Rejected" || item.Status == "Reject" ? "#dc3545cc" : "#11aabbcc"); color: #fff;">
+                            <div class="media">
+                                <div class="media-body">
+                                    <p class="dropdown-item-title">Request #: @item.RequestId</p>
+                                    <p class="text-sm">@item.Message</p>
+                                    <p><i class="far fa-clock mr-1"></i>@item.RelativeTime</p>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="p-0 m-0" />
+                    }
+                }
             </div>
         </li>
     </ul>
@@ -33,21 +49,22 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-light-blue elevation-4">
     <!-- Brand Logo -->
-    <a class="brand-link">
+
+    <a class="brand-link pl-0">
         <img src="~/Images/favicon.png" alt="AdminLTE Logo" class="brand-image">
-        <span class="brand-text font-weight-bold">SAMI</span><span class="brand-text font-weight-light">&nbsp;Pharmaceuticals</span>
+        <span class="brand-text">SAMI Pharmaceuticals (Pvt.) Ltd.<sup>®</sup></span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-2 pb-2 mb-2 d-flex">
-            <div class="image">
-                <img src="~/lib/dist/img/DefaultImage.png" class="img-circle elevation-1" alt="User Image">
-            </div>
-            <div class="info">
+        <div class="col-lg-12 col-md-12 p-2">
+            @*<div class="image">
+                    <img src="~/lib/dist/img/DefaultImage.png" class="img-circle elevation-1" alt="User Image">
+                </div>*@
+            <div class="info" style="word-break: break-all;">
                 <h5>@SessionHelper.LoginUser.FirstName @SessionHelper.LoginUser.LastName</h5>
-                <span>@SessionHelper.LoginUser.Role.RoleName</span>
+                <span  style="word-break: break-all;"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></span>
             </div>
         </div>
 
@@ -65,7 +82,7 @@
 
                         if (applicationPages.Count() > 0)
                         {
-                            <li class="nav-item has-treeview @(@module.ApplicationPage.ApplicationModule.ModuleName == "Home" ? "menu-open" : null)">
+                            <li class="nav-item has-treeview">
                                 <a href="#" class="nav-link active">
                                     <i class="@module.ApplicationPage.ApplicationModule.ModuleIcon"></i>
                                     <p>@module.ApplicationPage.ApplicationModule.ModuleName<i class="right fas fa-angle-left"></i></p>
@@ -85,7 +102,7 @@
                         }
                         else
                         {
-                            <li class="nav-item has-treeview active">
+                            <li class="nav-item has-treeview">
                                 <a href="@Url.Content(applicationPages[0].ApplicationPage.PageURL)" class="nav-link">
                                     <span class="far fa-circle nav-icon"></span>@applicationPages[0].ApplicationPage.PageTitle
                                 </a>
@@ -93,7 +110,7 @@
                         }
                     }
                 }
-                <li class="nav-item has-treeview">
+                <li class="nav-item has-treeview" style="word-break: break-all;">
                     <a href="@Url.Action("Logout","Login")" class="nav-link">
                         <i class="fas fa-arrow-circle-right"></i>
                         Log out
@@ -135,3 +152,13 @@
         </div>
     </div>
 </div>
+<script>
+    $('body').on('click', '#NotificationCount', function () {
+        debugger
+        $('#NotificationCountValue').innerHTML = '0';
+        var url = '@Url.Action("UpdateCount", "Notification")';
+        $.get(url, function (context) {
+            }).done(function (context) {
+            });
+    });
+</script>

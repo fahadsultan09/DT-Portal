@@ -23,6 +23,7 @@
                         <tr>
                             <th></th>
                             <th>Order Return No</th>
+                            <th>TR No</th>
                             @if (!SessionHelper.LoginUser.IsDistributor)
                             {
                                 <th>Distributor Name</th>
@@ -42,17 +43,18 @@
                                 <tr>
                                     <td class="details-control"><input class="hdnGatePassMasterId" type="hidden" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" /></td>
                                     <td>@item.SNo</td>
+                                    <td>@item.TRNo</td>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
                                         <td>@item.Distributor.DistributorName</td>
                                     }
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.CreatedName</td>
-                                    <td>@item.CreatedDate</td>
+                                    <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
                                     <td>@item.ReceivedName</td>
                                     <td>@item.ReceivedDate</td>
-                                    <td>
-                                        <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                    <td class="p-1">
+                                        <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" asp-route-RedirectURL="/Reports/OrderReturn" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a onclick="Print('/Reports/Print?', '@ApplicationPages.OrderReturn', '@EncryptDecrypt.Encrypt(item.Id.ToString())', '@item.OrderReturnReasonId');" class="btn btn-success btn-sm">
@@ -138,16 +140,17 @@
 
         // Add event listener for opening and closing details
         $('#example1 tbody').on('click', 'td.details-control', function () {
-            debugger;
+             ;
             var tr = $(this).closest('tr');
             var row = table.row(tr);
             var OrderReturnId = $(row.data()[0]).val();
+            BlockUI();
             $.ajax({
                 type: 'GET',
                 url: '/Reports/GetOrderReturnDetailList',
                 data: { DPID: OrderReturnId },
-                async: false,
                 success: function (response) {
+                    UnBlockUI();
                     $('#modal-detail').html(response);
                     $('#modal-default').modal('toggle');
                     $('#modal-default').modal('show');

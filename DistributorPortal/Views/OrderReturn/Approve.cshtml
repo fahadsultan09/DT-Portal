@@ -26,9 +26,8 @@
             <form asp-controller="OrderReturn"
                   asp-action="ApprovedQuantity"
                   id="frmOrderReturnMaster"
-                  data-ajax-begin="LaddaBegin"
+                  data-ajax-begin="Begin"
                   data-ajax-success="OnSuccess"
-                  data-ajax-complete="Complete"
                   data-ajax="true"
                   data-ajax-method="POST">
                 <input type="hidden" asp-for="Id" value="@Model.Id" />
@@ -73,40 +72,52 @@
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Transporter:</h6>
-                                                <span asp-for="Transporter" class="form-control">@Model.Transporter</span>
+                                                <p asp-for="Transporter">@Model.Transporter</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Number:</h6>
-                                                <span asp-for="TRNo" class="form-control">@Model.TRNo</span>
+                                                <p asp-for="TRNo">@Model.TRNo</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Date:</h6>
-                                                <span asp-for="TRDate" class="form-control">@Model.TRDate.ToShortDateString()</span>
+                                                <span asp-for="TRDate" class="form-control">@Model.TRDate.ToString("dd/MM/yyyy")</span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note No:</h6>
-                                                <span asp-for="DebitNoteNo" class="form-control">@Model.DebitNoteNo</span>
+                                                <p asp-for="DebitNoteNo">@Model.DebitNoteNo</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note Date:</h6>
-                                                <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToShortDateString()</span>
+                                                <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToString("dd/MM/yyyy")</span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Return Reason:</h6>
                                                 <span asp-for="OrderReturnReason.ReasonName" class="form-control">@Model.OrderReturnReason.ReasonName</span>
                                             </div>
-                                        </div><br />
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h6>Attachment:</h6>
+                                                <span class="caption">
+                                                    <strong>
+                                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                                    </strong>
+                                                </span>
+                                            </div>
+                                        </div>
                                         <div class="row">
                                             <div class="col-6">
                                                 <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp;</label><strong><span id="TotalValue">@Model.TotalValue.ToString("#,##0.00")</span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" id="btnReject" disabled="@btnDisable" name="btnSubmit" class="ladda-button btn btn-danger float-right mr-3">
+                                                <button type="button" onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-danger float-right mr-3">
                                                     Reject
                                                 </button>
-                                                <button type="submit" disabled="@btnDisable" onclick="return SubmitForm();" id="btnReceived" name="btnSubmit" class="ladda-button btn btn-success mr-1 float-right">
+                                                <button type="submit" disabled="@btnDisable" onclick="return SubmitForm();" id="btnReceived" name="btnSubmit" value="@OrderReturnStatus.Received" class="btn btn-success mr-1 float-right">
                                                     Received
                                                 </button>
+                                                <a asp-controller="OrderReturn" asp-action="Index" class="btn btn-secondary float-right mr-3">Back</a>
                                             </div>
                                         </div>
                                     </div>
@@ -121,7 +132,7 @@
                                         <h3 class="card-title">Return Products</h3>
                                         <span class="float-right"><strong>Return Order No: @Model.SNo</strong></span>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" id="frmOrderDetails">
 
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -133,12 +144,12 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:</h6>
-                                                <input type="number" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" />
+                                                <input type="text" name="Quantity" id="Quantity" placeholder="Enter Quantity" min="0" max="9999999999" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
                                                 <span id="ErrorQuantity" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>MRP:</h6>
-                                                <input type="number" name="MRP" id="MRP" placeholder="Enter MRP" class="form-control" />
+                                                <input type="text" name="MRP" id="MRP" placeholder="Enter MRP" min="0" max="9999999999" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
                                                 <span id="ErrorMRP" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
@@ -147,7 +158,7 @@
                                                 <span id="ErrorBatchNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Earlier Intimation:</h6>
+                                                <h6>Intimation Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" id="IntimationDate" name="IntimationDate" value="" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
@@ -182,7 +193,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Manufacture Date:</h6>
+                                                <h6>Mfg. Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" id="ManufactureDate" readonly="readonly" name="ManufactureDate" value="" data-target="#ManufactureDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ManufactureDate" data-toggle="datepicker">
@@ -197,7 +208,7 @@
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                                                 <h6></h6>
-                                                <button type="button" id="AddProducts" onclick="return AddToGrid();" class="ladda-button btn btn-primary float-right" style="margin-top: 20px;">
+                                                <button type="button" id="AddProducts" onclick="return AddToGrid();" class="btn btn-primary float-right" style="margin-top: 20px;">
                                                     Add
                                                 </button>
                                             </div>
@@ -220,7 +231,17 @@
 
 <script>
 
+    $(".datepicker").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'auto',
+    });
+
     $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '100%',
+        });
 
         $('#frm-example').on('submit', function (e) {
             var form = this;
@@ -246,12 +267,6 @@
         });
 
     });
-
-    function LaddaBegin() {
-        BlockUI();
-        Ladda.create($("#btnReject", this)[0]).start();
-        Ladda.create($("#btnReceived", this)[0]).start();
-    }
 
     function SubmitForm() {
 
@@ -323,24 +338,28 @@
             begin: function () {
                 BlockUI();
             },
-            success: function (response) {
-                debugger;
-                $('#ProductGrid').html(response.data.HtmlString.Result);
+            success: function (data) {
+                debugger
+                if (data.data.Status) {
+                    $('#frmOrderDetails input[type="text"],input[type="date"],input[type="number"]').val('');
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.data.Message
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: data.data.Message
+                    });
+
+                }
+                $('#ProductGrid').html(data.data.HtmlString.Result);
                 $("#example").dataTable().fnDestroy();
-                table = $("#example").DataTable({
-                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                table =  $("#example").DataTable({
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     "responsive": true,
                     "autoWidth": false,
                     "order": [],
-                    "scrollX": true,
-                    "sScrollXInner": "200%",
-                    "columnDefs": [{
-                        "targets": 0,
-                        "searchable": false,
-                        "orderable": false,
-                        "className": "dt-body-center"
-                    }],
-                    'order': [1, 'asc']
                 });
 
                 $('#example-select-all').on('click', function () {
@@ -384,7 +403,6 @@
                     });
 
                     // FOR TESTING ONLY
-
                     // Output form data to a console
                     $('#example-console').text($(form).serialize());
                     console.log("Form submission", $(form).serialize());
@@ -394,10 +412,55 @@
                 });
             },
             complete: function (response) {
+                debugger
                 UnBlockUI();
             }
         });
     }
+
+        function Reject(Id) {
+
+            Swal.fire({
+            title: 'Enter Comment before Reject',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Reject',
+            showLoaderOnConfirm: true,
+            preConfirm: (Comments) => {
+                if (Comments == "") {
+                    Swal.showValidationMessage(
+                        `Request failed: Enter Comments`
+                    )
+                }
+            },
+                allowOutsideClick: () => !Swal.isLoading(),
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to write something!'
+                    }
+                    if (value.length > 255) {
+                        return 'You have exceeded 255 characters';
+                    }
+                }
+        }).then((result) => {
+            if (result.value != null || result.value != undefined) {
+                Begin()
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Reject", "OrderReturn")',
+                    data: { 'DPID': Id, 'Comments': result.value },
+                    cache: false,
+                    success: function (data) {
+                        OnSuccess(data);
+                    }
+                });
+            }
+        })
+    }
+
 </script>
 
 

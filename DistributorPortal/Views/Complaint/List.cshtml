@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<Complaint>
+@{
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Complaint").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool add = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Complaint").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+}
 
 <div class="row">
     <div class="col-12">
@@ -11,7 +15,7 @@
                       method="GET">
                     @if (SessionHelper.LoginUser.IsDistributor == true)
                     {
-                        <button type="submit" class="btn btn-info float-right">Add</button>
+                        <button type="submit" class="btn btn-info float-right @(add ? null : "d-none")">Add</button>
                     }
                 </form>
             </div>
@@ -46,7 +50,7 @@
                                     {
                                         <span class="badge badge-success float-left" style="margin-left:5px;">@item.Status</span>
                                     }
-                                    else if (item.Status == ComplaintStatus.Pending)
+                                    else if (item.Status == ComplaintStatus.Rejected)
                                     {
                                         <span class="badge badge-danger float-left" style="margin-left:5px;">@item.Status</span>
                                     }
@@ -55,11 +59,17 @@
                                         <span class="badge badge-info float-left" style="margin-left:5px;">@item.Status</span>
                                     }
                                 </td>
-                                <td>@item.CreatedDate.ToString("dd/MM/yyyy hh:mm:ss")</td>
-                                <td>
-                                    <a asp-controller="Complaint" asp-action="ComplaintApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
+                                <td class="p-1">
+                                    <a asp-controller="Complaint" asp-action="ComplaintView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="View" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @if ((item.Status == ComplaintStatus.Pending || item.Status == ComplaintStatus.Resolved) && !SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        <a asp-controller="Complaint" asp-action="ComplaintApproval" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm @(add ? null : "d-none")">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -80,8 +90,9 @@
             "order": [],
         });
 
-        $('.select2').select2();
-
+        $('.select2').select2({
+            width: '100%',
+        });
     });
 
 </script>

@@ -12,56 +12,80 @@ namespace BusinessLogicLayer.Application
     public class UserSystemInfoBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IGenericRepository<UserSystemInfo> repository;
+        private readonly IGenericRepository<UserSystemInfo> _repository;
         public UserSystemInfoBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            repository = _unitOfWork.GenericRepository<UserSystemInfo>();
+            _repository = _unitOfWork.GenericRepository<UserSystemInfo>();
         }
         public void Add(UserSystemInfo module)
         {
-            foreach (var item in module.UserSystemInfoDetail)
+            if (CheckMACAddress(module.Id, module.MACAddress))
             {
                 module.Id = 0;
-                module.MACAddress = item.MACAddress;
+                module.MACAddress = module.MACAddress;
                 module.IsDeleted = false;
+                module.IsActive = module.IsActive;
                 module.CreatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
                 module.CreatedDate = DateTime.Now;
-                repository.Insert(module);
-                _unitOfWork.Save();
+                _repository.Insert(module);
             }
+            else
+            {
+                module.IsDeleted = false;
+                _repository.Update(module);
+            }
+            _unitOfWork.Save();
         }
-        public bool Update(UserSystemInfo module)
+        public void Update(UserSystemInfo module)
         {
-            var item = repository.GetById(module.Id);
+            var item = _repository.GetById(module.Id);
             item.ProcessorId = module.ProcessorId;
             item.HostName = module.HostName;
+            item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            repository.Update(item);
-            return _unitOfWork.Save() > 0;
+            _repository.Update(item);
+            _unitOfWork.Save();
         }
-        public bool Delete(int id)
+        public void Delete(int id)
         {
-            var item = repository.GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
             item.DeletedBy = SessionHelper.LoginUser.Id;
             item.DeletedDate = DateTime.Now;
-            repository.Delete(item);
-            return _unitOfWork.Save() > 0;
+            _repository.Delete(item);
+        }
+        public void DeleteRange(List<UserSystemInfo> list)
+        {
+            _repository.DeleteRange(list);
         }
         public UserSystemInfo GetById(int id)
         {
-            return repository.GetById(id);
+            return _repository.GetById(id);
         }
         public List<UserSystemInfo> GetAllUserSystemInfo()
         {
-            return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public bool Check(int Id, string MACAddress)
         {
             int? UserSystemInfoId = Id == 0 ? null : (int?)Id;
-            var model = _unitOfWork.GenericRepository<UserSystemInfo>().GetAllList().ToList().Where(x => x.IsDeleted == false && x.Id != UserSystemInfoId || (UserSystemInfoId == null && x.Id == null)).FirstOrDefault();
+            var model = _repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.Id != UserSystemInfoId || (UserSystemInfoId == null && x.Id == null)).FirstOrDefault();
+            if (model != null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool CheckMACAddress(int Id, string MACAddress)
+        {
+            int? id = Id == 0 ? null : (int?)Id;
+            var model = _repository.GetAllList().ToList().Where(x => x.IsDeleted == false && x.MACAddress == MACAddress.Trim() && x.Id != id || (id == null && x.Id == null)).FirstOrDefault();
+
             if (model != null)
             {
                 return false;
@@ -73,11 +97,11 @@ namespace BusinessLogicLayer.Application
         }
         public UserSystemInfo FirstOrDefault(Expression<Func<UserSystemInfo, bool>> predicate)
         {
-            return repository.FirstOrDefault(predicate);
+            return _repository.FirstOrDefault(predicate);
         }
         public List<UserSystemInfo> Where(Expression<Func<UserSystemInfo, bool>> predicate)
         {
-            return repository.Where(predicate);
+            return _repository.Where(predicate);
         }
     }
 }

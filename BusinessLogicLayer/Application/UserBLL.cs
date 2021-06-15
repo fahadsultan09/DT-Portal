@@ -35,6 +35,7 @@ namespace BusinessLogicLayer.Application
         public bool UpdateUser(User module)
         {
             var item = repository.GetById(module.Id);
+            item.AccessToken = module.AccessToken;
             item.UserName = module.UserName.Trim();
             item.FirstName = module.FirstName.Trim();
             item.LastName = module.LastName.Trim();
@@ -45,8 +46,10 @@ namespace BusinessLogicLayer.Application
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.RegisteredAddress = module.RegisteredAddress;
+            item.DesignationId = module.DesignationId;
+            item.CityId = module.CityId;
             item.IsActive = module.IsActive;
-            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
             return _unitOfWork.Save() > 0;
@@ -102,7 +105,7 @@ namespace BusinessLogicLayer.Application
         }
         public SelectList DropDownUserList(int? SelectedValue)
         {
-            var selectList = GetAllUser().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllUser().Where(x => !x.IsDeleted && x.IsActive && !x.IsDistributor).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.Email.Trim()

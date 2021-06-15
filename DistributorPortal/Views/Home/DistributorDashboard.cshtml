@@ -2,6 +2,27 @@
 @{
     ViewData["Title"] = "Home";
     int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
+    double value1 = 0;
+    double value2 = 0;
+    if (SessionHelper.DistributorBalance != null)
+    {
+        if (SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek)
+        {
+            value1 = SessionHelper.DistributorBalance.SAMI;
+        }
+        else
+        {
+            value2 = SessionHelper.DistributorBalance.HealthTek;
+        }
+        if (SessionHelper.DistributorBalance.HealthTek > SessionHelper.DistributorBalance.SAMI)
+        {
+            value1 = SessionHelper.DistributorBalance.SAMI;
+        }
+        else
+        {
+            value2 = SessionHelper.DistributorBalance.HealthTek;
+        }
+    }
 }
 
 <style type="text/css">
@@ -9,9 +30,6 @@
         min-height: 400px;
         margin-bottom: 50px;
         clear: both;
-    }
-    .alert-dismissible{
-        height: 95px
     }
 </style>
 
@@ -39,7 +57,7 @@
                     <div class="info-box">
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-truck"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Total in Process Orders</span>
+                            <span>Total in Process Orders</span>
                             <span class="info-box-number">@Model.InProcessOrderCount</span>
                             <span class="info-box-number">Order Value: @Model.InProcessOrderValue</span>
                         </div>
@@ -52,7 +70,7 @@
                         </span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Unverified Payments</span>
+                            <span>Total Unverified Payments</span>
                             <span class="info-box-number">@Model.UnverifiedPaymentAllCount</span>
                             <span class="info-box-number">Amount: @Model.UnverifiedPaymentAll</span>
                         </div>
@@ -65,7 +83,7 @@
                         </span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Return Orders</span>
+                            <span>Return Orders</span>
                             <span class="info-box-number">@Model.ReturnOrder</span>
                         </div>
                     </div>
@@ -77,7 +95,7 @@
                         <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clipboard-list"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Complaints</span>
+                            <span>Complaints</span>
                             <span class="info-box-number">@Model.Complaint</span>
                         </div>
                     </div>
@@ -88,7 +106,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Value Comparision - Last 12 Months</h3>
+                                <h3 class="card-title">Order Value Comparison - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="PaymentWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -103,24 +121,16 @@
                                 Policies
                             </h3>
                         </div>
-                        <!-- /.card-header -->
-                        <div class="card-body scrollmenu">                           
-                            <div class="alert alert-info alert-dismissible">
-                                <h5><i class="icon fas fa-info"></i> Leakage and breakage Policy:</h5>
-                                <p>Claim(s) for replacement of damaged goods shall only be entertained if lodged within 30 days from the date of invoice.</p>
-                            </div>
-                            <div class="alert alert-warning alert-dismissible">
-                                <h5><i class="icon fas fa-exclamation-triangle"></i> Expiry Policy:</h5>
-                                <p>Intimation should reach to H/O before 6 months to take necessary action.</p>
-                            </div>
-                            <div class="alert alert-success alert-dismissible">
-                                <h5><i class="icon fas fa-check"></i> Payment Policy:</h5>
-                                <p>100% advance payment should be required at the time of placing order for uninterrupted supply.</p>
-                            </div>
+                        <div class="card-body scrollmenu">
+                            @foreach (var item in Model.PolicyList.OrderBy(x => x.Sort))
+                            {
+                                <div class="@item.Style">
+                                    <h5><i class="@item.Icon"></i> @item.Title</h5>
+                                    <p>@item.Message</p>
+                                </div>
+                            }
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
                 </div>
             </div>
             <div class="row">
@@ -128,7 +138,7 @@
                     <div class="card card-primary">
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Count Comparision - Last 12 Months</h3>
+                                <h3 class="card-title">Order Count Comparison - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="OrderWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -156,13 +166,18 @@
                             </div>
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.SAMI.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.SAMI" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    @if (SessionHelper.DistributorBalance != null)
+                                    {
+                                        <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.SAMI.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.SAMI" data-min="@value1" data-max="@value2" data-width="90" data-height="90" data-fgColor="#39CCCC">
 
+                                    }
                                     <div class="knob-label">SAMI Balance</div>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.HealthTek.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.HealthTek" data-min="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-max="@(SessionHelper.DistributorBalance.SAMI + SessionHelper.DistributorBalance.HealthTek)" data-width="90" data-height="90" data-fgColor="#39CCCC">
-
+                                    @if (SessionHelper.DistributorBalance != null)
+                                    {
+                                        <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.HealthTek.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.HealthTek" data-min="@value1" data-max="@value2" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    }
                                     <div class="knob-label">Healthtek Balance</div>
                                 </div>
                             </div>
@@ -177,16 +192,19 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <!-- ./col -->
-                                <div class="col-4 text-center">
+                                <div class="col-3 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Pending Approval</div>
                                 </div>
-                                <div class="col-4 text-center">
+                                <div class="col-3 text-center">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Approved" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                    <div class="knob-label">Approved</div>
+                                </div>
+                                <div class="col-3 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
                                     <div class="knob-label">In Process</div>
                                 </div>
-                                <div class="col-4 text-center">
+                                <div class="col-3 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Partially Processed</div>
                                 </div>
@@ -263,11 +281,11 @@
                 localStorage.setItem('disclaimer', "true");
             }
 
-              GetDistributorPaymentWiseComparision();
-              GetDistributorOrderWiseComparision();
-              GetDistributorPaymentWiseStatus();
-              GetDistributorRecentPaymentStatus();
-              GetDistributorPendingQuantity();
+            GetDistributorPendingQuantity();
+            GetDistributorPaymentWiseComparision();
+            GetDistributorOrderWiseComparision();
+            GetDistributorPaymentWiseStatus();
+            GetDistributorRecentPaymentStatus();
         });
 
         function GetDistributorPaymentWiseComparision() {

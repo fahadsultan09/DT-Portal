@@ -1,5 +1,6 @@
 ﻿using Models.Common;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Utility;
 
@@ -21,6 +22,9 @@ namespace Models.Application
         public int ReceivedQty { get; set; }
         public int? ReceivedBy { get; set; }
         public DateTime? ReceivedDate { get; set; }
+        [Range(1, 9999999999)]
+        [Column(TypeName = "double")]
+        [Required(ErrorMessage = "Amount is required.")]
         public double MRP { get; set; }
         public string BatchNo { get; set; }
         public string InvoiceNo { get; set; }
@@ -30,7 +34,7 @@ namespace Models.Application
         public DateTime IntimationDate { get; set; }
         public string Remarks { get; set; }
         public string ReturnOrderNumber { get; set; }
-        public OrderStatus ReturnOrderStatus { get; set; }
+        public OrderStatus? ReturnOrderStatus { get; set; }
         public bool IsProductSelected { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }

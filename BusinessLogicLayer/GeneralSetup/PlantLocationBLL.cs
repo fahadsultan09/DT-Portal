@@ -40,7 +40,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeletePlantLocation(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }

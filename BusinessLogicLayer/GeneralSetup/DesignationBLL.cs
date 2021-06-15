@@ -39,7 +39,9 @@ namespace BusinessLogicLayer.GeneralSetup
         public int DeleteDesignation(int id)
         {
             var item = _unitOfWork.GenericRepository<Designation>().GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
+            item.DeletedBy = SessionHelper.LoginUser.Id;
+            item.DeletedDate = DateTime.Now;
             _unitOfWork.GenericRepository<Designation>().Delete(item);
             return _unitOfWork.Save();
         }

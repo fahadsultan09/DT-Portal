@@ -29,7 +29,9 @@ namespace Utility
 
     public enum ProductEnum
     {
+        [Display(Name = "Unmapped")]
         ProductMaster = 1,
+        [Display(Name = "Mapped")]
         ProductMapping = 2
     }
 
@@ -106,8 +108,10 @@ namespace Utility
 
     public enum SubmitStatus
     {
+        [Display(Name = "Order Now")]
         OrderNow = 1,
-        Draft = 2
+        Draft = 2,
+        Submit = 3,
     }
 
     public enum OrderValues
@@ -134,7 +138,7 @@ namespace Utility
         Pending = 1,
         Resolved = 2,
         Approved = 3,
-        Reject = 4,
+        Rejected = 4,
         [Display(Name = "In Process")]
         InProcess = 5,
     }
@@ -144,6 +148,7 @@ namespace Utility
         Submitted = 1,
         Verified = 2,
         Rejected = 3,
+        Expired = 4,
         Apply = 0
     }
 
@@ -170,6 +175,15 @@ namespace Utility
         CompletelyProcessed = 4,
         [Display(Name = "Partially Received")]
         PartiallyReceived = 5,
+        Rejected = 6,
+    }
+    public enum OrderReturnStatusDD
+    {
+        Draft = 1,
+        Submitted = 2,
+        Received = 3,
+        CompletelyProcessed = 4,
+        Rejected = 6,
     }
     public enum ApplicationActions
     {

@@ -25,23 +25,23 @@ namespace BusinessLogicLayer.Application
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderReturnDetail>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public int AddRange(List<OrderReturnDetail> module)
         {
-            _unitOfWork.GenericRepository<OrderReturnDetail>().AddRange(module);
+            _repository.AddRange(module);
             return _unitOfWork.Save();
         }
         public int DeleteRange(List<OrderReturnDetail> module)
         {
-            _unitOfWork.GenericRepository<OrderReturnDetail>().DeleteRange(module);
+            _repository.DeleteRange(module);
             return _unitOfWork.Save();
         }
         public int Update(OrderReturnDetail module)
         {
-            var item = _unitOfWork.GenericRepository<OrderReturnDetail>().GetById(module.Id);
-            _unitOfWork.GenericRepository<OrderReturnDetail>().Update(item);
+            var item = _repository.GetById(module.Id);
+            _repository.Update(item);
             return _unitOfWork.Save();
         }
         public int UpdateRange(List<OrderReturnDetail> OrderReturnDetailList)
@@ -51,13 +51,13 @@ namespace BusinessLogicLayer.Application
         }
         public int Delete(int id)
         {
-            var item = _unitOfWork.GenericRepository<OrderReturnDetail>().GetById(id);
-            _unitOfWork.GenericRepository<OrderReturnDetail>().Delete(item);
+            var item = _repository.GetById(id);
+            _repository.Delete(item);
             return _unitOfWork.Save();
         }
         public OrderReturnDetail GetOrderReturnDetailById(int id)
         {
-            return _unitOfWork.GenericRepository<OrderReturnDetail>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<OrderReturnDetail> GetOrderDetailByIdByMasterId(int OrderReturnId)
         {
@@ -65,7 +65,7 @@ namespace BusinessLogicLayer.Application
         }
         public List<OrderReturnDetail> GetAllOrderReturnDetail()
         {
-            return _unitOfWork.GenericRepository<OrderReturnDetail>().GetAllList().ToList();
+            return _repository.GetAllList().ToList();
         }
         public List<OrderReturnDetail> Where(Expression<Func<OrderReturnDetail, bool>> predicate)
         {

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:p1="https://www.sami.com/DPPendingOrders" xmlns:rfc="urn:sap-com:document:sap:rfc:functions" name="DPPendingOrdersRequest_Out" targetNamespace="https://www.sami.com/DPPendingOrders" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_DPPendingOrdersRequest_Out" />
+  <wsdl:types>
+    <xsd:schema xmlns="urn:sap-com:document:sap:rfc:functions" targetNamespace="urn:sap-com:document:sap:rfc:functions" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="ZSD_GET_PENDING_ORDERS">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="IV_DISTRIBUTOR">
+              <xsd:annotation>
+                <xsd:documentation>Customer Number</xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="10" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZSD_GET_PENDING_ORDERS.Response">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element minOccurs="0" name="E_ORDERS">
+              <xsd:annotation>
+                <xsd:documentation>TT: For Pending Sales Order</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="rfc:ZST_PENDING_ORDER_OUT" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ZST_PENDING_ORDER_OUT">
+        <xsd:annotation>
+          <xsd:documentation>Structure: For Pending Sales Order</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="MATNR">
+            <xsd:annotation>
+              <xsd:documentation>Material Number</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:maxLength value="18" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="KWMENG">
+            <xsd:annotation>
+              <xsd:documentation>Cumulative Order Quantity in Sales Units</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:decimal">
+                <xsd:totalDigits value="15" />
+                <xsd:fractionDigits value="3" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="LFIMG">
+            <xsd:annotation>
+              <xsd:documentation>Actual quantity delivered (in sales units)</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:decimal">
+                <xsd:totalDigits value="13" />
+                <xsd:fractionDigits value="3" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="PENDING">
+            <xsd:annotation>
+              <xsd:documentation>Cumulative Order Quantity in Sales Units</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:decimal">
+                <xsd:totalDigits value="15" />
+                <xsd:fractionDigits value="3" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="rfc.ZSD_GET_PENDING_ORDERS.Input">
+    <wsdl:documentation />
+    <wsdl:part name="parameters" element="rfc:ZSD_GET_PENDING_ORDERS" />
+  </wsdl:message>
+  <wsdl:message name="rfc.ZSD_GET_PENDING_ORDERS.Output">
+    <wsdl:documentation />
+    <wsdl:part name="parameters" element="rfc:ZSD_GET_PENDING_ORDERS.Response" />
+  </wsdl:message>
+  <wsdl:portType name="DPPendingOrdersRequest_Out">
+    <wsdl:documentation />
+    <wsdl:operation name="DPPendingOrdersRequest_Out">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_DPPendingOrdersRequest_Out" />
+      </wsp:Policy>
+      <wsdl:input message="p1:rfc.ZSD_GET_PENDING_ORDERS.Input" />
+      <wsdl:output message="p1:rfc.ZSD_GET_PENDING_ORDERS.Output" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DPPendingOrdersRequest_OutBinding" type="p1:DPPendingOrdersRequest_Out">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="DPPendingOrdersRequest_Out">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DPPendingOrdersRequest_OutService">
+    <wsdl:port name="HTTP_Port" binding="p1:DPPendingOrdersRequest_OutBinding">
+      <address location="http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=NSAP_DEV&amp;receiverParty=&amp;receiverService=&amp;interface=DPPendingOrdersRequest_Out&amp;interfaceNamespace=https%3A%2F%2Fwww.sami.com%2FDPPendingOrders" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:DPPendingOrdersRequest_OutBinding">
+      <address location="https://s049sappodev.samikhi.com:51001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=NSAP_DEV&amp;receiverParty=&amp;receiverService=&amp;interface=DPPendingOrdersRequest_Out&amp;interfaceNamespace=https%3A%2F%2Fwww.sami.com%2FDPPendingOrders" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

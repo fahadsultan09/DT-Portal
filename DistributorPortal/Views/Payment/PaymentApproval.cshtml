@@ -1,5 +1,5 @@
 ﻿@model PaymentMaster
-@{ ViewBag.Title = "Approve Payment | Distributor Portal"; }
+@{ ViewBag.Title = "Approve Payment "; }
 
 <style type="text/css">
     .select2-container .select2-selection--single {
@@ -99,7 +99,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" data-target="#DepositDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate != null ? Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy") : null)" data-target="#DepositDate" class="form-control datepicker" style="background: #e9ecef !important;" />
                                         <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate != null ? Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy") : null)" data-target="#ValueClearingDate" class="form-control datepicker" style="background: #e9ecef !important;" />
                                         <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -139,7 +139,7 @@
                             </div><br />
                             <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Payment Mode No.<span class="text-danger"> * </span></h6>
+                                    <h6 id="PaymentModeIdTitle"><span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <input type="text" asp-for="PaymentModeNo" class="form-control" />
@@ -240,15 +240,28 @@
 
     $(document).ready(function () {
 
-        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
-        $('.select2').select2();
-        $('#AmountInWords').html(inWords(@Model.Amount));
-
-        $('.date').datetimepicker({
-            format: 'L',
-            todayHighlight: true,
-            maxDate: moment(),
+        $('.select2').select2({
+            width: '100%',
         });
+
+        var value = $('#PaymentModeId').val();
+        if (value == "1") {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+
+        } else if (value == "2") {
+            $("#PaymentModeIdTitle").text('PO No. *');
+
+        } else if (value == "3") {
+            $("#PaymentModeIdTitle").text('RTGS No. *');
+
+        } else if (value == "4") {
+            $("#PaymentModeIdTitle").text('Online Transaction No. *');
+        } else {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+        }
+
+        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
+        $('#AmountInWords').html(inWords(@Model.Amount));
     });
 
     function Delete(e) {

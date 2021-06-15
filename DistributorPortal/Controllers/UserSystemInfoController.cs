@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
-using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +25,12 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().DistinctBy(e => e.HostName).ToList();
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName }).DistinctBy(y => y.HostName).ToList();
             return View(list);
         }
         public IActionResult List()
         {
-            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().DistinctBy(e => e.HostName).ToList();
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName }).DistinctBy(y => y.HostName).ToList();
             return PartialView("List", list);
         }
         [HttpGet]
@@ -47,9 +46,10 @@ namespace DistributorPortal.Controllers
         [HttpPost]
         public IActionResult SaveEdit(UserSystemInfo model)
         {
+            JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                JsonResponse jsonResponse = new JsonResponse();
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
@@ -58,22 +58,58 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
+                    if (model.UserSystemInfoDetail != null)
+                    {
+                        if (model.UserSystemInfoDetail.Where(x => x.IsRowDeleted == false).Count() > 0)
+                        {
+                            foreach (var item in model.UserSystemInfoDetail)
+                            {
+                                UserSystemInfo userSystemInfo = _UserSystemInfoBLL.Where(x => x.IsActive && !x.IsDeleted && x.ProcessorId == model.ProcessorId && x.HostName == model.HostName && x.MACAddress == item.MACAddress.Trim()).FirstOrDefault();
+                                if (userSystemInfo != null)
+                                {
+                                    _UserSystemInfoBLL.Delete(userSystemInfo.Id);
+                                    _unitOfWork.Save();
+                                }
+                            }
+                            foreach (var item in model.UserSystemInfoDetail.Where(x => x.IsRowDeleted == false))
+                            {
+                                if (_UserSystemInfoBLL.CheckMACAddress(model.Id, item.MACAddress))
+                                {
+                                    model.MACAddress = item.IsRowDeleted ? string.Empty : item.MACAddress;
+                                    _UserSystemInfoBLL.Add(model);
+                                }
+                                else
+                                {
+                                    model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
+                                    TempData["Message"] = "MAC Address already.";
+                                    return PartialView("Add", model);
+                                }
+                            }
+                            jsonResponse.Status = true;
+                            jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                            jsonResponse.RedirectURL = Url.Action("Index", "UserSystemInfo");
+                            return Json(new { data = jsonResponse });
 
-                    List<UserSystemInfo> UserSystemInfoDetailList = _UserSystemInfoBLL.Where(x => x.ProcessorId == model.ProcessorId && x.HostName == model.HostName).ToList();
-                    _unitOfWork.GenericRepository<UserSystemInfo>().DeleteRange(UserSystemInfoDetailList);
-                    _UserSystemInfoBLL.Add(model);
-
-                    jsonResponse.Status = true;
-                    jsonResponse.Message = NotificationMessage.SaveSuccessfully;
-                    jsonResponse.RedirectURL = Url.Action("Index", "UserSystemInfo");
+                        }
+                        model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
+                        TempData["Message"] = "Add at least one MAC Address";
+                        return PartialView("Add", model);
+                    }
+                    else
+                    {
+                        model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
+                        TempData["Message"] = "Add at least one MAC Address";
+                        return PartialView("Add", model);
+                    }
                 }
-                return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
+                _unitOfWork.Rollback();
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                TempData["Message"] = NotificationMessage.ErrorOccurred;
-                return RedirectToAction("List");
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
             }
         }
         [HttpPost]
@@ -81,9 +117,9 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id = 0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 _UserSystemInfoBLL.Delete(id);
+                _unitOfWork.Save();
                 return Json(new { Result = true });
             }
             catch (Exception ex)
@@ -99,7 +135,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _UserSystemInfoBLL.GetById(Id);
-                model.UserSystemInfoDetail = _UserSystemInfoBLL.Where(x => x.ProcessorId == model.ProcessorId && x.HostName == model.HostName).Select(x => new UserSystemInfoViewModel { MACAddress = x.MACAddress, IsRowDeleted = x.IsDeleted }).ToList();
+                model.UserSystemInfoDetail = _UserSystemInfoBLL.Where(x => x.DistributorId == model.DistributorId && x.HostName == model.HostName).Select(x => new UserSystemInfoViewModel { MACAddress = x.MACAddress, IsRowDeleted = x.IsDeleted }).ToList();
             }
             else
             {

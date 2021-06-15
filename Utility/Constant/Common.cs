@@ -12,13 +12,18 @@
         public class FolderName
         {
             public const string Order = "Order";
+            public const string OrderReturn = "OrderReturn";
+            public const string Payment = "Payment";
+            public const string Complaint = "Complaint";
+            public const string DistributorLicense = "DistributorLicense";
         }
 
         public class OrderContant
         {
-            public const string OrderDraft = "Successfully save to draft";
-            public const string OrderSubmit = "Order Submitted Successfully";
-            public const string OrderItem = "Please add atleast one product";
+            public const string OrderDraft = "Successfully saved to draft";
+            public const string OrderSubmit = "Order submitted successfully";
+            public const string OrderReturnSubmit = "Order return submitted successfully";
+            public const string OrderItem = "Please add at least one product";
         }
 
         public class AcceptURLs

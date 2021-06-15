@@ -46,12 +46,13 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
-            {                
+            {
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
+                    TempData["Message"] = NotificationMessage.RequiredFieldsValidation;
+                    return PartialView("Add", model);
                 }
                 else
                 {
@@ -74,8 +75,8 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        jsonResponse.Status = true;
-                        jsonResponse.Message = "Complaint Category name already exist";
+                        TempData["Message"] = "Complaint Category name already exist";
+                        return PartialView("Add", model);
                     }
                 }
                 return Json(new { data = jsonResponse });

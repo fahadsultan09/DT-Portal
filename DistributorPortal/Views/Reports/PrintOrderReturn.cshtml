@@ -13,8 +13,8 @@
 <html>
 <head>
     <title>Index</title>
-    <link rel="stylesheet" href="~/lib/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    <link rel="stylesheet" href="~/lib/plugins/fontawesome-free/css/all.min.css">
+    <link href="@(SessionHelper.URL)lib/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="@(SessionHelper.URL)lib/assets/font-awesome/css/font-awesome.css" rel="stylesheet">
     <style>
         .table-bordered > tbody > tr > td,
         .table-bordered > tbody > tr > th,
@@ -24,7 +24,7 @@
         .table-bordered > thead > tr > th {
             border: 1px solid black !important;
             padding: 0 0 0 5px;
-            font-family: Arial;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         tr {
@@ -53,7 +53,7 @@
                                     <tbody>
                                         <tr style="height:15pt;">
                                             <td colspan="2" style=" vertical-align:middle;">
-                                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>SAMI Pharmaceuticals (Pvt.) Ltd</span></strong></p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>SAMI Pharmaceuticals (Pvt.) Ltd.®</span></strong></p>
                                             </td>
                                             <td colspan="3" style=" vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>Title: Product Return Statement</span></strong></p>
@@ -211,7 +211,7 @@
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Invoice Date</span></strong></p>
                                             </td>
                                             <td style="width:10.66%; border-right-style:solid; border-right-width:0.75pt; vertical-align:middle;">
-                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Date of earlier Intimation</span></strong></p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Date of Earlier Intimation</span></strong></p>
                                             </td>
                                             <td style="width:11.18%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Remarks</span></strong></p>
@@ -237,7 +237,7 @@
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Quantity</p>
                                                 </td>
                                                 <td style="width:8.12%; vertical-align:middle;">
-                                                    <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.NetAmount</p>
+                                                    <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@(item.Quantity * item.MRP)</p>
                                                 </td>
                                                 <td style="width:6.34%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ManufactureDate.ToString("MMM-yyyy")</p>
@@ -450,7 +450,7 @@
                                     <tbody>
                                         <tr style="height:15pt;">
                                             <td colspan="2" style=" vertical-align:middle;">
-                                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>SAMI Pharmaceuticals (Pvt.) Ltd</span></strong></p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>SAMI Pharmaceuticals (Pvt.) Ltd.®</span></strong></p>
                                             </td>
                                             <td colspan="3" style=" vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><strong><span>Title: Product Return Statement</span></strong></p>
@@ -608,7 +608,7 @@
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Invoice Date</span></strong></p>
                                             </td>
                                             <td style="width:10.66%; border-right-style:solid; border-right-width:0.75pt; vertical-align:middle;">
-                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Date of earlier Intimation</span></strong></p>
+                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Date of Earlier Intimation</span></strong></p>
                                             </td>
                                             <td style="width:11.18%; vertical-align:middle;">
                                                 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><strong><span>Remarks</span></strong></p>
@@ -634,7 +634,7 @@
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.Quantity</p>
                                                 </td>
                                                 <td style="width:8.12%; vertical-align:middle;">
-                                                    <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@item.NetAmount</p>
+                                                    <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;">@(item.Quantity * item.MRP)</p>
                                                 </td>
                                                 <td style="width:6.34%; vertical-align:middle;">
                                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;">@item.ManufactureDate.ToString("MMM-yyyy")</p>

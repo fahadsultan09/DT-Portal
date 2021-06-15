@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<OrderReturnMaster>
-
+@{
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool add = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+}
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -9,7 +12,7 @@
                 {
                     <a asp-action="Add"
                        asp-controller="OrderReturn"
-                       class="btn btn-info float-right">Add</a>
+                       class="btn btn-info float-right @(add ? null : "d-none")">Add</a>
                 }
             </div>
             <div class="card-body scrollmenu">
@@ -17,9 +20,11 @@
                     <thead>
                         <tr>
                             <th>Order Return No</th>
+                            <th>TR No</th>
                             <th>Distributor Name</th>
                             <th>Status</th>
-                            <th>Created</th>
+                            <th>Created By</th>
+                            <th>Created Date</th>
                             <th>Action</th>
                         </tr>
                     <tbody>
@@ -27,10 +32,12 @@
                         {
                             <tr>
                                 <td>@item.SNo</td>
+                                <td>@item.TRNo</td>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@Html.DisplayFor(x => item.Status)</td>
-                                <td>@item.CreatedDate</td>
-                                <td>
+                                <td>@item.CreatedName</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
+                                <td class="p-1">
                                     <a asp-controller="OrderReturn" asp-action="View" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
@@ -42,8 +49,14 @@
                                     }
                                     @if ((item.Status == OrderReturnStatus.Submitted || item.Status == OrderReturnStatus.PartiallyReceived) && !SessionHelper.LoginUser.IsDistributor)
                                     {
-                                        <a asp-controller="OrderReturn" asp-action="Approve" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-success btn-sm">
+                                        <a asp-controller="OrderReturn" asp-action="Approve" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-success btn-sm@(approve ? null : "d-none")">
                                             <i class="fas fa-thumbs-up"></i>
+                                        </a>
+                                    }
+                                    @if (item.Status == OrderReturnStatus.PartiallyReceived && !SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        <a onclick="Sync('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Sync Partially Approved Order" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-sync"></i>
                                         </a>
                                     }
                                 </td>
@@ -68,5 +81,17 @@
         });
 
     });
+    function Sync(Id) {
+        Begin();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SyncPartiallyApproved", "OrderReturn")',
+            data: { 'DPID': Id },
+            cache: false,
+            success: function (data) {
+                OnSuccess(data);
+            }
+        });
+    }
 
 </script>

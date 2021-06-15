@@ -1,17 +1,5 @@
 ﻿@model ApplicationAction
-@{
-    var viewdata = (string)TempData["Message"];
-    if (!string.IsNullOrEmpty(viewdata))
-    {
-        <div class="alert alert-danger alert-dismissable" id="alertmessage">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            @viewdata <a class="alert-link" href="#"></a>
-        </div>
-    }
-}
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Application Action</h3>
@@ -68,12 +56,18 @@
         </div>
     </div>
 </div>
-<!-- /.card -->
-
 <script>
-    var MessageDisappear = function () {
-        setInterval(function () {
-            $("#alertmessage").hide('slow');
-        }, 5000);
+    var message = '@((string)TempData["Message"])';
+
+    var MessageDisappear = function (data) {
+         
+        if (message != "") {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+            message = '';
+        }
+        UnBlockUI();
     }
 </script>

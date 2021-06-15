@@ -2,7 +2,7 @@
 @using Utility
 @{
     ViewData["Title"] = "Home Page";
-    int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
+    //int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
 }
 <style type="text/css">
     body {
@@ -81,7 +81,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Value Comparision - Last 12 Months</h3>
+                                <h3 class="card-title">Order Value Comparison - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="PaymentWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -94,7 +94,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Order Count Comparision - Last 12 Months</h3>
+                                <h3 class="card-title">Order Count Comparison - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="OrderWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -137,29 +137,29 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0"   data-width="90" data-height="90" data-fgColor="#f56954">
                                     <div class="knob-label">Pending Approval</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0"   data-width="90" data-height="90" data-fgColor="#39CCCC">
                                     <div class="knob-label">In Process</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0"   data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Partially Processed</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.CompletelyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.CompletelyProcessed" data-min="0"   data-width="90" data-height="90" data-fgColor="#00a65a">
                                     <div class="knob-label">Completely Processed</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0"   data-width="90" data-height="90" data-fgColor="#6c757d">
                                     <div class="knob-label">On Hold</div>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0"   data-width="90" data-height="90" data-fgColor="#ffc107">
                                     <div class="knob-label">Reject</div>
                                 </div>
                             </div>

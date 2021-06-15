@@ -57,38 +57,52 @@
                     </div>
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Return Order Details</h3>
+                            <h3 class="card-title">Details for Return Claim</h3>
                         </div>
                         <div class="card-body" style="padding: 10px 15px 0px 15px;">
                             <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Transporter:</h6>
-                                    <span asp-for="Transporter" class="form-control">@Model.Transporter</span>
+                                    <p asp-for="Transporter">@Model.Transporter</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>TR Number:</h6>
-                                    <span asp-for="TRNo" class="form-control">@Model.TRNo</span>
+                                    <p asp-for="TRNo">@Model.TRNo</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>TR Date:</h6>
-                                    <span asp-for="TRDate" class="form-control">@Model.TRDate.ToShortDateString()</span>
+                                    <span asp-for="TRDate" class="form-control">@Model.TRDate.ToString("dd/MM/yyyy")</span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Debit Note No:</h6>
-                                    <span asp-for="DebitNoteNo" class="form-control">@Model.DebitNoteNo</span>
+                                    <p asp-for="DebitNoteNo">@Model.DebitNoteNo</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Debit Note Date:</h6>
-                                    <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToShortDateString()</span>
+                                    <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToString("dd/MM/yyyy")</span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <h6>Return Reason:</h6>
                                     <span asp-for="OrderReturnReason.ReasonName" class="form-control">@Model.OrderReturnReason.ReasonName</span>
                                 </div>
-                            </div><br />
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>Attachment:</h6>
+                                    <span class="caption">
+                                        <strong>
+                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment : "")" target="_blank">@(Model != null & !string.IsNullOrEmpty(Model.Attachment) ? Model.Attachment.Split('_')[1] : "")</a>
+                                        </strong>
+                                    </span>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-6">
                                     <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp;</label><strong><span id="TotalValue">@Model.TotalValue.ToString("#,##0.00")</span></strong>
+                                </div>
+                                <div class="col-6 pull-right">
+                                    <a asp-controller="OrderReturn" asp-action="Index" class="btn btn-secondary float-right mr-3">Back</a>
                                 </div>
                             </div>
                         </div>
@@ -103,11 +117,11 @@
                             <span class="float-right"><strong>Return Order No: @Model.SNo</strong></span>
                         </div>
                         <div class="card-body">
-                            <div id="ProductGrid">
-                                @if (Model.OrderReturnDetail.Count > 0)
-                                {
-                                    <div class="table-responsive-sm">
-                                        <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+                            <div class="row">
+                                <div class="col-lg-12" id="ProductGrid">
+                                    @if (Model.OrderReturnDetail.Count > 0)
+                                    {
+                                        <table id="example2" class="table table-bordered table-hover table-striped table-responsive">
                                             <thead>
                                                 <tr>
                                                     <th>Product Name</th>
@@ -120,7 +134,7 @@
                                                     <th>Received Qty</th>
                                                     <th>Discount</th>
                                                     <th>Net Amount</th>
-                                                    <th>Manufacture Date</th>
+                                                    <th>Mfg. Date</th>
                                                     <th>Expiry Date</th>
                                                     <th>Invoice No</th>
                                                     <th>Invoice Date</th>
@@ -160,8 +174,8 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -180,8 +194,6 @@
             "responsive": true,
             "autoWidth": false,
             "order": [],
-            "scrollX": true,
-            "sScrollXInner": "150%"
         });
     });
     function CalculateTotal() {

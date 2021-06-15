@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.ApplicationSetup
         {
             var item = GetDistributorBySAPId(module.DistributorSAPCode);
             var region = regionBLL.GetAllRegion();
-            item.RegionId = region.First(c => c.SAPId == module.RegionCode).Id;
+            item.RegionId = region.First(c => c.SAPId == module.Region.SAPId).Id;
             item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
             item.DistributorCode = module.DistributorCode;

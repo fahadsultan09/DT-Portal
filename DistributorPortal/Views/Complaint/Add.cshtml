@@ -1,5 +1,5 @@
 ﻿@model Complaint
-@{ ViewBag.Title = "Add Complaint | Distributor Portal"; }
+@{ ViewBag.Title = "Add Complaint "; }
 
 <div class="content-wrapper">
     <section class="content-header" disabled>
@@ -131,7 +131,9 @@
 
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
 
         //Date range picker
         $('.date').datetimepicker({
@@ -141,7 +143,7 @@
         });
 
         $('body').on('change', '#ddlComplaintCategory', function () {
-            debugger;
+             ;
             var ddlComplaintCategory = $('#ddlComplaintCategory :selected');
             var text = $(ddlComplaintCategory).text();
             var value = $(ddlComplaintCategory).val();

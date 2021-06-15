@@ -1,5 +1,5 @@
 ﻿@model PaymentMaster
-@{ ViewBag.Title = "View Payment | Distributor Portal"; }
+@{ ViewBag.Title = "View Payment"; }
 
 <style type="text/css">
     .select2-container .select2-selection--single {
@@ -94,23 +94,23 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Deposit Date</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" data-target="#DepositDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate != null ? Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy") : null)" data-target="#DepositDate" class="form-control datepicker" style="background: #e9ecef !important;" />
                                         <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Value Clearing Date</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" data-target="#ValueClearingDate" class="form-control datetimepicker-input" />
+                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate != null ? Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy") : null)" data-target="#ValueClearingDate" class="form-control datepicker" style="background: #e9ecef !important;" />
                                         <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -118,7 +118,7 @@
                                 </div>
                             </div><br />
                             <div class=" row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Mode of Payment<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -127,7 +127,7 @@
                                     </select><br />
                                     <span asp-validation-for="PaymentModeId" class="text-danger"></span>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Company<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -138,14 +138,14 @@
                                 </div>
                             </div><br />
                             <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Payment Mode No.<span class="text-danger"> * </span></h6>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                    <h6 id="PaymentModeIdTitle"><span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <input type="text" asp-for="PaymentModeNo" class="form-control" />
                                     <span asp-validation-for="PaymentModeNo" class="text-danger"></span>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Amount<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -155,7 +155,7 @@
                                 </div>
                             </div><br />
                             <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Depositor Bank Name<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -164,7 +164,7 @@
                                     </select><br />
                                     <span asp-validation-for="DepositorBankName" class="text-danger"></span>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -173,7 +173,7 @@
                                 </div>
                             </div><br />
                             <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Company Bank Name<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -182,7 +182,7 @@
                                     </select><br />
                                     <span asp-validation-for="CompanyBankName" class="text-danger"></span>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Company's Bank Code<span class="text-danger"> * </span></h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -191,7 +191,7 @@
                                 </div>
                             </div><br />
                             <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                     <h6>Attachment</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -201,7 +201,7 @@
                                 </div>
                                 @if (!string.IsNullOrEmpty(Model.Remarks))
                                 {
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                         <h6>Remarks</h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -214,9 +214,18 @@
                                 <div class="col-6">
                                 </div>
                                 <div class="col-6 pull-right">
-                                    <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
-                                        Back
-                                    </a>
+                                    @if (TempData["RedirectURL"] != null)
+                                    {
+                                        <a href="@((string)TempData["RedirectURL"])" class="btn btn-secondary float-right mr-3">
+                                            Back
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                            Back
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -231,15 +240,28 @@
 
     $(document).ready(function () {
 
-        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
-        $('.select2').select2();
-        $('#AmountInWords').html(inWords(@Model.Amount));
-
-        $('.date').datetimepicker({
-            format: 'L',
-            todayHighlight: true,
-            maxDate: moment(),
+        $('.select2').select2({
+            width: '100%',
         });
+
+        var value = $('#PaymentModeId').val();
+        if (value == "1") {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+
+        } else if (value == "2") {
+            $("#PaymentModeIdTitle").text('PO No. *');
+
+        } else if (value == "3") {
+            $("#PaymentModeIdTitle").text('RTGS No. *');
+
+        } else if (value == "4") {
+            $("#PaymentModeIdTitle").text('Online Transaction No. *');
+        } else {
+            $("#PaymentModeIdTitle").text('Cheque No. *');
+        }
+
+        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
+        $('#AmountInWords').html(inWords(@Model.Amount));
     });
 
     function Delete(e) {

@@ -1,14 +1,11 @@
 ﻿using Fingers10.ExcelExport.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Models.ViewModel
 {
     public class ProductMappingModel
     {
         [IncludeInReport(Order = 1)]
-        public string PackCode { get; set; }
+        public string ProductCode { get; set; }
         [IncludeInReport(Order = 2)]
         public string ProductName { get; set; }
         [IncludeInReport(Order = 3)]
@@ -45,5 +42,9 @@ namespace Models.ViewModel
         public string SalesItemCategory { get; set; }
         [IncludeInReport(Order = 19)]
         public string ReturnItemCategory { get; set; }
+        [IncludeInReport(Order = 20)]
+        public bool IsTaxApplicable { get; set; }
+        [IncludeInReport(Order = 21)]
+        public string LicenseType { get; set; }
     }
 }

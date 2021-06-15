@@ -27,7 +27,7 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped"   >
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -92,7 +92,7 @@
             showLoaderOnConfirm: true
         }).then((result) => {
             if (result.value) {
-                $.post('@Url.Action("Delete", "Region")?GPID=' + e.id, null, function (data) {
+                $.post('@Url.Action("Delete", "Region")?DPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
                         setTimeout(function () {

@@ -26,37 +26,51 @@ namespace BusinessLogicLayer.Login
             List<string> MACAddresses = new List<string>();
             var Password = EncryptDecrypt.Encrypt(user.Password);
             User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
-            if (LoginUser != null && LoginUser.DistributorId != null)
+            if (LoginUser != null && LoginUser.IsDistributor)
             {
-                List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(e => e.DistributorId == LoginUser.DistributorId).ToList();
-                
-                if (UserSystemInfoList != null)
+                if (string.IsNullOrEmpty(LoginUser.AccessToken) && !string.IsNullOrEmpty(user.AccessToken))
                 {
-
-                    foreach (var item in UserSystemInfoList.Select(x => x.MACAddress).ToList())
-                    {
-                        if (!string.IsNullOrEmpty(item))
-                        {
-                            MACAddresses.Add(item);
-                        }
-                    }
+                    LoginUser.AccessToken = user.AccessToken;
+                    _UserBLL.UpdateUser(LoginUser);
                 }
-                if (LoginUser.IsDistributor)
+                else
                 {
-                    bool check = false;
-                    if (MACAddresses.Count > 0)
-                    {
-                        if(MACAddresses.Contains(user.RegisteredAddress.Replace("-","")))
-                        {
-                            check = true;
-                        }
-                    }
-                    if(check == false)
+                    if ((LoginUser.AccessToken == user.AccessToken && LoginUser.AccessToken != null) || string.IsNullOrEmpty(user.MacAddresses))
                     {
                         LoginUser = null;
-                        return LoginStatus.NotRegistered;
+                        return LoginStatus.Failed;
                     }
                 }
+                string[] MacAddresses = user.MacAddresses.Split(',').ToArray();
+                List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(x => x.IsActive && !x.IsDeleted && x.DistributorId == LoginUser.DistributorId && MacAddresses.Contains(x.MACAddress)).ToList();
+                if (UserSystemInfoList == null || UserSystemInfoList.Count() == 0)
+                {
+                    LoginUser = null;
+                    return LoginStatus.NotRegistered;
+                }
+                //if (UserSystemInfoList != null)
+                //{
+                //    foreach (var item in UserSystemInfoList.Select(x => x.MACAddress).ToList())
+                //    {
+                //        if (!string.IsNullOrEmpty(item))
+                //        {
+                //            MACAddresses.Add(item);
+                //        }
+                //    }
+                //}
+                //bool check = false;
+                //if (MACAddresses.Count > 0)
+                //{
+                //    if (MACAddresses.Contains(user.RegisteredAddress.Replace("-", "")))
+                //    {
+                //        check = true;
+                //    }
+                //}
+                //if (check == false)
+                //{
+                //    LoginUser = null;
+                //    return LoginStatus.NotRegistered;
+                //}
             }
             if (LoginUser != null)
             {

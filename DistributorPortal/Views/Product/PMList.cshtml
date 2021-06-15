@@ -22,17 +22,26 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Product List</h2>
-                <a asp-controller="Product"
-                   asp-action="ProductsExportToExcel"
-                   asp-route-Id="@ProductEnum.ProductMapping"
-                   id="frmImport"
-                   class="btn btn-info float-right">
-                    <i class="fa fa-download"></i>
-                    Export
-                </a>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2 class="card-title">Product Mapping List</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="DistributorId" asp-items="@(Html.GetEnumSelectList<ProductEnum>())" id="ddlMappedId" class="form-control select2">
+                            <option value="">--All--</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <a asp-controller="Product"
+                           asp-action="ProductsExportToExcel"
+                           asp-route-Id="@ProductEnum.ProductMapping"
+                           id="frmImport"
+                           class="btn btn-info float-right">
+                            <i class="fa fa-download"></i> Export
+                        </a>
+                    </div>
+                </div>
             </div>
-            <!-- /.card-header -->
             <div class="card-body scrollmenu">
                 <table id="example1" class="table table-bordered table-striped" style="width:100%">
                     <thead>
@@ -59,7 +68,7 @@
                             <th>Sales Item Category </th>
                             <th>Return Item Category </th>
                             <th>Is Tax Applicable</th>
-                            <th>License Type</th>
+                            <th>License Id</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -70,7 +79,7 @@
                                 <td class="d-none"><input type="text" asp-for="@item.Id" class="form-control" /></td>
                                 <td class="d-none"><input type="text" asp-for="@item.ProductDetail.Id" class="form-control" /></td>
                                 <td>@item.SAPProductCode</td>
-                                <td>@item.ProductName</td>
+                                <td>@item.ProductDescription</td>
                                 <td>@item.PackSize</td>
                                 <td>
                                     @(Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId))
@@ -99,7 +108,7 @@
                                 <td><input type="text" asp-for="@item.ProductDetail.R_StorageLocation" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.SalesItemCategory" class="form-control" /></td>
                                 <td><input type="text" asp-for="@item.ProductDetail.ReturnItemCategory" class="form-control" /></td>
-                                <td style="vertical-align: middle;"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
+                                <td style="vertical-align: middle;" class="text-center"><input type="checkbox" asp-for="@item.ProductDetail.IsTaxApplicable" /></td>
                                 <td>
                                     <select asp-for="@item.ProductDetail.LicenseControlId" asp-items="@(new SelectList(licenseControlList, "Id", "LicenseName", item.ProductDetail.LicenseControlId))" class="form-control">
                                         <option>--Select option--</option>
@@ -118,6 +127,9 @@
 
     $(document).ready(function () {
 
+        var productEnum = '@ViewBag.productEnum';
+        $('#ddlMappedId').val(productEnum);
+
         $("#example1").DataTable({
             scrollY: "350px",
             scrollX: true,
@@ -129,11 +141,14 @@
             lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             responsive: true,
             autoWidth: false,
+            columnDefs: [
+                { "width": "20%", "targets": 20 }
+            ],
         });
     });
 
     $("#example1").on("click", "#btnSubmit", function () {
-        debugger
+         
         Ladda.create(this).start();
         var obj = {
             ProductMasterId: $(this).closest("tr").find("td:eq(0)").find(":input").val(),
@@ -154,7 +169,7 @@
             R_StorageLocation: $(this).closest("tr").find("td:eq(18)").find(":input").val(),
             SalesItemCategory: $(this).closest("tr").find("td:eq(19)").find(":input").val(),
             ReturnItemCategory: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
-            IsTaxApplicable: $(this).closest("tr").find("td:eq(21)").find(":input").val(),
+            IsTaxApplicable: $(this).closest("tr").find("td:eq(21)").find(":input").prop('checked'),
             LicenseControlId: $(this).closest("tr").find("td:eq(22)").find(":input").val(),
         };
 

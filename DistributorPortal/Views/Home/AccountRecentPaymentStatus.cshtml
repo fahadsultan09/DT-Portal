@@ -42,7 +42,7 @@
                                             }
                                         </td>
                                         <td>
-                                            <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.PaymentId.ToString())" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
+                                            <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-sm btn-default"><i class="fa fa-eye"></i></a>
                                         </td>
                                     </tr>
                                 }
@@ -61,7 +61,7 @@
     <!-- PIE CHART -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Status wise payment</h3>
+            <h3 class="card-title">Pay mode wise payment</h3>
         </div>
         <div class="card-body">
             <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>

@@ -133,7 +133,7 @@
 </div>
 <script type="text/javascript">
     function OnHold(Id) {
-        debugger;
+         ;
         Swal.fire({
             title: 'Enter Comment before onhold',
             input: 'text',
@@ -144,7 +144,7 @@
             confirmButtonText: 'On Hold Now',
             showLoaderOnConfirm: true,
             preConfirm: (Comments) => {
-                debugger;
+                 ;
                 if (Comments == "") {
                     Swal.showValidationMessage(
                         `Request failed: Enter Comments`
@@ -153,7 +153,7 @@
             },
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
-            debugger;
+             ;
             if (result.value != null || result.value != undefined) {
                     $.ajax({
                     type: "POST",
@@ -171,7 +171,7 @@
         })
     }
     function Reject(Id) {
-        debugger;
+         ;
         Swal.fire({
             title: 'Enter Comment before Reject',
             input: 'text',
@@ -182,7 +182,7 @@
             confirmButtonText: 'Reject',
             showLoaderOnConfirm: true,
             preConfirm: (Comments) => {
-                debugger;
+                 ;
                 if (Comments == "") {
                     Swal.showValidationMessage(
                         `Request failed: Enter Comments`

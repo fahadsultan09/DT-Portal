@@ -12,7 +12,12 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
@@ -45,12 +50,24 @@ namespace ProductPortal.Controllers
         public IActionResult Sync()
         {
             JsonResponse jsonResponse = new JsonResponse();
+            List<ProductMaster> SAPProduct = new List<ProductMaster>();
             try
             {
-               var Client = new RestClient(_configuration.SyncProductURL);
-                var request = new RestRequest(Method.GET);
-                IRestResponse response = Client.Execute(request);
-                var SAPProduct = JsonConvert.DeserializeObject<List<ProductMaster>>(response.Content);
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getHRMS")).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        Root root = (Root)JsonConvert.DeserializeObject(JsonContent);
+
+                    }
+                }
+
                 var allproduct = _ProductMasterBLL.GetAllProductMaster();
                 var addProduct = SAPProduct.Where(e => !allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
                 var updateProduct = SAPProduct.Where(e => allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
@@ -114,6 +131,29 @@ namespace ProductPortal.Controllers
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             return View("ProductMapping", productMasters);
         }
+
+        [HttpGet]
+        public PartialViewResult GetMappedUnmappedProduct(ProductEnum productEnum)
+        {
+            List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
+            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
+            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+            ViewBag.productEnum = (int)productEnum;
+
+            if (productEnum == ProductEnum.ProductMapping)
+            {
+                productMasters = _ProductMasterBLL.Where(x => productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
+            }
+            else if (productEnum == ProductEnum.ProductMaster)
+            {
+                productMasters = _ProductMasterBLL.Where(x => !productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
+            }
+            else
+            {
+                productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());    
+            }
+            return PartialView("PMList", productMasters);
+        }
         [HttpPost]
         public IActionResult UpdateProductDetail(ProductDetail model)
         {
@@ -146,8 +186,7 @@ namespace ProductPortal.Controllers
         [HttpGet]
         public JsonResult GetProduct(string DPID)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });
         }
@@ -157,13 +196,13 @@ namespace ProductPortal.Controllers
             if (Id == ProductEnum.ProductMaster)
             {
                 var data = _ProductMasterBLL.GetAllProductMaster();
-                return new ExcelResult<ProductMaster>(data, "Products", SessionHelper.LoginUser.FirstName + " " + SessionHelper.LoginUser.LastName + "_productlist");
+                return new ExcelResult<ProductMaster>(data, "Products", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
             else
             {
                 var data = _ProductDetailBLL.GetViewModelForExcel();
-                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", SessionHelper.LoginUser.FirstName + " " + SessionHelper.LoginUser.LastName + "_productlist");
-            }           
+                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", "Product List" + DateTime.Now.ToString("dd-MM-yyyy"));
+            }
         }
     }
 }

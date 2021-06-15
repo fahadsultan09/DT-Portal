@@ -75,7 +75,7 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Sub Region name already exist";
+                        jsonResponse.Message = "Sub region name already exist";
 
                     }
                 }

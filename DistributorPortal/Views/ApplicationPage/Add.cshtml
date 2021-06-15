@@ -1,6 +1,5 @@
 ﻿@model ApplicationPage
 
-<!-- Main content -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Application Page</h3>
@@ -14,7 +13,7 @@
                       id="frmApplicationPage"
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
-                      data-ajax-complete="Complete"
+                      data-ajax-complete="MessageDisappear"
                       data-ajax="true"
                       data-ajax-method="POST"
                       method="post">
@@ -138,10 +137,18 @@
         </div>
     </div>
 </div>
-
 <script>
+    var message = '@((string)TempData["Message"])';
 
-    $(document).ready(function () {
-        $('.select2').select2()
-    });
+    var MessageDisappear = function (data) {
+         
+        if (message != "") {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+            message = '';
+        }
+        UnBlockUI();
+    }
 </script>

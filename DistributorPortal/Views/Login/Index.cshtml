@@ -1,11 +1,11 @@
-﻿@model Models.Application.User
+﻿@model User
 @{
     Layout = null;
 }
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Login | SAMI Pharmaceuticals (Pvt.) Ltd</title>
+    <title>Login | SAMI Pharmaceuticals (Pvt.) Ltd.®</title>
     <meta charset="utf-8" />
     <meta name="description" content="Login page example" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -16,13 +16,11 @@
     <link rel="stylesheet" type="text/css" href="~/Login/style.css" />
     <link href="~/lib/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <link href="~/lib/plugins/toastr/toastr.min.css" rel="stylesheet" />
-    <!-- Ladda style -->
     <link href="~/lib/ladda/ladda-themeless.min.css" rel="stylesheet">
     <script src="~/Login/jquery-3.2.1.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
-    
 </head>
 <body class="form-login-body">
     <div class="container-fluid">
@@ -30,10 +28,10 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-1 logo">
-                        <img src="~/Images/favicon.png" class="pull-right" alt="">
+                        <img src="~/Images/favicon.png" class="pull-right" alt="SAMI Pharmaceuticals (Pvt.) Ltd.®">
                     </div>
-                    <div class="col-md-3 sup" style="margin-top: 5px">
-                        <h3><strong>SAMI</strong> Pharmaceuticals</h3>
+                    <div class="col-md-4 sup" style="margin-top: 5px">
+                        <h4><strong>SAMI</strong><br /> Pharmaceuticals (Pvt.) Ltd.<sup>®</sup></h4>
                     </div>
                 </div>
             </div>
@@ -45,7 +43,6 @@
                       id="frmUser"
                       data-ajax-begin="LoginBegin"
                       data-ajax-success="OnLoginSuccess"
-                      data-ajax-complete="Complete"
                       data-ajax="true"
                       data-ajax-method="POST"
                       method="post"
@@ -55,10 +52,10 @@
                             <div class="login-text">
                                 <h4>Login to Distributor Portal</h4>
                                 <span asp-validation-for="UserName" style="font-size:12px" class="text-danger"></span>
-                                <input type="text" asp-for="UserName" id="UserId" placeholder="Enter Username" class="form-control" autocomplete="off">
+                                <input type="text" asp-for="UserName" maxlength="6" id="UserId" placeholder="Enter Username" class="form-control" autocomplete="off">
                                 <span asp-validation-for="Password" style="font-size:12px" class="text-danger"></span>
                                 <input type="password" asp-for="Password" placeholder="Enter Password" class="form-control">
-                                <button type="submit" class="ladda-button btn btn-primary" data-style="zoom-in">
+                                <button type="submit" id="btnLogin" class="ladda-button btn btn-primary" data-style="zoom-in">
                                     <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
                                     <span class="sr-only">Loading...</span>
                                     Sign In
@@ -74,16 +71,15 @@
                         </div>
                     </div>
                 </form>
-                <div class="copy"><p>Designed by <a href="#">SAMI Pharmaceuticals (Pvt.) Ltd</a></p></div>
+                <div class="copy"><p>Designed by <a href="#">SAMI Pharmaceuticals (Pvt.) Ltd.<sup>®</sup></a></p></div>
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="modal-default">
         <div class="modal-dialog">
             <form asp-controller="Login"
                   asp-action="ChangePassword"
-                  id="frmUser"
+                  id="frmChangePassword"
                   data-ajax-begin="Begin"
                   data-ajax-success="OnSuccess"
                   data-ajax-complete="OnComplete"
@@ -103,7 +99,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <input type="text" asp-for="Password" id="Password" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Password" autocomplete="off" />
+                            <input type="text" asp-for="Password" id="NewPassword" class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" placeholder="Password" autocomplete="off" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -113,7 +109,7 @@
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" id="ChangePassword" value="ChangePassword" name="button" class="btn btn-primary">Save</button>
+                        <button type="submit" id="ChangePassword" name="ChangePassword" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -123,11 +119,17 @@
     <script>
 
         $(document).ready(function () {
+
+            $('.text-danger').empty();
+            var errorMessage = '@ViewBag.msg';
+            if (errorMessage != "") {
+                $('#error').text('Contact to administrator');
+
+            }
             $('#ForgotPassword').on('click', function () {
                 $('.text-danger').empty();
                 $('#error').text('Contact to administrator');
-            })
-
+            });
             localStorage.setItem('disclaimer', "false");
 
         });
@@ -138,12 +140,11 @@
                 Toast.fire({
                     icon: 'success',
                     title: data.data.Message
-                })
-                setTimeout(function () {
-                    window.location = data.data.RedirectURL;
-                }, 1000);
+                });
+                window.location = data.data.RedirectURL;
             }
             else {
+                Ladda.create($("button[type=submit]", this)[0]).stop();
                 if (data.data.Message == "Please change default password.") {
                     $('#UserName').val($('#UserId').val());
                     $('#modal-default').modal('toggle');
@@ -154,7 +155,7 @@
                 Toast.fire({
                     icon: 'error',
                     title: data.data.Message
-                })
+                });
             }
         }
 
@@ -162,7 +163,7 @@
             $('#modal-default').modal('toggle');
             $('#modal-default').modal('hide');
             $('#Spinner').hide('slow');
-            $('button[type="submit"]').attr('disabled', false);
+
             if ($("button[type=submit]", this)[0] != undefined) {
                 Ladda.create($("button[type=submit]", this)[0]).stop();
             }
@@ -170,7 +171,6 @@
 
         function LoginBegin() {
             $('#Spinner').show();
-            $('button[type="submit"]').attr('disabled', true);
             Ladda.create($("button[type=submit]", this)[0]).start();
         }
 
@@ -186,7 +186,6 @@
     <script src="~/lib/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/plugins/toastr/toastr.min.js"></script>
-    <!-- Ladda -->
     <script src="~/lib/ladda/spin.min.js"></script>
     <script src="~/lib/ladda/ladda.min.js"></script>
     <script src="~/lib/ladda/ladda.jquery.min.js"></script>

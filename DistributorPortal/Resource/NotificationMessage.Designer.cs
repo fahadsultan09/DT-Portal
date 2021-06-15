@@ -61,7 +61,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to License Uploaded Successfully.
+        ///   Looks up a localized string similar to License uploaded successfully.
         /// </summary>
         public static string AddLicense {
             get {
@@ -75,6 +75,33 @@ namespace DistributorPortal.Resource {
         public static string AddVerifiedLicense {
             get {
                 return ResourceManager.GetString("AddVerifiedLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint approved successfully.
+        /// </summary>
+        public static string ComplaintApproved {
+            get {
+                return ResourceManager.GetString("ComplaintApproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint rejected successfully.
+        /// </summary>
+        public static string ComplaintRejected {
+            get {
+                return ResourceManager.GetString("ComplaintRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint resolved successfully.
+        /// </summary>
+        public static string ComplaintResolved {
+            get {
+                return ResourceManager.GetString("ComplaintResolved", resourceCulture);
             }
         }
         
@@ -97,7 +124,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error occurred while saving changes..
+        ///   Looks up a localized string similar to Error occurred while saving changes.
         /// </summary>
         public static string ErrorOccurred {
             get {
@@ -151,7 +178,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Completed  successfully..
+        ///   Looks up a localized string similar to Completed successfully..
         /// </summary>
         public static string FormStatusCompleted {
             get {
@@ -169,7 +196,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order Successfully Saved.
+        ///   Looks up a localized string similar to Order saved successfully.
         /// </summary>
         public static string OrderSaved {
             get {
@@ -187,7 +214,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Payment Saved Successfully..
+        ///   Looks up a localized string similar to Payment saved successfully.
         /// </summary>
         public static string PaymentSaved {
             get {
@@ -196,7 +223,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Payment Verified Successfully..
+        ///   Looks up a localized string similar to Payment verified successfully.
         /// </summary>
         public static string PaymentVerified {
             get {
@@ -205,7 +232,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully received return product .
+        ///   Looks up a localized string similar to Successfully received return product.
         /// </summary>
         public static string ReceivedReturn {
             get {
@@ -223,7 +250,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Password Reset Successfully..
+        ///   Looks up a localized string similar to Password reset successfully.
         /// </summary>
         public static string ResetPasswordSuccessfully {
             get {
@@ -232,7 +259,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resolved Successfully..
+        ///   Looks up a localized string similar to Resolved successfully.
         /// </summary>
         public static string Resolved {
             get {
@@ -241,7 +268,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data Saved successfully..
+        ///   Looks up a localized string similar to Data saved successfully..
         /// </summary>
         public static string SaveSuccessfully {
             get {
@@ -259,7 +286,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synced Successfully.
+        ///   Looks up a localized string similar to Synced successfully.
         /// </summary>
         public static string SyncedSuccessfully {
             get {

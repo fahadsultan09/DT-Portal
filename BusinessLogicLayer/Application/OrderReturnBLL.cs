@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Utility;
-using Utility.HelperClasses;
 using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
@@ -41,6 +40,7 @@ namespace BusinessLogicLayer.Application
         public bool Update(OrderReturnMaster module)
         {
             var item = _repository.GetById(module.Id);
+            item.Attachment = module.Attachment;
             item.Status = module.Status;
             item.DebitNoteDate = module.DebitNoteDate;
             item.DebitNoteNo = module.DebitNoteNo;
@@ -58,7 +58,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(OrderReturnMaster module)
         {
             var item = _repository.GetById(module.Id);
-            if (_repository.GetAllList().Any())
+            if (_repository.GetAllList().Count() > 1)
             {
                 item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
             }
@@ -114,6 +114,10 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.SNo == model.OrderReturnNo);
             }
+            if (model.TRNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.TRNo == model.TRNo);
+            }
             if (model.FromDate != null)
             {
                 LamdaId = LamdaId.And(e => e.CreatedDate.Date >= Convert.ToDateTime(model.FromDate).Date);
@@ -134,6 +138,7 @@ namespace BusinessLogicLayer.Application
                          {
                              Id = x.Id,
                              SNo = x.SNo,
+                             TRNo = x.TRNo,
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
@@ -156,6 +161,10 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.SNo == model.OrderReturnNo);
             }
+            if (model.TRNo != null)
+            {
+                LamdaId = LamdaId.And(e => e.TRNo == model.TRNo);
+            }
             if (model.Status != null)
             {
                 LamdaId = LamdaId.And(e => e.Status == model.Status);
@@ -174,11 +183,12 @@ namespace BusinessLogicLayer.Application
                               on x.CreatedBy equals u.Id
                          join ua in _UserBLL.GetAllUser().ToList()
                               on x.ReceivedBy equals ua.Id into receivedGroup
-                         from a1 in receivedGroup.DefaultIfEmpty()                         
+                         from a1 in receivedGroup.DefaultIfEmpty()
                          select new OrderReturnMaster
                          {
                              Id = x.Id,
                              SNo = x.SNo,
+                             TRNo = x.TRNo,
                              Distributor = x.Distributor,
                              Status = x.Status,
                              DistributorId = x.DistributorId,
@@ -188,52 +198,43 @@ namespace BusinessLogicLayer.Application
                              CreatedDate = x.CreatedDate,
                              ReceivedBy = x.ReceivedBy,
                              ReceivedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
-                             ReceivedDate = x.ReceivedDate,                             
+                             ReceivedDate = x.ReceivedDate,
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
         }
 
-        public JsonResponse UpdateOrderReturn(OrderReturnMaster model, SubmitStatus btnSubmit, IUrlHelper Url)
+        public JsonResponse UpdateOrderReturn(OrderReturnMaster model, OrderReturnStatus btnSubmit, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
                 _unitOfWork.Begin();
-                if (SessionHelper.AddReturnProduct.Count > 0)
+                if (SessionHelper.AddReturnProduct.Count > 0 && SessionHelper.AddReturnProduct != null)
                 {
-                    if (btnSubmit == SubmitStatus.Draft)
-                    {
-                        model.Status = OrderReturnStatus.Draft;
-                        jsonResponse.Message = OrderContant.OrderDraft;
-                    }
-                    else
-                    {
-                        model.Status = OrderReturnStatus.Submitted;
-                        jsonResponse.Message = OrderContant.OrderSubmit;
-                        jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
-                    }
                     if (model.Id == 0)
                     {
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                         var detail = SessionHelper.AddReturnProduct;
                         model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
                         Add(model);
+
                         if (model.Id > 0)
-                        {
                             UpdateSNo(model);
-                        }
+
                         detail.ForEach(e => e.OrderReturnId = model.Id);
                         detail.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
                         detail.ForEach(e => e.CreatedDate = DateTime.Now);
                         detail.ForEach(e => e.ProductMaster = null);
                         detail.ForEach(e => e.PlantLocation = null);
                         _OrderReturnDetailBLL.AddRange(detail);
-                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "OrderReturn");
                     }
                     else
                     {
-                        model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        var item = _repository.GetById(model.Id);
+                        model.DistributorId = item.DistributorId;
+                        model.SNo = item.SNo;
+                        model.Status = btnSubmit;
                         var detail = SessionHelper.AddReturnProduct;
                         model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
                         Update(model);
@@ -245,9 +246,22 @@ namespace BusinessLogicLayer.Application
                         detail.ForEach(e => e.ProductMaster = null);
                         detail.ForEach(e => e.PlantLocation = null);
                         _OrderReturnDetailBLL.AddRange(detail);
-                        jsonResponse.RedirectURL = model.Status == OrderReturnStatus.Draft ? Url.Action("Add", "OrderReturn", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "OrderReturn");
                     }
-                    jsonResponse.Status = true;
+
+                    if (btnSubmit == OrderReturnStatus.Draft)
+                    {
+                        model.Status = OrderReturnStatus.Draft;
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = model.Status == OrderReturnStatus.Draft ? OrderContant.OrderDraft + Environment.NewLine + " Order Return Id: " + model.SNo : OrderContant.OrderDraft + " Order Return Id: " + model.SNo;
+                        jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
+                    }
+                    else
+                    {
+                        model.Status = OrderReturnStatus.Submitted;
+                        jsonResponse.Status = true;
+                        jsonResponse.Message = model.Status == OrderReturnStatus.Draft ? OrderContant.OrderReturnSubmit + Environment.NewLine + " Order Return Id: " + model.SNo : OrderContant.OrderReturnSubmit + " Order Return Id: " + model.SNo;
+                        jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
+                    }
                 }
                 else
                 {
@@ -263,7 +277,6 @@ namespace BusinessLogicLayer.Application
                 _unitOfWork.Rollback();
                 throw ex;
             }
-
         }
 
         public List<OrderStatusViewModel> PlaceReturnOrderToSAP(int OrderReturnId)
@@ -289,7 +302,37 @@ namespace BusinessLogicLayer.Application
                     MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
                     PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
                     STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_StorageLocation,
-                    BATCH = "",
+                    BATCH = item.BatchNo,
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ReturnItemCategory,
+                    REQ_QTY = item.ReceivedQty.ToString()
+                });
+            }
+            return model;
+        }
+        public List<OrderStatusViewModel> PlaceReturnOrderPartiallyApprovedToSAP(int OrderReturnId)
+        {
+            List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
+            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId && e.ReturnOrderStatus == null).ToList();
+            var ProductDetail = productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new OrderStatusViewModel()
+                {
+                    SNO = string.Format("{0:1000000000}", item.OrderReturnId),
+                    ITEMNO = "",
+                    PARTN_NUMB = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderReturnMaster.TRNo,
+                    PURCH_DATE = DateTime.Now,
+                    PRICE_DATE = DateTime.Now,
+                    ST_PARTN = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_StorageLocation,
+                    BATCH = item.BatchNo,
                     ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ReturnItemCategory,
                     REQ_QTY = item.ReceivedQty.ToString()
                 });

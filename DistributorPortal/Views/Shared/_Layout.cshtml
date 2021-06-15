@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="cache-control" content="no-cache" />
-    <title>@ViewData["Title"] - DistributorPortal</title>
+    <title>@ViewData["Title"] - Distributor Portal</title>
     <partial name="Head" />
 
     <style type="text/css">
@@ -30,15 +30,24 @@
         .text-sm .select2-container--default .select2-selection--single, select.form-control-sm ~ .select2-container--default .select2-selection--single {
             height: calc(2.2rem + 2px);
         }
+
+        .custom-file {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .datepicker {
+            background: white !important;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed text-sm">
-    <audio id="xyz" src="~/lib/dist/swiftly-610.mp3" preload="auto"></audio>
-    <div class="wrapper">
+    <audio id="xyz" src="~/lib/dist/swiftly-610.mp3" preload="auto" allow="autoplay"></audio>
+    <div class="wrapper" style="min-height:700px;">
         <partial name="Navigation" />
         @RenderBody()
-        <partial name="Footer" />
     </div>
+    <partial name="Footer" />
     <div class="loader">
         <div class="loading">
         </div>

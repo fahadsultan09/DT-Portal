@@ -42,6 +42,7 @@ namespace BusinessLogicLayer.GeneralSetup
             item.PageURL = module.PageURL.Trim();
             item.PageIcon = module.PageIcon.Trim();
             item.Sort = module.Sort;
+            item.IsShowOnNavigation = module.IsShowOnNavigation;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

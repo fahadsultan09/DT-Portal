@@ -43,7 +43,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(Complaint module)
         {
             var item = _repository.GetById(module.Id);
-            if (_repository.GetAllList().Any())
+            if (_repository.GetAllList().Count() > 1)
             {
                 item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
             }
@@ -76,7 +76,7 @@ namespace BusinessLogicLayer.Application
                 model.ApprovedBy = SessionHelper.LoginUser.Id;
                 model.ApprovedDate = DateTime.Now;
             }
-            else if (ComplaintStatus.Reject == ComplaintStatus)
+            else if (ComplaintStatus.Rejected == ComplaintStatus)
 
             {
                 model.Remarks = Remarks;
@@ -204,7 +204,8 @@ namespace BusinessLogicLayer.Application
                              ApprovedDate = x.ApprovedDate,
                              RejectedBy = x.RejectedBy,
                              RejectedName = a3 == null ? string.Empty : (a3.FirstName + " " + a3.LastName + " (" + a3.UserName + ")"),
-                             RejectedDate = x.RejectedDate
+                             RejectedDate = x.RejectedDate,
+                             Remarks = x.Remarks
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();

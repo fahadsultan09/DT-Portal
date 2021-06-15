@@ -1,5 +1,4 @@
-﻿using BusinessLogicLayer.Application;
-using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
@@ -46,11 +45,12 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
+                    TempData["Message"] = NotificationMessage.RequiredFieldsValidation;
+                    return PartialView("Add", model);
                 }
                 else
                 {
@@ -73,8 +73,8 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Bank name already exist";
+                        TempData["Message"] = "Bank name already exist";
+                        return PartialView("Add", model);
                     }
                 }
                 return Json(new { data = jsonResponse });

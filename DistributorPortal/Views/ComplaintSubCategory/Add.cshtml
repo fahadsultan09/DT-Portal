@@ -1,13 +1,5 @@
 ﻿@model ComplaintSubCategory
 @{
-    var viewdata = (string)TempData["Message"];
-    if (!string.IsNullOrEmpty(viewdata))
-    {
-        <div class="alert alert-danger alert-dismissable" id="alertmessage">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            @viewdata <a class="alert-link" href="#"></a>
-        </div>
-    }
     string CCEmail = string.Join(',', Model.UserEmailCC.ToArray());
     string KPIEmail = string.Join(',', Model.UserEmailKPI.ToArray());
 }
@@ -28,7 +20,7 @@
                 </div>
             </div>
             <section class="content">
-                <div class="container-fluid" id="divform">
+                <div class="container-fluid">
                     <form asp-controller="ComplaintSubCategory"
                           asp-action="SaveEdit"
                           id="frmComplaintSubCategory"
@@ -58,14 +50,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-lg-3 col-form-label">Sub Category Name<span class="text-danger"> * </span></label>
+                                                    <label class="col-lg-3 col-form-label">Complaint Sub Category Name<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-9">
                                                         <input asp-for="ComplaintSubCategoryName" type="text" placeholder="Name" class="form-control" />
                                                         <span asp-validation-for="ComplaintSubCategoryName" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-lg-3 col-form-label">To Email<span class="text-danger"> * </span></label>
+                                                    <label class="col-lg-3 col-form-label">Assignee Name (To)<span class="text-danger"> * </span></label>
                                                     <div class="col-lg-9">
                                                         <select asp-for="UserEmailTo" asp-items="@(Model.UserList)" class="select2" data-placeholder="--Select option--" style="width: 100%;">
                                                             <option value="" disabled selected>--Please Select--</option>
@@ -81,9 +73,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-lg-3 col-form-label">KPI Days</label>
+                                                    <label class="col-lg-3 col-form-label">Complaint Resolving Days</label>
                                                     <div class="col-lg-9">
-                                                        <input type="number" asp-for="KPIDay" placeholder="KPI Days" class="form-control" />
+                                                        <input type="number" asp-for="KPIDay" min="0" max="9999999999" oninput="validity.valid||(value='');" placeholder="Enter No. of Days" class="form-control" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -129,7 +121,9 @@
 
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
 
         $('#UserEmailCC').tagsinput({
             trimValue: true,

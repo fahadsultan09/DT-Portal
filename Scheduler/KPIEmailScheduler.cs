@@ -44,7 +44,7 @@ namespace Scheduler
                     {
                         var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\")));
                         string EmailTemplate = path + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
-                        EmailUserModel EmailUserModel = new EmailUserModel();
+                        ComplaintEmailUserModel EmailUserModel = new ComplaintEmailUserModel();
                         User user = new User();
                         Complaint complaint = ComplaintList.First(x => x.ComplaintSubCategoryId == item.ComplaintSubCategoryId);
                         item.ComplaintSubCategory.ComplaintCategory = new ComplaintCategoryBLL(_unitOfWork).FirstOrDefault(x => x.Id == item.ComplaintSubCategory.ComplaintCategoryId);
@@ -54,7 +54,7 @@ namespace Scheduler
                         EmailUserModel.Day = item.ComplaintSubCategory.KPIDay.ToString();
                         EmailUserModel.ComplaintCategory = item.ComplaintSubCategory.ComplaintCategory.ComplaintCategoryName + " - " + item.ComplaintSubCategory.ComplaintSubCategoryName;
                         EmailUserModel.ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate);
-                        EmailUserModel.ComplaintNo = string.Format("{0:1000000000}", complaint.Id);
+                        EmailUserModel.ComplaintNo = complaint.SNo.ToString();
                         EmailUserModel.DistributorName = complaint.Distributor.DistributorName;
                         EmailUserModel.ComplaintDetail = complaint.Description;
                         EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MMM/yyyy");
@@ -62,7 +62,7 @@ namespace Scheduler
                         EmailUserModel.CCEmail = string.Join(',', item.UserEmailId);
                         EmailUserModel.Subject = "REMINDER: Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
                         //Sending Email
-                        _EmailLogBLL.SendEmail(item.ComplaintSubCategory.User, EmailUserModel);
+                        _EmailLogBLL.ComplaintSendEmail(item.ComplaintSubCategory.User, EmailUserModel);
                     }
                 }
             }

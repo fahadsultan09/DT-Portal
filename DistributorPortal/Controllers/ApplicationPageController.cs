@@ -1,5 +1,4 @@
-﻿using BusinessLogicLayer.Application;
-using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
@@ -44,17 +43,17 @@ namespace DistributorPortal.Controllers
             return PartialView("Add", BindApplicationPage(id));
         }
         [HttpPost]
-        public JsonResult SaveEdit(ApplicationPage model)
+        public IActionResult SaveEdit(ApplicationPage model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
+                TempData["Message"] = string.Empty;
                 ModelState.Remove("Id");
                 if (!ModelState.IsValid)
                 {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
-                    return Json(new { data = jsonResponse });
+                    TempData["Message"] = NotificationMessage.RequiredFieldsValidation;
+                    return PartialView("Add", model);
                 }
                 else
                 {
@@ -97,9 +96,8 @@ namespace DistributorPortal.Controllers
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Application page name already exist";
-                        return Json(new { data = jsonResponse });
+                        TempData["Message"] = "Application page name already exist";
+                        return PartialView("Add", model);
                     }
                 }
             }

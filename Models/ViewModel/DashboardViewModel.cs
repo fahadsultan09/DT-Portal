@@ -46,6 +46,7 @@ namespace Models.ViewModel
     }
     public class RecentOrder
     {
+        public int Id { get; set; }
         public int OrderNo { get; set; }
         public string DistributorName { get; set; }
         public double Amount { get; set; }
@@ -53,6 +54,7 @@ namespace Models.ViewModel
     }
     public class RecentPayment
     {
+        public int Id { get; set; }
         public int PaymentId { get; set; }
         public string PaymentMode { get; set; }
         public string DistributorName { get; set; }

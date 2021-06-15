@@ -1,10 +1,7 @@
 ﻿using Fingers10.ExcelExport.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Models.Application
 {

@@ -8,11 +8,9 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <div class="col-md-4">
-                    <h2 class="card-title">Product List</h2>
-                </div>
                 <div class="row">
                     <div class="col-md-4">
+                        <h2 class="card-title">Distributor Wise Product List</h2>
                     </div>
                     <div class="col-md-4">
                         <select name="DistributorId" asp-items="@(new SelectList(DistributorList, "Value", "Text"))" id="ddlDistributorId" class="form-control select2">
@@ -36,16 +34,14 @@
                 </div>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped"   >
                     <thead>
                         <tr>
                             <th>S.No</th>
                             <th>Product Name</th>
-                            <th>Product Description</th>
                             <th>SAP Product Code</th>
+                            <th>Rate</th>
                             <th>Discount</th>
-                            <th>Carton Size</th>
-                            <th>Pack Size</th>
                             <th>Product Price</th>
                         </tr>
                     </thead>
@@ -54,12 +50,10 @@
                         {
                             <tr>
                                 <td>@item.Id</td>
-                                <td>@item.ProductName</td>
                                 <td>@item.ProductDescription</td>
                                 <td>@item.SAPProductCode</td>
+                                <td>@item.Rate</td>
                                 <td>@item.Discount</td>
-                                <td>@item.CartonSize</td>
-                                <td>@item.PackSize</td>
                                 <td>@item.ProductPrice</td>
                             </tr>
                         }
@@ -76,12 +70,16 @@
 
         var DistributorId = '@ViewBag.DistributorId';
         $('#ddlDistributorId').val(DistributorId);
-        $('.select2').select2();
+
+        $('.select2').select2({
+            width: '100%',
+        });
 
         $("#example1").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
+            "order": [],
         });
     });
 

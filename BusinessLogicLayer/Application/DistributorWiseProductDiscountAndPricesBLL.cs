@@ -1,15 +1,12 @@
-﻿using System;
+﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
+using DataAccessLayer.WorkProcess;
+using Models.Application;
+using Models.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using BusinessLogicLayer.HelperClasses;
-using DataAccessLayer.Repository;
-using DataAccessLayer.WorkProcess;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Models.Application;
-using Models.UserRights;
-using Models.ViewModel;
 
 namespace BusinessLogicLayer.Application
 {
@@ -27,8 +24,7 @@ namespace BusinessLogicLayer.Application
             try
             {
                 _unitOfWork.Begin();
-                List<DistributorWiseProductDiscountAndPrices> distributorWiseProductDiscountAndPricesList =
-                    new List<DistributorWiseProductDiscountAndPrices>();
+                List<DistributorWiseProductDiscountAndPrices> distributorWiseProductDiscountAndPricesList = new List<DistributorWiseProductDiscountAndPrices>();
                 var distributorData = GetAllDistributorWiseProductDiscountAndPrices();
                 if (distributorData.Count > 0)
                 {
@@ -39,10 +35,10 @@ namespace BusinessLogicLayer.Application
                     distributorWiseProductDiscountAndPricesList.Add(new DistributorWiseProductDiscountAndPrices()
                     {
                         CartonSize = item.CartonSize,
+                        Rate = item.Rate,
                         Discount = item.Discount,
                         PackSize = item.PackSize,
                         ProductDescription = item.ProductDescription,
-                        ProductName = item.ProductName,
                         ProductPrice = item.ProductPrice,
                         SAPProductCode = item.SAPProductCode,
                         CreatedBy = SessionHelper.LoginUser.Id,
@@ -51,7 +47,7 @@ namespace BusinessLogicLayer.Application
                         ProductDetailId = item.ProductDetailId
                     });
                 }
-                _repository.AddRange(distributorWiseProductDiscountAndPricesList); 
+                _repository.AddRange(distributorWiseProductDiscountAndPricesList);
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
                 return true;
@@ -61,7 +57,7 @@ namespace BusinessLogicLayer.Application
                 _unitOfWork.Rollback();
                 return false;
             }
-            
+
         }
         public List<DistributorWiseProductDiscountAndPrices> GetAllDistributorWiseProductDiscountAndPrices()
         {

@@ -26,6 +26,8 @@ namespace DistributorPortal.Controllers
         private readonly PaymentBLL _PaymentBLL;
         private readonly ComplaintBLL _ComplaintBLL;
         private readonly OrderValueBLL _OrderValueBLL;
+        private readonly DistributorWiseProductDiscountAndPricesBLL _DistributorWiseProductDiscountAndPricesBLL;
+        private readonly ProductDetailBLL _ProductDetailBLL;
         public ReportsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -36,6 +38,8 @@ namespace DistributorPortal.Controllers
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
             _OrderValueBLL = new OrderValueBLL(_unitOfWork);
+            _DistributorWiseProductDiscountAndPricesBLL = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
+            _ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
         }
 
         #region Order
@@ -111,7 +115,9 @@ namespace DistributorPortal.Controllers
         #region Payment
         public ActionResult Payment()
         {
-            return View();
+            PaymentSearch paymentSearch = new PaymentSearch();
+            paymentSearch.paymentMasters = GetPaymentList(new PaymentSearch());
+            return View(paymentSearch);
         }
         public List<PaymentMaster> GetPaymentList(PaymentSearch model)
         {
@@ -242,7 +248,9 @@ namespace DistributorPortal.Controllers
         private OrderMaster BindOrderMaster(int Id)
         {
             OrderMaster model = _OrderBLL.GetOrderMasterById(Id);
+            List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPricesList = _DistributorWiseProductDiscountAndPricesBLL.Where(x => x.DistributorId == model.DistributorId).ToList();
             model.OrderDetail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(Id);
+            model.OrderDetail.ForEach(x => x.ProductDetail = _ProductDetailBLL.FirstOrDefault(y => y.ProductMasterId == x.ProductMaster.Id) != null ? _ProductDetailBLL.FirstOrDefault(y => y.ProductMasterId == x.ProductMaster.Id) : null);
             model.OrderValueViewModel = _OrderBLL.GetOrderValueModel(_OrderValueBLL.GetOrderValueByOrderId(Id));
             return model;
         }

@@ -2406,7 +2406,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
-var DEFAULT_TIMEOUT_IN_MS = 30 * 1000;
+ var DEFAULT_TIMEOUT_IN_MS = 100000;
 var DEFAULT_PING_INTERVAL_IN_MS = 15 * 1000;
 /** Describes the current state of the {@link HubConnection} to the server. */
 var HubConnectionState;

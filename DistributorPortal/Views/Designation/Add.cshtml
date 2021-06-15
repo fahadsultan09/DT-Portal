@@ -1,22 +1,9 @@
 ﻿@model Designation
-@{
-    var viewdata = (string)TempData["Message"];
-    if (!string.IsNullOrEmpty(viewdata))
-    {
-        <div class="alert alert-info alert-dismissable" id="alertmessage">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            @viewdata <a class="alert-link" href="#"></a>
-        </div>
-    }
-}
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Designation</h3>
     </div>
-    <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -67,17 +54,19 @@
         </div>
     </div>
 </div>
-<!-- /.card -->
 
 <script>
-    var OnSuccess = function () {
-        debugger
-        if (@viewdata == '') {
+    var message = '@((string)TempData["Message"])';
 
+    var MessageDisappear = function () {
+         
+        if (message != "") {
             Toast.fire({
-                icon: 'success',
-                title: '@NotificationMessage.SaveSuccessfully'
-            })
+                icon: 'error',
+                title: message
+            });
+            message = '';
         }
+        UnBlockUI();
     }
 </script>

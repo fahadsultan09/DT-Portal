@@ -8,14 +8,14 @@ namespace Utility.HelperClasses
 {
     public class EncryptDecrypt
     {
-        static byte[] key1 = ASCIIEncoding.ASCII.GetBytes("everykey");
+        static readonly byte[] key1 = Encoding.ASCII.GetBytes("everykey");
 
         public static string Encrypt(string originalString)
         {
             byte[] bytes = key1;
             try
             {
-                if (String.IsNullOrEmpty(originalString))
+                if (string.IsNullOrEmpty(originalString))
                 {
                     throw new ArgumentNullException("The string which needs to be encrypted can not be null.");
                 }
@@ -41,7 +41,7 @@ namespace Utility.HelperClasses
             try
             {
 
-                if (String.IsNullOrEmpty(cryptedString))
+                if (string.IsNullOrEmpty(cryptedString))
                 {
                     throw new ArgumentNullException("The string which needs to be decrypted can not be null.");
                 }

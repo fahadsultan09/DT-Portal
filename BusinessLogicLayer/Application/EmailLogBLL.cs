@@ -5,7 +5,6 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
@@ -15,7 +14,6 @@ namespace BusinessLogicLayer.Application
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<EmailLog> repository;
         private readonly Configuration _Configuration;
-
         public EmailLogBLL(IUnitOfWork unitOfWork, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
@@ -42,15 +40,15 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<EmailLog>().GetById(id);
         }
-        public void EmailSend(List<User> UserList, EmailUserModel EmailUserModel)
+        public void ComplaintEmail(List<User> UserList, ComplaintEmailUserModel EmailUserModel)
         {
 
             foreach (var user in UserList)
             {
-                SendEmail(user, EmailUserModel);
+                ComplaintSendEmail(user, EmailUserModel);
             }
         }
-        public void SendEmail(User User, EmailUserModel EmailUserModel)
+        public void ComplaintSendEmail(User User, ComplaintEmailUserModel EmailUserModel)
         {
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Name}}", User.FirstName + " " + User.LastName);
@@ -63,6 +61,41 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintDetail}}", EmailUserModel.ComplaintDetail);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
             EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
+        }
+        public void OrderEmail(List<User> UserList, ApprovedOrderEmailUserModel EmailUserModel)
+        {
+
+            foreach (var user in UserList)
+            {
+                OrderSendEmail(user, EmailUserModel);
+            }
+        }
+        public void OrderSendEmail(User User, ApprovedOrderEmailUserModel EmailUserModel)
+        {
+            string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ShipToPartyName}}", EmailUserModel.ShipToPartyName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{City}}", EmailUserModel.City);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{OrderNumber}}", EmailUserModel.OrderNumber);
+            EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
+        }
+        public void RetrunOrderEmail(List<User> UserList, ReturnOrderEmailUserModel EmailUserModel)
+        {
+
+            foreach (var user in UserList)
+            {
+                RetrunOrderSendEmail(user, EmailUserModel);
+            }
+        }
+        public void RetrunOrderSendEmail(User User, ReturnOrderEmailUserModel EmailUserModel)
+        {
+            string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ShipToPartyName}}", EmailUserModel.ShipToPartyName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{City}}", EmailUserModel.City);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ReturnOrderNo}}", EmailUserModel.RetrunOrderNumber);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
+            EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
     }
 }

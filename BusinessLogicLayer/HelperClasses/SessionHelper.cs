@@ -54,5 +54,15 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<List<SAPOrderPendingValue>>("SAPOrderPendingValue");
             set => _httpContextAccessor.HttpContext.Session.Set("SAPOrderPendingValue", value);
         }
+        public static string URL
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<string>("URL");
+            set => _httpContextAccessor.HttpContext.Session.Set("URL", value);
+        }
+        public static List<Notification> Notification
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<Notification>>("Notification");
+            set => _httpContextAccessor.HttpContext.Session.Set("Notification", value);
+        }
     }
 }

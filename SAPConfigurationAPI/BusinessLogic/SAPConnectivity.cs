@@ -24,7 +24,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                 rfcDest = RfcDestinationManager.GetDestination(SystemId);
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable(TableName);
             }
             catch (Exception ex)
@@ -33,10 +35,11 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
-
-
         }
         public DistributorBalance GETBalanceFromSAP(string Function, string TableName, string DistributorId)
         {
@@ -49,7 +52,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
                 companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 var sami = companyBapi.GetValue("BAL_SAMI");
                 var HTL = companyBapi.GetValue("BAL_HTL");
                 return new DistributorBalance
@@ -64,7 +69,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
         public IRfcTable PostOrdertoSAP(string Function, string TableName, List<OrderStatusViewModel> Table)
@@ -89,10 +97,10 @@ namespace SAPConfigurationAPI.BusinessLogic
                     structInputs.SetValue("PARTN_NUMB", dt1.Rows[i]["PARTN_NUMB"].ToString());
                     structInputs.SetValue("DOC_TYPE", dt1.Rows[i]["DOC_TYPE"].ToString());
                     structInputs.SetValue("DISTR_CHAN", dt1.Rows[i]["DISTR_CHAN"].ToString());
+                    structInputs.SetValue("SALES_ORG", dt1.Rows[i]["SALES_ORG"].ToString());
                     structInputs.SetValue("DIVISION", dt1.Rows[i]["DIVISION"].ToString());
                     var PURCH_DATE = Convert.ToDateTime(dt1.Rows[i]["PURCH_DATE"].ToString());
                     var PRICE_DATE = Convert.ToDateTime(dt1.Rows[i]["PRICE_DATE"].ToString());
-                    //      structInputs.SetValue("PURCH_DATE", Convert.ToDateTime(dt1.Rows[i]["PURCH_DATE"].ToString()).ToShortDateString());
                     structInputs.SetValue("PURCH_DATE", (PURCH_DATE.Year.ToString() + string.Format("{0:00}", PURCH_DATE.Month) + string.Format("{0:00}", PURCH_DATE.Day)).ToString());
                     structInputs.SetValue("PRICE_DATE", (PRICE_DATE.Year.ToString() + string.Format("{0:00}", PRICE_DATE.Month) + string.Format("{0:00}", PRICE_DATE.Day)).ToString());
                     structInputs.SetValue("ST_PARTN", dt1.Rows[i]["ST_PARTN"].ToString());
@@ -105,13 +113,12 @@ namespace SAPConfigurationAPI.BusinessLogic
                     tableimport.Append(structInputs);
 
                     //IRfcStructure structInputs = destination.Repository.GetStructureMetadata("ZECOM_VA01").CreateStructure();
-
                     //tableimport.Insert(structInputs);
-
                 }
-
                 companyBapi.SetValue("ORDERS", tableimport);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable("CREATED");
             }
             catch (Exception ex)
@@ -120,7 +127,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
         public SAPPaymentStatus AddPaymentToSAP(string Function, SAPPaymentViewModel Table)
@@ -139,7 +149,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                 companyBapi.SetValue("DISTRIBUTOR", Table.DISTRIBUTOR);
                 companyBapi.SetValue("AMOUNT", Table.AMOUNT);
                 companyBapi.SetValue("B_CODE", Table.B_CODE);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 var DOCUMENT = companyBapi.GetValue("DOCUMENT");
                 var COMPANY = companyBapi.GetValue("COMPANY");
                 var FISCAL = companyBapi.GetValue("FISCAL");
@@ -157,7 +169,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
         public IRfcTable GetOrderPendingQuantity(string Function, string DistributorId)
@@ -165,13 +180,16 @@ namespace SAPConfigurationAPI.BusinessLogic
             SAPSystemConnect sapCfg = new SAPSystemConnect();
             try
             {
+                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
                 RfcDestinationManager.RegisterDestinationConfiguration(sapCfg);
                 RfcDestination rfcDest = null;
                 rfcDest = RfcDestinationManager.GetDestination(SystemId);
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
                 companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable("PENDING");
             }
             catch (Exception ex)
@@ -180,7 +198,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
         public IRfcTable GetPendingOrderStatus(string Function, string TableName, List<SAPOrderStatus> OrderNoList)
@@ -210,7 +231,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                     tableimport.Append(structInputs);
                 }
                 companyBapi.SetValue("ORDERS", tableimport);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable("STATUSES");
             }
             catch (Exception ex)
@@ -219,7 +242,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
         public IRfcTable GetPendingOrderValue(string Function, string DistributorId)
@@ -233,7 +259,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
                 companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable("PENDING");
             }
             catch (Exception ex)
@@ -242,7 +270,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
 
@@ -258,7 +289,9 @@ namespace SAPConfigurationAPI.BusinessLogic
                 RfcRepository repo = rfcDest.Repository;
                 IRfcFunction companyBapi = repo.CreateFunction(Function);
                 companyBapi.SetValue("DISTRIBUTOR", DistributorId);
+                RfcSessionManager.BeginContext(rfcDest);
                 companyBapi.Invoke(rfcDest);
+                RfcSessionManager.EndContext(rfcDest);
                 return companyBapi.GetTable("PRICES");
             }
             catch (Exception ex)
@@ -267,7 +300,10 @@ namespace SAPConfigurationAPI.BusinessLogic
             }
             finally
             {
-                RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                if (RfcDestinationManager.GetDestination(SystemId) != null)
+                {
+                    RfcDestinationManager.UnregisterDestinationConfiguration(sapCfg);
+                }
             }
         }
     }

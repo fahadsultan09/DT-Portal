@@ -1,14 +1,4 @@
 ﻿@model UserSystemInfo
-@{
-    var viewdata = (string)TempData["Message"];
-    if (!string.IsNullOrEmpty(viewdata))
-    {
-        <div class="alert alert-danger alert-dismissable" id="alertmessage">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            @viewdata <a class="alert-link" href="#"></a>
-        </div>
-    }
-}
 
 <div class="card card-default">
     <div class="card-header">
@@ -68,7 +58,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <table id="example1" class="table table-bordered table-striped">
+                                        <table id="example1" class="table table-bordered table-striped"  >
                                             <thead>
                                                 <tr>
                                                     <th class="text-center">MAC Address</th>
@@ -81,13 +71,16 @@
                                                     {
                                                         for (int i = 0; i < Model.UserSystemInfoDetail.Count; i++)
                                                         {
-                                                            <tr class="@(Model.UserSystemInfoDetail[i].IsRowDeleted == true ? "d-none" : null )">
-                                                                <td class="text-center">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].MACAddress, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].MACAddress</td>
-                                                                <td class="d-none">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].IsRowDeleted</td>
-                                                                <td class="row justify-content-center">
-                                                                    <button type="button" id="btnDeleteLcl" class="btn btn-default float-right" value="Delete">Delete</button>
-                                                                </td>
-                                                            </tr>
+                                                            @if (!string.IsNullOrEmpty(Model.UserSystemInfoDetail[i].MACAddress))
+                                                            {
+                                                                <tr class="@(Model.UserSystemInfoDetail[i].IsRowDeleted == true ? "d-none" : null )">
+                                                                    <td class="text-center">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].MACAddress, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].MACAddress</td>
+                                                                    <td class="d-none">@Html.TextBoxFor(x => Model.UserSystemInfoDetail[i].IsRowDeleted, new { @class = "d-none" }) @Model.UserSystemInfoDetail[i].IsRowDeleted</td>
+                                                                    <td class="row justify-content-center">
+                                                                        <button type="button" id="btnDeleteLcl" class="btn btn-default float-right" value="Delete">Delete</button>
+                                                                    </td>
+                                                                </tr>
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -97,7 +90,7 @@
                                     <div class="form-group row">
                                         <div class="col-lg-12 ">
                                             <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
-                                                @(Model.Id > 0 ? "Update" : "Add")
+                                               Save
                                             </button>
                                             <a data-ajax-update="#divform"
                                                data-ajax="true"
@@ -119,10 +112,25 @@
 <script>
 
     var MACAddressArr = [];
+    var message = '@((string)TempData["Message"])';
+
+    var MessageDisappear = function (data) {
+
+        if (message != "") {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+            message = '';
+        }
+        UnBlockUI();
+    }
 
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
 
         @if (Model.UserSystemInfoDetail != null)
 	    {
@@ -153,7 +161,7 @@
 
             var LclMarkup = '<tr> \
             <td class="text-center"><label id="' + LclCount + '">' + MACAddress + '</label><input style="display:none;" id="UserSystemInfoDetail_' + LclCount + '__MACAddress" name="UserSystemInfoDetail[' + LclCount + '].MACAddress" type="text" value="' + MACAddress + '" ></td> \
-          <td class="d-none"><label id="' + LclCount + '">' + IsRowDeleted + '</label><input style="display:none;" id="UserSystemInfoDetail_' + LclCount + '__IsRowDeleted" name="UserSystemInfoDetail[' + LclCount + '].IsRowDeleted" type="text" value="' + IsRowDeleted + '" ></td> \
+          <td class="d-none" style="display:none;"><label id="' + LclCount + '">' + IsRowDeleted + '</label><input style="display:none;" id="UserSystemInfoDetail_' + LclCount + '__IsRowDeleted" name="UserSystemInfoDetail[' + LclCount + '].IsRowDeleted" type="text" value="' + IsRowDeleted + '" ></td> \
             <td class="row justify-content-center"><button type="button" id="btnDeleteLcl" class="btn btn-default float-right"" value="Delete">Delete</button></td></tr>';
             $("#example1 tbody").append(LclMarkup);
 
@@ -161,7 +169,7 @@
         });
 
         $("#example1").on("click", "#btnDeleteLcl", function () {
-            debugger
+
             var LclcurrentRow = $(this).closest("tr");
             MACAddressArr.splice(MACAddressArr.indexOf(LclcurrentRow.find('td:nth-child(1)').find(':input').val()), 1);
             LclcurrentRow.find('td:nth-child(2)').find(':input').val(true);

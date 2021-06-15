@@ -2,7 +2,7 @@
 @inject IUnitOfWork unitOfWork
 @{
     List<LicenseForm> LicenseFormList = new LicenseFormBLL(unitOfWork).GetAllLicenseForm();
-    ViewBag.Title = "Add License | Distributor Portal";
+    ViewBag.Title = "Add / Update License";
     var j = 0;
 }
 
@@ -67,147 +67,164 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <form asp-controller="DistributorLicense"
-                          asp-action="SaveEdit"
-                          id="frmDistributorLicense"
-                          data-ajax-begin="Begin"
-                          data-ajax-success="OnSuccess"
-                          data-ajax-complete="Complete"
-                          data-ajax="true"
-                          data-ajax-method="POST"
-                          enctype="multipart/form-data">
-                        <div class="card card-primary">
-                            <div class="card-header">
-                                <h3 class="card-title">License</h3>
-                            </div>
-                            <div class="card-body m-0 p-0">
-                                <div class="table-responsive scrollmenu">
-                                    <table id="example2" class="table table-bordered table-condensed table-hover table-striped" style="width: 125%;">
-                                        <thead>
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">License</h3>
+                        </div>
+                        <div class="card-body m-0 p-0">
+                            <div class="table-responsive scrollmenu">
+                                <table id="example2" class="table table-bordered table-condensed table-hover table-striped" style="width: 150%;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">License</th>
+                                            <th class="text-center">License Type<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Request Type<span class="text-danger"> * </span></th>
+                                            <th class="text-center">License No<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Issuing Authority<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Form No<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Attachment<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Issue Date<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Expiry Date<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-center">Remarks</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.Count; i++)
+                                        {
                                             <tr>
-                                                <th class="text-center">License</th>
-                                                <th class="text-center">Type</th>
-                                                <th class="text-center">Request Type</th>
-                                                <th class="text-center">License No</th>
-                                                <th class="text-center">Issuing Authority</th>
-                                                <th class="text-center">Form No</th>
-                                                <th class="text-center">Attachment</th>
-                                                <th class="text-center">Issue Date</th>
-                                                <th class="text-center">Expiry</th>
-                                                <th class="text-center">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @for (int i = 0; i < Model.Count; i++)
-                                            {
-                                                <tr>
-                                                    @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].Type == LicenseType.Challan)
+                                                @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].Type == LicenseType.Challan)
+                                                {
+                                                    if (Model[i].Expiry.Date <= DateTime.Now.Date && Model[i].Id != 0 || Model[i].Status == null)
                                                     {
-                                                        <td>
-                                                            <input type="hidden" asp-for="@Model[j].LicenseId" value="@Model[i].LicenseControl.Id" />
-                                                            <input type="hidden" asp-for="@Model[j].Id" value="@Model[i].Id" />
-                                                            @Model[i].LicenseControl.LicenseName
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Enum.GetValues(typeof(LicenseType)).Cast<LicenseType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
-                                                                <option readonly>--Select option--</option>
-                                                            </select>
-                                                            <span asp-validation-for="@Model[j].Type" class="text-danger"></span>
-                                                        </td>
-                                                        <td>
-                                                            <select style="width: 170px;" class="form-control select2" asp-for="@Model[j].RequestType" asp-items="Enum.GetValues(typeof(LicenseRequestType)).Cast<LicenseRequestType>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() })">
-                                                                <option readonly>--Select option--</option>
-                                                            </select>
-                                                            <span asp-validation-for="@Model[j].RequestType" class="text-danger"></span>
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" asp-for="@Model[j].LicenseNo" value="@Model[j].LicenseNo" class="form-control" />
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" asp-for="@Model[j].IssuingAuthority" value="@Model[j].IssuingAuthority" class="form-control" />
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control select2" asp-for="@Model[j].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[j].FormNoId))">
-                                                                <option readonly>--Select option--</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <div class="custom-file">
-                                                                <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
-                                                                <label class="custom-file-label" for="customFile">Choose file</label>
-                                                                <span class="caption">
-                                                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(!string.IsNullOrEmpty(Model[j].Attachment) ? Model[j].Attachment : "")" target="_blank">@(Model[j].Attachment != null ? Model[j].Attachment.Split('_')[1] : "")</a>
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group date" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].IssueDate.ToString("dd/MMM/yyyy"))" id="IssueDate@(j)" class="form-control datepicker" />
-                                                                <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datepicker">
-                                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group date" data-target-input="nearest">
-                                                                <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 ? DateTime.Now.ToString("dd/MMM/yyyy") : Model[j].Expiry.ToString("dd/MMM/yyyy"))" id="Expiry@(j)" class="form-control datepicker" />
-                                                                <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datepicker">
-                                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].Status
-                                                        </td>
-                                                        j++;
+                                                        Model[j].LicenseNo = string.Empty;
+                                                        Model[j].IssuingAuthority = string.Empty;
+                                                        if (Model[i].Id == 0)
+                                                        {
+                                                            Model[j].Status = null;
+                                                        }
+                                                        else
+                                                        {
+                                                            Model[j].Status = LicenseStatus.Expired;
+                                                        }
+                                                        Model[j].Type = null;
+                                                        Model[j].RequestType = null;
+                                                        Model[j].FormNoId = null;
                                                     }
-                                                    else
-                                                    {
-                                                        <td>
-                                                            <input type="hidden" asp-for="@Model[j].Type" value="@Model[j].Type" />
-                                                            <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
-                                                            @Model[i].LicenseControl.LicenseName
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].Type
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].RequestType
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].LicenseNo
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].IssuingAuthority
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].LicenseForm.LicenseFormNo
-                                                        </td>
-                                                        <td>
-                                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].IssueDate.ToShortDateString()
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].Expiry.ToShortDateString()
-                                                        </td>
-                                                        <td>
-                                                            @Model[i].Status
-                                                        </td>
-                                                        j++;
-                                                    }
-                                                </tr>
-                                            }
-                                            <tr>
-                                                <td colspan="10"><button class="btn btn-info fa-pull-right" type="submit">Save</button></td>
+                                                    <td width="5%">
+                                                        <input type="hidden" asp-for="@Model[j].LicenseControl.LicenseName" value="@Model[i].LicenseControl.LicenseName" />
+                                                        <input type="hidden" asp-for="@Model[j].LicenseId" value="@Model[i].LicenseControl.Id" class="hiddenLicenseId" />
+                                                        <input type="hidden" asp-for="@Model[j].Id" value="@Model[i].Id" class="hiddenId" />
+                                                        @Model[i].LicenseControl.LicenseName
+                                                    </td>
+                                                    <td width="10%">
+                                                        <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Html.GetEnumSelectList<LicenseType>()">
+                                                            <option readonly>--Select option--</option>
+                                                        </select>
+                                                    </td>
+                                                    <td width="10%">
+                                                        <select class="form-control select2" asp-for="@Model[j].RequestType" asp-items="Html.GetEnumSelectList<LicenseRequestType>()">
+                                                            <option readonly>--Select option--</option>
+                                                        </select>
+                                                    </td>
+                                                    <td width="6%">
+                                                        <input type="text" asp-for="@Model[j].LicenseNo" value="@Model[i].LicenseNo" class="form-control" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" asp-for="@Model[j].IssuingAuthority" value="@Model[i].IssuingAuthority" class="form-control" />
+                                                    </td>
+                                                    <td width="10%">
+                                                        <select class="form-control select2" asp-for="@Model[j].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[j].FormNoId))">
+                                                            <option readonly>--Select option--</option>
+                                                        </select>
+                                                    </td>
+                                                    <td width="10%">
+                                                        <div class="custom-file">
+                                                            <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                                        </div>
+                                                        <span class="caption">
+                                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(!string.IsNullOrEmpty(Model[i].Attachment) ? Model[i].Attachment : "")" target="_blank">@(Model[i].Attachment != null ? Model[i].Attachment.Split('_')[1] : "")</a>
+                                                        </span>
+                                                    </td>
+                                                    <td width="10%">
+                                                        <div class="input-group date" data-target-input="nearest">
+                                                            <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 || Model[i].Expiry.Date <= DateTime.Now.Date ? null : Model[i].IssueDate.ToShortDateString())" id="IssueDate@(j)" class="form-control datepicker1" style="background-color:white;" />
+                                                            <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datepicker">
+                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td width="10%">
+                                                        <div class="input-group date" data-target-input="nearest">
+                                                            <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 || Model[i].Expiry.Date <= DateTime.Now.Date ? null : Model[i].Expiry.ToShortDateString())" id="Expiry@(j)" class="form-control datepicker2" style="background-color:white;" />
+                                                            <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datepicker">
+                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td width="4%">
+                                                        @Model[i].Status
+                                                    </td>
+                                                    <td width="10%">
+                                                        @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
+                                                    </td>
+                                                    <td width="5%">
+                                                        @if (Model.Any(x => x.Status == LicenseStatus.Rejected || x.Type == LicenseType.Challan || x.Expiry.Date <= DateTime.Now.Date))
+                                                        {
+                                                            <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
+                                                        }
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td width="5%">
+                                                        <input type="hidden" asp-for="@Model[j].Type" value="@Model[j].Type" />
+                                                        <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
+                                                        @Model[i].LicenseControl.LicenseName
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].Type
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Html.DisplayFor(x => Model[i].RequestType)
+                                                    </td>
+                                                    <td width="6%">
+                                                        @Model[i].LicenseNo
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].IssuingAuthority
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].LicenseForm.LicenseFormNo
+                                                    </td>
+                                                    <td width="10%">
+                                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].IssueDate.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].Expiry.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    <td width="4%">
+                                                        @Model[i].Status
+                                                    </td>
+                                                    <td width="10%">
+                                                        @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
+                                                    </td>
+                                                    <td width="5%">
+                                                    </td>
+                                                    j++;
+                                                }
                                             </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="col-12">
                     <div class="card card-primary">
@@ -216,13 +233,13 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive-sm">
-                                <table id="example1" class="table table-bordered table-striped">
+                                <table id="example1" class="table table-bordered table-striped"  >
                                     <thead>
                                         <tr>
                                             <th class="text-center">License</th>
-                                            <th class="text-center">Type</th>
+                                            <th class="text-center">License Type</th>
                                             <th class="text-center">Request Type</th>
-                                            <th class="text-center">Attachment</th>
+                                            <th class="text-center" width="20%">Attachment</th>
                                             <th class="text-center">Issue Date</th>
                                             <th class="text-center">Expiry</th>
                                         </tr>
@@ -231,7 +248,7 @@
 
                                         @if (ViewBag.distributorLicensesHistory.Count > 0)
                                         {
-                                            @foreach (var item in ViewBag.distributorLicensesHistory)
+                                            @foreach (var item in (List<DistributorLicense>)ViewBag.distributorLicensesHistory)
                                             {
                                                 <tr>
                                                     <td>
@@ -241,16 +258,16 @@
                                                         @item.Type
                                                     </td>
                                                     <td>
-                                                        @item.RequestType
+                                                        @Html.DisplayFor(x => item.RequestType)
                                                     </td>
                                                     <td>
                                                         <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ?  item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
                                                     </td>
                                                     <td>
-                                                        @item.IssueDate.ToShortDateString()
+                                                        @item.IssueDate.ToString("dd/MM/yyyy")
                                                     </td>
                                                     <td>
-                                                        @item.Expiry.ToShortDateString()
+                                                        @item.Expiry.ToString("dd/MM/yyyy")
                                                     </td>
                                                 </tr>
                                             }
@@ -273,6 +290,96 @@
 </div>
 
 <script>
+
+    $("#example2").on("click", ".btnSubmit", function () {
+
+        if ($(this).closest("tr").find("td:eq(1)").find(":input").val() == "--Select option--") {
+            Toast.fire({ icon: 'error', title: 'Select License Type' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(2)").find(":input").val() == "--Select option--") {
+            Toast.fire({ icon: 'error', title: 'Select Request Type' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(3)").find(":input").val() == "") {
+            Toast.fire({ icon: 'error', title: 'Enter License No' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(4)").find(":input").val() == "") {
+            Toast.fire({ icon: 'error', title: 'Enter Issuing Authority' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(5)").find(":input").val() == "--Select option--") {
+            Toast.fire({ icon: 'error', title: 'Select Form No' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(6)").find(":input").val() == "") {
+            Toast.fire({ icon: 'error', title: 'Select Attachment' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(7)").find(":input").val() == "") {
+            Toast.fire({ icon: 'error', title: 'Select Issue Date' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(8)").find(":input").val() == "") {
+            Toast.fire({ icon: 'error', title: 'Select Expiry Date' });
+            return false;
+        }
+        var fileUpload = $(this).closest("tr").find("td:eq(6)").find(":input").get(0);
+        var files = fileUpload.files;
+
+        Ladda.create(this).start();
+        var LicenseControl = {
+            LicenseName: $(this).closest("tr").find("td:eq(0)").find(":input").val()
+        };
+        var model = new FormData();
+        model.append('Id', $(this).closest("tr").find("td:eq(0)").find('input.hiddenId').val());
+        model.append('LicenseId', $(this).closest("tr").find("td:eq(0)").find('input.hiddenLicenseId').val());
+        model.append('LicenseControl', LicenseControl);
+        model.append('Type', $(this).closest("tr").find("td:eq(1)").find(":input").val());
+        model.append('RequestType', $(this).closest("tr").find("td:eq(2)").find(":input").val());
+        model.append('LicenseNo', $(this).closest("tr").find("td:eq(3)").find(":input").val());
+        model.append('IssuingAuthority', $(this).closest("tr").find("td:eq(4)").find(":input").val());
+        model.append('FormNoId', $(this).closest("tr").find("td:eq(5)").find(":input").val());
+        model.append('File', files[0]);
+        model.append('IssueDate', $(this).closest("tr").find("td:eq(7)").find(":input").val());
+        model.append('Expiry', $(this).closest("tr").find("td:eq(8)").find(":input").val());
+
+        $.post({
+            url: "SaveEdit/DistributorLicense",
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data: model,
+            success: function (data) {
+
+                if (data) {
+                    Toast.fire({ icon: 'success', title: data.data.Message });
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    Ladda.create(this).stop();
+                    Toast.fire({ icon: 'error', title: data.data.Message });
+                }
+            }
+        });
+
+    });
+
+    $(".datepicker1").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'bottom',
+        endDate: new Date()
+    });
+
+    $(".datepicker2").datepicker({
+        autoclose: true,
+        orientation: 'bottom',
+        startDate: '+1d'
+    });
+
     $('.custom-file-input').on("change", function () {
         var fileName = $(this).val().split("\\").pop();
         $(this).next('.custom-file-label').html(fileName);
@@ -280,10 +387,15 @@
 
     $(document).ready(function () {
 
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%',
+        });
 
-        $('body').on('keyup', '#Amount', function () {
-            $('#AmountInWords').html(inWords($('#Amount').val()));
+        $("#example1").DataTable({
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": []
         });
 
         $('body').on('change', '#ddlCompany', function () {
@@ -312,7 +424,6 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: { Id: $(".ddlDepostitorBank").val() },
-                async: false,
                 success: function (response) {
                     $('#DepositorBankCode').val(response[0]);
                 },
@@ -326,21 +437,11 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: { Id: $(".ddlCompanyBank").val() },
-                async: false,
                 success: function (response) {
                     $('#CompanyBankCode').val(response[0]);
                 },
             });
         });
-
     });
-    $(document).ready(function () {
 
-        $("#example1").DataTable({
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "responsive": true,
-            "autoWidth": false,
-            "order": []
-        });
-    });
 </script>

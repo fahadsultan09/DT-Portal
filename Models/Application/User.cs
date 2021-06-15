@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
 using Models.UserRights;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,6 +11,8 @@ namespace Models.Application
 {
     public class User : DeletedEntity
     {
+        [StringLength(1000)]
+        public string AccessToken { get; set; }
         [DisplayName("First Name")]
         [Required(ErrorMessage = "First Name field is required.")]
         [StringLength(100)]
@@ -20,8 +23,7 @@ namespace Models.Application
         public string LastName { get; set; }
         [DisplayName("Username")]
         [Required(ErrorMessage = "User name field is required.")]
-        [StringLength(6)]
-        [MaxLength(6, ErrorMessage = "User name max length must be 6 characters")]
+        [MaxLength(8, ErrorMessage = "User name max length must be 8 characters")]
         [MinLength(6, ErrorMessage = "User name min length must be 6 characters")]
         [RegularExpression(@"^[0-9-]*$", ErrorMessage = "Only number is allowed")]
         public string UserName { get; set; }
@@ -57,6 +59,8 @@ namespace Models.Application
         [Required(ErrorMessage = "Confirm Password field is required.")]
         [Compare("Password", ErrorMessage = "Password doesn't match.")]
         public string ConfirmPassword { get; set; }
+        [BindRequired]
+        [Required(ErrorMessage = "Select city.")]
         public int? CityId { get; set; }
         [ForeignKey("CityId")]
         public virtual City City { get; set; }
@@ -78,6 +82,7 @@ namespace Models.Application
         public SelectList CompanyList { get; set; }
         [NotMapped]
         public SelectList PlantLocationList { get; set; }
-
+        [NotMapped]
+        public string MacAddresses { get; set; }
     }
 }

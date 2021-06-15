@@ -1,13 +1,13 @@
 ﻿@model PaymentSearch
 @inject IUnitOfWork iUnitOfWork
 @{
-    ViewBag.Title = "Payment | Distributor Portal";
+    ViewBag.Title = "Payment ";
     var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
     var search = new PaymentSearch() { DistributorList = distributor };
 }
 
 <div class="content-wrapper">
-    <section class="content-header p-0">
+    <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
@@ -25,7 +25,7 @@
     <partial name="PaymentSearch" model="@search" />
     <section class="content">
         <div class="container-fluid scrollmenu" id="divform">
-            <partial name="PaymentList" model="Model" />
+            <partial name="PaymentList" model="Model.paymentMasters" />
         </div>
     </section>
 </div>

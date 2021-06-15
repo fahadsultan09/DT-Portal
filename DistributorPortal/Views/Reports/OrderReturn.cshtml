@@ -1,13 +1,13 @@
 ﻿@model OrderSearch
 @inject IUnitOfWork iUnitOfWork
 @{
-    ViewBag.Title = "Order Return | Distributor Portal";
+    ViewBag.Title = "Order Return ";
     var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
     var search = new OrderReturnSearch() { DistributorList = distributor };
 }
 
 <div class="content-wrapper">
-    <section class="content-header p-0">
+    <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">

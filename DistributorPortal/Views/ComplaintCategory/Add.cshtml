@@ -1,22 +1,9 @@
 ﻿@model ComplaintCategory
-@{
-    var viewdata = (string)TempData["Message"];
-    if (!string.IsNullOrEmpty(viewdata))
-    {
-        <div class="alert alert-danger alert-dismissable" id="alertmessage">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            @viewdata <a class="alert-link" href="#"></a>
-        </div>
-    }
-}
 
-<!-- Main content -->
-<!-- SELECT2 EXAMPLE -->
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Complaint Category</h3>
     </div>
-    <!-- /.card-header -->
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -65,6 +52,21 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> 
 </div>
-<!-- /.card -->
+
+<script>
+    var message = '@((string)TempData["Message"])';
+
+    var MessageDisappear = function () {
+         
+        if (message != "") {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+            message = '';
+        }
+        UnBlockUI();
+    }
+</script>

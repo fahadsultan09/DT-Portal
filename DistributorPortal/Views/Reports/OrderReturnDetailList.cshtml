@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<OrderReturnDetail>
+@{ int i = 1; }
 
 <div class="row">
     <div class="col-12 p-0" style="height: 300px;">
@@ -10,7 +11,7 @@
                             <th colspan="6" style="text-align: center; vertical-align: middle; font-size:medium;">Order Return No: <span>@string.Format("{0:1000000000}", Model.FirstOrDefault().OrderReturnId)</span></th>
                         </tr>
                         <tr>
-
+                            <th>S No</th>
                             <th>Product Name</th>
                             <th>Ordered Quantity</th>
                             <th>Received Quantity</th>
@@ -21,6 +22,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>@(i++)</td>
                                 <td>@item.ProductMaster.ProductDescription</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.ReceivedQty</td>

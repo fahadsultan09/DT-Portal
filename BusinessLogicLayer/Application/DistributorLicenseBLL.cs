@@ -25,25 +25,28 @@ namespace BusinessLogicLayer.Application
         public int Add(DistributorLicense module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
+            module.File = null;
+            module.LicenseControl = null;
+            module.Status = LicenseStatus.Submitted;
+            module.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
-            module.Status = LicenseStatus.Submitted;
             _repository.Insert(module);
-            module.File = null;
             _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Insert, module, "Save Distributor License", module.CreatedBy);
             return _unitOfWork.Save();
         }
         public int Update(DistributorLicense module)
         {
             var item = _repository.GetById(module.Id);
+            module.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
             item.IssueDate = module.IssueDate;
             item.LicenseId = module.LicenseId;
             item.Attachment = module.Attachment;
             item.DistributorId = module.DistributorId;
             item.Expiry = module.Expiry;
             item.IsActive = module.IsActive;
-            item.Status = module.Status;
+            item.Status = LicenseStatus.Submitted;
             item.Type = module.Type;
             item.RequestType = module.RequestType;
             item.UpdatedBy = SessionHelper.LoginUser.Id;

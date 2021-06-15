@@ -40,7 +40,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public int DeleteComplaintCategory(int id)
         {
             var item = _repository.GetById(id);
-            item.IsDeleted = true;
+            item.IsDeleted = false;
             _repository.Delete(item);
             return _unitOfWork.Save();
         }

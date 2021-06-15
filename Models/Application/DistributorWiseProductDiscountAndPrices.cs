@@ -17,10 +17,10 @@ namespace Models.Application
         public virtual ProductDetail ProductDetail { get; set; }
         public string SAPProductCode { get; set; }
         public string PackSize { get; set; }
-        public string ProductName { get; set; }
         public string ProductDescription { get; set; }
         public double ProductPrice { get; set; }
         public double CartonSize { get; set; }
+        public double Rate { get; set; }
         public double Discount { get; set; }
     }
 }

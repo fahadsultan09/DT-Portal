@@ -28,7 +28,8 @@ namespace DistributorPortal.Controllers
         private readonly LicenseControlBLL _licenseControlBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly AuditTrailBLL<DistributorLicense> _AuditTrailDistributorLicense;
-        public DistributorLicenseController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private readonly Configuration _Configuration;
+        public DistributorLicenseController(IUnitOfWork unitOfWork, IConfiguration configuration, Configuration _configuration)
         {
             _unitOfWork = unitOfWork;
             _DistributorLicenseBLL = new DistributorLicenseBLL(_unitOfWork);
@@ -36,6 +37,7 @@ namespace DistributorPortal.Controllers
             _licenseControlBLL = new LicenseControlBLL(_unitOfWork);
             _IConfiguration = configuration;
             _AuditTrailDistributorLicense = new AuditTrailBLL<DistributorLicense>(_unitOfWork);
+            _Configuration = _configuration;
         }
         // GET: DistributorLicense
         public IActionResult Index()
@@ -48,19 +50,20 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Add()
         {
-            var licenseControl = _licenseControlBLL.GetAllLicenseControl();
-            var model = new List<DistributorLicense>();
+            var licenseControl = _licenseControlBLL.Where(x => x.IsActive && !x.IsDeleted);
+            var DistributorLicenseList = new List<DistributorLicense>();
             List<DistributorLicense> distributorLicensesHistory = new List<DistributorLicense>();
             var License = _DistributorLicenseBLL.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             if (License.Count > 0)
             {
-                model.AddRange(License);
+                DistributorLicenseList.AddRange(License);
+                DistributorLicenseList.ForEach(x => x = x.Expiry.Date <= DateTime.Now.Date ? new DistributorLicense() : x);
             }
             foreach (var item in licenseControl)
             {
-                if (!model.Any(e => e.LicenseId == item.Id))
+                if (!DistributorLicenseList.Any(e => e.LicenseId == item.Id))
                 {
-                    model.Add(new DistributorLicense()
+                    DistributorLicenseList.Add(new DistributorLicense()
                     {
                         LicenseControl = item
                     });
@@ -74,71 +77,55 @@ namespace DistributorPortal.Controllers
                 distributorLicensesHistory.Add(license);
             }
             ViewBag.distributorLicensesHistory = distributorLicensesHistory.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-            return View(model);
+            return View(DistributorLicenseList);
         }
         [HttpPost]
-        public IActionResult SaveEdit(List<DistributorLicense> model)
+        public JsonResult SaveEdit(DistributorLicense model)
         {
             JsonResponse jsonResponse = new JsonResponse();
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("LicenseFolderPath").Value;
+            string[] permittedExtensions = Common.permittedExtensions;
             try
             {
-                if (model.Where(x => x.File is null).Count() == model.Count())
+                if (model.File is null)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Add license";
+                    jsonResponse.Message = "Add Attachment";
                     return Json(new { data = jsonResponse });
-                }
-                for (int i = 0; i < model.Count(); i++)
-                {
-                    if (model[i].File is null)
-                    {
-                        ModelState.Remove("[" + i + "].Type");
-                        ModelState.Remove("[" + i + "].RequestType");
-                        ModelState.Remove("[" + i + "].FormNoId");
-                    }
                 }
                 if (!ModelState.IsValid)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                    var message = string.Join(" <br />", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    jsonResponse.Message = message.Replace("'--Select option--'", "");
                     return Json(new { data = jsonResponse });
                 }
-
-                foreach (var item in model.Where(x => x.File != null))
+                var ext = Path.GetExtension(model.File.FileName).ToLowerInvariant();
+                if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                 {
-                    string[] permittedExtensions = Common.permittedExtensions;
-
-                    if (item.File != null)
+                    return Json(new { Result = false, Message = NotificationMessage.FileTypeAllowed });
+                }
+                if (model.File.Length >= Convert.ToInt64(_Configuration.FileSize))
+                {
+                    return Json(new { Result = false, Message = NotificationMessage.FileSizeAllowed });
+                }
+                Tuple<bool, string> tuple = FileUtility.UploadFile(model.File, FolderName.DistributorLicense, FolderPath);
+                if (tuple.Item1)
+                {
+                    model.Attachment = tuple.Item2;
+                }
+                if (model.Id > 0)
+                {
+                    if (model.Attachment != null)
                     {
-                        var ext = Path.GetExtension(item.File.FileName).ToLowerInvariant();
-                        if (permittedExtensions.Contains(ext) && item.File.Length < Convert.ToInt64(5242880))
-                        {
-                            Tuple<bool, string> tuple = FileUtility.UploadFile(item.File, FolderName.Order, FolderPath);
-                            if (tuple.Item1)
-                            {
-                                item.Attachment = tuple.Item2;
-                            }
-                        }
-                        item.Status = LicenseStatus.Submitted;
-                        item.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                        item.IsActive = true;
-                        item.IsDeleted = false;
-                        if (item.Id > 0)
-                        {
-                            if (item.Attachment != null)
-                            {
-                                _DistributorLicenseBLL.Update(item);
-                            }
-                        }
-                        else
-                        {
-                            if (item.Attachment != null)
-                            {
-                                _DistributorLicenseBLL.Add(item);
-                            }
-
-                        }
+                        _DistributorLicenseBLL.Update(model);
+                    }
+                }
+                else
+                {
+                    if (model.Attachment != null)
+                    {
+                        _DistributorLicenseBLL.Add(model);
                     }
 
                 }
@@ -169,15 +156,16 @@ namespace DistributorPortal.Controllers
 
                 if (Status == LicenseStatus.Verified)
                 {
+                    jsonResponse.Status = true;
                     jsonResponse.Message = model.LicenseControl.LicenseName + " License approved successfully.";
                 }
                 else
                 {
+                    jsonResponse.Status = false;
                     jsonResponse.Message = model.LicenseControl.LicenseName + " License has been rejected.";
                 }
                 _unitOfWork.Save();
 
-                jsonResponse.Status = true;
                 jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
                 jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "License #: " + string.Format("{0:1000000000}", model.Id), Message = jsonResponse.Message, Status = Enum.GetName(typeof(LicenseStatus), model.Status) };
                 return Json(new { data = jsonResponse });

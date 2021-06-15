@@ -126,7 +126,7 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Complaint Sub Category name already exist";
+                        jsonResponse.Message = "Complaint sub category name already exist";
                     }
                 }
                 return Json(new { data = jsonResponse });

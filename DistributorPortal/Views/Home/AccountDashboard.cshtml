@@ -36,7 +36,7 @@
                             <i class="fas fa-money-bill-alt"></i>
                         </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Current Year Payment</span>
+                            <span>Current Year Payment</span>
                             <span class="info-box-number">@Model.VerifiedPayment</span>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                             <i class="fas fa-money-bill-alt"></i>
                         </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Unverified Payment</span>
+                            <span>Unverified Payment</span>
                             <span class="info-box-number">@Model.UnverifiedPaymentCount</span>
                             <span class="info-box-number">Amount: @Model.UnverifiedPayment</span>
                         </div>
@@ -59,7 +59,7 @@
                             <i class="fas fa-money-bill-alt"></i>
                         </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Today's Verified Payment</span>
+                            <span>Today's Verified Payment</span>
                             <span class="info-box-number">@Model.TodayVerifiedPayment</span>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="card card-primary">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Payment Comparision - Last 12 Months</h3>
+                                <h3 class="card-title">Payment Comparison - Last 12 Months</h3>
                             </div>
                         </div>
                         <div class="card-body" id="PaymentWiseComparision" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">

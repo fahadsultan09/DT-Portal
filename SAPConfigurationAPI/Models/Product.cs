@@ -17,5 +17,7 @@ namespace SAPConfigurationAPI.Models
         public double Discount { get; set; }
         public string LicenseType { get; set; }
         public string SFSize { get; set; }
+        public string Strength { get; set; }
+        public string ProductOrigin { get; set; }
     }
 }

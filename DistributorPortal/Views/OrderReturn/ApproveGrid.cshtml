@@ -2,8 +2,8 @@
 
 @if (Model.OrderReturnDetail.Count > 0)
 {
-    <div class="table-responsive-sm">
-        <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+    <div class="scrollmenu">
+        <table id="example2" class="table table-bordered table-hover table-striped table-responsive" style="width:150%;">
             <thead>
                 <tr>
                     <th>
@@ -22,7 +22,7 @@
                     <th>Received Qty</th>
                     <th>Discount</th>
                     <th>Net Amount</th>
-                    <th>Manufacture Date</th>
+                    <th>Mfg. Date</th>
                     <th>Expiry Date</th>
                     <th>Invoice No</th>
                     <th>Invoice Date</th>
@@ -47,23 +47,23 @@
                         <td>@Model.OrderReturnDetail[i].Company.CompanyName</td>
                         <td>@Model.OrderReturnDetail[i].PlantLocation.PlantLocationName</td>
                         <td>
-                            <input type="number" asp-for="@Model.OrderReturnDetail[i].BatchNo" value="@Model.OrderReturnDetail[i].BatchNo" class="form-control" />
+                            <input type="text" asp-for="@Model.OrderReturnDetail[i].BatchNo" value="@Model.OrderReturnDetail[i].BatchNo" class="form-control" />
                         </td>
                         <td>
-                            <input type="number" asp-for="@Model.OrderReturnDetail[i].MRP" width="100" value="@Model.OrderReturnDetail[i].MRP" class="form-control" />
+                            <input type="text" asp-for="@Model.OrderReturnDetail[i].MRP" value="@Model.OrderReturnDetail[i].MRP" min="0" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
                         </td>
                         <td>@Model.OrderReturnDetail[i].TotalPrice</td>
                         <td>@Model.OrderReturnDetail[i].Quantity</td>
                         <td>
-                            <input type="number" asp-for="@Model.OrderReturnDetail[i].ReceivedQty" value="@Model.OrderReturnDetail[i].Quantity" class="form-control" />
+                            <input type="text" asp-for="@Model.OrderReturnDetail[i].ReceivedQty" value="@Model.OrderReturnDetail[i].Quantity" min="0" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
                         </td>
                         <td>@Model.OrderReturnDetail[i].ProductMaster.Discount %</td>
                         <td><span class="Amount">@Model.OrderReturnDetail[i].NetAmount</span></td>
-                        <td><input class="form-control" type="text" value="@Model.OrderReturnDetail[i].ManufactureDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].ManufactureDate" readonly="readonly" /></td>
-                        <td><input class="form-control" type="text" value="@Model.OrderReturnDetail[i].ExpiryDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].ExpiryDate" readonly="readonly" /></td>
-                        <td><input class="form-control" type="text" value="@Model.OrderReturnDetail[i].InvoiceNo" asp-for="@Model.OrderReturnDetail[i].InvoiceNo" readonly="readonly" /></td>
-                        <td><input class="form-control" type="text" value="@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].InvoiceDate" readonly="readonly" /></td>
-                        <td><input class="form-control" type="text" value="@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")" asp-for="@Model.OrderReturnDetail[i].IntimationDate" readonly="readonly" /></td>
+                        <td>@Model.OrderReturnDetail[i].ManufactureDate.ToString("dd/MM/yyyy")</td>
+                        <td>@Model.OrderReturnDetail[i].ExpiryDate.ToString("dd/MM/yyyy")</td>
+                        <td>@Model.OrderReturnDetail[i].InvoiceNo</td>
+                        <td>@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")</td>
+                        <td>@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")</td>
                     </tr>
                 }
             </tbody>
@@ -89,8 +89,6 @@
             "responsive": true,
             "autoWidth": false,
             "order": [],
-            "scrollX": true,
-            "sScrollXInner": "150%",
         });
 
         CalculateTotal();

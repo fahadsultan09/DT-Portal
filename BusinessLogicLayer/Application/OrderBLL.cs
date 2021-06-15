@@ -3,20 +3,24 @@ using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
+using DPPendingOrdersRequest;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.ServiceModel;
+using System.Text;
+using System.Xml;
 using Utility;
-using Utility.Constant;
 using Utility.HelperClasses;
 using static Utility.Constant.Common;
 
@@ -28,7 +32,7 @@ namespace BusinessLogicLayer.Application
         private readonly IGenericRepository<OrderMaster> _repository;
         private readonly IGenericRepository<OrderValue> _OrderValuerepository;
         private readonly OrderDetailBLL _orderDetailBLL;
-        private readonly OrderValueBLL _orderValueBLL;
+        private readonly OrderValueBLL _OrderValueBLL;
         private readonly ProductDetailBLL ProductDetailBLL;
         private DistributorWiseProductDiscountAndPricesBLL discountAndPricesBll;
         private readonly UserBLL _UserBLL;
@@ -39,7 +43,7 @@ namespace BusinessLogicLayer.Application
             _repository = _unitOfWork.GenericRepository<OrderMaster>();
             _OrderValuerepository = _unitOfWork.GenericRepository<OrderValue>();
             _orderDetailBLL = new OrderDetailBLL(_unitOfWork);
-            _orderValueBLL = new OrderValueBLL(_unitOfWork);
+            _OrderValueBLL = new OrderValueBLL(_unitOfWork);
             ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
             _PaymentBLL = new PaymentBLL(_unitOfWork);
@@ -78,7 +82,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateSNo(OrderMaster module)
         {
             var item = _repository.GetById(module.Id);
-            if (_repository.GetAllList().Any())
+            if (_repository.GetAllList().Count() > 1)
             {
                 item.SNo = _repository.GetAllList().Max(y => y.SNo) + 1;
             }
@@ -86,7 +90,7 @@ namespace BusinessLogicLayer.Application
             {
                 item.SNo = 100000001;
             }
-            
+
             _repository.Update(item);
             return _unitOfWork.Save();
         }
@@ -200,6 +204,7 @@ namespace BusinessLogicLayer.Application
         }
         public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
         {
+            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
             List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId).ToList();
             List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId)).ToList();
             List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
@@ -215,7 +220,14 @@ namespace BusinessLogicLayer.Application
                 viewModel.SAMISupplies1 = SAMIproductDetails.SuppliesOne;
                 viewModel.SAMISupplies4 = SAMIproductDetails.SuppliesFour;
                 viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
-                viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0)
+                {
+                    viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
+                }
+                else
+                {
+                    viewModel.SAMIPendingOrderValues = SAMIproductDetails.PendingOrderValues;
+                }
                 viewModel.SAMICurrentBalance = SAMIproductDetails.CurrentBalance;
                 viewModel.SAMIUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == SAMIproductDetails.CompanyId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.SAMINetPayable = SAMIproductDetails.NetPayable;
@@ -233,7 +245,14 @@ namespace BusinessLogicLayer.Application
                 viewModel.HealthTekSupplies1 = HealthTekproductDetails.SuppliesOne;
                 viewModel.HealthTekSupplies4 = HealthTekproductDetails.SuppliesFour;
                 viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.TotalOrderValues;
-                viewModel.HealthTekPendingOrderValues = HealthTekproductDetails.PendingOrderValues;
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0)
+                {
+                    viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
+                }
+                else
+                {
+                    viewModel.HealthTekPendingOrderValues = HealthTekproductDetails.PendingOrderValues;
+                }
                 viewModel.HealthTekCurrentBalance = HealthTekproductDetails.CurrentBalance;
                 viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == HealthTekproductDetails.CompanyId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.HealthTekNetPayable = HealthTekproductDetails.NetPayable;
@@ -251,7 +270,14 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekSupplies1 = PhytekproductDetails.SuppliesOne;
                 viewModel.PhytekSupplies4 = PhytekproductDetails.SuppliesFour;
                 viewModel.PhytekTotalOrderValues = PhytekproductDetails.TotalOrderValues;
-                viewModel.PhytekPendingOrderValues = PhytekproductDetails.PendingOrderValues;
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0 && SessionHelper.SAPOrderPendingValue.Select(x => x.CompanyCode).Contains(companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode))
+                {
+                    viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
+                }
+                else
+                {
+                    viewModel.PhytekPendingOrderValues = PhytekproductDetails.PendingOrderValues;
+                }
                 viewModel.PhytekCurrentBalance = PhytekproductDetails.CurrentBalance;
                 viewModel.PhytekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == PhytekproductDetails.CompanyId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 viewModel.PhytekNetPayable = PhytekproductDetails.NetPayable;
@@ -262,6 +288,7 @@ namespace BusinessLogicLayer.Application
                                                               let Amount = odp.Sum(m => m.od.Amount)
                                                               select Amount).Sum(x => x);
             }
+            viewModel.NetPayable = viewModel.SAMITotalOrderValues + viewModel.HealthTekTotalOrderValues + viewModel.PhytekTotalOrderValues;
             return viewModel;
         }
         public List<OrderValue> GetValues(OrderValueViewModel orderValueViewModel, int OrderId)
@@ -335,31 +362,20 @@ namespace BusinessLogicLayer.Application
             _OrderValuerepository.DeleteRange(module);
             return _unitOfWork.Save();
         }
-        public JsonResponse Save(OrderMaster model, IConfiguration configuration, IUrlHelper Url)
+        public JsonResponse Save(OrderMaster model, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            string FolderPath = configuration.GetSection("Settings").GetSection("FolderPath").Value;
-            string[] permittedExtensions = Common.permittedExtensions;
-            if (model.AttachmentFormFile != null)
-            {
-                var ext = Path.GetExtension(model.AttachmentFormFile.FileName).ToLowerInvariant();
-                if (permittedExtensions.Contains(ext) && model.AttachmentFormFile.Length < Convert.ToInt64(5242880))
-                {
-                    Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
-                    if (tuple.Item1)
-                    {
-                        model.Attachment = tuple.Item2;
-                    }
-                }
-            }
+            List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetail != null).ToList();
+
             if (model.Id == 0)
             {
-
-                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductDetail.TotalPrice).Sum();
+                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductPrice * e.ProductDetail.ProductMaster.Quantity).Sum();
                 model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                 Add(model);
                 if (model.Id > 0)
                 {
+                    var item = _repository.GetById(model.Id);
+                    model.SNo = item.SNo;
                     UpdateSNo(model);
                 }
                 List<OrderDetail> details = new List<OrderDetail>();
@@ -367,32 +383,33 @@ namespace BusinessLogicLayer.Application
                 {
                     details.Add(new OrderDetail()
                     {
-                        Amount = item.ProductDetail.TotalPrice,
                         OrderId = model.Id,
                         ProductId = item.ProductDetail.ProductMasterId,
                         Quantity = item.ProductDetail.ProductMaster.Quantity,
+                        ApprovedQuantity = 0,
+                        Amount = (DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) + (((DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) / 100) * DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount),
+                        ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
+                        Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
+                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
+                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
+                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
-                        ApprovedQuantity = 0,
-                        ProductPrice = item.ProductPrice,
-                        Discount = item.Discount
                     });
                 }
                 _orderDetailBLL.AddRange(details);
                 var ProductsIds = _orderDetailBLL.Where(e => e.OrderId == model.Id).ToList().Select(e => e.ProductId);
-                var ProductDetails = discountAndPricesBll.Where(e => ProductsIds.Contains(e.ProductDetail.ProductMasterId) && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                var discountWiseProduct = discountAndPricesBll.Where(e =>
-                    ProductDetails.Select(c => c.ProductDetail.ProductMaster.SAPProductCode).Contains(e.SAPProductCode) && e.DistributorId == SessionHelper.LoginUser.DistributorId);
-
-                ProductDetails.ForEach(e => e.ProductDetail.ProductMaster.Quantity = _orderDetailBLL.FirstOrDefault(c => c.ProductMaster.SAPProductCode.Contains(e.ProductDetail.ProductMaster.SAPProductCode)).Quantity);
+                var ProductDetails = DistributorWiseProductDiscountAndPrices.Where(e => ProductsIds.Contains(e.ProductDetail.ProductMasterId) && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                var discountWiseProduct = DistributorWiseProductDiscountAndPrices.Where(e => ProductDetails.Select(c => c.ProductDetail.ProductMaster.SAPProductCode).Contains(e.SAPProductCode) && e.DistributorId == SessionHelper.LoginUser.DistributorId);
+                ProductDetails.ForEach(x => x.ProductDetail.ProductMaster.Quantity = model.DistributorWiseProduct.First(y => y.ProductDetail.ProductMasterId == x.ProductDetail.ProductMasterId).ProductDetail.ProductMaster.Quantity);
                 AddRange(GetValues(GetOrderValueModel(ProductDetails), model.Id));
                 jsonResponse.Status = true;
-                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Dummy", "DummyOrderForm", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft + " Order Id: " + model.SNo : OrderContant.OrderSubmit + " Order Id: " + model.SNo;
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
             }
             else
             {
-                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductDetail.TotalPrice).Sum();
+                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductPrice * e.ProductDetail.ProductMaster.Quantity).Sum();
                 model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
                 Update(model);
                 _orderDetailBLL.DeleteRange(_orderDetailBLL.Where(e => e.OrderId == model.Id).ToList());
@@ -401,29 +418,30 @@ namespace BusinessLogicLayer.Application
                 {
                     details.Add(new OrderDetail()
                     {
-                        Amount = item.ProductDetail.TotalPrice,
                         OrderId = model.Id,
                         ProductId = item.ProductDetail.ProductMasterId,
                         Quantity = item.ProductDetail.ProductMaster.Quantity,
+                        ApprovedQuantity = 0,
+                        Amount = (DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) + (((DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) / 100) * DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount),
+                        ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
+                        Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
+                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
+                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
+                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
-                        ApprovedQuantity = 0,
-                        ProductPrice = item.ProductPrice,
-                        Discount = item.Discount
                     });
                 }
                 _orderDetailBLL.AddRange(details);
                 var ProductsIds = _orderDetailBLL.Where(e => e.OrderId == model.Id).ToList().Select(e => e.ProductId);
-                var ProductDetails = ProductDetailBLL.Where(e => ProductsIds.Contains(e.ProductMasterId)).ToList();
-                var discountWiseProduct = discountAndPricesBll.Where(e =>
-                    ProductDetails.Select(c => c.ProductMaster.SAPProductCode).Contains(e.SAPProductCode) && e.DistributorId == SessionHelper.LoginUser.DistributorId);
-
-                ProductDetails.ForEach(e => e.ProductMaster.Quantity = _orderDetailBLL.FirstOrDefault(c => c.ProductMaster.SAPProductCode.Contains(e.ProductMaster.SAPProductCode)).Quantity);
-                DeleteRange(_orderValueBLL.GetOrderValueByOrderId(model.Id));
+                var ProductDetails = DistributorWiseProductDiscountAndPrices.Where(e => ProductsIds.Contains(e.ProductDetail.ProductMasterId) && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                var discountWiseProduct = DistributorWiseProductDiscountAndPrices.Where(e => ProductDetails.Select(c => c.ProductDetail.ProductMaster.SAPProductCode).Contains(e.SAPProductCode) && e.DistributorId == SessionHelper.LoginUser.DistributorId);
+                ProductDetails.ForEach(x => x.ProductDetail.ProductMaster.Quantity = model.DistributorWiseProduct.First(y => y.ProductDetail.ProductMasterId == x.ProductDetail.ProductMasterId).ProductDetail.ProductMaster.Quantity);
+                DeleteRange(_OrderValueBLL.GetOrderValueByOrderId(model.Id));
                 AddRange(GetValues(GetOrderValueModel(ProductDetails), model.Id));
                 jsonResponse.Status = true;
-                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft : OrderContant.OrderSubmit;
-                jsonResponse.RedirectURL = model.Status == OrderStatus.Draft ? Url.Action("Dummy", "DummyOrderForm", new { DPID = EncryptDecrypt.Encrypt(model.Id.ToString()) }) : Url.Action("Index", "Order");
+                jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft + " Order Id: " + model.SNo : OrderContant.OrderSubmit + " Order Id: " + model.SNo;
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
             }
             return jsonResponse;
         }
@@ -452,7 +470,37 @@ namespace BusinessLogicLayer.Application
                     STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
                     BATCH = "",
                     ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
-                    REQ_QTY = item.ApprovedQuantity.ToString()
+                    REQ_QTY = item.Quantity.ToString()
+                });
+            }
+            return model;
+        }
+        public List<OrderStatusViewModel> PlaceOrderPartiallyApprovedToSAP(int OrderId)
+        {
+            List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
+            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new OrderStatusViewModel()
+                {
+                    SNO = string.Format("{0:1000000000}", item.OrderId),
+                    ITEMNO = "",
+                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderMaster.ReferenceNo,
+                    PURCH_DATE = DateTime.Now,
+                    PRICE_DATE = DateTime.Now,
+                    ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    BATCH = "",
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    REQ_QTY = item.Quantity.ToString()
                 });
             }
             return model;
@@ -509,7 +557,9 @@ namespace BusinessLogicLayer.Application
                              ApprovedDate = x.ApprovedDate,
                              RejectedBy = x.RejectedBy,
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
-                             RejectedDate = x.RejectedDate
+                             RejectedDate = x.RejectedDate,
+                             RejectedComment = x.RejectedComment,
+                             OnHoldComment = x.OnHoldComment,
                          }).ToList();
 
             return query.OrderByDescending(x => x.Id).ToList();
@@ -518,18 +568,30 @@ namespace BusinessLogicLayer.Application
         {
             try
             {
-
-                var Client = new RestClient(configuration.SyncDistributorBalanceURL + "/Get?DistributorId=" + DistributorCode);
-                var request = new RestRequest(Method.GET);
-                IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<DistributorBalance>(response.Content);
-                if (resp == null)
+                DistributorBalance distributorBalance = new DistributorBalance();
+                Root root = new Root();
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123")); //("Username:Password")  
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorCode)).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent);
+                    }
+                }
+                if (distributorBalance == null)
                 {
                     return new DistributorBalance();
                 }
                 else
                 {
-                    return resp;
+                    distributorBalance.SAMI = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_SAMI;
+                    distributorBalance.HealthTek = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_HTL;
+                    return distributorBalance;
                 }
             }
             catch (Exception ex)
@@ -587,7 +649,6 @@ namespace BusinessLogicLayer.Application
         public OrderValueViewModel GetOrderValueModel(List<DistributorWiseProductDiscountAndPrices> productDetails)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-
             OrderValueViewModel viewModel = new OrderValueViewModel();
             List<OrderDetail> orderDetails = _orderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
             List<ProductDetail> productDetailList = ProductDetailBLL.Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
@@ -673,6 +734,47 @@ namespace BusinessLogicLayer.Application
             }
             viewModel.PhytekNetPayable = viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;
+        }
+        public List<SAPOrderPendingQuantity> GetDistributorOrderPendingQuantity(string DistributorId, Configuration _configuration)
+        {
+            BasicHttpBinding binding = new BasicHttpBinding
+            {
+                SendTimeout = TimeSpan.FromSeconds(100000),
+                MaxBufferSize = int.MaxValue,
+                MaxReceivedMessageSize = int.MaxValue,
+                AllowCookies = true,
+                ReaderQuotas = XmlDictionaryReaderQuotas.Max,
+            };
+            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DPPendingOrdersRequest_Out&interfaceNamespace=https://www.sami.com/DPPendingOrders");
+            DPPendingOrdersRequest_OutClient client = new DPPendingOrdersRequest_OutClient(binding, address);
+            client.ClientCredentials.UserName.UserName = "SAMI_PO";
+            client.ClientCredentials.UserName.Password = "wasay123";
+            if (client.InnerChannel.State == CommunicationState.Faulted)
+            {
+            }
+            else
+            {
+                client.OpenAsync();
+            }
+            ZST_PENDING_ORDER_OUT[] ZST_PENDING_ORDER_OUTList = client.DPPendingOrdersRequest_Out(SessionHelper.LoginUser.Distributor.DistributorSAPCode);
+            client.CloseAsync();
+            List<SAPOrderPendingQuantity> OrderPendingQuantityList = new List<SAPOrderPendingQuantity>();
+            if (ZST_PENDING_ORDER_OUTList != null)
+            {
+                for (int i = 0; i < ZST_PENDING_ORDER_OUTList.Length; i++)
+                {
+                    OrderPendingQuantityList.Add(new SAPOrderPendingQuantity()
+                    {
+                        ProductCode = ZST_PENDING_ORDER_OUTList[i].MATNR.TrimStart(new char[] { '0' }),
+                        OrderQuantity = ZST_PENDING_ORDER_OUTList[i].KWMENG.ToString(),
+                        DispatchQuantity = ZST_PENDING_ORDER_OUTList[i].LFIMG.ToString(),
+                        PendingQuantity = ZST_PENDING_ORDER_OUTList[i].PENDING.ToString(),
+                    });
+                }
+            }
+            return OrderPendingQuantityList;
         }
     }
 }

@@ -1,24 +1,26 @@
 ﻿@model IEnumerable<OrderReturnDetail>
 
-<div class="table-responsive-sm">
-    <table id="example2" class="table table-bordered table-condensed table-hover table-striped table-sm">
+<div class="scrollmenu">
+    <table id="example2" class="table table-bordered table-condensed table-hover table-striped">
         <thead>
             <tr>
-                <th width="1%" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
+                <th class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
+                <th>Product Code</th>
                 <th>Product Name</th>
                 <th>Company</th>
                 <th>Location</th>
                 <th>Batch No</th>
                 <th>MRP</th>
-                <th>Total Price</th>
-                <th width="10%">Quantity</th>
+                @*<th>Total Price</th>*@
+                <th>Quantity</th>
                 <th>Discount</th>
                 <th>Net Amount</th>
-                <th>Manufacture Date</th>
+                <th>Mfg. Date</th>
                 <th>Expiry Date</th>
                 <th>Invoice No</th>
                 <th>Invoice Date</th>
                 <th>Intimation Date</th>
+                <th>Remarks</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -33,14 +35,15 @@
                             </label>
                         </div>
                     </td>
+                    <td>@item.ProductMaster.SAPProductCode</td>
                     <td>@item.ProductMaster.ProductDescription</td>
                     <td>@item.Company.CompanyName</td>
                     <td>@item.PlantLocation.PlantLocationName</td>
                     <td>@item.BatchNo</td>
                     <td>@item.MRP</td>
-                    <td>@item.TotalPrice</td>
+                    @*<td>@item.TotalPrice</td>*@
                     <td>
-                        <input type="number" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="0" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
+                        <input type="text" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="1" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
                     </td>
                     <td>@item.ProductMaster.Discount %</td>
                     <td><span class="NetAmount">@item.NetAmount</span></td>
@@ -49,10 +52,12 @@
                     <td>@item.InvoiceNo</td>
                     <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
                     <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Remarks</td>
                     <td>
                         <a asp-action="Delete"
                            asp-controller="OrderReturn"
                            asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
+                           asp-route-BatchNo="@item.BatchNo.ToString()"
                            class="btn btn-danger"
                            data-ajax="true"
                            data-ajax-complete="UpdateOrderValue"
@@ -64,7 +69,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "10")"><span class="float-right">Grand Total</span></td>
+                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "10")"><span class="float-right">Total value of order</span></td>
                 @if (Model.Count() > 0 && Model != null)
                 {
                     <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "7" : "7")"><strong><span class="TotalNetValue">@Model.Select(e => e.NetAmount).Sum()</span></strong></td>
@@ -82,22 +87,21 @@
     $(document).ready(function () {
 
         CalculateTotal();
-
-        $('div#divOrderDetails input[type="text"],input[type="date"]').val('');
-        $('#Quantity').val('');
-        $('#MRP').val('');
+        $("#example2").dataTable().fnDestroy();
 
         $("#example2").DataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
-            "scrollX": true,
-            "sScrollXInner": "150%"
         });
 
-        $('.ReturnQuantity').bind('keyup mouseup',function (data) {
-            debugger;
+        $('body').on('change', '.ReturnQuantity', function (data) {
+
+            if (data.currentTarget.value == "0") {
+                $(this).val(1);
+                return false;
+            }
             var intmaxvalue = @Int32.MaxValue;
             var Quantity = data.currentTarget.value;
             var Product = data.currentTarget.getAttribute("_ProductId");
@@ -114,12 +118,6 @@
                     url: '@Url.Action("UpdateQuantity", "OrderReturn")',
                     data: { 'Quantity': Quantity, 'Product': Product },
                     cache: false,
-                    success: function (response) {
-
-                    },
-                    complete: function (response) {
-
-                    }
                 });
             }
         });

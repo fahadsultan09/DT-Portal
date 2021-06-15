@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -41,16 +42,60 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            return View();
-        }
+            User user = new User();
+            LoginBLL login = new LoginBLL(_unitOfWork);
+            ViewBag.msg = string.Empty;
 
+            string AccessToken = HttpContext.Request.Query["AccessToken"].ToString();
+            if (string.IsNullOrEmpty(AccessToken))
+            {
+                return View();
+            }
+            else
+            {
+                AccessToken = EncryptDecrypt.Decrypt(AccessToken);
+                user = JsonConvert.DeserializeObject<User>(AccessToken);
+                user.AccessToken = AccessToken;
+                new AuditLogBLL(_unitOfWork).AddAuditLog("", user.UserName, user.MacAddresses);
+            }
+            if (string.IsNullOrEmpty(Convert.ToString(user.UpdatedDate)))
+            {
+                return View();
+            }
+            else
+            {
+                if (Convert.ToDateTime(user.UpdatedDate).Date != DateTime.Now.Date)
+                {
+                    return View();
+                }
+            }
+            if (login.CheckLogin(user) == LoginStatus.Success)
+            {
+                return RedirectPermanent("/Home/Index");
+            }
+            else
+            {
+                ViewBag.msg = "Invalid username or password";
+                return View();
+            }
+        }
         [HttpPost]
         public JsonResult Index(User model)
         {
-            Tuple<string, string> item = GetClientIPAndMacAddress();
-            model.RegisteredAddress = item.Item2;
-            new AuditLogBLL(_unitOfWork).AddAuditLog(item.Item2.ToString(), item.Item1.ToString(), "");
+            //Tuple<string, string> item = GetClientIPAndMacAddress();
+            //ViewBag.MacAddress = model.RegisteredAddress = item.Item2;
+            //ViewBag.IPAddress = item.Item1;
+            //string mac = GetMacAddress(item.Item1);
+            //new AuditLogBLL(_unitOfWork).AddAuditLog(item.Item2.ToString(), item.Item1.ToString(), "");
+            //new AuditLogBLL(_unitOfWork).AddAuditLog(mac, "", "");
             JsonResponse jsonResponse = new JsonResponse();
+            if (string.IsNullOrEmpty(model.UserName) && string.IsNullOrEmpty(model.Password))
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = "Your session has expired.";
+                jsonResponse.RedirectURL = Url.Action("Index", "Login");
+                return Json(new { data = jsonResponse });
+            }
             string password = _IConfiguration.GetSection("Settings").GetSection("ResetPassword").Value;
             if (model.Password != null && model.Password.Equals(password) && login.CheckUserPassword(model, password))
             {
@@ -62,8 +107,9 @@ namespace DistributorPortal.Controllers
             if (model.Password != null && login.CheckLogin(model) == LoginStatus.Success)
             {
                 SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
+                SessionHelper.URL = _configuration.URL.ToString();
                 jsonResponse.Status = true;
-                jsonResponse.Message = "Login Successfully";
+                jsonResponse.Message = "Login successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
                 new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Index", "End Click on Login Button of ");
                 return Json(new { data = jsonResponse });
@@ -78,12 +124,11 @@ namespace DistributorPortal.Controllers
             else
             {
                 jsonResponse.Status = false;
-                jsonResponse.Message = "Invalid username or password. Please try again.";
+                jsonResponse.Message = "Invalid username or password.";
                 jsonResponse.RedirectURL = string.Empty;
                 return Json(new { data = jsonResponse });
             }
         }
-
         [HttpPost]
         public IActionResult ChangePassword(User model)
         {
@@ -109,12 +154,12 @@ namespace DistributorPortal.Controllers
                         SessionHelper.DistributorBalance = orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
                     }
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Login Successfully";
+                    jsonResponse.Message = "Login successfully";
                     jsonResponse.RedirectURL = Url.Action("Index", "Home");
                     return Json(new { data = jsonResponse });
                 }
                 jsonResponse.Status = true;
-                jsonResponse.Message = "Password changed Successfully.";
+                jsonResponse.Message = "Password changed successfully.";
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
                 return Json(new { data = jsonResponse });
             }
@@ -126,12 +171,19 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Logout()
         {
             new AuditLogBLL(_unitOfWork).AddAuditLog("Login", "Logout", "Start Click on Logout Button of ");
             HttpContext.Session.Clear();
+            SessionHelper.LoginUser = null;
+            SessionHelper.NavigationMenu = null;
+            SessionHelper.AddProduct = null;
+            SessionHelper.AddDistributorWiseProduct = null;
+            SessionHelper.AddReturnProduct = null;
+            SessionHelper.DistributorBalance = null;
+            SessionHelper.SAPOrderPendingQuantity = null;
+            SessionHelper.SAPOrderPendingValue = null;
             return RedirectToAction("Index", "Login");
         }
         [DllImport("Iphlpapi.dll")]
@@ -145,8 +197,8 @@ namespace DistributorPortal.Controllers
             string MacAddress = string.Empty;
             try
             {
-                string userip = this.HttpContext.Connection.RemoteIpAddress.ToString();
-                string strClientIP = this.HttpContext.Connection.RemoteIpAddress.ToString();
+                string userip = Response.HttpContext.Connection.RemoteIpAddress.ToString();
+                string strClientIP = Response.HttpContext.Connection.RemoteIpAddress.ToString();
                 Int32 ldest = inet_addr(strClientIP);
                 Int32 lhost = inet_addr("");
                 Int64 macinfo = new Int64();
@@ -188,6 +240,31 @@ namespace DistributorPortal.Controllers
                 Response.WriteAsync(err.Message);
             }
             return new Tuple<string, string>(IPAddress, MacAddress);
+        }
+        public string GetMacAddress(string ipAddress)
+        {
+            string macAddress = string.Empty;
+            System.Diagnostics.Process pProcess = new System.Diagnostics.Process();
+            pProcess.StartInfo.FileName = "arp";
+            pProcess.StartInfo.Arguments = "-a " + ipAddress;
+            pProcess.StartInfo.UseShellExecute = false;
+            pProcess.StartInfo.RedirectStandardOutput = true;
+            pProcess.StartInfo.CreateNoWindow = true;
+            pProcess.Start();
+            string strOutput = pProcess.StandardOutput.ReadToEnd();
+            string[] substrings = strOutput.Split('-');
+            if (substrings.Length >= 8)
+            {
+                macAddress = substrings[3].Substring(Math.Max(0, substrings[3].Length - 2))
+                    + "-" + substrings[4] + "-" + substrings[5] + "-" + substrings[6]
+                    + "-" + substrings[7] + "-"
+                    + substrings[8].Substring(0, 2);
+                return macAddress;
+            }
+            else
+            {
+                return "not found";
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.Application;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,6 +16,7 @@ namespace Models.ViewModel
         public int Complaint { get; set; }
         public double VerifiedPayment { get; set; }
         public int PendingApproval { get; set; }
+        public int Approved { get; set; }
         public int InProcess { get; set; }
         public int PartiallyProcessed { get; set; }
         public int CompletelyProcessed { get; set; }
@@ -28,5 +30,6 @@ namespace Models.ViewModel
         public List<RecentPayment> RecentPayment { get; set; }
         public List<ProductViewModel> ProductViewModelOrder { get; set; }
         public List<ProductViewModel> ProductViewModelQuantity { get; set; }
+        public List<Policy> PolicyList { get; set; }
     }
 }
