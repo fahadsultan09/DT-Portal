@@ -54,12 +54,12 @@ namespace UserLoginRegistration
             // 
             // btnChangePassword
             // 
-            this.btnChangePassword.Location = new System.Drawing.Point(236, 362);
+            this.btnChangePassword.Location = new System.Drawing.Point(224, 362);
             this.btnChangePassword.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnChangePassword.Name = "btnChangePassword";
-            this.btnChangePassword.Size = new System.Drawing.Size(95, 30);
+            this.btnChangePassword.Size = new System.Drawing.Size(140, 30);
             this.btnChangePassword.TabIndex = 11;
-            this.btnChangePassword.Text = "Save";
+            this.btnChangePassword.Text = "Update Password";
             this.btnChangePassword.UseVisualStyleBackColor = true;
             this.btnChangePassword.Click += new System.EventHandler(this.btnChangePassword_Click);
             // 

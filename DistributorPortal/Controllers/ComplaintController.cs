@@ -135,7 +135,7 @@ namespace DistributorPortal.Controllers
                             return Json(new { data = jsonResponse });
                         }
 
-                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Order, FolderPath);
+                        Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Complaint, FolderPath);
                         if (tuple.Item1)
                         {
                             model.File = tuple.Item2;

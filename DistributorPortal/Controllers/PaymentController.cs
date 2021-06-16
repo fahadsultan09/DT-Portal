@@ -103,13 +103,18 @@ namespace DistributorPortal.Controllers
                     if (model.FormFile != null)
                     {
                         var ext = Path.GetExtension(model.FormFile.FileName).ToLowerInvariant();
+
                         if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                         {
-                            return Json(new { Result = false, Message = NotificationMessage.FileTypeAllowed });
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileTypeAllowed;
+                            return Json(new { data = jsonResponse });
                         }
                         if (model.FormFile.Length >= Convert.ToInt64(_Configuration.FileSize))
                         {
-                            return Json(new { Result = false, Message = NotificationMessage.FileSizeAllowed });
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = NotificationMessage.FileSizeAllowed;
+                            return Json(new { data = jsonResponse });
                         }
                         Tuple<bool, string> tuple = FileUtility.UploadFile(model.FormFile, FolderName.Payment, FolderPath);
                         if (tuple.Item1)

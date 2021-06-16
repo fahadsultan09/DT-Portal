@@ -28,7 +28,7 @@ namespace Models.Application
         public int CompanyBankName { get; set; }
         [Required(ErrorMessage = "Company Bank Code is required.")]
         public string CompanyBankCode { get; set; }
-        [Range(1, 9999999999)]
+        [Range(1, 999999999)]
         [Column(TypeName = "double")]
         [Required(ErrorMessage = "Amount is required.")]
         public double Amount { get; set; }
@@ -36,6 +36,7 @@ namespace Models.Application
         public int PaymentModeId { get; set; }
         [ForeignKey("PaymentModeId")]
         public virtual PaymentMode PaymentMode { get; set; }
+        [StringLength(18)]
         [Required(ErrorMessage = "Payment Mode No is required.")]
         public string PaymentModeNo { get; set; }
         public int SNo { get; set; }

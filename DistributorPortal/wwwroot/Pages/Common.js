@@ -224,7 +224,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
 
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
-
+                    
                     if (data) {
                         if (data.data.Status) {
                             Toast.fire({ icon: 'success', title: data.data.Message });
@@ -235,7 +235,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                             CallSignalR(data.data.SignalRResponse);
                         }
                         setTimeout(function () {
-                            window.location.reload();
+                            window.location = data.data.RedirectURL;
                         }, 1000);
                     } else {
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
@@ -267,7 +267,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                             CallSignalR(data.data.SignalRResponse);
                         }
                         setTimeout(function () {
-                            window.location.reload();
+                            window.location = data.data.RedirectURL;
                         }, 1000);
                     } else {
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });

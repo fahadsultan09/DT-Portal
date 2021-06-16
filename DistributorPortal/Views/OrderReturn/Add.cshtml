@@ -382,13 +382,13 @@
     }
 
     function SubmitForm() {
-
+        
         $('.error').empty();
         if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && $('#TRNo').val().trim() == "") {
             $('#ErrorTRNo').text('TR No is mandatory.');
             return false;
         }
-        if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && $('.custom-file-input').val() == "") {
+        if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && ($('.custom-file-input').val() == "" && $('#Attachment').val() == "")) {
             $('#ErrorAttachment').text('Attachment is mandatory.');
             return false;
         }

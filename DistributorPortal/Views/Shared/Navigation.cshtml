@@ -154,11 +154,11 @@
 </div>
 <script>
     $('body').on('click', '#NotificationCount', function () {
-        debugger
-        $('#NotificationCountValue').innerHTML = '0';
+
         var url = '@Url.Action("UpdateCount", "Notification")';
         $.get(url, function (context) {
             }).done(function (context) {
             });
+        $('#NotificationCountValue').innerHTML = '0';
     });
 </script>

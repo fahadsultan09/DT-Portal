@@ -212,7 +212,7 @@ namespace DistributorPortal.Controllers
                                 return Json(new { data = jsonResponse });
                             }
 
-                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.OrderReturn, FolderPath);
+                            Tuple<bool, string> tuple = FileUtility.UploadFile(model.AttachmentFormFile, FolderName.Order, FolderPath);
                             if (tuple.Item1)
                             {
                                 master.Attachment = tuple.Item2;
