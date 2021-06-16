@@ -81,7 +81,7 @@ namespace DistributorPortal.Controllers
                                 else
                                 {
                                     model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
-                                    TempData["Message"] = "MAC Address already.";
+                                    TempData["Message"] = "MAC address already exists.";
                                     return PartialView("Add", model);
                                 }
                             }
@@ -92,13 +92,13 @@ namespace DistributorPortal.Controllers
 
                         }
                         model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
-                        TempData["Message"] = "Add at least one MAC Address";
+                        TempData["Message"] = "Add at least one MAC address";
                         return PartialView("Add", model);
                     }
                     else
                     {
                         model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
-                        TempData["Message"] = "Add at least one MAC Address";
+                        TempData["Message"] = "Add at least one MAC address";
                         return PartialView("Add", model);
                     }
                 }

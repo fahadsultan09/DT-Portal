@@ -152,11 +152,11 @@
             var IsRowDeleted = false;
 
             if (MACAddress === '') {
-                $("#MACAddressRequired").text('MAC Address is required');
+                $("#MACAddressRequired").text('MAC address is required');
                 return false;
             }
             if (MACAddressArr.indexOf(MACAddress) !== -1) {
-                $("#MACAddressRequired").text('MAC Address already exists');
+                $("#MACAddressRequired").text('MAC address already exists');
                 return false;
             } else {
                 MACAddressArr.push(MACAddress);
