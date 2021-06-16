@@ -177,6 +177,14 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 HttpContext.Session.Clear();
+                SessionHelper.LoginUser = null;
+                SessionHelper.NavigationMenu = null;
+                SessionHelper.AddProduct = null;
+                SessionHelper.AddDistributorWiseProduct = null;
+                SessionHelper.AddReturnProduct = null;
+                SessionHelper.DistributorBalance = null;
+                SessionHelper.SAPOrderPendingQuantity = null;
+                SessionHelper.SAPOrderPendingValue = null;
                 return View();
             }
             else

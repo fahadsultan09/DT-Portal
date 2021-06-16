@@ -82,15 +82,6 @@
                                                     <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker" id="input-group-append-TRDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
-                                                </div>*@
-                                                <div class="form-group">
-                                                    <label class="control-label">To Date</label>
-                                                    <div class="input-group date" data-target-input="nearest">
-                                                        <input type="text" name="TRDate" readonly="readonly" id="TRDate" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
-                                                        <div class="input-group-append" data-target="#TRDate" id="input-group-append-To" data-toggle="datepicker">
-                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 <span asp-validation-for="TRDate" class="text-danger error"></span>
                                             </div>
