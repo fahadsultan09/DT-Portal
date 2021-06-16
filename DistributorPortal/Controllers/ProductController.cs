@@ -51,6 +51,7 @@ namespace ProductPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             List<ProductMaster> SAPProduct = new List<ProductMaster>();
+            Root root = new Root();
             try
             {
                 using (var client = new HttpClient())
@@ -63,11 +64,27 @@ namespace ProductPortal.Controllers
                     if (result.IsSuccessStatusCode)
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;
-                        Root root = (Root)JsonConvert.DeserializeObject(JsonContent);
-
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        for (int i = 0; i < root.ZWASITHRMSBAPIResponse.PRODUCTS.item.Count(); i++)
+                        {
+                            SAPProduct.Add(new ProductMaster()
+                            {
+                                SAPProductCode = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MATNR.TrimStart(new char[] { '0' }),
+                                PackSize = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MVGR2T,
+                                ProductName = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MVGR4T,
+                                ProductDescription = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MAKTX,
+                                ProductPrice = Convert.ToDouble(root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].KBETR),
+                                CartonSize = Convert.ToDouble(root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].CARTON),
+                                Rate = Convert.ToDouble(root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].KBETR),
+                                Discount = Convert.ToDouble(root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].DISCOUNT),
+                                LicenseType = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MTPOS,
+                                SFSize = Convert.ToDouble(root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].SF),
+                                Strength = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].WRKST,
+                                //ProductOrigin = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].GetString(""),
+                            });
+                        }
                     }
                 }
-
                 var allproduct = _ProductMasterBLL.GetAllProductMaster();
                 var addProduct = SAPProduct.Where(e => !allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
                 var updateProduct = SAPProduct.Where(e => allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
@@ -150,7 +167,7 @@ namespace ProductPortal.Controllers
             }
             else
             {
-                productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());    
+                productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             }
             return PartialView("PMList", productMasters);
         }

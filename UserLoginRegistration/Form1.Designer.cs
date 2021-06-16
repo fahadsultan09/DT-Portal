@@ -39,6 +39,7 @@ namespace UserLoginRegistration
             this.btnRegister = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblError = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtUserName
@@ -137,11 +138,22 @@ namespace UserLoginRegistration
             this.lblError.Size = new System.Drawing.Size(0, 18);
             this.lblError.TabIndex = 8;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(13, 374);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(52, 12);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Version 1.1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(482, 403);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.lblError);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.label4);
@@ -174,6 +186,7 @@ namespace UserLoginRegistration
         private System.Windows.Forms.Button btnRegister;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblError;
+        private System.Windows.Forms.Label label5;
     }
 }
 

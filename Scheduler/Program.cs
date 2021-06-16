@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace Scheduler
     {
         private static DistributorPortalDbContext _DistributorPortalDbContext;
         private static IUnitOfWork _unitOfWork;
-
+        private static IWebHostEnvironment _env;
         static void Main(string[] args)
         {
             try
@@ -41,13 +42,13 @@ namespace Scheduler
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
 
-                ////Order and Order Return Produc Status
-                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
-                //distributorOrderStatus.GetInProcessOrderProductStatus();
-                //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
+                //Order and Order Return Produc Status
+                DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
+                distributorOrderStatus.GetInProcessOrderProductStatus();
+                distributorOrderStatus.GetInProcessOrderReturnProductStatus();
 
                 //Order and Order Return Produc Status
-                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config);
+                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
                 KPIEmailScheduler.GetPendingComplaints();
 
             }

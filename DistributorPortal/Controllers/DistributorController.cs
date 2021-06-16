@@ -8,11 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -61,6 +59,22 @@ namespace DistributorPortal.Controllers
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;
                         root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        for (int i = 0; i < root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item.Count(); i++)
+                        {
+                            SAPDistributor.Add(new Distributor()
+                            {
+                                DistributorSAPCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KUNNR,
+                                DistributorName = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME1,
+                                City = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].ORT01,
+                                RegionCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].REGIO,
+                                CustomerGroup = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KDGRPT,
+                                DistributorAddress = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].STRAS,
+                                NTN = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].STCD2,
+                                CNIC = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].STCD1,
+                                EmailAddress = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].EMAIL,
+                                MobileNumber = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].TELF1
+                            });
+                        }
                     }
                 }
                 var alldist = _DistributorBLL.GetAllDistributor();
@@ -89,8 +103,9 @@ namespace DistributorPortal.Controllers
             }
             catch (Exception ex)
             {
-                jsonResponse.Message = ex.Message;
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 jsonResponse.RedirectURL = Url.Action("Index", "Distributor");
                 return Json(new { data = jsonResponse });
             }

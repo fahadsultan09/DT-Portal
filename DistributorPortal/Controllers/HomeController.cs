@@ -479,28 +479,6 @@ namespace DistributorPortal.Controllers
             }
             return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);
         }
-        //public ZST_PENDING_ORDER_OUT[] Request()
-        //{
-        //    BasicHttpBinding binding = new BasicHttpBinding
-        //    {
-        //        SendTimeout = TimeSpan.FromSeconds(100000),
-        //        MaxBufferSize = int.MaxValue,
-        //        MaxReceivedMessageSize = int.MaxValue,
-        //        AllowCookies = true,
-        //        ReaderQuotas = XmlDictionaryReaderQuotas.Max,
-        //    };
-        //    binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
-        //    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-        //    EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DPPendingOrdersRequest_Out&interfaceNamespace=https://www.sami.com/DPPendingOrders");
-        //    DPPendingOrdersRequest_OutClient client = new DPPendingOrdersRequest_OutClient(binding, address);
-        //    client.ClientCredentials.UserName.UserName = "SAMI_PO";
-        //    client.ClientCredentials.UserName.Password = "wasay123";
-        //    client.OpenAsync();
-        //    //DPPendingOrdersRequest_OutRequest dPPendingOrdersRequest_OutRequest = new DPPendingOrdersRequest_OutRequest(SessionHelper.LoginUser.Distributor.DistributorSAPCode);
-        //    ZST_PENDING_ORDER_OUT[] list = client.DPPendingOrdersRequest_Out(SessionHelper.LoginUser.Distributor.DistributorSAPCode);
-
-        //    return list;
-        //}
         #endregion
 
         #region Store Keeper

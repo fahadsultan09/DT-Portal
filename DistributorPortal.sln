@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAPConfigurationAPI", "SAPC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{119EF512-0575-48E4-BC45-2C6ADDF1A064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSystemInfo", "UserSystemInfo\UserSystemInfo.csproj", "{47B1B3F1-8DD1-46A6-AB91-3E8F70E66B22}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLoginRegistration", "UserLoginRegistration\UserLoginRegistration.csproj", "{CF1672B7-C494-4096-80F5-90E9BB2CF171}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LoginSetup", "LoginSetup\LoginSetup.vdproj", "{A553C8A1-84E4-4790-8978-73893C0015E2}"
@@ -57,10 +55,6 @@ Global
 		{119EF512-0575-48E4-BC45-2C6ADDF1A064}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{119EF512-0575-48E4-BC45-2C6ADDF1A064}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{119EF512-0575-48E4-BC45-2C6ADDF1A064}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47B1B3F1-8DD1-46A6-AB91-3E8F70E66B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47B1B3F1-8DD1-46A6-AB91-3E8F70E66B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47B1B3F1-8DD1-46A6-AB91-3E8F70E66B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47B1B3F1-8DD1-46A6-AB91-3E8F70E66B22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF1672B7-C494-4096-80F5-90E9BB2CF171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF1672B7-C494-4096-80F5-90E9BB2CF171}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF1672B7-C494-4096-80F5-90E9BB2CF171}.Release|Any CPU.ActiveCfg = Release|Any CPU

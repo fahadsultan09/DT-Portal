@@ -357,8 +357,8 @@ namespace DistributorPortal.Controllers
                         {
                             ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
                             Date = Convert.ToDateTime(master.ReceivedDate).ToString("dd/MMM/yyyy"),
-                            City = "",
-                            ShipToPartyName = "",
+                            City = master.Distributor.City,
+                            ShipToPartyName = master.Distributor.DistributorName,
                             RetrunOrderNumber = master.SNo.ToString(),
                             Subject = "Return Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,

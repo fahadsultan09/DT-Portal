@@ -77,9 +77,9 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>TR Date:</h6>
-                                                <div class="input-group date" id="TRDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker">
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" id="TRDate" readonly="readonly" asp-for="TRDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.TRDate).ToString("MM/dd/yyyy"))" data-target="#TRDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#TRDate" data-toggle="datepicker" id="input-group-append-TRDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -92,9 +92,9 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note Date:</h6>
-                                                <div class="input-group date" id="DebitNoteDate" data-target-input="nearest">
-                                                    <input type="text" readonly="readonly" asp-for="DebitNoteDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.DebitNoteDate).ToString("MM/dd/yyyy"))" data-target="#DebitNoteDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#DebitNoteDate" data-toggle="datepicker">
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" id="DebitNoteDate" readonly="readonly" asp-for="DebitNoteDate" value="@(Model.Id == 0 ? DateTime.Now.ToString("MM/dd/yyyy") : Convert.ToDateTime(Model.DebitNoteDate).ToString("MM/dd/yyyy"))" data-target="#DebitNoteDate" class="form-control datepicker" />
+                                                    <div class="input-group-append" data-target="#DebitNoteDate" data-toggle="datepicker" id="input-group-append-DebitNoteDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -181,7 +181,7 @@
                                                 <h6>Intimation Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="IntimationDate" id="txtIntimationDate" data-target="#IntimationDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker">
+                                                    <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker" id="input-group-append-IntimationDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -199,7 +199,7 @@
                                                 <h6>Invoice Date:<span class="text-danger"> *</span></h6>
                                                 <div class="input-group date" id="InvoiceDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="InvoiceDate" id="txtInvoiceDate" data-target="#InvoiceDate" class="form-control datepicker" />
-                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datepicker">
+                                                    <div class="input-group-append" data-target="#InvoiceDate" data-toggle="datepicker" id="input-group-append-InvoiceDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -263,6 +263,30 @@
     });
 
     $(document).ready(function () {
+
+        $('#input-group-append-TRDate').click(function () {
+            $("#TRDate").focus();
+        });
+
+        $('#input-group-append-DebitNoteDate').click(function () {
+            $("#DebitNoteDate").focus();
+        });
+
+        $('#input-group-append-IntimationDate').click(function () {
+            $("#txtIntimationDate").focus();
+        });
+
+        $('#input-group-append-InvoiceDate').click(function () {
+            $("#txtInvoiceDate").focus();
+        });
+
+        $('#input-group-append-From').click(function () {
+            $("#ManufactureDate").focus();
+        });
+
+        $('#input-group-append-To').click(function () {
+            $("#ExpiryDate").focus();
+        });
 
         $('#ManufactureDate').on('change', function () {
 

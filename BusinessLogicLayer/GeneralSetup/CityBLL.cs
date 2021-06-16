@@ -39,7 +39,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeleteCity(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = false;
+            item.IsDeleted = true;
             item.DeletedBy = SessionHelper.LoginUser.Id;
             item.DeletedDate = DateTime.Now;
             repository.Delete(item);

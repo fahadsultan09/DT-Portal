@@ -26,6 +26,11 @@ namespace BusinessLogicLayer.Login
             List<string> MACAddresses = new List<string>();
             var Password = EncryptDecrypt.Encrypt(user.Password);
             User LoginUser = _UserBLL.Where(e => e.IsActive == true && e.IsDeleted == false && e.UserName == user.UserName && e.Password == Password).FirstOrDefault();
+            if (LoginUser != null && !LoginUser.IsDistributor && !string.IsNullOrEmpty(user.MacAddresses))
+            {
+                LoginUser = null;
+                return LoginStatus.NotRegistered;
+            }
             if (LoginUser != null && LoginUser.IsDistributor)
             {
                 if (string.IsNullOrEmpty(LoginUser.AccessToken) && !string.IsNullOrEmpty(user.AccessToken))

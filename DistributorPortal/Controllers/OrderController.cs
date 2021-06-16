@@ -272,11 +272,12 @@ namespace DistributorPortal.Controllers
                     Detail.IsProductSelected = item.ProductMaster.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
-                var Client = new RestClient(_Configuration.PostOrder);
-                var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
-                IRestResponse response = Client.Execute(request);
-                var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                //var Client = new RestClient(_Configuration.PostOrder);
+                //var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
+                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
+                //IRestResponse response = Client.Execute(request);
+                //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                List<SAPOrderStatus> SAPProduct = _OrderBLL.PostDistributorOrder(OrderId);
                 var detail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (SAPProduct != null)
                 {
@@ -769,35 +770,5 @@ namespace DistributorPortal.Controllers
             }
             SessionHelper.AddProduct = list;
         }
-        //public List<ZST_SALE_ORDER_CREATE_IN> PlaceOrderToSAPPO(int OrderId)
-        //{
-        //    List<ZST_SALE_ORDER_CREATE_IN> model = new List<ZST_SALE_ORDER_CREATE_IN>();
-        //    var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.IsProductSelected == true && e.ApprovedQuantity > 0 && e.SAPOrderNumber == null).ToList();
-        //    var ProductDetail = _productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
-        //    foreach (var item in orderproduct)
-        //    {
-        //        model.Add(new ZST_SALE_ORDER_CREATE_IN()
-        //        {
-        //            SNO = string.Format("{0:1000000000}", item.OrderId),
-        //            ITEMNO = "",
-        //            PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
-        //            DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
-        //            SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-        //            DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-        //            DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
-        //            PURCH_NO = item.OrderMaster.ReferenceNo,
-        //            PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
-        //            PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
-        //            ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
-        //            MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-        //            PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-        //            STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
-        //            BATCH = "",
-        //            ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
-        //            REQ_QTY = item.ApprovedQuantity.ToString()
-        //        });
-        //    }
-        //    return model;
-        //}
     }
 }

@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeleteApplicationModule(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = false;
+            item.IsDeleted = true;
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }

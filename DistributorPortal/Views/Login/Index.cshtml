@@ -136,7 +136,7 @@
 
         function OnLoginSuccess(data) {
 
-            if (data.data.Status) {
+            if (data.data != null && data.data.Status != undefined) {
                 Toast.fire({
                     icon: 'success',
                     title: data.data.Message

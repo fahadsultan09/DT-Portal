@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Utility.HelperClasses;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Scheduler
 {
@@ -21,13 +22,15 @@ namespace Scheduler
         private readonly ComplaintUserEmailBLL _ComplaintUserEmailBLL;
         private readonly EmailLogBLL _EmailLogBLL;
         private readonly Configuration _Configuration;
-        public KPIEmailScheduler(IUnitOfWork unitOfWork, Configuration configuration)
+        private readonly IWebHostEnvironment _env;
+        public KPIEmailScheduler(IUnitOfWork unitOfWork, Configuration configuration, IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _ComplaintBLL = new ComplaintBLL(_unitOfWork);
             _ComplaintUserEmailBLL = new ComplaintUserEmailBLL(_unitOfWork);
             _Configuration = configuration;
             _EmailLogBLL = new EmailLogBLL(_unitOfWork, _Configuration);
+            _env = env;
         }
 
         public void GetPendingComplaints()
@@ -44,6 +47,7 @@ namespace Scheduler
                     {
                         var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\")));
                         string EmailTemplate = path + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
+                        //EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
                         ComplaintEmailUserModel EmailUserModel = new ComplaintEmailUserModel();
                         User user = new User();
                         Complaint complaint = ComplaintList.First(x => x.ComplaintSubCategoryId == item.ComplaintSubCategoryId);
@@ -53,7 +57,7 @@ namespace Scheduler
 
                         EmailUserModel.Day = item.ComplaintSubCategory.KPIDay.ToString();
                         EmailUserModel.ComplaintCategory = item.ComplaintSubCategory.ComplaintCategory.ComplaintCategoryName + " - " + item.ComplaintSubCategory.ComplaintSubCategoryName;
-                        EmailUserModel.ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate);
+                        EmailUserModel.ToAcceptTemplate = File.ReadAllText(EmailTemplate);
                         EmailUserModel.ComplaintNo = complaint.SNo.ToString();
                         EmailUserModel.DistributorName = complaint.Distributor.DistributorName;
                         EmailUserModel.ComplaintDetail = complaint.Description;

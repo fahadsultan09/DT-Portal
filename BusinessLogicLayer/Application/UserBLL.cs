@@ -26,6 +26,7 @@ namespace BusinessLogicLayer.Application
             module.FirstName.Trim();
             module.LastName.Trim();
             module.DistributorId = module.IsDistributor ? module.DistributorId : null;
+            module.IsActive = module.IsActive;
             module.IsDeleted = false;
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;

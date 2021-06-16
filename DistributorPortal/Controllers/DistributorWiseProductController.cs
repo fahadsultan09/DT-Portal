@@ -59,17 +59,35 @@ namespace DistributorPortal.Controllers
                 var productDetail = _productDetailBll.GetAllProductDetail();
                 foreach (var item in distributors)
                 {
+                    Root root = new Root();
                     using (var client = new HttpClient())
                     {
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123")); //("Username:Password")  
+                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                         var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PriceDisc?DISTRIBUTOR=" + item.DistributorSAPCode)).Result;
                         if (result.IsSuccessStatusCode)
                         {
                             var JsonContent = result.Content.ReadAsStringAsync().Result;
-                            distributorsProduct = JsonConvert.DeserializeObject<List<DistributorWiseProductViewModel>>(JsonContent);
+                            root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        }
+                    }
+                    if (root != null && root.ZWAS_IT_DP_PRICE_DISCOUNT != null && root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES != null && root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item != null)
+                    {
+                        for (int i = 0; i < root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item.Count(); i++)
+                        {
+                            distributorsProduct.Add(new DistributorWiseProductViewModel()
+                            {
+                                SAPProductCode = root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].MATNR.TrimStart(new char[] { '0' }),
+                                PackSize = root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].MVGR2T,
+                                ProductDescription = root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].MAKTX,
+                                ProductPrice = Convert.ToDouble(root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].KBETR),
+                                CartonSize = Convert.ToDouble(root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].CARTON),
+                                Rate = Convert.ToDouble(root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].KBETR),
+                                Discount = Convert.ToDouble(root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].DISCOUNT),
+                                LicenseType = root.ZWAS_IT_DP_PRICE_DISCOUNT.PRICES.item[i].MTPOS,
+                            });
                         }
                     }
                     distributorsProduct.ForEach(e => e.DistributorId = item.Id);

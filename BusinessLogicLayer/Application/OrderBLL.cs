@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
+using SalesOrder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.ServiceModel;
@@ -440,6 +439,8 @@ namespace BusinessLogicLayer.Application
                 DeleteRange(_OrderValueBLL.GetOrderValueByOrderId(model.Id));
                 AddRange(GetValues(GetOrderValueModel(ProductDetails), model.Id));
                 jsonResponse.Status = true;
+                model = _repository.GetById(model.Id);
+                model.SNo = model.SNo;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft + " Order Id: " + model.SNo : OrderContant.OrderSubmit + " Order Id: " + model.SNo;
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
             }
@@ -627,17 +628,43 @@ namespace BusinessLogicLayer.Application
         {
             try
             {
-                var Client = new RestClient(_configuration.GetPendingOrderValue + "?DistributorId=" + DistributorCode);
-                var request = new RestRequest(Method.POST);
-                IRestResponse response = Client.Execute(request);
-                var SAPOrderPendingValue = JsonConvert.DeserializeObject<List<SAPOrderPendingValue>>(response.Content);
-                if (SAPOrderPendingValue == null)
+                //var Client = new RestClient(_configuration.GetPendingOrderValue + "?DistributorId=" + DistributorCode);
+                //var request = new RestRequest(Method.POST);
+                //IRestResponse response = Client.Execute(request);
+                //var SAPOrderPendingValue = JsonConvert.DeserializeObject<List<SAPOrderPendingValue>>(response.Content);
+                List<SAPOrderPendingValue> sAPOrderPendingValue = new List<SAPOrderPendingValue>();
+                Root root = new Root();
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getSalesQuery?DISTRIBUTOR=" + DistributorCode)).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        if (root != null)
+                        {
+                            for (int i = 0; i < root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item.Count(); i++)
+                            {
+                                sAPOrderPendingValue.Add(new SAPOrderPendingValue()
+                                {
+                                    CompanyCode = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].VKORG,
+                                    PendingValue = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].NETWR,
+                                });
+                            }
+                        }
+                    }
+                }
+                if (sAPOrderPendingValue == null)
                 {
                     return new List<SAPOrderPendingValue>();
                 }
                 else
                 {
-                    return SAPOrderPendingValue;
+                    return sAPOrderPendingValue;
                 }
             }
             catch (Exception ex)
@@ -775,6 +802,78 @@ namespace BusinessLogicLayer.Application
                 }
             }
             return OrderPendingQuantityList;
+        }
+        public List<SAPOrderStatus> PostDistributorOrder(int OrderId)
+        {
+            BasicHttpBinding binding = new BasicHttpBinding
+            {
+                SendTimeout = TimeSpan.FromSeconds(100000),
+                MaxBufferSize = int.MaxValue,
+                MaxReceivedMessageSize = int.MaxValue,
+                AllowCookies = true,
+                ReaderQuotas = XmlDictionaryReaderQuotas.Max,
+            };
+            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DisPortalPORequest_Out&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FSalesOrderCreation");
+            DisPortalPORequest_OutClient client = new DisPortalPORequest_OutClient(binding, address);
+            client.ClientCredentials.UserName.UserName = "SAMI_PO";
+            client.ClientCredentials.UserName.Password = "wasay123";
+            if (client.InnerChannel.State == CommunicationState.Faulted)
+            {
+            }
+            else
+            {
+                client.OpenAsync();
+            }
+            DisPortalRequestIn disPortalRequestIn = new DisPortalRequestIn();
+            disPortalRequestIn.IM_SALEDATA = PlaceOrderToSAPPO(OrderId).ToArray();
+            DisPortalPORequest_OutRequest disPortalPORequest_OutRequest = new DisPortalPORequest_OutRequest(disPortalRequestIn);
+            ZSD_CREATE_SALE_ORDERResponse zSD_CREATE_SALE_ORDERResponse = client.DisPortalPORequest_Out(disPortalRequestIn);
+            client.CloseAsync();
+            List<SAPOrderStatus> list = new List<SAPOrderStatus>();
+            if (zSD_CREATE_SALE_ORDERResponse != null)
+            {
+                for (int i = 0; i < zSD_CREATE_SALE_ORDERResponse.EX_OUTPUT.Length; i++)
+                {
+                    list.Add(new SAPOrderStatus()
+                    {
+                        ProductCode = zSD_CREATE_SALE_ORDERResponse.EX_OUTPUT[i].MATNR,
+                        SAPOrderNo = zSD_CREATE_SALE_ORDERResponse.EX_OUTPUT[i].VBELN
+                    });
+                }
+            }
+            return list;
+        }
+        public List<DisPortalRequestInMain> PlaceOrderToSAPPO(int OrderId)
+        {
+            List<DisPortalRequestInMain> model = new List<DisPortalRequestInMain>();
+            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
+            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
+            foreach (var item in orderproduct)
+            {
+                model.Add(new DisPortalRequestInMain()
+                {
+                    SNO = string.Format("{0:1000000000}", item.OrderId),
+                    ITEMNO = item.OrderId.ToString(),
+                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
+                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
+                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
+                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PURCH_NO = item.OrderMaster.ReferenceNo,
+                    PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+                    PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+                    ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
+                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
+                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
+                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    BATCH = "",
+                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    REQ_QTY = item.Quantity.ToString()
+                });
+            }
+            return model;
         }
     }
 }

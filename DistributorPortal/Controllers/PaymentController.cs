@@ -192,25 +192,26 @@ namespace DistributorPortal.Controllers
                     //IRestResponse restResponse = Client.Execute(request);
                     //var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
                     SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(id);
+                    Root root = new Root();
                     using (var client = new HttpClient())
                     {
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123")); //("Username:Password")  
+                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                        var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/payment?REF=" + sAPPaymentViewModel.REF + "&COMPANY=" + sAPPaymentViewModel.COMPANY + "&AMOUNT=" + sAPPaymentViewModel.AMOUNT + "&DISTRIBUTOR=" + sAPPaymentViewModel.DISTRIBUTOR + "&B_CODE=" + sAPPaymentViewModel.B_CODE + "&PAY_ID=" + sAPPaymentViewModel.PAY_ID)).Result;
+                        var result = client.GetAsync(new Uri(string.Format("http://10.0.3.35:51000/RESTAdapter/payment?REF={0}&COMPANY={1}&AMOUNT={2}&DISTRIBUTOR={3}&B_CODE={4}&PAY_ID={5}", sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
                         if (result.IsSuccessStatusCode)
                         {
                             var JsonContent = result.Content.ReadAsStringAsync().Result;
-                            SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(JsonContent);
+                            root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
                         }
                     }
 
-                    if (SAPPaymentStatus != null)
+                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null &&  !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
                     {
-                        model.SAPCompanyCode = SAPPaymentStatus.SAPCompanyCode;
-                        model.SAPDocumentNumber = SAPPaymentStatus.SAPDocumentNumber;
-                        model.SAPFiscalYear = SAPPaymentStatus.SAPFiscalYear;
+                        model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
+                        model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
+                        model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
                         model.Status = PaymentStatus.Verified;
                         bool result = _PaymentBLL.Update(model);
                         _PaymentBLL.UpdateStatus(model, Status, Remarks);

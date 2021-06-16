@@ -195,7 +195,7 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 }
 
 function UpdateStatus(e, controllerName, actionName, id) {
-    debugger
+    BlockUI();
     var val = '';
     if (e.value == undefined) {
         val = e;
@@ -276,6 +276,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
             }
         });
     }
+    UnBlockUI();
 }
 
 function inWords(num) {

@@ -44,7 +44,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public int DeleteBank(int id)
         {
             var item = _unitOfWork.GenericRepository<Bank>().GetById(id);
-            item.IsDeleted = false;
+            item.IsDeleted = true;
             item.DeletedBy = SessionHelper.LoginUser.Id;
             item.DeletedDate = DateTime.Now;
             _unitOfWork.GenericRepository<Bank>().Delete(item);

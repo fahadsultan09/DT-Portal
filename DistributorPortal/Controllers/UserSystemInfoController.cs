@@ -25,12 +25,12 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName }).DistinctBy(y => y.HostName).ToList();
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Where(x => !x.IsDeleted).Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName, IsActive = x.IsActive }).DistinctBy(y => y.HostName).ToList();
             return View(list);
         }
         public IActionResult List()
         {
-            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName }).DistinctBy(y => y.HostName).ToList();
+            List<UserSystemInfo> list = _UserSystemInfoBLL.GetAllUserSystemInfo().Where(x => !x.IsDeleted).Select(x => new UserSystemInfo { Id = x.Id, Distributor = x.Distributor, ProcessorId = x.ProcessorId, HostName = x.HostName, IsActive = x.IsActive }).DistinctBy(y => y.HostName).ToList();
             return PartialView("List", list);
         }
         [HttpGet]
@@ -64,7 +64,7 @@ namespace DistributorPortal.Controllers
                         {
                             foreach (var item in model.UserSystemInfoDetail)
                             {
-                                UserSystemInfo userSystemInfo = _UserSystemInfoBLL.Where(x => x.IsActive && !x.IsDeleted && x.ProcessorId == model.ProcessorId && x.HostName == model.HostName && x.MACAddress == item.MACAddress.Trim()).FirstOrDefault();
+                                UserSystemInfo userSystemInfo = _UserSystemInfoBLL.Where(x => x.Id == item.Id).FirstOrDefault();
                                 if (userSystemInfo != null)
                                 {
                                     _UserSystemInfoBLL.Delete(userSystemInfo.Id);
@@ -118,7 +118,14 @@ namespace DistributorPortal.Controllers
             try
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
-                _UserSystemInfoBLL.Delete(id);
+
+                UserSystemInfo userSystemInfo = _UserSystemInfoBLL.Where(x => x.Id == id).FirstOrDefault();
+                List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(x => !x.IsDeleted && x.DistributorId == userSystemInfo.DistributorId && x.ProcessorId == userSystemInfo.ProcessorId && x.HostName == userSystemInfo.HostName).ToList();
+                foreach (var item in UserSystemInfoList)
+                {
+                    _UserSystemInfoBLL.Delete(item.Id);
+                    _unitOfWork.Save();
+                }
                 _unitOfWork.Save();
                 return Json(new { Result = true });
             }
@@ -135,7 +142,7 @@ namespace DistributorPortal.Controllers
             if (Id > 0)
             {
                 model = _UserSystemInfoBLL.GetById(Id);
-                model.UserSystemInfoDetail = _UserSystemInfoBLL.Where(x => x.DistributorId == model.DistributorId && x.HostName == model.HostName).Select(x => new UserSystemInfoViewModel { MACAddress = x.MACAddress, IsRowDeleted = x.IsDeleted }).ToList();
+                model.UserSystemInfoDetail = _UserSystemInfoBLL.Where(x => x.DistributorId == model.DistributorId && x.HostName == model.HostName).Select(x => new UserSystemInfoViewModel { Id = x.Id, MACAddress = x.MACAddress, IsRowDeleted = x.IsDeleted }).ToList();
             }
             else
             {

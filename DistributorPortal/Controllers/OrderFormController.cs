@@ -352,10 +352,11 @@ namespace DistributorPortal.Controllers
                 order.ApprovedBy = SessionHelper.LoginUser.Id;
                 order.ApprovedDate = DateTime.Now;
 
-                var client = new RestClient(_Configuration.PostOrder);
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
-                IRestResponse response = client.Execute(request);
-                var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                //var client = new RestClient(_Configuration.PostOrder);
+                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
+                //IRestResponse response = client.Execute(request);
+                //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id);
                 var detail = _orderDetailBll.Where(e => e.OrderId == id).ToList();
                 if (sapProduct != null)
                 {
@@ -388,8 +389,8 @@ namespace DistributorPortal.Controllers
                         {
                             ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
                             Date = Convert.ToDateTime(order.ApprovedDate).ToString("dd/MMM/yyyy"),
-                            City = "",
-                            ShipToPartyName = "",
+                            City = order.Distributor.City,
+                            ShipToPartyName = order.Distributor.DistributorName,
                             OrderNumber = order.SNo.ToString(),
                             Subject = "Order Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,

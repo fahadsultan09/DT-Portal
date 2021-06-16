@@ -28,14 +28,17 @@ namespace Scheduler
         {
             try
             {
-                var a = _OrderDetailBLL.GetInProcessOrderStatus();
-                var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
-                var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
-                IRestResponse response = Client.Execute(request);
-                var resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                if (resp != null && resp.Count > 0)
+                var InProcessOrderStatus = _OrderDetailBLL.GetInProcessOrderStatus();
+                if (InProcessOrderStatus != null)
                 {
-                    _OrderDetailBLL.UpdateProductOrderStatus(resp);
+                    var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
+                    var request = new RestRequest(Method.POST).AddJsonBody(InProcessOrderStatus, "json");
+                    IRestResponse response = Client.Execute(request);
+                    var resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                    if (resp != null && resp.Count > 0)
+                    {
+                        _OrderDetailBLL.UpdateProductOrderStatus(resp);
+                    }
                 }
             }
             catch (Exception ex)
@@ -47,14 +50,17 @@ namespace Scheduler
         {
             try
             {
-                var a = _OrderReturnDetailBLL.GetInProcessOrderReturnStatus();
-                var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
-                var request = new RestRequest(Method.POST).AddJsonBody(a, "json");
-                IRestResponse response = Client.Execute(request);
-                List<SAPOrderStatus> resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                if (resp != null && resp.Count > 0)
+                var InProcessOrderReturnStatus = _OrderReturnDetailBLL.GetInProcessOrderReturnStatus();
+                if (InProcessOrderReturnStatus != null)
                 {
-                    _OrderReturnDetailBLL.UpdateProductOrderStatus(resp);
+                    var Client = new RestClient(_Configuration.GetInProcessOrderStatus);
+                    var request = new RestRequest(Method.POST).AddJsonBody(InProcessOrderReturnStatus, "json");
+                    IRestResponse response = Client.Execute(request);
+                    List<SAPOrderStatus> resp = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                    if (resp != null && resp.Count > 0)
+                    {
+                        _OrderReturnDetailBLL.UpdateProductOrderStatus(resp);
+                    }
                 }
             }
             catch (Exception ex)

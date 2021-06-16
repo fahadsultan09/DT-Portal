@@ -43,7 +43,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public int DeletePolicy(int id)
         {
             var item = _repository.GetById(id);
-            item.IsDeleted = false;
+            item.IsDeleted = true;
             item.DeletedBy = SessionHelper.LoginUser.Id;
             item.DeletedDate = DateTime.Now;
             _repository.Delete(item);
