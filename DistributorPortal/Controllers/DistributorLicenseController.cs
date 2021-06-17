@@ -100,19 +100,27 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = message.Replace("'--Select option--'", "");
                     return Json(new { data = jsonResponse });
                 }
-                var ext = Path.GetExtension(model.File.FileName).ToLowerInvariant();
-                if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+                if (model.File != null)
                 {
-                    return Json(new { Result = false, Message = NotificationMessage.FileTypeAllowed });
-                }
-                if (model.File.Length >= Convert.ToInt64(_Configuration.FileSize))
-                {
-                    return Json(new { Result = false, Message = NotificationMessage.FileSizeAllowed });
-                }
-                Tuple<bool, string> tuple = FileUtility.UploadFile(model.File, FolderName.DistributorLicense, FolderPath);
-                if (tuple.Item1)
-                {
-                    model.Attachment = tuple.Item2;
+                    var ext = Path.GetExtension(model.File.FileName).ToLowerInvariant();
+
+                    if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = NotificationMessage.FileTypeAllowed;
+                        return Json(new { data = jsonResponse });
+                    }
+                    if (model.File.Length >= Convert.ToInt64(_Configuration.FileSize))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = NotificationMessage.FileSizeAllowed;
+                        return Json(new { data = jsonResponse });
+                    }
+                    Tuple<bool, string> tuple = FileUtility.UploadFile(model.File, FolderName.Complaint, FolderPath);
+                    if (tuple.Item1)
+                    {
+                        model.Attachment = tuple.Item2;
+                    }
                 }
                 if (model.Id > 0)
                 {
@@ -127,7 +135,6 @@ namespace DistributorPortal.Controllers
                     {
                         _DistributorLicenseBLL.Add(model);
                     }
-
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.AddLicense;
@@ -180,7 +187,7 @@ namespace DistributorPortal.Controllers
         }
         public DistributorLicenseViewModel List(DistributorLicenseViewModel model)
         {
-            if (model.DistributorId is null && model.Status is null && model.FromDate is null && model.ToDate is null && model.DistributorId is null)
+            if (model.FromDate is null && model.ToDate is null && model.Status is null && model.DistributorId is null && model.LicenseId is null)
             {
                 model.DistributorLicenseList = GetDistributorLicenseList();
             }

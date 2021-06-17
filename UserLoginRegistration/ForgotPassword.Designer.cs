@@ -32,7 +32,6 @@ namespace UserLoginRegistration
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ForgotPassword));
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnChangePassword = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblError = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -40,6 +39,7 @@ namespace UserLoginRegistration
             this.txtConfirmPassword = new System.Windows.Forms.TextBox();
             this.lblResponseError = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtPassword
@@ -63,22 +63,11 @@ namespace UserLoginRegistration
             this.btnChangePassword.UseVisualStyleBackColor = true;
             this.btnChangePassword.Click += new System.EventHandler(this.btnChangePassword_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label2.Location = new System.Drawing.Point(36, 47);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(409, 32);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "SAMI Pharmaceuticals (Pvt.) Ltd.®";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(162, 115);
+            this.label1.Location = new System.Drawing.Point(143, 108);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(177, 28);
             this.label1.TabIndex = 13;
@@ -147,18 +136,29 @@ namespace UserLoginRegistration
             this.lblUserName.Text = "lblUserName";
             this.lblUserName.Visible = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(184)))), ((int)(((byte)(242)))));
+            this.label2.Location = new System.Drawing.Point(33, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(409, 32);
+            this.label2.TabIndex = 20;
+            this.label2.Text = "SAMI Pharmaceuticals (Pvt.) Ltd.®";
+            // 
             // ForgotPassword
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(482, 403);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lblUserName);
             this.Controls.Add(this.lblResponseError);
             this.Controls.Add(this.lblError);
             this.Controls.Add(this.txtConfirmPassword);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnChangePassword);
             this.Controls.Add(this.txtPassword);
@@ -176,7 +176,6 @@ namespace UserLoginRegistration
 
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Button btnChangePassword;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblError;
         private System.Windows.Forms.Label label3;
@@ -184,5 +183,6 @@ namespace UserLoginRegistration
         private System.Windows.Forms.TextBox txtConfirmPassword;
         private System.Windows.Forms.Label lblResponseError;
         private System.Windows.Forms.Label lblUserName;
+        private System.Windows.Forms.Label label2;
     }
 }

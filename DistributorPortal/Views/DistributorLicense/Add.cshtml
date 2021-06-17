@@ -73,7 +73,7 @@
                         </div>
                         <div class="card-body m-0 p-0">
                             <div class="table-responsive scrollmenu">
-                                <table id="example2" class="table table-bordered table-condensed table-hover table-striped" style="width: 150%;">
+                                <table id="example2" class="table table-bordered table-condensed table-hover table-striped" style="width: 160%;">
                                     <thead>
                                         <tr>
                                             <th class="text-center">License</th>
@@ -314,7 +314,7 @@
             return false;
         }
         if ($(this).closest("tr").find("td:eq(6)").find(":input").val() == "") {
-            Toast.fire({ icon: 'error', title: 'Select Attachment' });
+            Toast.fire({ icon: 'error', title: 'Select a file' });
             return false;
         }
         if ($(this).closest("tr").find("td:eq(7)").find(":input").val() == "") {
@@ -328,7 +328,6 @@
         var fileUpload = $(this).closest("tr").find("td:eq(6)").find(":input").get(0);
         var files = fileUpload.files;
 
-        Ladda.create(this).start();
         var LicenseControl = {
             LicenseName: $(this).closest("tr").find("td:eq(0)").find(":input").val()
         };
@@ -344,7 +343,7 @@
         model.append('File', files[0]);
         model.append('IssueDate', $(this).closest("tr").find("td:eq(7)").find(":input").val());
         model.append('Expiry', $(this).closest("tr").find("td:eq(8)").find(":input").val());
-
+        BlockUI();
         $.post({
             url: "SaveEdit/DistributorLicense",
             type: 'POST',
@@ -353,18 +352,17 @@
             data: model,
             success: function (data) {
 
-                if (data) {
+                if (data != null && data.data.Status) {
                     Toast.fire({ icon: 'success', title: data.data.Message });
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);
                 } else {
-                    Ladda.create(this).stop();
+                    UnBlockUI();
                     Toast.fire({ icon: 'error', title: data.data.Message });
                 }
             }
         });
-
     });
 
     $(".datepicker1").datepicker({

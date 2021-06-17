@@ -57,8 +57,8 @@ namespace UserLoginRegistration
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label2.Location = new System.Drawing.Point(27, 42);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(184)))), ((int)(((byte)(242)))));
+            this.label2.Location = new System.Drawing.Point(33, 43);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(409, 32);
             this.label2.TabIndex = 5;
@@ -141,10 +141,10 @@ namespace UserLoginRegistration
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(13, 374);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(52, 12);
+            this.label5.Size = new System.Drawing.Size(60, 13);
             this.label5.TabIndex = 9;
             this.label5.Text = "Version 1.1";
             // 

@@ -10,13 +10,15 @@
                 <table id="example1" class="table table-bordered table-striped"  >
                     <thead>
                         <tr>
-                            <th>Distributor</th>
-                            <th>License</th>
+                            <th>Distributor Name</th>
+                            <th>License Name</th>
                             <th>Type</th>
                             <th>Request Type</th>
+                            <th>License No</th>
+                            <th>Issuing Authority</th>
                             <th width="15%">Attachment</th>
-                            <th>Issue</th>
-                            <th>Expiry</th>
+                            <th>Issue Date</th>
+                            <th>Expiry Date</th>
                             <th>Uploaded Date</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -30,6 +32,8 @@
                                 <td>@item.LicenseControl.LicenseName</td>
                                 <td>@item.Type</td>
                                 <td>@Html.DisplayFor(x => item.RequestType)</td>
+                                <td>@item.LicenseNo</td>
+                                <td>@item.IssuingAuthority</td>
                                 <td>
                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ? item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
                                 </td>

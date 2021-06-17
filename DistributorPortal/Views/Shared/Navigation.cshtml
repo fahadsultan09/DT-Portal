@@ -153,12 +153,20 @@
     </div>
 </div>
 <script>
+
+    $(document).ready(function () {
+        debugger
+        var count = '@(SessionHelper.Notification != null ? SessionHelper.Notification.Where(x => !x.IsView).Count().ToString() : "0")';
+        if (count == "0") {
+            $('#NotificationCountValue').css('display', 'none');
+        }
+    });
     $('body').on('click', '#NotificationCount', function () {
 
         var url = '@Url.Action("UpdateCount", "Notification")';
         $.get(url, function (context) {
             }).done(function (context) {
             });
-        $('#NotificationCountValue').innerHTML = '0';
+        $('#NotificationCountValue').css('display','none');
     });
 </script>

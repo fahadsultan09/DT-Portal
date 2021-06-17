@@ -62,8 +62,15 @@ namespace DistributorPortal.Controllers
             _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
             _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             _Distributor = _DistributorBLL.GetAllDistributor().ToList();
-            _Notification = _NotificationBLL.GetAllNotification().Where(x => x.CreatedDate.Date >= DateTime.Now.Date.AddDays(-10)).OrderByDescending(x => x.CreatedDate).ToList();
-            _Notification.ForEach(x => x.RelativeTime = ExtensionUtility.TimeAgo(x.CreatedDate));
+            if (SessionHelper.LoginUser != null && SessionHelper.LoginUser.IsDistributor)
+            {
+                SessionHelper.Notification = _NotificationBLL.GetAllNotification().Where(x => (SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true) && x.CreatedDate.Date >= DateTime.Now.Date.AddDays(-10)).OrderByDescending(x => x.CreatedDate).ToList();
+                SessionHelper.Notification.ForEach(x => x.RelativeTime = ExtensionUtility.TimeAgo(x.CreatedDate));
+            }
+            else
+            {
+                SessionHelper.Notification = new List<Notification>();
+            }
             _configuration = configuration;
         }
         public IActionResult Index()
@@ -330,7 +337,6 @@ namespace DistributorPortal.Controllers
                 model.ReturnOrder = _OrderReturnMaster.Where(x => x.Status != OrderReturnStatus.Draft).Count();
 
                 model.PolicyList = _PolicyBLL.Where(x => x.IsActive && !x.IsDeleted).ToList();
-                SessionHelper.Notification = _Notification;
                 if (SessionHelper.LoginUser.Distributor != null)
                 {
                     SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration).ToList();

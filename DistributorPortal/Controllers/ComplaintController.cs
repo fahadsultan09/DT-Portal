@@ -218,9 +218,9 @@ namespace DistributorPortal.Controllers
                 }
                 jsonResponse.Message = Status == ComplaintStatus.Resolved ? NotificationMessage.Resolved : Status == ComplaintStatus.Approved ? NotificationMessage.ComplaintApproved : NotificationMessage.ComplaintRejected;
                 jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                notification.ApplicationPageId = (int)ApplicationPages.Complaint;
-                if (Status != ComplaintStatus.Resolved)
+                if (Status == ComplaintStatus.Approved || Status == ComplaintStatus.Rejected)
                 {
+                    notification.ApplicationPageId = (int)ApplicationPages.Complaint;
                     notification.DistributorId = model.DistributorId;
                     notification.RequestId = model.SNo;
                     notification.Status = model.Status.ToString();
@@ -230,7 +230,7 @@ namespace DistributorPortal.Controllers
                 }
                 _unitOfWork.Save();
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.Resolved;
+                jsonResponse.Message = Status == ComplaintStatus.Resolved ? NotificationMessage.Resolved : Status == ComplaintStatus.Approved ? NotificationMessage.ComplaintApproved : NotificationMessage.ComplaintRejected;
                 jsonResponse.RedirectURL = Url.Action("Index", "Complaint");
                 return Json(new { data = jsonResponse });
             }

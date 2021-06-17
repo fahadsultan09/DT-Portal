@@ -90,10 +90,20 @@ namespace DistributorPortal.Controllers
                             });
                         }
                     }
-                    distributorsProduct.ForEach(e => e.DistributorId = item.Id);
+                    distributorsProduct.ForEach(e => e.DistributorId = distributors.FirstOrDefault(c => c.DistributorSAPCode == item.DistributorSAPCode).Id);
                     distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
                     master.AddRange(distributorsProduct);
                 }
+                //var a = master.GroupBy(x => x.DistributorId).Select(y => new RegionWiseOrder
+                //{
+                //    Region = y.Key.ToString(),
+                //    OrderCount = y.Count()
+                //}).ToList();
+                //var result1 = from stu in master
+                //              group stu by stu.DistributorId
+                //            into egroup
+                //              orderby egroup.Key
+                //              select egroup;
                 _DistributorWiseProductDiscountAndPricesBLL.AddRange(master);
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SyncedSuccessfully;

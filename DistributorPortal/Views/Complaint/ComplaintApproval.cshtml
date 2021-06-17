@@ -130,13 +130,13 @@
                             <br />
                             <div class="row">
                                 <div class="col-12 pull-right">
-                                    @if ((Model.Status != ComplaintStatus.Approved && Model.Status != ComplaintStatus.Rejected) && SessionHelper.LoginUser.UserName != "000004")
+                                    @if ((Model.Status != ComplaintStatus.Approved && Model.Status != ComplaintStatus.Rejected) && SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Resolve && x.ApplicationPage.ControllerName == "Complaint"))
                                     {
                                         <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
                                             Resolve
                                         </button>
                                     }
-                                    @if (Model.Status == ComplaintStatus.Resolved && SessionHelper.LoginUser.UserName != "000013" && SessionHelper.LoginUser.UserName != "000014")
+                                    @if (Model.Status == ComplaintStatus.Resolved && SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Approve && x.ApplicationPage.ControllerName == "Complaint"))
                                     {
                                         <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Approved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Approved ? "d-none" : null)">
                                             Approve
