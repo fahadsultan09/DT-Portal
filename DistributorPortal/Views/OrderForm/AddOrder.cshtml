@@ -372,19 +372,21 @@
             var intmaxvalue = @Int32.MaxValue;
         var quantity = data.value == "" ? "0" : data.value;
             var product = data.getAttribute("ProductId");
-            if (quantity > intmaxvalue) {
-                Toast.fire({
-                    icon: 'error',
-                    title: "Quantity cannot be greater than " + intmaxvalue
-                });
-            }
-            else {
-                var qty = parseInt(quantity);
-                var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
-                var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
-                var tradePrice = parseFloat($(data).parent('td').parent('tr').find('.TradePrice').val());
-                var discount = parseFloat($(data).parent('td').parent('tr').find('.Discount').text());
-                var netValue = (tradePrice * qty) + (((tradePrice * qty) / 100) * discount);
+        if (quantity > intmaxvalue) {
+            Toast.fire({
+                icon: 'error',
+                title: "Quantity cannot be greater than " + intmaxvalue
+            });
+        }
+        else {
+            var SalesTaxRate = parseFloat('@ViewBag.SalesTaxRate');
+            var qty = parseInt(quantity);
+            var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
+            var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
+            var tradePrice = parseFloat($(data).parent('td').parent('tr').find('.TradePrice').val());
+            var discount = parseFloat($(data).parent('td').parent('tr').find('.Discount').text());
+            var netValue = ((qty * tradePrice) * (1 - ((-1 * discount) / 100))) + (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) * (SalesTaxRate / 100));
+
                 $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue);
                 //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
 
@@ -418,7 +420,7 @@
                     complete: function(response) {
 
                     }
-                
+
                     });
         }
 

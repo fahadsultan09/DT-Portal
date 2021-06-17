@@ -53,7 +53,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="form-group">
                                         <label class="control-label">Complaint No</label>
-                                        <input type="text" asp-for="ComplaintNo" min="0" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" id="ComplaintNo" autocomplete="off" class="form-control" />
+                                        <input type="text" asp-for="ComplaintNo" min="0" maxlength="9" pattern="\d*" oninput="validity.valid||(value='');" id="ComplaintNo" autocomplete="off" class="form-control" />
                                     </div>
                                 </div>
                                 @if (!SessionHelper.LoginUser.IsDistributor)

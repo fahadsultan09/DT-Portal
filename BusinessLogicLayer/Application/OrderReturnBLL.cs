@@ -4,10 +4,13 @@ using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
+using OrderReturn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.ServiceModel;
+using System.Xml;
 using Utility;
 using static Utility.Constant.Common;
 
@@ -203,7 +206,6 @@ namespace BusinessLogicLayer.Application
 
             return query.OrderByDescending(x => x.Id).ToList();
         }
-
         public JsonResponse UpdateOrderReturn(OrderReturnMaster model, OrderReturnStatus btnSubmit, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -278,15 +280,56 @@ namespace BusinessLogicLayer.Application
                 throw ex;
             }
         }
-
-        public List<OrderStatusViewModel> PlaceReturnOrderToSAP(int OrderReturnId)
+        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId)
         {
-            List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
-            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId && e.IsProductSelected == true && e.ReturnOrderNumber == null).ToList();
+            BasicHttpBinding binding = new BasicHttpBinding
+            {
+                SendTimeout = TimeSpan.FromSeconds(100000),
+                MaxBufferSize = int.MaxValue,
+                MaxReceivedMessageSize = int.MaxValue,
+                AllowCookies = true,
+                ReaderQuotas = XmlDictionaryReaderQuotas.Max,
+            };
+            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=Ord_return_Request_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
+            Ord_return_Request_OUTClient client = new Ord_return_Request_OUTClient(binding, address);
+            client.ClientCredentials.UserName.UserName = "SAMI_PO";
+            client.ClientCredentials.UserName.Password = "wasay123";
+            if (client.InnerChannel.State == CommunicationState.Faulted)
+            {
+            }
+            else
+            {
+                client.OpenAsync();
+            }
+            Ord_return_Request_IN disPortalRequestIn = new Ord_return_Request_IN();
+            disPortalRequestIn.ORDERS = PlaceReturnOrderToSAP(OrderId).ToArray();
+            Ord_return_Request_OUTRequest disPortalPORequest_OutRequest = new Ord_return_Request_OUTRequest(disPortalRequestIn);
+            ZWAS_ORDER_RETURN_UPLOADResponse zSD_CREATE_SALE_ORDERResponse = client.Ord_return_Request_OUT(disPortalRequestIn);
+            client.CloseAsync();
+            List<SAPOrderStatus> list = new List<SAPOrderStatus>();
+            if (zSD_CREATE_SALE_ORDERResponse != null)
+            {
+                for (int i = 0; i < zSD_CREATE_SALE_ORDERResponse.CREATED.Length; i++)
+                {
+                    list.Add(new SAPOrderStatus()
+                    {
+                        ProductCode = zSD_CREATE_SALE_ORDERResponse.CREATED[i].MATNR,
+                        SAPOrderNo = zSD_CREATE_SALE_ORDERResponse.CREATED[i].VBELN
+                    });
+                }
+            }
+            return list;
+        }
+        public List<Ord_return_Request_main> PlaceReturnOrderToSAP(int OrderReturnId)
+        {
+            List<Ord_return_Request_main> model = new List<Ord_return_Request_main>();
+            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId && SessionHelper.LoginUser.PlantLocationId == e.PlantLocationId && e.IsProductSelected == true && e.ReturnOrderNumber == null).ToList();
             var ProductDetail = productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
-                model.Add(new OrderStatusViewModel()
+                model.Add(new Ord_return_Request_main()
                 {
                     SNO = string.Format("{0:1000000000}", item.OrderReturnId),
                     ITEMNO = "",
@@ -296,8 +339,8 @@ namespace BusinessLogicLayer.Application
                     DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
                     DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
                     PURCH_NO = item.OrderReturnMaster.TRNo,
-                    PURCH_DATE = DateTime.Now,
-                    PRICE_DATE = DateTime.Now,
+                    PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
+                    PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
                     ST_PARTN = item.OrderReturnMaster.Distributor.DistributorSAPCode,
                     MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
                     PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,

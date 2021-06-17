@@ -314,10 +314,11 @@ namespace DistributorPortal.Controllers
                         _unitOfWork.Save();
                     }
                 }
-                var Client = new RestClient(_Configuration.PostReturnOrder);
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderToSAP(model.Id), "json");
-                IRestResponse response = Client.Execute(request);
-                var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                //var Client = new RestClient(_Configuration.PostReturnOrder);
+                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderToSAP(model.Id), "json");
+                //IRestResponse response = Client.Execute(request);
+                //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                List<SAPOrderStatus> SAPProduct = _OrderReturnBLL.PostDistributorOrderReturn(model.Id);
                 if (SAPProduct != null || SAPProduct.Count() == 0)
                 {
                     OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && model.OrderReturnDetail.Select(e => e.ProductId).Contains(e.ProductId)).ToList();

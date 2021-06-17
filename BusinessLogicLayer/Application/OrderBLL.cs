@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ApplicationSetup;
+using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
@@ -365,6 +366,7 @@ namespace BusinessLogicLayer.Application
         {
             JsonResponse jsonResponse = new JsonResponse();
             List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetail != null).ToList();
+            double SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First().IsFiler ? 17 : 20);
 
             if (model.Id == 0)
             {
@@ -386,7 +388,10 @@ namespace BusinessLogicLayer.Application
                         ProductId = item.ProductDetail.ProductMasterId,
                         Quantity = item.ProductDetail.ProductMaster.Quantity,
                         ApprovedQuantity = 0,
-                        Amount = (DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) + (((DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) / 100) * DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount),
+                        Amount = (item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)))
+                        + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice)
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (SalesTaxRate / 100 + 0)),
                         ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
                         QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
@@ -421,7 +426,10 @@ namespace BusinessLogicLayer.Application
                         ProductId = item.ProductDetail.ProductMasterId,
                         Quantity = item.ProductDetail.ProductMaster.Quantity,
                         ApprovedQuantity = 0,
-                        Amount = (DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) + (((DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice * item.ProductDetail.ProductMaster.Quantity) / 100) * DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount),
+                        Amount = (item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice 
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100))) 
+                        + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice) 
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (SalesTaxRate / 100 + 0)),
                         ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
                         QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),

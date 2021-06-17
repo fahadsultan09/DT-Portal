@@ -174,7 +174,7 @@ namespace DistributorPortal.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Logout()
         {
-            if (SessionHelper.LoginUser.IsDistributor)
+            if (SessionHelper.LoginUser != null  && SessionHelper.LoginUser.IsDistributor)
             {
                 HttpContext.Session.Clear();
                 SessionHelper.LoginUser = null;

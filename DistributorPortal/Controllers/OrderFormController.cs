@@ -19,6 +19,7 @@ using static Utility.Constant.Common;
 using System.IO;
 using BusinessLogicLayer.GeneralSetup;
 using Microsoft.AspNetCore.Hosting;
+using BusinessLogicLayer.ApplicationSetup;
 
 namespace DistributorPortal.Controllers
 {
@@ -81,6 +82,7 @@ namespace DistributorPortal.Controllers
                     LicenseId.Add((int)narcotics);
 
                 ViewBag.LicenseId = LicenseId;
+                ViewBag.SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(_unitOfWork).Where(x => x.Id == SessionHelper.LoginUser.DistributorId).First().IsFiler ? 17 : 20);
                 if (!string.IsNullOrEmpty(DPID))
                 {
                     int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
