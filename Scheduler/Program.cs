@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.ApplicationContext;
 using System;
+using System.IO;
+using System.Reflection;
 using Utility.HelperClasses;
 
 namespace Scheduler
@@ -21,19 +23,21 @@ namespace Scheduler
             {
                 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
                 var ConnectionString = configuration.GetSection("ConnectionStrings:DistributorPortalDbContext");
-                var InProcessOrderStatus = configuration.GetSection("AppSettings:GetInProcessOrderStatus");
                 var FromEmail = configuration.GetSection("Settings:FromEmail");
                 var Password = configuration.GetSection("Settings:Password");
                 var Port = configuration.GetSection("Settings:Port");
                 var ServerAddress = configuration.GetSection("Settings:ServerAddress");
+                var POUserName = configuration.GetSection("Settings:POUserName");
+                var POPassword = configuration.GetSection("Settings:POPassword");
                 var config = new Configuration(null) 
                 { 
-                    GetInProcessOrderStatus = InProcessOrderStatus.Value, 
                     ConnectionString = ConnectionString.Value,
                     FromEmail = FromEmail.Value,
                     Password = Password.Value,
                     Port = Convert.ToInt32(Port.Value),
                     ServerAddress = ServerAddress.Value,
+                    POUserName = POUserName.Value,
+                    POPassword = POPassword.Value,
                 };
                 var services = new ServiceCollection();
                 services.AddDbContext<DistributorPortalDbContext>(options => options.UseMySQL(config.ConnectionString));
@@ -42,10 +46,10 @@ namespace Scheduler
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
 
-                //Order and Order Return Produc Status
-                DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
-                distributorOrderStatus.GetInProcessOrderProductStatus();
-                distributorOrderStatus.GetInProcessOrderReturnProductStatus();
+                ////Order and Order Return Produc Status
+                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
+                //distributorOrderStatus.GetInProcessOrderProductStatus();
+                //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
 
                 //Order and Order Return Produc Status
                 KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
@@ -54,7 +58,7 @@ namespace Scheduler
             }
             catch (Exception ex)
             {
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }
     }

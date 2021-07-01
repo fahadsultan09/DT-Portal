@@ -339,7 +339,7 @@
                 BlockUI();
             },
             success: function (data) {
-                debugger
+                
                 if (data.data.Status) {
                     $('#frmOrderDetails input[type="text"],input[type="date"],input[type="number"]').val('');
                     Toast.fire({
@@ -412,7 +412,7 @@
                 });
             },
             complete: function (response) {
-                debugger
+                
                 UnBlockUI();
             }
         });

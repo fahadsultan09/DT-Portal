@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class OrderReturnReasonBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<OrderReturnReason> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<OrderReturnReason> repository;
         public OrderReturnReasonBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

@@ -130,9 +130,9 @@ namespace BusinessLogicLayer.Application
                              Status = x.Status,
                              DistributorId = x.DistributorId,
                              CreatedDate = x.CreatedDate,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
     }
 }

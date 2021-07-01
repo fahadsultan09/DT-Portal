@@ -51,7 +51,7 @@ namespace Models.Application
         [NotMapped]
         public SelectList ProductList { get; set; }
         [NotMapped]
-        public SelectList returnReasonList { get; set; }
+        public SelectList ReturnReasonList { get; set; }
         [NotMapped]
         public List<ProductDetail> ProductDetail { get; set; }
         [NotMapped]

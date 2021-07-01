@@ -150,7 +150,7 @@ namespace DistributorPortal.Controllers
             {
                 model = _PaymentBLL.GetById(Id);
                 SessionHelper.DistributorBalance = GetDistributorBalance(model.Distributor.DistributorSAPCode);
-                model.Distributor = new DistributorBLL(_unitOfWork).GetAllDistributor().Where(x => x.Id == model.DistributorId).FirstOrDefault();
+                model.Distributor = new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).FirstOrDefault();
             }
             else
             {
@@ -159,12 +159,18 @@ namespace DistributorPortal.Controllers
 
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                if (SessionHelper.SAPOrderPendingValue == null)
+                {
+                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                }
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(SessionHelper.LoginUser.Distributor.Id);
             }
             else
             {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                if (SessionHelper.SAPOrderPendingValue == null)
+                {
+                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                }
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
             }
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
@@ -202,7 +208,7 @@ namespace DistributorPortal.Controllers
                     {
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                         var result = client.GetAsync(new Uri(string.Format("http://10.0.3.35:51000/RESTAdapter/payment?REF={0}&COMPANY={1}&AMOUNT={2}&DISTRIBUTOR={3}&B_CODE={4}&PAY_ID={5}", sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
                         if (result.IsSuccessStatusCode)
@@ -212,7 +218,7 @@ namespace DistributorPortal.Controllers
                         }
                     }
 
-                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null &&  !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
+                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
                     {
                         model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
                         model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
@@ -283,7 +289,7 @@ namespace DistributorPortal.Controllers
         }
         public List<PaymentMaster> GetPaymentList()
         {
-            var list = _PaymentBLL.GetAllPaymentMaster().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            var list = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             return list;
         }
         public DistributorBalance GetDistributorBalance(string DistributorSAPCode)
@@ -296,7 +302,7 @@ namespace DistributorPortal.Controllers
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                     var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorSAPCode)).Result;
                     if (result.IsSuccessStatusCode)

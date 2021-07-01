@@ -14,6 +14,9 @@ namespace Models.ViewModel
             ZWASITDPDISTBALANCEBAPIResponse = new ZWASITDPDISTBALANCEBAPIResponse();
             ZWASITHRMSBAPIResponse = new ZWASITHRMSBAPIResponse();
             ZWAS_IT_DP_PRICE_DISCOUNT = new ZWAS_IT_DP_PRICE_DISCOUNT();
+            ZWAS_BI_SALES_QUERY_BAPI = new ZWAS_BI_SALES_QUERY_BAPI();
+            ZWAS_PAYMENT_BAPI_DP = new ZWAS_PAYMENT_BAPI_DP();
+            ZWASDPPENDINGORDERBAPIResponse = new ZWASDPPENDINGORDERBAPIResponse();
         }
         [JsonProperty("ZWAS_IT_DP_DIST_BALANCE_BAPI.Response")]
         public ZWASITDPDISTBALANCEBAPIResponse ZWASITDPDISTBALANCEBAPIResponse { get; set; }
@@ -25,6 +28,8 @@ namespace Models.ViewModel
         public ZWAS_BI_SALES_QUERY_BAPI ZWAS_BI_SALES_QUERY_BAPI { get; set; }
         [JsonProperty("ZWAS_PAYMENT_BAPI_DP.Response")]
         public ZWAS_PAYMENT_BAPI_DP ZWAS_PAYMENT_BAPI_DP { get; set; }
+        [JsonProperty("ZWAS_DP_PENDING_ORDER_BAPI.Response")]
+        public ZWASDPPENDINGORDERBAPIResponse ZWASDPPENDINGORDERBAPIResponse { get; set; }
     }
     public class item
     {
@@ -68,6 +73,12 @@ namespace Models.ViewModel
         //public string BZTXT { get; set; }
         public string NETWR { get; set; }
         public string VKORG { get; set; }
+        public string KWMENG { get; set; }
+        public string LFIMG { get; set; }
+        public string PENDING { get; set; }
+        public string KWMENG_AM { get; set; }
+        public string LFIMG_AM { get; set; }
+        public string PENDING_AM { get; set; }
     }
     public class DISTRIBUTOR
     {
@@ -109,5 +120,9 @@ namespace Models.ViewModel
         public string COMPANYY { get; set; }
         public string DOCUMENT { get; set; }
         public string FISCAL { get; set; }
+    }
+    public class ZWASDPPENDINGORDERBAPIResponse
+    {
+        public PENDING PENDING { get; set; }
     }
 }

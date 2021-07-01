@@ -1,25 +1,21 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using RestSharp;
 using Utility;
-using Utility.Constant;
 using Utility.HelperClasses;
 using static Utility.Constant.Common;
-using System.IO;
-using BusinessLogicLayer.GeneralSetup;
-using Microsoft.AspNetCore.Hosting;
-using BusinessLogicLayer.ApplicationSetup;
 
 namespace DistributorPortal.Controllers
 {
@@ -59,10 +55,6 @@ namespace DistributorPortal.Controllers
         public IActionResult Index()
         {
             var model = _productDetailBLL.GetAllProductDetail();
-            if (SessionHelper.SAPOrderPendingQuantity != null)
-            {
-                model.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
-            }
             return View(model);
         }
         public IActionResult Create(string DPID)
@@ -71,9 +63,11 @@ namespace DistributorPortal.Controllers
             OrderViewModel model = new OrderViewModel();
             try
             {
+                var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible);
                 List<int> LicenseId = new List<int>();
-                int? drug = _DistributorLicenseBLL.Where(e => e.Status == LicenseStatus.Verified && e.LicenseId == 1 && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).FirstOrDefault();
-                int? narcotics = _DistributorLicenseBLL.Where(e => e.Status == LicenseStatus.Verified && e.LicenseId == 2 && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).FirstOrDefault();
+                List<DistributorLicense> DistributorLicenseList = _DistributorLicenseBLL.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                int? drug = DistributorLicenseList.Where(e => e.Status == LicenseStatus.Verified && e.LicenseId == 1 && e.Expiry > DateTime.Now).Select(x => x.LicenseId).FirstOrDefault();
+                int? narcotics = DistributorLicenseList.Where(e => e.Status == LicenseStatus.Verified && e.LicenseId == 2 && e.Expiry > DateTime.Now).Select(x => x.LicenseId).FirstOrDefault();
 
                 if (drug != null)
                     LicenseId.Add((int)drug);
@@ -82,11 +76,14 @@ namespace DistributorPortal.Controllers
                     LicenseId.Add((int)narcotics);
 
                 ViewBag.LicenseId = LicenseId;
-                ViewBag.SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(_unitOfWork).Where(x => x.Id == SessionHelper.LoginUser.DistributorId).First().IsFiler ? 17 : 20);
+
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue == null)
+                {
+                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+                }
                 if (!string.IsNullOrEmpty(DPID))
                 {
                     int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
-                    var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
                     var orderDetails = _orderDetailBll.Where(e => e.OrderId == id);
                     if (SessionHelper.SAPOrderPendingQuantity != null)
                     {
@@ -99,9 +96,11 @@ namespace DistributorPortal.Controllers
                     }
 
                     model.OrderValues = _OrderBLL.GetOrderValueModel(_orderValueBll.GetOrderValueByOrderId(id));
+                    SessionHelper.TotalOrderValue = orderDetails.First().OrderMaster.TotalValue.ToString("#,##0.00");
                     model.Id = id;
-                    SessionHelper.AddDistributorWiseProduct = distributorProduct;
-                    model.ProductDetails = distributorProduct;
+                    distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
                 else
@@ -109,33 +108,34 @@ namespace DistributorPortal.Controllers
                     if (SessionHelper.LoginUser.Distributor != null && (SessionHelper.SAPOrderPendingQuantity == null || SessionHelper.SAPOrderPendingQuantity.Count() == 0))
                     {
                         List<ProductMaster> _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
-                        SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorOrderPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-                        var pendingQuantity = SessionHelper.SAPOrderPendingQuantity;
+                        List<SAPOrderPendingQuantity> pendingQuantity = SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorOrderPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
                         pendingQuantity.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id : 0);
-                        pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
+                        pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
                         SessionHelper.SAPOrderPendingQuantity = pendingQuantity;
-                        SessionHelper.SAPOrderPendingQuantity = SessionHelper.SAPOrderPendingQuantity.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
+                        SessionHelper.SAPOrderPendingQuantity = SessionHelper.SAPOrderPendingQuantity.ToList();
                     }
-                    var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
                     if (SessionHelper.SAPOrderPendingQuantity != null)
                     {
-                        distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode)?.PendingQuantity)).ToString() : "0");
+                        distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode)?.PendingQuantity ?? "0");
+                        //distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.SAPProductCode) == null ? string.Empty : SessionHelper.SAPOrderPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
                     }
-                    SessionHelper.AddDistributorWiseProduct = distributorProduct;
-                    model.ProductDetails = distributorProduct;
+                    distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
+                var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible);
                 if (SessionHelper.SAPOrderPendingQuantity != null)
                 {
-                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductDetail.ProductMaster.SAPProductCode)?.PendingQuantity)).ToString() : "0");
+                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.SAPProductCode) == null ? string.Empty : SessionHelper.SAPOrderPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
                 }
-                SessionHelper.AddDistributorWiseProduct = distributorProduct;
-                model.ProductDetails = distributorProduct;
+                distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                 return View("AddOrder", model);
             }
         }
@@ -146,6 +146,17 @@ namespace DistributorPortal.Controllers
             SessionHelper.AddDistributorWiseProduct = list;
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddDistributorWiseProduct);
             return PartialView("OrderValue", OrderVal);
+        }
+        public JsonResult GetCurrentOrderValue()
+        {
+            if (SessionHelper.AddDistributorWiseProduct != null && SessionHelper.TotalOrderValue != null)
+            {
+                return Json(new { data = SessionHelper.TotalOrderValue });
+            }
+            else
+            {
+                return Json(new { data = "0" });
+            }
         }
         [HttpPost]
         public JsonResult SaveEdit(OrderViewModel model, SubmitStatus btnSubmit)
@@ -358,7 +369,7 @@ namespace DistributorPortal.Controllers
                 //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(id), "json");
                 //IRestResponse response = client.Execute(request);
                 //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id);
+                List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id, _Configuration);
                 var detail = _orderDetailBll.Where(e => e.OrderId == id).ToList();
                 if (sapProduct != null)
                 {
@@ -386,6 +397,7 @@ namespace DistributorPortal.Controllers
                     //Sending Email
                     if (jsonResponse.Status)
                     {
+                        string SAPOrderNo = string.Join("</br>" + Environment.NewLine, sapProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
                         string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ApprovalOfSaleOrder.html";
                         ApprovedOrderEmailUserModel EmailUserModel = new ApprovedOrderEmailUserModel()
                         {
@@ -393,14 +405,14 @@ namespace DistributorPortal.Controllers
                             Date = Convert.ToDateTime(order.ApprovedDate).ToString("dd/MMM/yyyy"),
                             City = order.Distributor.City,
                             ShipToPartyName = order.Distributor.DistributorName,
-                            OrderNumber = order.SNo.ToString(),
+                            OrderNumber = SAPOrderNo,
                             Subject = "Order Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,
                         };
                         int[] PlantLocationId = _productDetailBLL.Where(x => detail.Select(x => x.ProductMaster.Id).Contains(x.ProductMasterId)).Select(x => x.PlantLocationId).Distinct().ToArray();
-                        if (PlantLocationId.Count() > 0)
+                        if (PlantLocationId.Count() > 0 && !string.IsNullOrEmpty(SAPOrderNo))
                         {
-                            List<User> UserList = _UserBLL.GetAllUser().Where(x => x.PlantLocationId != null && PlantLocationId.Contains((int)x.PlantLocationId)).ToList();
+                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
                             _EmailLogBLL.OrderEmail(UserList, EmailUserModel);
                         }
                     }
@@ -437,10 +449,11 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 var order = _OrderBLL.GetOrderMasterById(id);
-                var client = new RestClient(_Configuration.PostOrder);
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderPartiallyApprovedToSAP(id), "json");
-                IRestResponse response = client.Execute(request);
-                var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                //var client = new RestClient(_Configuration.PostOrder);
+                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderPartiallyApprovedToSAP(id), "json");
+                //IRestResponse response = client.Execute(request);
+                //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id, _Configuration);
                 var updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
                 if (sapProduct != null)
                 {

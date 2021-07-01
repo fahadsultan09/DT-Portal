@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class PlantLocationBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<PlantLocation> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<PlantLocation> repository;
         public PlantLocationBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

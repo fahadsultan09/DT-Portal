@@ -198,6 +198,20 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Email Intimation</label>
+                                                        <div class="col-lg-8">
+                                                            <select asp-for="EmailIntimationId" asp-items="Html.GetEnumSelectList<EmailIntimation>()" class="form-control select2" id="EmailIntimationId">
+                                                                <option value="">--Select option--</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
                                                         <label class="col-lg-4 col-form-label">Is Active</label>
                                                         <div class="col-lg-6">
                                                             <input style="margin-top: 13px" asp-for="IsActive" type="checkbox" id="IsActive"><i></i>
@@ -240,6 +254,7 @@
         $('#DistributorId').attr("disabled", true);
         $('#CompanyId').attr("disabled", true);
         $('#PlantLocationId').attr("disabled", true);
+        $('#EmailIntimationId').attr("disabled", true);
 
         $('#IsDistributor').on('change', function () {
             $('#IsDistributor').removeAttr("disabled");
@@ -256,6 +271,9 @@
                 $('#PlantLocationId').attr("disabled", "disabled");
                 $('#PlantLocationId').val('');
                 $('#PlantLocationId').trigger('change');
+                $('#EmailIntimationId').attr("disabled", "disabled");
+                $('#EmailIntimationId').val('');
+                $('#EmailIntimationId').trigger('change');
             }
             else {
                 $('#DistributorId').attr("disabled", "disabled");
@@ -273,6 +291,7 @@
 
             if ($('#IsStoreKeeper').is(':checked')) {
                 $('#CompanyId').removeAttr("disabled");
+                $('#EmailIntimationId').removeAttr("disabled");
                 $('#PlantLocationId').removeAttr("disabled");
                 $('#IsStoreKeeper').removeAttr("disabled");
 
@@ -289,6 +308,9 @@
                 $('#PlantLocationId').attr("disabled", "disabled");
                 $('#PlantLocationId').val('');
                 $('#PlantLocationId').trigger('change');
+                $('#EmailIntimationId').attr("disabled", "disabled");
+                $('#EmailIntimationId').val('');
+                $('#EmailIntimationId').trigger('change');
                 $('#IsDistributor').removeAttr("disabled");
             }
         });

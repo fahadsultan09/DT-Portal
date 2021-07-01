@@ -4,7 +4,6 @@
 @{
     Layout = null;
     int i = 1;
-    double SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(unitOfWork).Where(x => x.Id == Model.DistributorId).First().IsFiler ? 17 : 20);
     List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPricesList = new DistributorWiseProductDiscountAndPricesBLL(unitOfWork).Where(x => x.DistributorId == Model.DistributorId).ToList();
     double TotalValueOrder = 0;
 }
@@ -24,6 +23,10 @@
         .table-bordered > thead > tr > th {
             border: 1px solid black !important;
             padding: 0 0 0 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        div, p {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -271,17 +274,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
-                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
-                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
-                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
-                            <p style="margin-top:0pt; margin-bottom:8pt; line-height:108%; font-size:11pt;"><span style="font-family:Calibri;">&nbsp;</span></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 </html>

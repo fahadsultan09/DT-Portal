@@ -6,6 +6,7 @@ using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
@@ -166,8 +167,9 @@ namespace DistributorPortal.Controllers
                 EmailUserModel.ComplaintNo = model.SNo.ToString();
                 EmailUserModel.DistributorName = SessionHelper.LoginUser.Distributor.DistributorName;
                 EmailUserModel.ComplaintDetail = model.Description.Trim();
-                EmailUserModel.URL = _Configuration.URL + "Other/GetFile?filepath=" + model.File;
-                EmailUserModel.Attachment = model.File != null ? model.File.Split('_')[1] : "";
+                EmailUserModel.URL = _Configuration.URL;
+                EmailUserModel.Attachment = string.IsNullOrEmpty(model.File) ? null : model.File.Split('_')[1];
+                EmailUserModel.AttachmentPath = string.IsNullOrEmpty(model.File) ? null : _Configuration.URL + "Other/GetFile?filepath=" + model.File;
                 EmailUserModel.ComplaintDate = DateTime.Now.ToString("dd/MMM/yyyy");
                 EmailUserModel.CreatedBy = SessionHelper.LoginUser.Id;
                 EmailUserModel.Subject = "New Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
@@ -205,21 +207,44 @@ namespace DistributorPortal.Controllers
             return model;
         }
         [HttpPost]
-        public JsonResult UpdateStatus(int Id, ComplaintStatus Status, string Remarks)
+        public JsonResult UpdateStatus(int Id, ComplaintStatus Status, string Remarks, IFormFile FormFile, string ResolvedRemarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
             Notification notification = new Notification();
+            string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
                 Complaint model = _ComplaintBLL.GetById(Id);
+                if (FormFile != null)
+                {
+                    var ext = Path.GetExtension(FormFile.FileName).ToLowerInvariant();
+                    if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = NotificationMessage.FileTypeAllowed;
+                        return Json(new { data = jsonResponse });
+                    }
+                    if (FormFile.Length >= Convert.ToInt64(_Configuration.FileSize))
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = NotificationMessage.FileSizeAllowed;
+                        return Json(new { data = jsonResponse });
+                    }
+
+                    Tuple<bool, string> tuple = FileUtility.UploadFile(FormFile, FolderName.Order, FolderPath);
+                    if (tuple.Item1)
+                    {
+                        model.ResolvedAttachment = tuple.Item2;
+                    }
+                }
                 if (model != null)
                 {
-                    _ComplaintBLL.UpdateStatus(model, Status, Remarks);
+                    _ComplaintBLL.UpdateStatus(model, Status, Remarks, ResolvedRemarks);
                 }
                 jsonResponse.Message = Status == ComplaintStatus.Resolved ? NotificationMessage.Resolved : Status == ComplaintStatus.Approved ? NotificationMessage.ComplaintApproved : NotificationMessage.ComplaintRejected;
-                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                if (Status == ComplaintStatus.Approved || Status == ComplaintStatus.Rejected)
+                if (Status == ComplaintStatus.Approved)
                 {
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
                     notification.ApplicationPageId = (int)ApplicationPages.Complaint;
                     notification.DistributorId = model.DistributorId;
                     notification.RequestId = model.SNo;
@@ -259,7 +284,11 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                if (!SessionHelper.LoginUser.IsDistributor)
+                if (SessionHelper.LoginUser.IsDistributor)
+                {
+                    model.ComplaintList = GetComplaintList().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                }
+                else
                 {
                     int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
                     model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
@@ -269,7 +298,7 @@ namespace DistributorPortal.Controllers
         }
         public List<Complaint> GetComplaintList()
         {
-            var list = _ComplaintBLL.GetAllComplaint().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+            var list = _ComplaintBLL.Where(x => x.IsActive && !x.IsDeleted && SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             return list;
         }
     }

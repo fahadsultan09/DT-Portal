@@ -61,6 +61,7 @@ namespace Models.ApplicationContext
         public DbSet<UserSystemInfo> UserSystemInfo { get; set; }
         public DbSet<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices { get; set; }
         public DbSet<Notification> Notification { get; set; }
-        public DbSet<Policy> Policy { get; set; }  
+        public DbSet<Policy> Policy { get; set; }
+        public DbSet<Disclaimer> Disclaimer { get; set; }  
     }
 }

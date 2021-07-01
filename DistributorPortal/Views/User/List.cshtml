@@ -1,4 +1,9 @@
 ﻿@model IEnumerable<User>
+@{
+    bool insert = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "User").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+    bool update = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "User").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Update));
+    bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "User").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
+}
 
 <div class="row">
     <div class="col-12">
@@ -15,9 +20,8 @@
                     <button type="submit" class="btn btn-info float-right">Add</button>
                 </form>
             </div>
-            <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped"   >
+                <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -67,12 +71,9 @@
                     </tbody>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
 <script>
 
 

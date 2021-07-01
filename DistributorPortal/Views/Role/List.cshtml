@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<Role>
 @{
+    bool insert = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Role").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+    bool update = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Role").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Update));
+    bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Role").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
     var viewdata = (string)TempData["Message"];
     if (!string.IsNullOrEmpty(viewdata))
     {
@@ -22,11 +25,14 @@
                       data-ajax="true"
                       data-ajax-method="GET"
                       method="GET">
-                    <button type="submit" class="btn btn-info float-right">Add</button>
+                    @if (insert)
+                    {
+                        <button type="submit" class="btn btn-info float-right">Add</button>
+                    }
                 </form>
             </div>
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped"   >
+                <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -53,17 +59,23 @@
                                        class="btn btn-warning btn-sm">
                                         <i class="fas fa-shield-alt"></i>
                                     </a>
-                                    <a data-ajax-update="#divform"
-                                       data-ajax="true"
-                                       data-ajax-method="GET"
-                                       asp-controller="Role" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())"
-                                       class="btn btn-info btn-sm">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </a>
-                                    <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())"
-                                       class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
+                                    @if (update)
+                                    {
+                                        <a data-ajax-update="#divform"
+                                           data-ajax="true"
+                                           data-ajax-method="GET"
+                                           asp-controller="Role" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())"
+                                           class="btn btn-info btn-sm">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    @if (delete)
+                                    {
+                                        <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())"
+                                           class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }

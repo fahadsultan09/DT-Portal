@@ -12,7 +12,7 @@ namespace BusinessLogicLayer.FormLogic
 {
     public class RolePermissionLogic
     {
-        private ApplicationPageActionBLL ApplicationPageActionBLL;
+        private readonly ApplicationPageActionBLL ApplicationPageActionBLL;
         private readonly IUnitOfWork _unitOfWork;
         public RolePermissionLogic(IUnitOfWork unitOfWork)
         {

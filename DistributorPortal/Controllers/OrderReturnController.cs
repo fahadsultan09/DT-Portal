@@ -318,7 +318,7 @@ namespace DistributorPortal.Controllers
                 //var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderToSAP(model.Id), "json");
                 //IRestResponse response = Client.Execute(request);
                 //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                List<SAPOrderStatus> SAPProduct = _OrderReturnBLL.PostDistributorOrderReturn(model.Id);
+                List<SAPOrderStatus> SAPProduct = _OrderReturnBLL.PostDistributorOrderReturn(model.Id, _Configuration);
                 if (SAPProduct != null || SAPProduct.Count() == 0)
                 {
                     OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && model.OrderReturnDetail.Select(e => e.ProductId).Contains(e.ProductId)).ToList();
@@ -359,20 +359,21 @@ namespace DistributorPortal.Controllers
                     if (jsonResponse.Status)
                     {
                         string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ReturnOrderFromCustomer.html";
+                        string SAPOrderNo = string.Join(", </br>", SAPProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
                         ReturnOrderEmailUserModel EmailUserModel = new ReturnOrderEmailUserModel()
                         {
                             ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
                             Date = Convert.ToDateTime(master.ReceivedDate).ToString("dd/MMM/yyyy"),
                             City = master.Distributor.City,
                             ShipToPartyName = master.Distributor.DistributorName,
-                            RetrunOrderNumber = master.SNo.ToString(),
+                            RetrunOrderNumber = SAPOrderNo,
                             Subject = "Return Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,
                         };
                         int[] PlantLocationId = OrderreturnProduct.Select(x => x.PlantLocationId).Distinct().ToArray();
                         if (PlantLocationId.Count() > 0)
                         {
-                            List<User> UserList = _UserBLL.Where(x => PlantLocationId.Contains((int)x.PlantLocationId)).ToList();
+                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && PlantLocationId.Contains((int)x.PlantLocationId) || Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) && x.Equals(2)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
                             _EmailLogBLL.RetrunOrderEmail(UserList, EmailUserModel);
                         }
                     }
@@ -413,7 +414,7 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsStoreKeeper)
             {
                 List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Select(x => x.ProductMasterId).Distinct().ToList();
-                list = _OrderReturnDetailBLL.GetAllOrderReturnDetail().Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e => e.OrderReturnId).Select(x => new OrderReturnMaster
+                list = _OrderReturnDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e => e.OrderReturnId).Select(x => new OrderReturnMaster
                 {
                     TRNo = x.OrderReturnMaster.TRNo,
                     SNo = x.OrderReturnMaster.SNo,
@@ -422,11 +423,11 @@ namespace DistributorPortal.Controllers
                     Status = x.OrderReturnMaster.Status,
                     CreatedBy = x.OrderReturnMaster.CreatedBy,
                     CreatedDate = x.OrderReturnMaster.CreatedDate
-                }).OrderByDescending(x => x.Id).ToList();
+                }).ToList();
             }
             else
             {
-                list = _OrderReturnBLL.GetAllOrderReturn().Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.Id).ToList();
+                list = _OrderReturnBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
             }
             return list;
         }
@@ -489,12 +490,12 @@ namespace DistributorPortal.Controllers
                 }
                 model.OrderReturnDetail = SessionHelper.AddReturnProduct;
                 model.ProductList = _ProductDetailBLL.DropDownProductList();
-                model.returnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
+                model.ReturnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
             }
             else
             {
                 model.ProductList = _ProductDetailBLL.DropDownProductList();
-                model.returnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
+                model.ReturnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
                 model.OrderReturnDetail = new List<OrderReturnDetail>();
                 model.Distributor = SessionHelper.LoginUser.Distributor;
             }
@@ -513,8 +514,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID, string BatchNo)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             var list = SessionHelper.AddReturnProduct;
             var item = list.FirstOrDefault(e => e.ProductId == id && e.BatchNo.Trim() == BatchNo.Trim());
             if (item != null)
@@ -593,8 +593,7 @@ namespace DistributorPortal.Controllers
         }
         public JsonResult GetTRNoById(string DPID)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             var TRNoPlantLocation = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id).Select(x => new { TRNo = x.TRNo, PlantLocationId = x.PlantLocationId }).Distinct().ToArray();
             return Json(new { data = TRNoPlantLocation });
         }

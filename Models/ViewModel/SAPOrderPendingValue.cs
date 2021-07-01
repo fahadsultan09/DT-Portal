@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Models.ViewModel
+﻿namespace Models.ViewModel
 {
     public class SAPOrderPendingValue
     {

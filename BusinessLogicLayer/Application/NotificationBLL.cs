@@ -10,8 +10,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class NotificationBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<Notification> _repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Notification> _repository;
         public NotificationBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

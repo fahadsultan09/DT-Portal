@@ -77,18 +77,20 @@ namespace BusinessLogicLayer.Application
         }
         public List<SAPOrderStatus> GetInProcessOrderReturnStatus()
         {
-            List<SAPOrderStatus> list = _repository.GetAllList().Where(x => x.ReturnOrderNumber != null && x.ReturnOrderStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.ReturnOrderNumber }).ToList();
+            List<SAPOrderStatus> list = _repository.GetAllList().Where(x => x.ReturnOrderNumber != null && x.ReturnOrderStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.ReturnOrderNumber }).Distinct().ToList();
             return list;
         }
         public void UpdateProductOrderStatus(List<SAPOrderStatus> SAPOrderStatusList)
         {
+            List<OrderReturnDetail> list = new List<OrderReturnDetail>();
             foreach (var item in SAPOrderStatusList)
             {
-                var model = _repository.Where(x => x.ReturnOrderNumber == item.SAPOrderNo).First();
-                model.ReturnOrderStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess);
-                _repository.Update(model);
-                _unitOfWork.Save();
+                List<OrderReturnDetail> OrderReturnDetailList = _repository.Where(x => x.ReturnOrderNumber == item.SAPOrderNo).ToList();
+                OrderReturnDetailList.ForEach(x => x.ReturnOrderStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess));
+                list.AddRange(OrderReturnDetailList.ToList());
             }
+            _repository.UpdateRange(list);
+            _unitOfWork.Save();
         }
     }
 }

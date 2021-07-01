@@ -93,5 +93,15 @@ namespace BusinessLogicLayer.Application
 
             return new SelectList(selectList, "Value", "Text");
         }
+        public SelectList DropDownProductSAPCodeList()
+        {
+            var selectList = GetAllProductMaster().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.SAPProductCode.ToString(),
+                Text = x.ProductName.Trim() + " - " + x.ProductDescription.Trim()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
+        }
     }
 }

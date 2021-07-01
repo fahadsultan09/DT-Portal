@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.Application
 {
     public class SubRegionBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<SubRegion> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<SubRegion> repository;
         public SubRegionBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

@@ -1,4 +1,7 @@
-﻿<!-- Navbar -->
+﻿
+<link href="~/lib/summernote/summernote-bs4.css" rel="stylesheet" />
+
+<!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -6,14 +9,12 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
     </ul>
+    <input type="hidden" id="hdnDistributorDisclaimer" value="@SessionHelper.Disclaimer" />
     @if (SessionHelper.LoginUser.IsDistributor)
     {
         <span style="width:95%; cursor: pointer;" class="text-danger" id="disclaimer">
             <marquee direction="left" scrollamount="3">
-                All information or data contained on this web portal is limited, unconfirmed and is not intended to be relied upon. The Company do not endorse the accuracy or reliability of any information or statement and shall not be liable to any user or anyone else for any inaccuracy, error, disclosure, omission, interruption, failure, deletion, defect, alteration of or use of any content or record herein or for any loss or damage suffered by any person or organization arising from matters or information expressed on this web portal.
-                Information, is intended only for the use of the individual or entity to which it is given access and may contain information that is confidential and subject to copyright. All users are self-responsible to safeguard their system access login and password credentials to protect unauthorized access to their account information.
-                The Company reserves the right to remove, modify or suspend for any reason and without notice, any content, record or information from the web portal.
-                For definite information and report or in case of any query you may contact by emailing us on <strong>samiho@samikhi.com</strong> OR <strong>samicustomer@samikhi.com</strong> or call our customer support officer on +92-(0)21-34527490-92.
+                <span class="disclaimerModalNav"></span>
             </marquee>
         </span>
     }
@@ -28,7 +29,6 @@
                 {
                     @foreach (var item in SessionHelper.Notification)
                     {
-
                         <a href="@(SessionHelper.URL + item.URL)" class="dropdown-item" style="background-color:@(item.Status == "Verified" ||item.Status ==  "Approved" ||item.Status ==  "InProcess" || item.Status == "Received" || item.Status == "PartiallyApproved" ? "#28a745cc" : item.Status == "Rejected" || item.Status == "Reject" ? "#dc3545cc" : "#11aabbcc"); color: #fff;">
                             <div class="media">
                                 <div class="media-body">
@@ -64,13 +64,11 @@
                 </div>*@
             <div class="info" style="word-break: break-all;">
                 <h5>@SessionHelper.LoginUser.FirstName @SessionHelper.LoginUser.LastName</h5>
-                <span  style="word-break: break-all;"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></span>
+                <span style="word-break: break-all;"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></span>
             </div>
         </div>
 
-        <!-- Sidebar Menu -->
         <nav class="mt-2">
-
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                 @{
@@ -118,9 +116,7 @@
                 </li>
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 </aside>
 
 <div class="modal fade" id="modal-disclaimer" aria-modal="true">
@@ -132,19 +128,7 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <p>
-                    All information or data contained on this web portal is limited, unconfirmed and is not intended to be relied upon. The Company do not endorse the accuracy or reliability of any information or statement and shall not be liable to any user or anyone else for any inaccuracy, error, disclosure, omission, interruption, failure, deletion, defect, alteration of or use of any content or record herein or for any loss or damage suffered by any person or organization arising from matters or information expressed on this web portal.
-                </p>
-                <p>
-                    Information, is intended only for the use of the individual or entity to which it is given access and may contain information that is confidential and subject to copyright. All users are self-responsible to safeguard their system access login and password credentials to protect unauthorized access to their account information.
-                </p>
-                <p>
-                    The Company reserves the right to remove, modify or suspend for any reason and without notice, any content, record or information from the web portal.
-                </p>
-                <p>
-                    For definite information and report or in case of any query you may contact by emailing us on <strong>samiho@samikhi.com</strong> OR <strong>samicustomer@samikhi.com</strong> or call our customer support officer on +92-(0)21-34527490-92.
-                </p>
+            <div class="modal-body disclaimerModal">
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -152,15 +136,24 @@
         </div>
     </div>
 </div>
+<script src="~/lib/summernote/summernote-bs4.js"></script>
 <script>
 
     $(document).ready(function () {
-        debugger
+
+        var disclaimerModal = $("#hdnDistributorDisclaimer").val();
+
+        if (disclaimerModal != "") {
+            $('.disclaimerModal').html(disclaimerModal);
+            $('.disclaimerModalNav').html(disclaimerModal.replace(/<[\/]{0,1}(p)[^><]*>/ig, ""));
+        }
+
         var count = '@(SessionHelper.Notification != null ? SessionHelper.Notification.Where(x => !x.IsView).Count().ToString() : "0")';
         if (count == "0") {
             $('#NotificationCountValue').css('display', 'none');
         }
     });
+
     $('body').on('click', '#NotificationCount', function () {
 
         var url = '@Url.Action("UpdateCount", "Notification")';
@@ -169,4 +162,5 @@
             });
         $('#NotificationCountValue').css('display','none');
     });
+
 </script>

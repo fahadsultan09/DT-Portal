@@ -11,8 +11,8 @@ namespace UserLoginRegistration
 {
     public partial class ForgotPassword : Form
     {
-        string AppUrl = string.Empty;
-        List<string> MacAddresses = new List<string>();
+        readonly string AppUrl = string.Empty;
+        readonly List<string> MacAddresses = new List<string>();
         public ForgotPassword()
         {
             InitializeComponent();
@@ -39,6 +39,11 @@ namespace UserLoginRegistration
         }
         private void btnChangePassword_Click(object sender, EventArgs e)
         {
+            if (txtPassword.Text.Trim() != txtConfirmPassword.Text.Trim())
+            {
+                lblError.Text = "Password and confirm password should be match.";
+                return;
+            }
             if (string.IsNullOrEmpty(txtPassword.Text) || string.IsNullOrEmpty(txtConfirmPassword.Text))
             {
                 lblError.Text = "Please enter password and confirm password.";
@@ -46,7 +51,7 @@ namespace UserLoginRegistration
             }
             if (txtPassword.Text.Trim() == "Sami@1234" && txtConfirmPassword.Text.Trim() == "Sami@1234")
             {
-                lblError.Text = "Password and confirm password should be match.";
+                lblError.Text = "Cannot set default password";
                 return;
             }
             JsonResponse jsonResponse = Request.ChangePassword(lblUserName.Text, txtPassword.Text, MacAddresses.ToList(), AppUrl);

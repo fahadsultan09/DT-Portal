@@ -13,7 +13,7 @@ namespace BusinessLogicLayer.GeneralSetup
     public class ComplaintUserEmailBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        private IGenericRepository<ComplaintUserEmail> _repository;
+        private readonly IGenericRepository<ComplaintUserEmail> _repository;
         public ComplaintUserEmailBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

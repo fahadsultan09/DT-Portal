@@ -1,8 +1,13 @@
 ﻿@model Complaint
-@{ ViewBag.Title = "Approve Complaint "; }
+@{
+    ViewBag.Title = "Approve Complaint";
+    bool resolve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Complaint").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Resolve));
+    bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Complaint").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Complaint").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+}
 
 <div class="content-wrapper">
-    <section class="content-header" disabled>
+    <section class="content-header">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
@@ -48,9 +53,9 @@
                                 }
                                 else if (Model.Status == ComplaintStatus.Approved)
                                 {
-                                    <span class="badge badge-success float-left" style="margin-left:5px;">@Model.Status</span>
+                                    <span class="badge badge-success float-left" style="margin-left:5px;">@ComplaintStatus.Resolved.ToString()</span>
                                 }
-                                else if (Model.Status == ComplaintStatus.Pending)
+                                else if (Model.Status == ComplaintStatus.Rejected)
                                 {
                                     <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
@@ -62,7 +67,7 @@
                             <span class="float-right"><strong>Complaint No: @Model.SNo</strong></span>
                         </div>
                         <div class="card-body">
-                            <div class=" row">
+                            <div class=" row" disabled>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <h6>Complaint Category<span class="text-danger"> * </span></h6>
                                 </div>
@@ -73,11 +78,11 @@
                                     <h6>Attachment</h6>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintCategory" })
+                                    @Html.DropDownListFor(e => e.ComplaintCategoryId, Model.ComplaintCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintCategory", @disabled = "disabled" })
                                     <span asp-validation-for="ComplaintCategoryId" class="text-danger"></span>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    @Html.DropDownListFor(e => e.ComplaintSubCategoryId, Model.ComplaintSubCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintSubCategory" })
+                                    @Html.DropDownListFor(e => e.ComplaintSubCategoryId, Model.ComplaintSubCategoryList, "--Please Select--", htmlAttributes: new { @class = "form-control", @id = "ddlComplaintSubCategory", @disabled = "disabled" })
                                     <span asp-validation-for="ComplaintSubCategoryId" class="text-danger"></span>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -94,55 +99,71 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <textarea asp-for="Description" class="form-control"></textarea>
+                                    <textarea asp-for="Description" class="form-control" disabled="disabled"></textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
                             <br />
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
-                                    {
-                                        <h6>Resolver Remarks</h6>
-                                    }
+                                    <h6>Resolver Remarks</h6>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.Remarks))
-                                    {
-                                        <h6>Approver Remarks</h6>
-                                    }
+                                    <h6>Attachment</h6>
+
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
-                                    {
-                                        <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
-                                    }
+                                    <textarea asp-for="ResolvedRemarks" class="form-control" id="ResolvedRemarks"></textarea>
+                                    <span name="errorResolvedRemarks" id="errorResolvedRemarks" class="text-danger error"></span>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.Remarks))
-                                    {
-                                        <textarea asp-for="Remarks" class="form-control"></textarea>
-                                    }
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" asp-for="ResolvedAttachment" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                        </div>
+                                    </div>
+                                    <span class="caption">
+                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.ResolvedAttachment != null ? Model.ResolvedAttachment : "")" target="_blank">@(Model.ResolvedAttachment != null ? Model.ResolvedAttachment.Split('_')[1] : "")</a>
+                                    </span>
                                 </div>
                             </div>
                             <br />
+                            @if (Model.Status != ComplaintStatus.Pending)
+                            {
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <h6>Approver Remarks</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <textarea asp-for="Remarks" class="form-control" id="Remarks" disabled="@(approve ? null : "disabled")"></textarea>
+                                        <span name="errorRemarks" id="errorRemarks" class="text-danger error"></span>
+                                    </div>
+                                </div>
+                            }
+                            <br />
                             <div class="row">
                                 <div class="col-12 pull-right">
-                                    @if ((Model.Status != ComplaintStatus.Approved && Model.Status != ComplaintStatus.Rejected) && SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Resolve && x.ApplicationPage.ControllerName == "Complaint"))
+                                    @if (Model.Status != ComplaintStatus.Approved && resolve)
                                     {
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
+                                        <button type="button" name="btnSubmit" onclick="Resolve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Resolved" class="btn btn-success float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Resolved ? "d-none" : null)">
                                             Resolve
                                         </button>
                                     }
-                                    @if (Model.Status == ComplaintStatus.Resolved && SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == (int)ApplicationActions.Approve && x.ApplicationPage.ControllerName == "Complaint"))
+                                    @if (Model.Status == ComplaintStatus.Resolved && reject)
                                     {
-                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Approved" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Approved ? "d-none" : null)">
-                                            Approve
-                                        </button>
-                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Rejected" class="btn btn-danger float-right  mr-1 @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Rejected ? "d-none" : null)">
+                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Rejected ? "d-none" : null)">
                                             Reject
+                                        </button>
+                                    }
+                                    @if (Model.Status == ComplaintStatus.Resolved && approve)
+                                    {
+                                        <button type="button" name="btnSubmit" onclick="Approve(this, 'Complaint', 'UpdateStatus', @Model.Id);" value="@ComplaintStatus.Approved" class="btn btn-success float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || Model.Status == ComplaintStatus.Approved ? "d-none" : null)">
+                                            Approve
                                         </button>
                                     }
                                     <a asp-controller="Complaint" asp-action="Index" class="btn btn-secondary float-right mr-3">
@@ -161,8 +182,6 @@
 <script>
 
     $(document).ready(function () {
-
-        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
 
         $('.select2').select2({
             width: '100%',
@@ -198,50 +217,111 @@
 
     //Approve
     function Approve(e, controllerName, actionName, id) {
-        var val = '';
-        if (e.value == undefined) {
-            val = e;
+        $('.error').empty();
+        if ($('#Remarks').val() == "") {
+            $('#errorRemarks').text('Please enter remarks');
+            return false;
+        } else if ($('#Remarks').val().length > 255) {
+            $('#errorRemarks').text('You have exceeded 255 characters');
+            return false;
         }
-        else {
-            val = e.value;
-        }
-            Swal.fire({
-                type: "warning",
-                confirmButtonText: "Yes",
-                title: 'Enter Remarks',
-                input: 'text',
-                inputLabel: 'Remarks',
-                inputValue: '',
-                showCancelButton: true,
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'You need to write something!'
-                    }
-                    if (value.length > 255) {
-                        return 'You have exceeded 255 characters';
-                    }
-                }
-            }).then(function (result) {
+        BlockUI();
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
 
-                if (result.value) {
-                    BlockUI();
-                    $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
+            if (result.value) {
+                $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: e.value, Remarks: $('#Remarks').val(), ResolvedRemarks: $('#ResolvedRemarks').val()}, function (data) {
+                    if (data) {
+                        if (e.value == "Resolved") {
+                            Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
+                        }
+                        else if (e.value == "Reject") {
+
+                            Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+                        }
+                        setTimeout(function () {
+                            window.location = data.data.RedirectURL;
+                        }, 1000);
+                    }
+                    else {
+                        UnBlockUI();
+                        Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                    }
+                });
+            }
+            else {
+                UnBlockUI();
+            }
+        });
+    }
+
+    function Resolve(e, controllerName, actionName, id) {
+        
+        $('.error').empty();
+        if ($('#ResolvedRemarks').val() == "") {
+            $('#errorResolvedRemarks').text('Please enter remarks');
+            return false;
+        } else if ($('#ResolvedRemarks').val().length > 255) {
+            $('#errorResolvedRemarks').text('You have exceeded 255 characters');
+            return false;
+        }
+
+        var resolver = new FormData();
+        resolver.append('FormFile', $('#customFile').get(0).files[0]);
+        resolver.append('Id', id);
+        resolver.append('Status', e.value);
+        resolver.append('Remarks', $('#ResolvedRemarks').val());
+        BlockUI();
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+
+            if (result.value) {
+                $.post({
+                    url: "/" + controllerName + "/" + actionName,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    data: resolver,
+                    success: function (data) {
                         if (data) {
-                            if (e.value == "Resolved") {
-                                Toast.fire({ icon: 'success', title: 'Resolved successfully.' });
-                            } else if (e.value == "Reject") {
-                                Toast.fire({ icon: 'success', title: 'Reject successfully.' });
+                            if (data.data.Status) {
+                                Toast.fire({ icon: 'success', title: data.data.Message });
+                            } else {
+                                Toast.fire({ icon: 'error', title: data.data.Message });
+                            }
+                            if (data.data.SignalRResponse !== null) {
+                                CallSignalR(data.data.SignalRResponse);
                             }
                             setTimeout(function () {
-                                window.location.reload();
+                                window.location = data.data.RedirectURL;
                             }, 1000);
                         } else {
+                            UnBlockUI();
                             Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                         }
-                    });
-                    UnBlockUI();
-                }
-            });
-        }
+                    }
+                });
+            }
+            else {
+                UnBlockUI();
+            }
+        });
+    }
 
 </script>

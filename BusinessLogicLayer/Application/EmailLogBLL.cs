@@ -58,6 +58,7 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{DistributorName}}", EmailUserModel.DistributorName);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintCategory}}", EmailUserModel.ComplaintCategory);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Attachment}}", EmailUserModel.Attachment);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{AttachmentPath}}", EmailUserModel.AttachmentPath);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintDetail}}", EmailUserModel.ComplaintDetail);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
             EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
@@ -74,8 +75,8 @@ namespace BusinessLogicLayer.Application
         {
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
-            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ShipToPartyName}}", EmailUserModel.ShipToPartyName);
-            ToAcceptTemplate = ToAcceptTemplate.Replace("{{City}}", EmailUserModel.City);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{SHIPTOPARTYNAME}}", EmailUserModel.ShipToPartyName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{CITY}}", EmailUserModel.City);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{OrderNumber}}", EmailUserModel.OrderNumber);
             EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
@@ -91,8 +92,8 @@ namespace BusinessLogicLayer.Application
         {
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
-            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ShipToPartyName}}", EmailUserModel.ShipToPartyName);
-            ToAcceptTemplate = ToAcceptTemplate.Replace("{{City}}", EmailUserModel.City);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{SHIPTOPARTYNAME}}", EmailUserModel.ShipToPartyName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{CITY}}", EmailUserModel.City);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{ReturnOrderNo}}", EmailUserModel.RetrunOrderNumber);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
             EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);

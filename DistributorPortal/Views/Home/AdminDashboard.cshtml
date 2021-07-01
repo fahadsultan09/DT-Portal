@@ -2,7 +2,7 @@
 @using Utility
 @{
     ViewData["Title"] = "Home Page";
-    //int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder;
+    int MaxOrder = Model.PendingApproval + Model.OnHold + Model.Reject + Model.Approved + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed;
 }
 <style type="text/css">
     body {
@@ -38,21 +38,21 @@
                             <p>Pending Orders</p>
                         </div>
                         <div class="icon">
-                            <i class="fas fa-shopping-cart"></i>
+                            <i class="fas fa-truck"></i>
                         </div>
                     </div>
                 </div>
                 @*<div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>@ExtensionUtility.FormatNumberAmount(Model.UnverifiedPayment)</h3>
-                            <p>Unverified Payment</p>
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>@ExtensionUtility.FormatNumberAmount(Model.UnverifiedPayment)</h3>
+                                <p>Unverified Payment</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-money-bill-alt"></i>
+                            </div>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-money-bill-alt"></i>
-                        </div>
-                    </div>
-                </div>*@
+                    </div>*@
                 <div class="col-lg-4 col-6">
                     <div class="small-box bg-gradient-secondary">
                         <div class="inner">
@@ -137,30 +137,69 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0"   data-width="90" data-height="90" data-fgColor="#f56954">
-                                    <div class="knob-label">Pending Approval</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.PendingApproval">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
+                                        <div class="knob-label">Pending Approval</div>
+                                    </form>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0"   data-width="90" data-height="90" data-fgColor="#39CCCC">
-                                    <div class="knob-label">In Process</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Onhold">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                        <div class="knob-label">On Hold</div>
+                                    </form>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0"   data-width="90" data-height="90" data-fgColor="#932ab6">
-                                    <div class="knob-label">Partially Processed</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Reject">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
+                                        <div class="knob-label">Reject</div>
+                                    </form>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.CompletelyProcessed" data-min="0"   data-width="90" data-height="90" data-fgColor="#00a65a">
-                                    <div class="knob-label">Completely Processed</div>
+                                <div class="col-3 text-center">
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Approved">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.Approved" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                        <div class="knob-label">Approved</div>
+                                    </form>
                                 </div>
-                                <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0"   data-width="90" data-height="90" data-fgColor="#6c757d">
-                                    <div class="knob-label">On Hold</div>
+                                <div class="col-3 text-center">
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.InProcess">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                        <div class="knob-label">In Process</div>
+                                    </form>
                                 </div>
-                                <div class="col-4 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0"   data-width="90" data-height="90" data-fgColor="#ffc107">
-                                    <div class="knob-label">Reject</div>
+                                <div class="col-3 text-center">
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.PartiallyProcessed">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                        <div class="knob-label">Partially Processed</div>
+                                    </form>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.CompletelyProcessed">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.CompletelyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                        <div class="knob-label">Completely Processed</div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 using Models.Common;
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Utility;
 
@@ -23,12 +24,16 @@ namespace Models.Application
         public LicenseType? Type { get; set; }
         [DisplayName("Request Type")]
         public LicenseRequestType? RequestType { get; set; }
+        [StringLength(50)]
         public string IssuingAuthority { get; set; }
+        [StringLength(50)]
         public string LicenseNo { get; set; }
+        [StringLength(1000)]
         public string Attachment { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime Expiry { get; set; }
         public LicenseStatus? Status { get; set; }
+        [StringLength(255)]
         public string Remarks { get; set; }
         [NotMapped]
         public IFormFile File { get; set; }

@@ -3,6 +3,7 @@ using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
 using Models.ViewModel;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,18 +74,20 @@ namespace BusinessLogicLayer.Application
         }
         public List<SAPOrderStatus> GetInProcessOrderStatus()
         {
-            List<SAPOrderStatus> list = _repository.Where(x => x.SAPOrderNumber != null && x.OrderProductStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.SAPOrderNumber }).ToList();
+            List<SAPOrderStatus> list = _repository.Where(x => x.SAPOrderNumber != null && x.OrderProductStatus != OrderStatus.CompletelyProcessed).Select(x => new SAPOrderStatus { SAPOrderNo = x.SAPOrderNumber }).DistinctBy(x => x.SAPOrderNo).ToList();
             return list;
         }
         public void UpdateProductOrderStatus(List<SAPOrderStatus> SAPOrderStatusList)
         {
+            List<OrderDetail> list = new List<OrderDetail>();
             foreach (var item in SAPOrderStatusList)
             {
-                var model = _repository.Where(x=>x.SAPOrderNumber == item.SAPOrderNo).First();
-                model.OrderProductStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess);
-                _repository.Update(model);
-                _unitOfWork.Save();
+                List<OrderDetail> OrderDetailList = _repository.Where(x => x.SAPOrderNumber == item.SAPOrderNo).ToList();
+                OrderDetailList.ForEach(x => x.OrderProductStatus = item.OrderStatus == "B" ? OrderStatus.PartiallyProcessed : (item.OrderStatus == "C" ? OrderStatus.CompletelyProcessed : OrderStatus.InProcess));
+                list.AddRange(OrderDetailList.ToList());
             }
+            _repository.UpdateRange(list);
+            _unitOfWork.Save();
         }
     }
 }

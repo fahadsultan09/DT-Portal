@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.Application
 {
     public class OrderValueBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<OrderValue> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<OrderValue> repository;
         public OrderValueBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -43,19 +43,13 @@ namespace BusinessLogicLayer.Application
         {
             return repository.GetById(id);
         }
-
         public List<OrderValue> GetOrderValueByCompanyId(int CompanyId)
         {
             return repository.Where(e => e.CompanyId == CompanyId).ToList();
         }
-
         public List<OrderValue> GetOrderValueByOrderId(int OrderId)
         {
             return repository.Where(e => e.OrderId == OrderId).ToList();
-        }
-        public List<OrderValue> GetAllOrderValue()
-        {
-            return repository.GetAllList().ToList();
-        }
+        }  
     }
 }

@@ -51,8 +51,8 @@ namespace Utility.HelperClasses
                 Password = configuration["Settings:Password"];
                 ServerAddress = configuration["Settings:ServerAddress"];
                 DistributorWiseProduct = configuration["AppSettings:DistributorWiseProduct"];
-                POUserName = configuration["AppSettings:POUserName"];
-                POPassword = configuration["AppSettings:POPassword"];
+                POUserName = configuration["Settings:POUserName"];
+                POPassword = configuration["Settings:POPassword"];
                 int.TryParse(configuration["Settings:Port"], out int portnumber);
                 Port = portnumber;
             }

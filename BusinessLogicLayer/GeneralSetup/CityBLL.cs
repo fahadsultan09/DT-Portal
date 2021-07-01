@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class CityBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<City> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<City> repository;
         public CityBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

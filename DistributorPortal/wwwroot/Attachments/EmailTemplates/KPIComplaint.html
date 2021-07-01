@@ -3,14 +3,31 @@
 <head>
 </head>
 <body>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Dear {{Name}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Below customer complaint is still pending. Please respond the complaint at earliest possible time.</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Complaint No.:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintNo}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Complaint Date: &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintDate}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Customer Name: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{DistributorName}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Complaint Category: &nbsp;&nbsp; &nbsp; &nbsp;Billing &ndash; {{ComplaintCategory}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>Attachment:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; {{Attachment}}</p>
-    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:106.35pt;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;text-align:justify;text-indent:-106.35pt;'>Complaint Detail: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintDetail}}</p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Dear {{Name}}
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Below customer complaint is still pending. Please respond the complaint at earliest possible time.
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Complaint No.:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintNo}}
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Complaint Date: &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintDate}}
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Customer Name: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{DistributorName}}
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Complaint Category: &nbsp;&nbsp; &nbsp; &nbsp;Billing &ndash; {{ComplaintCategory}}
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;'>
+        Attachment:            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+        <a target="_blank" href="{{AttachmentPath}}">{{Attachment}}</a>
+    </p>
+    <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:106.35pt;line-height:107%;font-size:15px;font-family:"Calibri",sans-serif;text-align:justify;text-indent:-106.35pt;'>
+        Complaint Detail: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ComplaintDetail}}
+    </p>
     <p><a href='{{URL}}'>Distributor Portal Login</a></p>
 </body>
 </html>

@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class RolePermissionBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<RolePermission> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<RolePermission> repository;
         public RolePermissionBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

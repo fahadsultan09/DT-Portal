@@ -116,7 +116,7 @@ namespace DistributorPortal.Controllers
         public ActionResult Payment()
         {
             PaymentSearch paymentSearch = new PaymentSearch();
-            paymentSearch.paymentMasters = GetPaymentList(new PaymentSearch());
+            paymentSearch.PaymentMasters = GetPaymentList(new PaymentSearch());
             return View(paymentSearch);
         }
         public List<PaymentMaster> GetPaymentList(PaymentSearch model)

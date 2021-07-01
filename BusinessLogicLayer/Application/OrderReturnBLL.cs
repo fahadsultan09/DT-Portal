@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.ServiceModel;
 using System.Xml;
 using Utility;
+using Utility.HelperClasses;
 using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
@@ -135,7 +136,7 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
                          select new OrderReturnMaster
                          {
@@ -149,9 +150,9 @@ namespace BusinessLogicLayer.Application
                              CreatedBy = x.CreatedBy,
                              CreatedName = (u.FirstName + " " + u.LastName + " (" + u.UserName + ")"),
                              CreatedDate = x.CreatedDate,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public List<OrderReturnMaster> SearchReport(OrderReturnSearch model)
         {
@@ -182,9 +183,9 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
-                         join ua in _UserBLL.GetAllUser().ToList()
+                         join ua in _UserBLL.GetUsers().ToList()
                               on x.ReceivedBy equals ua.Id into receivedGroup
                          from a1 in receivedGroup.DefaultIfEmpty()
                          select new OrderReturnMaster
@@ -202,9 +203,9 @@ namespace BusinessLogicLayer.Application
                              ReceivedBy = x.ReceivedBy,
                              ReceivedName = a1 == null ? string.Empty : (a1.FirstName + " " + a1.LastName + " (" + a1.UserName + ")"),
                              ReceivedDate = x.ReceivedDate,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public JsonResponse UpdateOrderReturn(OrderReturnMaster model, OrderReturnStatus btnSubmit, IUrlHelper Url)
         {
@@ -280,7 +281,7 @@ namespace BusinessLogicLayer.Application
                 throw ex;
             }
         }
-        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId)
+        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId, Configuration _Configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
             {
@@ -294,8 +295,8 @@ namespace BusinessLogicLayer.Application
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
             EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=Ord_return_Request_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
             Ord_return_Request_OUTClient client = new Ord_return_Request_OUTClient(binding, address);
-            client.ClientCredentials.UserName.UserName = "SAMI_PO";
-            client.ClientCredentials.UserName.Password = "wasay123";
+            client.ClientCredentials.UserName.UserName = _Configuration.POUserName;
+            client.ClientCredentials.UserName.Password = _Configuration.POPassword;
             if (client.InnerChannel.State == CommunicationState.Faulted)
             {
             }
@@ -331,9 +332,9 @@ namespace BusinessLogicLayer.Application
             {
                 model.Add(new Ord_return_Request_main()
                 {
-                    SNO = string.Format("{0:1000000000}", item.OrderReturnId),
-                    ITEMNO = "",
-                    PARTN_NUMB = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    SNO = item.OrderReturnMaster.SNo.ToString(),
+                    ITEMNO = item.ProductId.ToString(),
+                    PARTN_NUMB = !string.IsNullOrEmpty(ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor) ? ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor : item.OrderReturnMaster.Distributor.DistributorSAPCode,
                     DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,
                     SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
                     DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
@@ -361,9 +362,9 @@ namespace BusinessLogicLayer.Application
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:1000000000}", item.OrderReturnId),
-                    ITEMNO = "",
-                    PARTN_NUMB = item.OrderReturnMaster.Distributor.DistributorSAPCode,
+                    SNO = item.OrderReturnMaster.SNo.ToString(),
+                    ITEMNO = item.ProductId.ToString(),
+                    PARTN_NUMB = !string.IsNullOrEmpty(ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor) ? ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor : item.OrderReturnMaster.Distributor.DistributorSAPCode,
                     DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,
                     SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
                     DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,

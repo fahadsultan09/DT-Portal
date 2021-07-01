@@ -1,4 +1,17 @@
 ﻿@model IEnumerable<Policy>
+@{
+    bool insert = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Policy").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+    bool update = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Policy").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Update));
+    bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Policy").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
+    var viewdata = (string)TempData["Message"];
+    if (!string.IsNullOrEmpty(viewdata))
+    {
+        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            @viewdata <a class="alert-link" href="#"></a>
+        </div>
+    }
+}
 
 <div class="row">
     <div class="col-12">
@@ -12,12 +25,14 @@
                       data-ajax="true"
                       data-ajax-method="GET"
                       method="GET">
-                    <button type="submit" class="btn btn-info float-right">Add</button>
+                    @if (insert)
+                    {
+                        <button type="submit" class="btn btn-info float-right">Add</button>
+                    }
                 </form>
             </div>
-            <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped"   >
+                <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -43,27 +58,31 @@
                                     {<i class="fa fa-times text-danger"></i>}
                                 </td>
                                 <td class="p-1">
-                                    <a data-ajax-update="#divform"
-                                       data-ajax="true"
-                                       data-ajax-method="GET"
-                                       asp-controller="Policy" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </a>
-                                    <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    @if (update)
+                                    {
+                                        <a data-ajax-update="#divform"
+                                           data-ajax="true"
+                                           data-ajax-method="GET"
+                                           asp-controller="Policy" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    @if (delete)
+                                    {
+                                        <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
+
 <script>
 
     $(document).ready(function () {

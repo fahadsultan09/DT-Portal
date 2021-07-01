@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Application;
@@ -7,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Utility;
 
 namespace BusinessLogicLayer.Application
@@ -15,21 +15,26 @@ namespace BusinessLogicLayer.Application
     public class ProductDetailBLL
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<ProductDetail> _repository;
+
         public ProductDetailBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            _repository = unitOfWork.GenericRepository<ProductDetail>();
         }
         public int AddProductDetail(ProductDetail module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
+            module.IsActive = true;
             module.IsDeleted = false;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<ProductDetail>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public int UpdateProductDetail(ProductDetail module)
         {
-            var item = _unitOfWork.GenericRepository<ProductDetail>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
+            item.ProductVisibilityId = module.ProductVisibilityId;
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.WTaxRate = module.WTaxRate;
@@ -45,35 +50,42 @@ namespace BusinessLogicLayer.Application
             item.R_StorageLocation = module.R_StorageLocation;
             item.SalesItemCategory = module.SalesItemCategory;
             item.ReturnItemCategory = module.ReturnItemCategory;
-            item.IsTaxApplicable = module.IsTaxApplicable;
+            item.SalesTax = module.SalesTax;
+            item.IncomeTax = module.IncomeTax;
+            item.AdditionalSalesTax = module.AdditionalSalesTax;
             item.LicenseControlId = module.LicenseControlId;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<ProductDetail>().Update(item);
+            _repository.Update(item);
+            return _unitOfWork.Save();
+        }
+        public int UpdateRange(List<ProductDetail> ProductDetailList)
+        {
+            _repository.UpdateRange(ProductDetailList);
             return _unitOfWork.Save();
         }
         public int DeleteProductDetail(int id)
         {
-            var item = _unitOfWork.GenericRepository<ProductDetail>().GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
-            _unitOfWork.GenericRepository<ProductDetail>().Delete(item);
+            _repository.Delete(item);
             return _unitOfWork.Save();
         }
         public ProductDetail GetProductDetailById(int id)
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().GetById(id);
+            return _repository.GetById(id);
         }
         public ProductDetail GetProductDetailByMasterId(int id)
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().Where(e => e.ProductMasterId == id).FirstOrDefault();
+            return _repository.Where(e => e.ProductMasterId == id).FirstOrDefault();
         }
         public List<ProductDetail> GetAllProductDetail()
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<ProductDetail> GetAllProductDetailById(int[] list, int OrderId)
         {
-            var detail = _unitOfWork.GenericRepository<ProductDetail>().GetAllList().Where(x => x.IsDeleted == false && list.Contains(x.ProductMasterId)).ToList();
+            var detail = _repository.GetAllList().Where(x => x.IsDeleted == false && list.Contains(x.ProductMasterId)).ToList();
             var OrderDetail = _unitOfWork.GenericRepository<OrderDetail>().Where(e => list.Contains(e.ProductId) && e.OrderId == OrderId).ToList();
             foreach (var item in detail)
             {
@@ -93,11 +105,11 @@ namespace BusinessLogicLayer.Application
         }
         public ProductDetail FirstOrDefault(Expression<Func<ProductDetail, bool>> predicate)
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().FirstOrDefault(predicate);
+            return _repository.FirstOrDefault(predicate);
         }
         public List<ProductDetail> Where(Expression<Func<ProductDetail, bool>> expression)
         {
-            return _unitOfWork.GenericRepository<ProductDetail>().Where(expression);
+            return _repository.Where(expression);
         }
         public List<ProductMappingModel> GetViewModelForExcel()
         {
@@ -108,7 +120,8 @@ namespace BusinessLogicLayer.Application
                 ProductMappingModel.Add(new ProductMappingModel()
                 {
                     ProductCode = item.ProductMaster.SAPProductCode,
-                    ProductName = item.ProductMaster.ProductName,
+                    BrandName = item.ProductMaster.ProductName,
+                    ProductDescription = item.ProductMaster.ProductDescription,
                     PackSize = item.ProductMaster.PackSize,
                     Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
                     PlantLocation = item.PlantLocation.PlantLocationName,
@@ -126,7 +139,9 @@ namespace BusinessLogicLayer.Application
                     R_StorageLocation = item.R_StorageLocation,
                     SalesItemCategory = item.SalesItemCategory,
                     ReturnItemCategory = item.ReturnItemCategory,
-                    IsTaxApplicable = item.IsTaxApplicable,
+                    IncomeTax = item.IncomeTax.ToString(),
+                    SalesTax = item.SalesTax.ToString(),
+                    AdditionalSalesTax = item.AdditionalSalesTax.ToString(),
                     LicenseType = item.LicenseControl is null ? "" : item.LicenseControl.LicenseName,
                 });
             }

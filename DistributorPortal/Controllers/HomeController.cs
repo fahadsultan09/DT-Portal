@@ -15,8 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.ServiceModel;
-using System.Xml;
+using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
 
@@ -34,6 +33,7 @@ namespace DistributorPortal.Controllers
         private readonly DistributorBLL _DistributorBLL;
         private readonly PolicyBLL _PolicyBLL;
         private readonly NotificationBLL _NotificationBLL;
+        private readonly DisclaimerBLL _DisclaimerBLL;
         private List<PaymentMaster> _PaymentMaster;
         private List<OrderMaster> _OrderMaster;
         private List<OrderDetail> _OrderDetail;
@@ -41,7 +41,6 @@ namespace DistributorPortal.Controllers
         private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
         private List<Distributor> _Distributor;
-        private List<Notification> _Notification;
         private readonly Configuration _configuration;
         public HomeController(IUnitOfWork unitOfWork, Configuration configuration)
         {
@@ -55,17 +54,21 @@ namespace DistributorPortal.Controllers
             _OrderReturnBLL = new OrderReturnBLL(_unitOfWork);
             _PolicyBLL = new PolicyBLL(_unitOfWork);
             _NotificationBLL = new NotificationBLL(_unitOfWork);
-            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
-            _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
-            _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
-            _OrderReturnMaster = _OrderReturnBLL.GetAllOrderReturn().ToList();
-            _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
-            _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
-            _Distributor = _DistributorBLL.GetAllDistributor().ToList();
+            _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
+            if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
+            {
+                SessionHelper.Disclaimer = _DisclaimerBLL.GetAllDisclaimer().First().Description;
+            }
+            else
+            {
+                SessionHelper.Disclaimer = string.Empty;
+            }
             if (SessionHelper.LoginUser != null && SessionHelper.LoginUser.IsDistributor)
             {
                 SessionHelper.Notification = _NotificationBLL.GetAllNotification().Where(x => (SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true) && x.CreatedDate.Date >= DateTime.Now.Date.AddDays(-10)).OrderByDescending(x => x.CreatedDate).ToList();
-                SessionHelper.Notification.ForEach(x => x.RelativeTime = ExtensionUtility.TimeAgo(x.CreatedDate));
+                var list = SessionHelper.Notification;
+                list.ForEach(x => x.RelativeTime = ExtensionUtility.TimeAgo(x.CreatedDate));
+                SessionHelper.Notification = list;
             }
             else
             {
@@ -77,7 +80,7 @@ namespace DistributorPortal.Controllers
         {
             new AuditLogBLL(_unitOfWork).AddAuditLog("Home", "Index", "Dashboard");
 
-            var dashboard = SessionHelper.NavigationMenu.FirstOrDefault(x => (x.ApplicationPage.ControllerName == "Home" || x.ApplicationPage.ControllerName == "StoreKeeperDashboard") && x.ApplicationPage.PageTitle != "Get File");
+            var dashboard = SessionHelper.NavigationMenu.FirstOrDefault(x => (x.ApplicationPage.ControllerName == "Home" || x.ApplicationPage.ControllerName == "StoreKeeperDashboard") && x.ApplicationPage.PageTitle != "Allow users to view files");
             if (dashboard != null)
             {
                 return RedirectToAction(dashboard.ApplicationPage.PageURL.Split('/')[2]);
@@ -92,13 +95,18 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
+                _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
+                _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
+                _OrderReturnMaster = _OrderReturnBLL.GetAllOrderReturn().ToList();
                 AdminDashboardViewModel model = new AdminDashboardViewModel();
+                _Complaint = _ComplaintBLL.GetAllComplaint().ToList();
                 model.Complaint = _Complaint.Where(x => x.Status == ComplaintStatus.Pending && x.Status == ComplaintStatus.Resolved).Count();
                 model.PendingApproval = _OrderMaster.Where(x => x.Status == OrderStatus.PendingApproval).Count();
                 model.Approved = _OrderMaster.Where(x => x.Status == OrderStatus.Approved).Count();
-                model.InProcess = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.InProcess).Count();
-                model.PartiallyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.PartiallyProcessed).Count();
-                model.CompletelyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.CompletelyProcessed).Count();
+                model.InProcess = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.InProcess).Select(x => x.SAPOrderNumber).Distinct().Count();
+                model.PartiallyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.PartiallyProcessed).Select(x => x.SAPOrderNumber).Distinct().Count();
+                model.CompletelyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.CompletelyProcessed).Select(x => x.SAPOrderNumber).Distinct().Count();
                 model.OnHold = _OrderMaster.Where(x => x.Status == OrderStatus.Onhold).Count();
                 model.Reject = _OrderMaster.Where(x => x.Status == OrderStatus.Reject).Count();
                 model.PendingOrder = model.PendingApproval + model.InProcess + model.PartiallyProcessed;
@@ -115,6 +123,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAdminPaymentWiseComparision()
         {
+            _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -132,6 +141,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAdminOrderWiseComparision()
         {
+            _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -149,6 +159,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAdminPaymentWiseStatus()
         {
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -166,6 +177,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAdminRegionWiseOrder()
         {
+            _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -182,6 +194,11 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAdminRecentPaymentStatus()
         {
+            _Distributor = _DistributorBLL.GetAllDistributor().ToList();
+            _OrderMaster = _OrderBLL.GetAllOrderMaster().ToList();
+            _OrderDetail = _OrderDetailBLL.GetAllOrderDetail().ToList();
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
+            _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             AdminRecentPaymentStatus model = new AdminRecentPaymentStatus();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
@@ -226,8 +243,8 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
                 AccountDashboardViewModel model = new AccountDashboardViewModel();
-
                 model.VerifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount));
                 model.UnverifiedPaymentCount = _PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Count();
                 model.UnverifiedPayment = ExtensionUtility.FormatNumberAmount(_PaymentMaster.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
@@ -243,6 +260,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAccountPaymentWiseComparision()
         {
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -260,6 +278,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAccountPaymentWiseStatus()
         {
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -278,6 +297,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetAccountRecentPaymentStatus()
         {
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
             AccountRecentPaymentStatus model = new AccountRecentPaymentStatus();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
@@ -312,7 +332,12 @@ namespace DistributorPortal.Controllers
             try
             {
                 DistributorDashboardViewModel model = new DistributorDashboardViewModel();
-                List<OrderMaster> OrderMasterList = _OrderMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status != OrderStatus.Cancel).ToList();
+                _Complaint = _ComplaintBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                _OrderDetail = _OrderDetailBLL.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                _OrderMaster = _OrderBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                _OrderReturnMaster = _OrderReturnBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                _PaymentMaster = _PaymentBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                List<OrderMaster> orderMasters = _OrderMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status != OrderStatus.Cancel).ToList();
                 List<PaymentMaster> paymentMasters = _PaymentMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 _Complaint = _Complaint.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 _OrderReturnMaster = _OrderReturnMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
@@ -320,18 +345,18 @@ namespace DistributorPortal.Controllers
                 model.UnverifiedPaymentAllCount = paymentMasters.Where(x => x.Status == PaymentStatus.Unverified).Count();
                 model.UnverifiedPaymentAll = ExtensionUtility.FormatNumberAmount(paymentMasters.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
 
-                model.InProcessOrderCount = OrderMasterList.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Reject).Count();
-                model.InProcessOrderValue = ExtensionUtility.FormatNumberAmount(OrderMasterList.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Reject).Sum(x => x.TotalValue));
+                model.InProcessOrderCount = orderMasters.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Reject).Count();
+                model.InProcessOrderValue = ExtensionUtility.FormatNumberAmount(orderMasters.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Reject).Sum(x => x.TotalValue));
 
                 model.Complaint = _Complaint.Where(x => x.Status == ComplaintStatus.Pending).Count();
-                model.PendingApproval = OrderMasterList.Where(x => x.Status == OrderStatus.PendingApproval).Count();
-                model.Approved = OrderMasterList.Where(x => x.Status == OrderStatus.Approved).Count();
-                model.InProcess = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.InProcess).Count();
-                model.PartiallyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.PartiallyProcessed).Count();
-                model.CompletelyProcessed = _OrderDetail.Where(x => x.OrderProductStatus == OrderStatus.CompletelyProcessed).Count();
-                model.OnHold = OrderMasterList.Where(x => x.Status == OrderStatus.Onhold).Count();
-                model.Reject = OrderMasterList.Where(x => x.Status == OrderStatus.Reject).Count();
-                model.Draft = OrderMasterList.Where(x => x.Status == OrderStatus.Draft).Count();
+                model.PendingApproval = orderMasters.Where(x => x.Status == OrderStatus.PendingApproval).Count();
+                model.Approved = orderMasters.Where(x => x.Status == OrderStatus.Approved).Count();
+                model.InProcess = _OrderDetail.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId && x.OrderProductStatus == OrderStatus.InProcess).Select(x => x.SAPOrderNumber).Distinct().Count();
+                model.PartiallyProcessed = _OrderDetail.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId && x.OrderProductStatus == OrderStatus.PartiallyProcessed).Select(x => x.SAPOrderNumber).Distinct().Count();
+                model.CompletelyProcessed = _OrderDetail.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId && x.OrderProductStatus == OrderStatus.CompletelyProcessed).Select(x => x.SAPOrderNumber).Distinct().Count();
+                model.OnHold = orderMasters.Where(x => x.Status == OrderStatus.Onhold).Count();
+                model.Reject = orderMasters.Where(x => x.Status == OrderStatus.Reject).Count();
+                model.Draft = orderMasters.Where(x => x.Status == OrderStatus.Draft).Count();
                 model.VerifiedPayment = paymentMasters.Where(x => x.Status == PaymentStatus.Verified).Sum(x => x.Amount);
                 model.UnverifiedPayment = paymentMasters.Where(x => x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
                 model.ReturnOrder = _OrderReturnMaster.Where(x => x.Status != OrderReturnStatus.Draft).Count();
@@ -339,7 +364,6 @@ namespace DistributorPortal.Controllers
                 model.PolicyList = _PolicyBLL.Where(x => x.IsActive && !x.IsDeleted).ToList();
                 if (SessionHelper.LoginUser.Distributor != null)
                 {
-                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration).ToList();
                     SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
                 }
                 return View(model);
@@ -352,6 +376,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorPaymentWiseComparision()
         {
+            _OrderMaster = _OrderBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -370,6 +395,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorOrderWiseComparision()
         {
+            _OrderMaster = _OrderBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -388,6 +414,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorPaymentWiseStatus()
         {
+            _PaymentMaster = _PaymentBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
@@ -407,17 +434,19 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult GetDistributorRecentPaymentStatus()
         {
+            _OrderDetail = _OrderDetailBLL.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+            _OrderMaster = _OrderBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+            _PaymentMaster = _PaymentBLL.GetAllPaymentMaster().ToList();
+            _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
             DistributorRecentPaymentStatus model = new DistributorRecentPaymentStatus();
             DateTime CurrentYear = DateTime.Now;
             DateTime LastYear = DateTime.Now.AddYears(-1).AddMonths(1);
             var months = ExtensionUtility.MonthsBetween(LastYear, CurrentYear);
             List<OrderMaster> orderMasters = _OrderMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Reject && x.Status != OrderStatus.Cancel).ToList();
-            List<OrderMaster> OrderMasterList = orderMasters.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-            List<OrderDetail> OrderDetailList = _OrderDetail.Where(x => x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             List<PaymentMaster> PaymentMasterList = _PaymentMaster.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
 
             model.RecentOrder = new List<RecentOrder>();
-            model.RecentOrder = OrderMasterList.OrderByDescending(x => x.CreatedDate).Select(y => new RecentOrder
+            model.RecentOrder = orderMasters.OrderByDescending(x => x.CreatedDate).Select(y => new RecentOrder
             {
                 Id = y.Id,
                 OrderNo = y.SNo,
@@ -439,7 +468,7 @@ namespace DistributorPortal.Controllers
             }).Take(5).ToList();
 
             model.ProductViewModelOrder = new List<ProductViewModel>();
-            model.ProductViewModelOrder = OrderDetailList.GroupBy(x => x.ProductId).Select(y => new ProductViewModel
+            model.ProductViewModelOrder = _OrderDetail.GroupBy(x => x.ProductId).Select(y => new ProductViewModel
             {
                 ProductName = _ProductMaster.FirstOrDefault(x => x.Id == y.Key).ProductName,
                 CurrentPrice = _ProductMaster.FirstOrDefault(x => x.Id == y.Key).ProductPrice,
@@ -447,7 +476,7 @@ namespace DistributorPortal.Controllers
             }).Take(5).ToList();
 
             model.ProductViewModelQuantity = new List<ProductViewModel>();
-            model.ProductViewModelQuantity = OrderDetailList.GroupBy(x => x.ProductId).Select(y => new ProductViewModel
+            model.ProductViewModelQuantity = _OrderDetail.GroupBy(x => x.ProductId).Select(y => new ProductViewModel
             {
                 ProductName = _ProductMaster.FirstOrDefault(x => x.Id == y.Key).ProductName,
                 CurrentPrice = _ProductMaster.FirstOrDefault(x => x.Id == y.Key).ProductPrice,
@@ -461,9 +490,9 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             try
             {
-                if (SessionHelper.LoginUser.Distributor != null)
+                _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
+                if (SessionHelper.LoginUser.IsDistributor && (SessionHelper.SAPOrderPendingQuantity == null || SessionHelper.SAPOrderPendingQuantity.Count() == 0))
                 {
-                    //SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration).ToList();
                     SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorOrderPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
                     var pendingQuantity = SessionHelper.SAPOrderPendingQuantity;
                     pendingQuantity.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id : 0);
@@ -473,7 +502,10 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    SessionHelper.SAPOrderPendingQuantity = new List<SAPOrderPendingQuantity>();
+                    if (SessionHelper.SAPOrderPendingQuantity == null || SessionHelper.SAPOrderPendingQuantity.Count() == 0)
+                    {
+                        SessionHelper.SAPOrderPendingQuantity = new List<SAPOrderPendingQuantity>();
+                    }
                 }
             }
             catch (Exception ex)
@@ -485,6 +517,25 @@ namespace DistributorPortal.Controllers
             }
             return PartialView("DistributorPendingQuantity", SessionHelper.SAPOrderPendingQuantity);
         }
+        [HttpPost]
+        public async Task Get()
+        {
+            try
+            {
+                if (SessionHelper.LoginUser.IsDistributor && (SessionHelper.SAPOrderPendingValue == null || SessionHelper.SAPOrderPendingValue.Count() == 0))
+                {
+                    if (SessionHelper.SAPOrderPendingValue == null)
+                    {
+                        SessionHelper.SAPOrderPendingValue = new List<SAPOrderPendingValue>();
+                    }
+                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+            }
+        }
         #endregion
 
         #region Store Keeper
@@ -492,6 +543,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
+                _OrderReturnMaster = _OrderReturnBLL.GetAllOrderReturn().ToList();
                 StoreKeeperDashboard model = new StoreKeeperDashboard();
                 model.Submitted = _OrderReturnMaster.Where(x => x.Status == OrderReturnStatus.Submitted).Count();
                 model.Received = _OrderReturnMaster.Where(x => x.Status == OrderReturnStatus.Received).Count();

@@ -138,6 +138,14 @@
     </div>
 </div>
 <script>
+
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '100%',
+        });
+    });
+
     var message = '@((string)TempData["Message"])';
 
     var MessageDisappear = function (data) {

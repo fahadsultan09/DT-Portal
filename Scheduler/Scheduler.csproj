@@ -29,6 +29,10 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.10" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.10" />
 		<PackageReference Include="RestSharp" Version="106.11.7" />
+		<PackageReference Include="System.ServiceModel.Duplex" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Http" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Security" Version="4.8.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,6 +40,10 @@
 		<ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
 		<ProjectReference Include="..\Models\Models.csproj" />
 		<ProjectReference Include="..\Utility\Utility.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <WCFMetadata Include="Connected Services" />
 	</ItemGroup>
 
 </Project>

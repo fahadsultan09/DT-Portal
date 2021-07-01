@@ -133,12 +133,12 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
-                         join ua in _UserBLL.GetAllUser().ToList()
+                         join ua in _UserBLL.GetUsers().ToList()
                               on x.ApprovedBy equals ua.Id into approvedGroup
                          from a1 in approvedGroup.DefaultIfEmpty()
-                         join ur in _UserBLL.GetAllUser().ToList()
+                         join ur in _UserBLL.GetUsers().ToList()
                               on x.RejectedBy equals ur.Id into rejectedGroup
                          from a2 in rejectedGroup.DefaultIfEmpty()
                          select new PaymentMaster
@@ -159,9 +159,9 @@ namespace BusinessLogicLayer.Application
                              RejectedBy = x.RejectedBy,
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              RejectedDate = x.RejectedDate
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public List<PaymentMaster> SearchReport(PaymentSearch model)
         {
@@ -188,12 +188,12 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
-                         join ua in _UserBLL.GetAllUser().ToList()
+                         join ua in _UserBLL.GetUsers().ToList()
                               on x.ApprovedBy equals ua.Id into approvedGroup
                          from a1 in approvedGroup.DefaultIfEmpty()
-                         join ur in _UserBLL.GetAllUser().ToList()
+                         join ur in _UserBLL.GetUsers().ToList()
                               on x.RejectedBy equals ur.Id into rejectedGroup
                          from a2 in rejectedGroup.DefaultIfEmpty()
                          select new PaymentMaster
@@ -218,9 +218,9 @@ namespace BusinessLogicLayer.Application
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              RejectedDate = x.RejectedDate,
                              Remarks = x.Remarks,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public SAPPaymentViewModel AddPaymentToSAP(int PaymentId)
         {
@@ -246,7 +246,7 @@ namespace BusinessLogicLayer.Application
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
 
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-            List<OrderDetail> orderDetails = _OrderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
+            List<OrderDetail> orderDetails = _OrderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
             List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
 
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails

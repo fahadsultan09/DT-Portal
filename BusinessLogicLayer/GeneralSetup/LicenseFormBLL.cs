@@ -12,8 +12,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class LicenseFormBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<LicenseForm> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<LicenseForm> repository;
         public LicenseFormBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

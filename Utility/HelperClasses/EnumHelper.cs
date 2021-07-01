@@ -36,7 +36,7 @@ namespace Utility.HelperClasses
             return GetNames(value).Select(obj => GetDisplayValue(Parse(obj))).ToList();
         }
 
-        private static string lookupResource(Type resourceManagerProvider, string resourceKey)
+        private static string LookupResource(Type resourceManagerProvider, string resourceKey)
         {
             foreach (PropertyInfo staticProperty in resourceManagerProvider.GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
             {
@@ -58,7 +58,7 @@ namespace Utility.HelperClasses
                 typeof(DisplayAttribute), false) as DisplayAttribute[];
 
             if (descriptionAttributes[0].ResourceType != null)
-                return lookupResource(descriptionAttributes[0].ResourceType, descriptionAttributes[0].Name);
+                return LookupResource(descriptionAttributes[0].ResourceType, descriptionAttributes[0].Name);
 
             if (descriptionAttributes == null) return string.Empty;
             return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Name : value.ToString();

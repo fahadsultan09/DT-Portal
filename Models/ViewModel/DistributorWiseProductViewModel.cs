@@ -8,6 +8,7 @@ namespace Models.ViewModel
     public class DistributorWiseProductViewModel
     {
         public int DistributorId { get; set; }
+        public string SAPDistributorCode { get; set; }
         public string SAPProductCode { get; set; }
         public string PackSize { get; set; }
         public string ProductName { get; set; }

@@ -59,10 +59,20 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<string>("URL");
             set => _httpContextAccessor.HttpContext.Session.Set("URL", value);
         }
+        public static string Disclaimer
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<string>("Disclaimer");
+            set => _httpContextAccessor.HttpContext.Session.Set("Disclaimer", value);
+        }
         public static List<Notification> Notification
         {
             get => _httpContextAccessor.HttpContext.Session.Get<List<Notification>>("Notification");
             set => _httpContextAccessor.HttpContext.Session.Set("Notification", value);
+        }
+        public static string TotalOrderValue
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<string>("TotalOrderValue");
+            set => _httpContextAccessor.HttpContext.Session.Set("TotalOrderValue", value);
         }
     }
 }

@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
-using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +36,6 @@ namespace DistributorPortal.Controllers
         private readonly ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
         private readonly IConfiguration _IConfiguration;
-        //private readonly IDisPortalPORequest_OutRepository _temp;
         public OrderController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration)
         {
             _unitOfWork = unitOfWork;
@@ -52,11 +49,15 @@ namespace DistributorPortal.Controllers
             _viewEngine = viewEngine;
             _Configuration = configuration;
             _IConfiguration = iConfiguration;
-            //_temp = temp;
         }
         // GET: Order
-        public ActionResult Index()
+        public ActionResult Index(OrderStatus? orderStatus)
         {
+            List<OrderMaster> orderList = GetOrderList();
+            if (orderStatus != null)
+            {
+                orderList = orderList.Where(x => x.Status == orderStatus).ToList();
+            }
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 DistributorLicense DistributorLicense = _DistributorLicenseBLL.FirstOrDefault(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified);
@@ -81,7 +82,7 @@ namespace DistributorPortal.Controllers
                     }
                 }
             }
-            return View(GetOrderList());
+            return View(orderList);
         }
         public IActionResult List()
         {
@@ -131,8 +132,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id = 0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Onhold;
@@ -159,8 +159,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id = 0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Reject;
@@ -188,8 +187,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id = 0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Cancel;
@@ -213,8 +211,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id = 0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var result = _OrderBLL.Delete(id);
                 if (result > 0)
@@ -277,7 +274,7 @@ namespace DistributorPortal.Controllers
                 //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
                 //IRestResponse response = Client.Execute(request);
                 //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                List<SAPOrderStatus> SAPProduct = _OrderBLL.PostDistributorOrder(OrderId);
+                List<SAPOrderStatus> SAPProduct = _OrderBLL.PostDistributorOrder(OrderId, _Configuration);
                 var detail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (SAPProduct != null)
                 {
@@ -356,8 +353,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Delete(string DPID)
         {
-            int id = 0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             var list = SessionHelper.AddProduct;
             var item = list.FirstOrDefault(e => e.ProductMasterId == id);
             if (item != null)
@@ -459,6 +455,7 @@ namespace DistributorPortal.Controllers
         public ActionResult UpdateOrderValue()
         {
             var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddProduct);
+            ViewBag.OrderValue = OrderVal;
             return PartialView("OrderValue", OrderVal);
         }
         public ActionResult ApprovedOrderValue(int Product, int Quantity)
@@ -485,11 +482,11 @@ namespace DistributorPortal.Controllers
         {
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                return _OrderBLL.Where(x => x.IsDeleted == false && x.DistributorId == SessionHelper.LoginUser.DistributorId).OrderByDescending(x => x.Id).ToList();
+                return _OrderBLL.Where(x => x.IsDeleted == false && x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             }
             else
             {
-                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).OrderByDescending(x => x.Id).ToList();
+                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).ToList();
             }
         }
         public JsonResult CheckProductLicense(int ProductMasterId)
@@ -718,7 +715,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                model.OrderMaster = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+                model.OrderMaster = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).ToList();
             }
             return model;
         }

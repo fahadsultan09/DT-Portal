@@ -38,6 +38,8 @@ namespace Models.Application
         public ComplaintStatus Status { get; set; }
         [StringLength(255)]
         public string File { get; set; }
+        [StringLength(255)]
+        public string ResolvedAttachment { get; set; }
         public int SNo { get; set; }
         public int? RejectedBy { get; set; }
         public DateTime? RejectedDate { get; set; }

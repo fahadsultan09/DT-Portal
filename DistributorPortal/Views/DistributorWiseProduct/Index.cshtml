@@ -26,6 +26,10 @@
 <script>
 
     $('body').on('change', '#ddlDistributorId', function () {
+        debugger
+        if ($("#ddlDistributorId option:selected").text() == "--All--") {
+            return false;
+        }
 
         BlockUI();
         var params = { DistributorId: $(this).val() };

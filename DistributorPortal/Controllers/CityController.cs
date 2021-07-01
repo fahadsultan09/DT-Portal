@@ -33,7 +33,7 @@ namespace DistributorPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -92,8 +92,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 _CityBLL.DeleteCity(id);
                 return Json(new { Result = true });
             }
@@ -124,8 +123,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult DropDownCityList(string DPID)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return Json(_CityBLL.DropDownCityList(id, 0));
         }
     }

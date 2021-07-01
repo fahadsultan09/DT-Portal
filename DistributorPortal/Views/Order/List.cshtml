@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<OrderMaster>
 @{
     bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
-
     bool add = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
 }
 
@@ -25,7 +24,7 @@
                             <th>Remarks On Hold</th>
                             <th>Remarks On Reject</th>
                             <th>Status</th>
-                            <th>Created</th>
+                            <th>Created Date</th>
                             <th>Action</th>
                         </tr>
                     <tbody>
@@ -110,6 +109,14 @@
 <script>
     $(document).ready(function () {
 
+        $("#example1").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": true,
+            "order": [[0, "desc"]]
+
+        });
+
         var days = '@ViewBag.Days';
         if (days != '') {
             if (parseInt(days) <= 0) {
@@ -123,12 +130,6 @@
 
             }
         }
-        $("#example1").DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-            "responsive": true,
-            "autoWidth": true,
-            "order": [],
-        });
     });
 
     function Cancel(Id) {

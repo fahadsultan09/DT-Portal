@@ -1,7 +1,8 @@
 ﻿@model DistributorDashboardViewModel
 @{
     ViewData["Title"] = "Home";
-    int MaxOrder = Model.PendingApproval + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed + Model.Reject + Model.ReturnOrder + Model.Draft;
+    var m = new OrderSearch();
+    int MaxOrder = Model.Draft + Model.PendingApproval + Model.OnHold + Model.Reject + Model.Approved + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed;
     double value1 = 0;
     double value2 = 0;
     if (SessionHelper.DistributorBalance != null)
@@ -24,14 +25,6 @@
         }
     }
 }
-
-<style type="text/css">
-    body {
-        min-height: 400px;
-        margin-bottom: 50px;
-        clear: both;
-    }
-</style>
 
 <div class="content-wrapper">
 
@@ -193,38 +186,78 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
-                                    <div class="knob-label">Pending Approval</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Draft">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.Draft" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                        <div class="knob-label">Draft</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Approved" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
-                                    <div class="knob-label">Approved</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.PendingApproval">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.PendingApproval" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#f56954">
+                                        <div class="knob-label">Pending Approval</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
-                                    <div class="knob-label">In Process</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Onhold">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                        <div class="knob-label">On Hold</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
-                                    <div class="knob-label">Partially Processed</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Reject">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
+                                        <div class="knob-label">Reject</div>
+                                    </form>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.CompletelyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00a65a">
-                                    <div class="knob-label">Completely Processed</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.Approved">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.Approved" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
+                                        <div class="knob-label">Approved</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.OnHold" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
-                                    <div class="knob-label">On Hold</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.InProcess">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.InProcess" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#39CCCC">
+                                        <div class="knob-label">In Process</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Reject" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#ffc107">
-                                    <div class="knob-label">Reject</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.PartiallyProcessed">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.PartiallyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#932ab6">
+                                        <div class="knob-label">Partially Processed</div>
+                                    </form>
                                 </div>
                                 <div class="col-3 text-center">
-                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" value="@Model.Draft" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#6c757d">
-                                    <div class="knob-label">Draft</div>
+                                    <form asp-controller="Order"
+                                          asp-action="Index"
+                                          id="OrderSearch"
+                                          asp-route-orderStatus="@OrderStatus.CompletelyProcessed">
+                                        <input type="submit" readonly="readonly" class="knob" value="@Model.CompletelyProcessed" data-min="0" data-max="@MaxOrder" data-width="90" data-height="90" data-fgColor="#00a65a">
+                                        <div class="knob-label">Completely Processed</div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -260,7 +293,6 @@
     </section>
 </div>
 
-<!-- OPTIONAL SCRIPTS -->
 <script src="~/lib/plugins/chart.js/Chart.min.js"></script>
 <script src="~/lib/dist/js/demo.js"></script>
 
@@ -273,19 +305,18 @@
             var value = localStorage.getItem('disclaimer');
 
             if (value == "false" || value == null) {
-
                 $('#modal-disclaimer').modal('toggle');
                 $('#modal-disclaimer').modal('show');
 
                 localStorage.clear();
                 localStorage.setItem('disclaimer', "true");
             }
-
             GetDistributorPendingQuantity();
             GetDistributorPaymentWiseComparision();
             GetDistributorOrderWiseComparision();
             GetDistributorPaymentWiseStatus();
             GetDistributorRecentPaymentStatus();
+            //GetSAPOrderPendingValueAsync();
         });
 
         function GetDistributorPaymentWiseComparision() {
@@ -349,8 +380,18 @@
                 type: 'POST',
                  dataType: 'html',
                 success: function (result) {
-                    $('#DistributorPendingQuantity').html(result);
-                    $("#DistributorPendingQuantity").next().remove();
+                        $('#DistributorPendingQuantity').html(result);
+                        $("#DistributorPendingQuantity").next().remove();
+                }
+            });
+        }
+        function GetSAPOrderPendingValueAsync() {
+
+            $.post({
+                url: "/Home/Get",
+                type: 'POST',
+                async: true,
+                success: function (result) {
                 }
             });
         }

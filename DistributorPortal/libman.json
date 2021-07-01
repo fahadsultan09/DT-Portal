@@ -39,6 +39,24 @@
     {
       "library": "microsoft-signalr@5.0.4",
       "destination": "wwwroot/microsoft-signalr/"
+    },
+    {
+      "library": "summernote@0.8.18",
+      "destination": "wwwroot/lib/summernote/",
+      "files": [
+        "summernote-bs4.css",
+        "summernote-bs4.js",
+        "summernote-bs4.js.map",
+        "summernote-bs4.min.css",
+        "summernote-bs4.min.js",
+        "summernote-bs4.min.js.map",
+        "summernote.css",
+        "summernote.js",
+        "summernote.js.map",
+        "summernote.min.css",
+        "summernote.min.js",
+        "summernote.min.js.map"
+      ]
     }
   ]
 }

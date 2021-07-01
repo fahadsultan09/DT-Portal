@@ -1,5 +1,5 @@
 ﻿@model Complaint
-@{ ViewBag.Title = "Approve Complaint "; }
+@{ ViewBag.Title = "View Complaint "; }
 
 <div class="content-wrapper">
     <section class="content-header" disabled>
@@ -41,20 +41,16 @@
                             <h3 class="card-title">Complaint</h3>
                             @if (Model.Id > 0)
                             {
-                                @if (Model.Status == ComplaintStatus.Resolved)
+                                @if (Model.Status == ComplaintStatus.Resolved || Model.Status == ComplaintStatus.Rejected)
                                 {
                                     string description = EnumHelper<ComplaintStatus>.GetDisplayValue(ComplaintStatus.InProcess);
-                                    <span class="badge badge-warning pull-right" style="margin-left:5px;">@Html.DisplayFor(e => description)</span>
+                                    <span class="badge badge-info pull-right" style="margin-left:5px;">@Html.DisplayFor(e => description)</span>
                                 }
                                 else if (Model.Status == ComplaintStatus.Approved)
                                 {
-                                    <span class="badge badge-success float-left" style="margin-left:5px;">@Model.Status</span>
+                                    <span class="badge badge-success float-left" style="margin-left:5px;">@ComplaintStatus.Resolved.ToString()</span>
                                 }
                                 else if (Model.Status == ComplaintStatus.Pending)
-                                {
-                                    <span class="badge badge-danger float-left" style="margin-left:5px;">@Model.Status</span>
-                                }
-                                else
                                 {
                                     <span class="badge badge-info float-left" style="margin-left:5px;">@Model.Status</span>
                                 }
@@ -99,34 +95,78 @@
                                 </div>
                             </div>
                             <br />
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
-                                    {
-                                        <h6>Resolver Remarks</h6>
-                                    }
+                            @if (SessionHelper.LoginUser.IsDistributor && Model.Status == ComplaintStatus.Approved)
+                            {
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <h6>Remarks</h6>
+                                        }
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <h6>Attachment</h6>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.Remarks))
-                                    {
-                                        <h6>Approver Remarks</h6>
-                                    }
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
+                                        }
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.ResolvedAttachment != null ? Model.File : "")" target="_blank">@(Model.ResolvedAttachment != null ? Model.ResolvedAttachment.Split('_')[1] : "")</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
-                                    {
-                                        <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
-                                    }
+                            }
+                            @if (!SessionHelper.LoginUser.IsDistributor)
+                            {
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <h6>Remarks</h6>
+                                        }
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <h6>Attachment</h6>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    @if (!string.IsNullOrEmpty(Model.Remarks))
-                                    {
-                                        <textarea asp-for="Remarks" class="form-control"></textarea>
-                                    }
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
+                                        {
+                                            <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
+                                        }
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.ResolvedAttachment != null ? Model.File : "")" target="_blank">@(Model.ResolvedAttachment != null ? Model.ResolvedAttachment.Split('_')[1] : "")</a>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.Remarks))
+                                        {
+                                            <h6>Approver Remarks</h6>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        @if (!string.IsNullOrEmpty(Model.Remarks))
+                                        {
+                                            <textarea asp-for="Remarks" class="form-control"></textarea>
+                                        }
+                                    </div>
+                                </div>
+                            }
                             <br />
                             <div class="row">
                                 <div class="col-12 pull-right">

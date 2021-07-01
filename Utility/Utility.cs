@@ -98,6 +98,14 @@ namespace Utility
         Visible = 1,
         Hide = 2
     }
+    public enum EmailIntimation
+    {
+        Both = 1,
+        [Display(Name = "Order Return")]
+        OrderReturn = 2,
+        [Display(Name = "Order Dispatch")]
+        OrderDispatch = 3
+    }
 
     public enum CompanyEnum
     {
@@ -196,6 +204,8 @@ namespace Utility
         Onhold = 7,
         Resolve = 8,
         IsAdmin = 9,
+        Sync = 10,
+        Export = 11,
     }
     public enum ApplicationPages
     {

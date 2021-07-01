@@ -95,8 +95,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 _ComplaintCategoryBLL.DeleteComplaintCategory(id);
                 return Json(new { Result = true });
             }

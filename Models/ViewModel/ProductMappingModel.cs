@@ -6,45 +6,52 @@ namespace Models.ViewModel
     {
         [IncludeInReport(Order = 1)]
         public string ProductCode { get; set; }
+
         [IncludeInReport(Order = 2)]
-        public string ProductName { get; set; }
+        public string BrandName { get; set; }
         [IncludeInReport(Order = 3)]
+        public string ProductDescription { get; set; }
+        [IncludeInReport(Order = 4)]
         public string PackSize { get; set; }
-        [IncludeInReport(Order = 4)]
-        public string Visibility { get; set; }
         [IncludeInReport(Order = 5)]
-        public string PlantLocation { get; set; }
+        public string Visibility { get; set; }
         [IncludeInReport(Order = 6)]
-        public string Company { get; set; }
+        public string PlantLocation { get; set; }
         [IncludeInReport(Order = 7)]
-        public string WTaxRate { get; set; }
+        public string Company { get; set; }
         [IncludeInReport(Order = 8)]
-        public int Factor { get; set; }
+        public string WTaxRate { get; set; }
         [IncludeInReport(Order = 9)]
-        public string ParentDistributor { get; set; }
+        public int Factor { get; set; }
         [IncludeInReport(Order = 10)]
-        public string S_OrderType { get; set; }
+        public string ParentDistributor { get; set; }
         [IncludeInReport(Order = 11)]
-        public string R_OrderType { get; set; }
+        public string S_OrderType { get; set; }
         [IncludeInReport(Order = 12)]
+        public string R_OrderType { get; set; }
+        [IncludeInReport(Order = 13)]
         public string SaleOrganization { get; set; }
-        [IncludeInReport(Order = 3)]
+        [IncludeInReport(Order = 14)]
         public string DistributionChannel { get; set; }
-        [IncludeInReport(Order = 4)]
-        public string Division { get; set; }
         [IncludeInReport(Order = 15)]
-        public string DispatchPlant { get; set; }
+        public string Division { get; set; }
         [IncludeInReport(Order = 16)]
-        public string S_StorageLocation { get; set; }
+        public string DispatchPlant { get; set; }
         [IncludeInReport(Order = 17)]
-        public string R_StorageLocation { get; set; }
+        public string S_StorageLocation { get; set; }
         [IncludeInReport(Order = 18)]
-        public string SalesItemCategory { get; set; }
+        public string R_StorageLocation { get; set; }
         [IncludeInReport(Order = 19)]
-        public string ReturnItemCategory { get; set; }
+        public string SalesItemCategory { get; set; }
         [IncludeInReport(Order = 20)]
-        public bool IsTaxApplicable { get; set; }
+        public string ReturnItemCategory { get; set; }
         [IncludeInReport(Order = 21)]
+        public string IncomeTax { get; set; }
+        [IncludeInReport(Order = 22)]
+        public string SalesTax { get; set; }
+        [IncludeInReport(Order = 23)]
+        public string AdditionalSalesTax { get; set; }
+        [IncludeInReport(Order = 24)]
         public string LicenseType { get; set; }
     }
 }

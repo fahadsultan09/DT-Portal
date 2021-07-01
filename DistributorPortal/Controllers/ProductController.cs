@@ -8,17 +8,15 @@ using Fingers10.ExcelExport.ActionResults;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
+using MoreLinq;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using Utility;
 using Utility.HelperClasses;
 
@@ -58,7 +56,7 @@ namespace ProductPortal.Controllers
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_configuration.POUserName + ":" + _configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                     var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getHRMS")).Result;
                     if (result.IsSuccessStatusCode)
@@ -119,7 +117,7 @@ namespace ProductPortal.Controllers
                         item.ProductPrice = e.ProductPrice;
                         item.ProductDescription = e.ProductDescription;
                         item.LicenseType = e.LicenseType;
-                        item.IsActive = e.IsActive;
+                        item.IsActive = true;
                         item.UpdatedBy = SessionHelper.LoginUser.Id;
                         item.UpdatedDate = DateTime.Now;
                         list.Add(item);
@@ -128,7 +126,7 @@ namespace ProductPortal.Controllers
                 }
                 jsonResponse.Status = true;
                 jsonResponse.Message = NotificationMessage.SyncedSuccessfully;
-                jsonResponse.RedirectURL = Url.Action("Index", "Product");
+                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -136,7 +134,7 @@ namespace ProductPortal.Controllers
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
-                jsonResponse.RedirectURL = Url.Action("Index", "Product");
+                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });
             }
         }
@@ -148,7 +146,6 @@ namespace ProductPortal.Controllers
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             return View("ProductMapping", productMasters);
         }
-
         [HttpGet]
         public PartialViewResult GetMappedUnmappedProduct(ProductEnum productEnum)
         {
@@ -207,7 +204,6 @@ namespace ProductPortal.Controllers
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });
         }
-
         public IActionResult ProductsExportToExcel(ProductEnum Id)
         {
             if (Id == ProductEnum.ProductMaster)
@@ -218,8 +214,70 @@ namespace ProductPortal.Controllers
             else
             {
                 var data = _ProductDetailBLL.GetViewModelForExcel();
-                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", "Product List" + DateTime.Now.ToString("dd-MM-yyyy"));
+                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
         }
+        [HttpPost]
+        public IActionResult SaveEdit(List<ProductMaster> List)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                if (List != null & List.Count() > 0)
+                {
+                    List<ProductDetail> ProductDetailList = new List<ProductDetail>();
+                    List<ProductDetail> UpdateProductDetailList = new List<ProductDetail>();
+                    UpdateProductDetailList = List.Where(x => x.ProductDetail.Id > 0).Select(x => x.ProductDetail).ToList();
+                    UpdateProductDetailList.ForEach(x =>
+                    {
+                        var item = _unitOfWork.GenericRepository<ProductDetail>().FirstOrDefault(y => y.Id == x.Id);
+                        item.ProductVisibilityId = x.ProductVisibilityId;
+                        item.PlantLocationId = x.PlantLocationId;
+                        item.CompanyId = x.CompanyId;
+                        item.WTaxRate = x.WTaxRate;
+                        item.Factor = x.Factor;
+                        item.ParentDistributor = x.ParentDistributor;
+                        item.S_OrderType = x.S_OrderType;
+                        item.R_OrderType = x.R_OrderType;
+                        item.SaleOrganization = x.SaleOrganization;
+                        item.DistributionChannel = x.DistributionChannel;
+                        item.Division = x.Division;
+                        item.DispatchPlant = x.DispatchPlant;
+                        item.S_StorageLocation = x.S_StorageLocation;
+                        item.R_StorageLocation = x.R_StorageLocation;
+                        item.SalesItemCategory = x.SalesItemCategory;
+                        item.ReturnItemCategory = x.ReturnItemCategory;
+                        item.SalesTax = x.SalesTax;
+                        item.IncomeTax = x.IncomeTax;
+                        item.AdditionalSalesTax = x.AdditionalSalesTax;
+                        item.LicenseControlId = x.LicenseControlId;
+                        item.UpdatedBy = SessionHelper.LoginUser.Id;
+                        item.UpdatedDate = DateTime.Now;
+                        ProductDetailList.Add(item);
+                    });
+                    _ProductDetailBLL.UpdateRange(ProductDetailList);
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                    jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
+                    return Json(new { data = jsonResponse });
+                }
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                    jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
+                    return Json(new { data = jsonResponse });
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
+                return Json(new { data = jsonResponse });
+            }
+        }
+
     }
 }

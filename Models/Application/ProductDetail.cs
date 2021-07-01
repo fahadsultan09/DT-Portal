@@ -1,8 +1,5 @@
 ﻿using Models.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Utility;
 
 namespace Models.Application
@@ -35,9 +32,11 @@ namespace Models.Application
         public string R_StorageLocation { get; set; }
         public string SalesItemCategory { get; set; }
         public string ReturnItemCategory { get; set; }
+        public double SalesTax { get; set; }
+        public double IncomeTax { get; set; }
+        public double AdditionalSalesTax { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
-        public bool IsTaxApplicable { get; set; }
         [NotMapped]
         public int OrderNumber { get; set; }
         [NotMapped]

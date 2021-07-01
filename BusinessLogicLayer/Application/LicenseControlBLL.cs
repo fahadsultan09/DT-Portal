@@ -12,8 +12,8 @@ namespace BusinessLogicLayer.Application
 {
     public class LicenseControlBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<LicenseControl> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<LicenseControl> repository;
         public LicenseControlBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -59,7 +59,7 @@ namespace BusinessLogicLayer.Application
         public bool CheckLicenseControlName(int Id, string LicenseControlName)
         {
             int? LicenseControlId = Id == 0 ? null : (int?)Id;
-            var model = GetAllLicenseControl().ToList().Where(x => x.IsDeleted == false && x.LicenseName == LicenseControlName && x.Id != LicenseControlId || (LicenseControlId == null && x.Id == null)).FirstOrDefault();
+            var model = GetAllLicenseControl().Where(x => x.IsDeleted == false && x.LicenseName == LicenseControlName && x.Id != LicenseControlId || (LicenseControlId == null && x.Id == null)).FirstOrDefault();
 
             if (model != null)
             {

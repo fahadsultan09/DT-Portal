@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Application;
 using BusinessLogicLayer.ErrorLog;
+using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using BusinessLogicLayer.Login;
 using DataAccessLayer.WorkProcess;
@@ -28,6 +29,7 @@ namespace DistributorPortal.Controllers
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _configuration;
         private readonly OrderBLL orderBLL;
+        private readonly DisclaimerBLL _DisclaimerBLL;
 
         public LoginController(IUnitOfWork unitOfWork, IHttpContextAccessor HhttpContextAccessor, IConfiguration IConfiguration, Configuration configuration)
         {
@@ -39,6 +41,7 @@ namespace DistributorPortal.Controllers
             _IConfiguration = IConfiguration;
             _configuration = configuration;
             orderBLL = new OrderBLL(_unitOfWork);
+            _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
         }
         public IActionResult Index()
         {
@@ -106,6 +109,14 @@ namespace DistributorPortal.Controllers
             }
             if (model.Password != null && login.CheckLogin(model) == LoginStatus.Success)
             {
+                if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
+                {
+                    SessionHelper.Disclaimer = _DisclaimerBLL.GetAllDisclaimer().First().Description;
+                }
+                else
+                {
+                    SessionHelper.Disclaimer = string.Empty;
+                }
                 SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
                 SessionHelper.URL = _configuration.URL.ToString();
                 jsonResponse.Status = true;

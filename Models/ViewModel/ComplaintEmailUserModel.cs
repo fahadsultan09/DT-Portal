@@ -8,6 +8,7 @@
         public string DistributorName { get; set; }
         public string ComplaintCategory { get; set; }
         public string Attachment { get; set; }
+        public string AttachmentPath { get; set; }
         public string ComplaintDetail { get; set; }
         public string URL { get; set; }
         public string ToAcceptTemplate { get; set; }

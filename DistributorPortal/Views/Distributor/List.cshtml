@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<Distributor>
-
+@{
+    bool sync = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Distributor").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Sync));
+}
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -14,25 +16,28 @@
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
                       data-ajax-complete="OnComplete">
-                    <button type="submit" class="btn btn-success float-right">Sync</button>
+                    @if (sync)
+                    {
+                        <button type="submit" class="btn btn-success float-right">Sync</button>
+                    }
                 </form>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped"   >
+                <table id="example1" class="table table-bordered table-striped" style="width:130%;">
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Region</th>
-                            <th>City</th>
-                            @*<th>Distributor Code</th>*@
                             <th>SAP Distributor Code</th>
                             <th>Name</th>
                             <th>Address</th>
+                            <th>Region</th>
+                            <th>City</th>
                             <th>NTN</th>
                             <th>CNIC</th>
                             <th>Email Address</th>
                             <th>Group</th>
-                            <th>Is Registered</th>
+                            <th>Is Sales Tax Applicable</th>
+                            <th>Is Income Tax Applicable</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,20 +45,26 @@
                         {
                             <tr>
                                 <td>@item.Id</td>
-                                <td>@item.Region.RegionName</td>
-                                <td>@item.City</td>
-                                @*<td>@item.DistributorCode</td>*@
                                 <td>@item.DistributorSAPCode</td>
                                 <td>@item.DistributorName</td>
                                 <td>@item.DistributorAddress</td>
-                                <td>@item.NTN</td>
+                                <td>@item.Region.RegionName</td>
+                                <td>@item.City</td>
+                                <td style="padding:0;">@item.NTN</td>
                                 <td>@item.CNIC</td>
                                 <td>@item.EmailAddress</td>
                                 <td>@item.CustomerGroup</td>
                                 <td>
                                     <div class="icheck-success d-inline">
-                                        <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsFiler" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" checked="@(item.IsFiler ? "checked" : null)" />
-                                        <label for="checkbox@(item.Id)">
+                                        <input type="checkbox" id="IsSalesTaxApplicable@(item.Id)" asp-for="@item.IsSalesTaxApplicable" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" onchange="SalesTaxApplicable(this);" checked="@(item.IsSalesTaxApplicable ? "checked" : null)" />
+                                        <label for="IsSalesTaxApplicable@(item.Id)">
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="icheck-success d-inline">
+                                        <input type="checkbox" id="IsIncomeTaxApplicable@(item.Id)" asp-for="@item.IsIncomeTaxApplicable" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" onchange="IncomeTaxApplicable(this);" checked="@(item.IsIncomeTaxApplicable ? "checked" : null)" />
+                                        <label for="IsIncomeTaxApplicable@(item.Id)">
                                         </label>
                                     </div>
                                 </td>
@@ -65,37 +76,74 @@
         </div>
     </div>
 </div>
+
 <script>
+
+    function Success(data) {
+
+        if (data.data != undefined) {
+            if (data.data.Status && data.data != undefined) {
+                Toast.fire({
+                    icon: 'success',
+                    title: data.data.Message
+                });
+            }
+        } else {
+            Toast.fire({
+                icon: 'error',
+                title: data.data.Message
+            });
+        }
+    }
+
     $(document).ready(function () {
+
         $("#example1").DataTable({
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
         });
+    });
 
-        $("input[type='checkbox']").change(function (e) {
-             
-            if ($(this).attr('Id') != "example-select-all") {
-                $.post(window.location.origin + "/Distributor/RegisterDistributor", { DPID: $(this).val() }, function (data) {
-                     
-                    if (data.data != undefined) {
-                        if (data.data.Status && data.data != undefined) {
-                            Toast.fire({
-                                icon: 'success',
-                                title: data.data.Message
-                            });
-                        }
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.data.Message
-                        });
-                    }
+    function SalesTaxApplicable(e) {
+        
+        $.post(window.location.origin + "/Distributor/SalesTaxApplicable", { DPID: e.value }, function (data) {
+
+            if (data.data != undefined) {
+                if (data.data.Status && data.data != undefined) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.data.Message
+                    });
+                }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: data.data.Message
                 });
             }
         });
+    }
 
-    });
+    function IncomeTaxApplicable(e) {
+        
+        $.post(window.location.origin + "/Distributor/IncomeTaxApplicable", { DPID: e.value }, function (data) {
+
+            if (data.data != undefined) {
+                if (data.data.Status && data.data != undefined) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.data.Message
+                    });
+                }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: data.data.Message
+                });
+            }
+        });
+    }
 
 </script>

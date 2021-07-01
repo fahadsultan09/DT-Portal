@@ -12,8 +12,8 @@ namespace BusinessLogicLayer.Application
 {
     public class UserBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<User> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<User> repository;
         public UserBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -47,6 +47,8 @@ namespace BusinessLogicLayer.Application
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
             item.RegisteredAddress = module.RegisteredAddress;
+            item.IsStoreKeeper = module.IsStoreKeeper;
+            item.EmailIntimationId = module.EmailIntimationId;
             item.DesignationId = module.DesignationId;
             item.CityId = module.CityId;
             item.IsActive = module.IsActive;
@@ -79,7 +81,15 @@ namespace BusinessLogicLayer.Application
         }
         public List<User> GetAllUser()
         {
-            return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return repository.GetAllList().Where(x => !x.IsDeleted).ToList();
+        }
+        public List<User> GetAllActiveUser()
+        {
+            return repository.GetAllList().Where(x => x.IsActive && !x.IsDeleted).ToList();
+        }
+        public List<User> GetUsers()
+        {
+            return repository.GetAllList().ToList();
         }
         public bool CheckUserName(int Id, string UserName)
         {

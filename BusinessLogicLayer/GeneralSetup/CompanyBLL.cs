@@ -12,8 +12,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class CompanyBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<Company> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Company> repository;
         public CompanyBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

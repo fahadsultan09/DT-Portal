@@ -111,11 +111,13 @@ namespace Utility
             var dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat;
             while (iterator < limit)
             {
-                LastYearMonth model = new LastYearMonth();
-                model.MonthName = dateTimeFormat.GetMonthName(iterator.Month);
-                model.Month = iterator.Month;
-                model.Year = iterator.Year;
-                model.LastYear = iterator.AddYears(-1).Year;
+                LastYearMonth model = new LastYearMonth
+                {
+                    MonthName = dateTimeFormat.GetMonthName(iterator.Month),
+                    Month = iterator.Month,
+                    Year = iterator.Year,
+                    LastYear = iterator.AddYears(-1).Year
+                };
                 list.Add(model);
                 iterator = iterator.AddMonths(1);
             }

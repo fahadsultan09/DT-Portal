@@ -94,8 +94,7 @@ namespace DistributorPortal.Controllers
         {
             try
             {
-                int id=0;
-                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 _SubRegionBLL.DeleteSubRegion(id);
                 return Json(new { Result = true });
             }
@@ -126,8 +125,7 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult DropDownSubRegionList(string DPID)
         {
-            int id=0;
-            int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return Json(_SubRegionBLL.DropDownSubRegionList(id, 0));
         }
     }

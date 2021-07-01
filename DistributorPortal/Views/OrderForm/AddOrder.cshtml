@@ -76,7 +76,6 @@
                                 {
                                     <partial name="OrderValue" model="m" />
                                 }
-
                             </div>
                         </div>
                     </div>
@@ -96,8 +95,8 @@
                             <div class="card-body">
 
                                 <div class="row">
-                                    <div class="col-lg-12">
-                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%">
+                                    <div class="col-lg-12 scrollmenu" style="height: 480px;">
+                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped" style="width: 150%">
                                             <thead>
                                                 <tr>
                                                     <th>Code</th>
@@ -126,6 +125,16 @@
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.ProductMaster.CartonSize)
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.ProductMaster.SFSize)
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.LicenseControlId)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.S_OrderType)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.SaleOrganization)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.DistributionChannel)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.Division)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.DispatchPlant)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.S_StorageLocation)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.SalesItemCategory)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.ParentDistributor)
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.SalesTax, htmlAttributes: new { @class = "SalesTax d-none" })
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.IncomeTax, htmlAttributes: new { @class = "IncomeTax d-none" })
                                                             @Model.ProductDetails[i].ProductDetail.ProductMaster.SAPProductCode
                                                         </td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.ProductDescription</td>
@@ -133,7 +142,6 @@
                                                         <td><span class="CurtonSize">@Model.ProductDetails[i].ProductDetail.ProductMaster.CartonSize</span></td>
                                                         <td><span class="SFSize">@Model.ProductDetails[i].ProductDetail.ProductMaster.SFSize</span></td>
                                                         <td>
-                                                            @*@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, htmlAttributes: new { tabindex = id, type = "text", value = Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity, ProductId = Model.ProductDetails[i].ProductDetail.ProductMaster.Id, onchange = "LoadOrderValue(this);", onkeypress = "return isNumberKey(event)", @class = "form-control ApproveQuantity", min = "0", max = "9999999", pattern = "\\d*", maxlength = "6", disabled = "@@(LicenseId.Contains(Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : 'disabled')" })*@
                                                             <input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity" value="@Model.ProductDetails[i].ProductDetail.ProductMaster.Quantity"
                                                                    tabindex="@id"
                                                                    ProductId="@Model.ProductDetails[i].ProductDetail.ProductMaster.Id"
@@ -153,12 +161,14 @@
                                                     </tr>
                                                     id++;
                                                 }
-
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                        <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp;</label><strong><span id="OrderValue"></span></strong>
+                                    </div>
                                     <div class="col-lg-1 offset-11">
                                         <button type="button" onclick="LoadModal();" class="btn btn-primary pull-right" style="margin-top: 28px"><i class="fa fa-arrow-right"></i>&nbsp;Next</button>
                                     </div>
@@ -220,13 +230,13 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" onclick="return SaveEdit(this);" name="Submit" value="@SubmitStatus.Submit" class="btn btn-success float-right">Submit</button>
                     <button type="submit" onclick="return DraftForm(this);" name="Draft" value="@SubmitStatus.Draft" class="btn btn-info float-right mr-3">Draft</button>
-                    <input type="hidden" name="btnSubmit" value="" class="btn btn-success float-right">
+                    <input type="hidden" name="btnSubmit" value="">
                 </div>
             </div>
         </div>
     </div>
 </form>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>*@
 
 <script>
 
@@ -259,15 +269,8 @@
                 });
                 $("#example1").dataTable().fnDestroy();
                 $("#example1").DataTable({
-                    scrollX: true,
-                    scrollY: "410px",
-                    sScrollXInner: "150%",
-                    scrollCollapse: true,
                     paging: false,
-                    fixedColumns: {
-                        leftColumns: 4
-                    },
-                    lengthMenu: [[14, 25, 50, -1], [14, 25, 50, "All"]],
+                    "lengthMenu": [[-1], ["All"]],
                     responsive: true,
                     autoWidth: false,
                     order: []
@@ -331,26 +334,37 @@
                     LoadModal();
                 } else {
                     UnBlockUI();
+                        
+                        $("#example1").dataTable().fnDestroy();
+                        $("#example1").DataTable({
+                            paging: false,
+                            "lengthMenu": [[-1], ["All"]],
+                            responsive: true,
+                            autoWidth: false,
+                            order: []
+                        });
                 }
             });
         return false;
     }
 
     $(document).ready(function () {
+
         $("#example1").DataTable({
-            scrollX: true,
-            scrollY: "410px",
-            sScrollXInner: "150%",
-            scrollCollapse: true,
             paging: false,
-            fixedColumns: {
-                leftColumns: 4
-            },
-            lengthMenu: [[14, 25, 50, -1], [14, 25, 50, "All"]],
+            "lengthMenu": [[-1], ["All"]],
             responsive: true,
             autoWidth: false,
             order: []
         });
+
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
         $("input").not($(":submit, :button")).keypress(function (evt) {
             if (evt.keyCode == 13) {
                 var next = $('[tabindex="' + (this.tabIndex + 1) + '"]');
@@ -365,13 +379,23 @@
             }
 
         });
+
+        if ($('#Id').val() != "0") {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCurrentOrderValue", "OrderForm")',
+                success: function (response) {
+                    $("#OrderValue").html(response.data);
+                }
+            });
+        }
     });
 
     function LoadOrderValue(data) {
         BlockUI();
-            var intmaxvalue = @Int32.MaxValue;
+        var intmaxvalue = @Int32.MaxValue;
         var quantity = data.value == "" ? "0" : data.value;
-            var product = data.getAttribute("ProductId");
+        var product = data.getAttribute("ProductId");
         if (quantity > intmaxvalue) {
             Toast.fire({
                 icon: 'error',
@@ -379,51 +403,55 @@
             });
         }
         else {
-            var SalesTaxRate = parseFloat('@ViewBag.SalesTaxRate');
+            
             var qty = parseInt(quantity);
             var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
             var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
             var tradePrice = parseFloat($(data).parent('td').parent('tr').find('.TradePrice').val());
             var discount = parseFloat($(data).parent('td').parent('tr').find('.Discount').text());
-            var netValue = ((qty * tradePrice) * (1 - ((-1 * discount) / 100))) + (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) * (SalesTaxRate / 100));
-
-                $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue);
-                //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
-
-                if (quantity != "" && quantity != undefined) {
-                    if (size != 0) {
-                        $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / size).toString();
+            var SalesTax = parseFloat($(data).parent('td').parent('tr').find('.SalesTax').val());
+            var IncomeTax = parseFloat($(data).parent('td').parent('tr').find('.IncomeTax').val());
+            var InclusiveSalesTax = (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) + (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) * ((SalesTax / 100))));
+            var CalculateIncomeTax = (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) + (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) * ((SalesTax / 100)))) * (IncomeTax / 100);
+            var netValue = InclusiveSalesTax + CalculateIncomeTax;
+            $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue.toFixed(2));
+            //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
+            if (quantity != "" && quantity != undefined) {
+                if (size != 0) {
+                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / size).toString();
                         $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = Math.ceil((quantity - ((quantity / size) * size) / SFSize)).toString() == "-Infinity" ? 0 : Math.ceil((quantity - ((quantity / size) * size) / SFSize));
                         $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = (quantity - ((quantity / size) * size) + ((quantity - ((quantity / size) * size) / SFSize) * SFSize)).toString() == "NaN" ? 0 : (quantity / size) * size + ((quantity - ((quantity / size) * size) / SFSize) * SFSize);
-                    }
-                    else {
+                }
+                else {
                         $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
                         $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
                         $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = 0;
-                    }
                 }
-                else {
+            }
+            else {
                     $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = "";
                     $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = "";
                     $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = "";
-                }
-
-                $.ajax({
+            }
+            $.ajax({
                     type: "GET",
                     url: '@Url.Action("ApprovedOrderValue", "OrderForm")',
                     data: { 'Quantity': quantity, 'Product': product },
                     cache: false,
                     success: function(response) {
-                         ;
                         $("#UpdateOrderValueId").html(response);
                     },
-                    complete: function(response) {
-
-                    }
-
+                complete: function (response) {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("GetCurrentOrderValue", "OrderForm")',
+                        success: function (response) {
+                            $("#OrderValue").html(response.data);
+                        }
                     });
+                }
+            });
         }
-
         UnBlockUI();
     }
 
@@ -449,10 +477,16 @@
     }
 
     function DraftForm() {
-            $("#frmOrderMaster").submit(function () {
-                $('[name="btnSubmit"]').val("Draft");
-                LoadModal();
-            });
+
+        $('#example1').dataTable().fnDestroy();
+        $("#example1").DataTable({
+            "lengthMenu": [[-1], ["All"]]
+        });
+
+        $("#frmOrderMaster").submit(function () {
+            $('[name="btnSubmit"]').val("Draft");
+            LoadModal();
+        });
     }
 
 </script>

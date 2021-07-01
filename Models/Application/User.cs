@@ -49,6 +49,7 @@ namespace Models.Application
         public int? CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
+        public int? EmailIntimationId { get; set; }
         [BindRequired]
         [Required(ErrorMessage = "Select designation.")]
         public int DesignationId { get; set; }

@@ -60,7 +60,7 @@ namespace BusinessLogicLayer.Application
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
-        public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus, string Remarks)
+        public void UpdateStatus(Complaint model, ComplaintStatus ComplaintStatus, string Remarks, string ResolvedRemarks)
         {
             model.Status = ComplaintStatus;
             if (ComplaintStatus.Resolved == ComplaintStatus)
@@ -70,8 +70,8 @@ namespace BusinessLogicLayer.Application
                 model.ResolvedDate = DateTime.Now;
             }
             else if (ComplaintStatus.Approved == ComplaintStatus)
-
             {
+                model.ResolvedRemarks = !string.IsNullOrEmpty(ResolvedRemarks) ? ResolvedRemarks.Trim() : Remarks.Trim();
                 model.Remarks = Remarks;
                 model.ApprovedBy = SessionHelper.LoginUser.Id;
                 model.ApprovedDate = DateTime.Now;
@@ -79,7 +79,7 @@ namespace BusinessLogicLayer.Application
             else if (ComplaintStatus.Rejected == ComplaintStatus)
 
             {
-                model.Remarks = Remarks;
+                model.Remarks = Remarks.Trim();
                 model.RejectedBy = SessionHelper.LoginUser.Id;
                 model.RejectedDate = DateTime.Now;
             }
@@ -144,9 +144,9 @@ namespace BusinessLogicLayer.Application
                              Status = x.Status,
                              DistributorId = x.DistributorId,
                              CreatedDate = x.CreatedDate,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public List<Complaint> SearchReport(ComplaintSearch model)
         {
@@ -173,15 +173,15 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
-                         join ra in _UserBLL.GetAllUser().ToList()
+                         join ra in _UserBLL.GetUsers().ToList()
                               on x.ResolvedBy equals ra.Id into resolvedGroup
                          from a1 in resolvedGroup.DefaultIfEmpty()
-                         join ua in _UserBLL.GetAllUser().ToList()
+                         join ua in _UserBLL.GetUsers().ToList()
                               on x.ApprovedBy equals ua.Id into approvedGroup
                          from a2 in approvedGroup.DefaultIfEmpty()
-                         join ur in _UserBLL.GetAllUser().ToList()
+                         join ur in _UserBLL.GetUsers().ToList()
                               on x.RejectedBy equals ur.Id into rejectedGroup
                          from a3 in rejectedGroup.DefaultIfEmpty()
                          select new Complaint
@@ -206,13 +206,13 @@ namespace BusinessLogicLayer.Application
                              RejectedName = a3 == null ? string.Empty : (a3.FirstName + " " + a3.LastName + " (" + a3.UserName + ")"),
                              RejectedDate = x.RejectedDate,
                              Remarks = x.Remarks
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public List<Complaint> GetPendingComplaint()
         {
-            return _repository.GetAllList().Where(x => x.Status == ComplaintStatus.Pending).ToList();
+            return _repository.GetAllList().Where(x => x.Status != ComplaintStatus.Approved).ToList();
         }
     }
 }

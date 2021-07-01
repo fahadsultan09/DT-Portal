@@ -1,10 +1,8 @@
-﻿using BusinessLogicLayer.ApplicationSetup;
-using BusinessLogicLayer.ErrorLog;
+﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
-using DPPendingOrdersRequest;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
 using Models.ViewModel;
@@ -19,9 +17,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.ServiceModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Utility;
 using Utility.HelperClasses;
+using static SalesOrder.DisPortalPORequest_OutClient;
 using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
@@ -34,7 +34,7 @@ namespace BusinessLogicLayer.Application
         private readonly OrderDetailBLL _orderDetailBLL;
         private readonly OrderValueBLL _OrderValueBLL;
         private readonly ProductDetailBLL ProductDetailBLL;
-        private DistributorWiseProductDiscountAndPricesBLL discountAndPricesBll;
+        private readonly DistributorWiseProductDiscountAndPricesBLL discountAndPricesBll;
         private readonly UserBLL _UserBLL;
         private readonly PaymentBLL _PaymentBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
@@ -55,12 +55,12 @@ namespace BusinessLogicLayer.Application
             module.IsActive = true;
             module.IsDeleted = false;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderMaster>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public int Update(OrderMaster module)
         {
-            var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
             item.ReferenceNo = module.ReferenceNo;
             item.Remarks = module.Remarks;
             item.Status = module.Status;
@@ -76,7 +76,7 @@ namespace BusinessLogicLayer.Application
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderMaster>().Update(item);
+            _repository.Update(item);
             return _unitOfWork.Save();
         }
         public int UpdateSNo(OrderMaster module)
@@ -96,29 +96,29 @@ namespace BusinessLogicLayer.Application
         }
         public int Delete(int id)
         {
-            var item = _unitOfWork.GenericRepository<OrderMaster>().GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
             item.IsActive = false;
             item.DeletedBy = SessionHelper.LoginUser.Id;
             item.DeletedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderMaster>().Delete(item);
+            _repository.Delete(item);
             return _unitOfWork.Save();
         }
         public OrderMaster GetOrderMasterById(int id)
         {
-            return _unitOfWork.GenericRepository<OrderMaster>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<OrderMaster> GetAllOrderMaster()
         {
-            return _unitOfWork.GenericRepository<OrderMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public OrderValueViewModel GetOrderValueModel(List<ProductDetail> productDetails)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-
             OrderValueViewModel viewModel = new OrderValueViewModel();
-            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
-            List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
+            List<OrderDetail> orderDetails = _orderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
+            List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == orderDetails.First().OrderMaster.DistributorId).ToList();
+            List<ProductDetail> productDetailList = ProductDetailBLL.Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
@@ -153,13 +153,13 @@ namespace BusinessLogicLayer.Application
             viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.SAMIUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == sami && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.SAMIUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == sami && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.SAMINetPayable = viewModel.SAMITotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment <= 0 ? 0 : viewModel.SAMITotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment;
+            viewModel.SAMINetPayable = viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment <= 0 ? 0 : viewModel.SAMITotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment;
 
             var HealthTekproductDetails = productDetails.Where(e => e.CompanyId == HealthTek).ToList();
             viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
@@ -173,13 +173,13 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == HealthTek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == HealthTek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.HealthTekNetPayable = viewModel.HealthTekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment <= 0 ? 0 : viewModel.HealthTekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment;
+            viewModel.HealthTekNetPayable = viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment <= 0 ? 0 : viewModel.HealthTekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment;
 
             var PhytekproductDetails = productDetails.Where(e => e.CompanyId == Phytek).ToList();
             viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.WTaxRate == "0").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
@@ -193,21 +193,21 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.PhytekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == Phytek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == Phytek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
-            viewModel.PhytekNetPayable = viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
+            viewModel.PhytekNetPayable = viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;
         }
         public OrderValueViewModel GetOrderValueModel(List<OrderValue> OrderValue)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
             List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId).ToList();
-            List<OrderDetail> orderDetails = _orderDetailBLL.GetAllOrderDetail().Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId)).ToList();
-            List<ProductDetail> productDetailList = new ProductDetailBLL(_unitOfWork).GetAllProductDetail();
+            List<OrderDetail> orderDetails = _orderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == OrderValue.FirstOrDefault().OrderMaster.DistributorId)).ToList();
+            List<ProductDetail> productDetailList = ProductDetailBLL.GetAllProductDetail();
             OrderValueViewModel viewModel = new OrderValueViewModel();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
@@ -234,7 +234,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
                                                             join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                             where p.CompanyId == 1
-                                                            group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                            group new { od } by new { od.OrderId } into odp
                                                             let Amount = odp.Sum(m => m.od.Amount)
                                                             select Amount).Sum(x => x);
             }
@@ -259,7 +259,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
                                                                  join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                                  where p.CompanyId == 3
-                                                                 group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                                 group new { od } by new { od.OrderId } into odp
                                                                  let Amount = odp.Sum(m => m.od.Amount)
                                                                  select Amount).Sum(x => x);
             }
@@ -284,7 +284,7 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
                                                               join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                               where p.CompanyId == 2
-                                                              group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                              group new { od } by new { od.OrderId } into odp
                                                               let Amount = odp.Sum(m => m.od.Amount)
                                                               select Amount).Sum(x => x);
             }
@@ -366,12 +366,39 @@ namespace BusinessLogicLayer.Application
         {
             JsonResponse jsonResponse = new JsonResponse();
             List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetail != null).ToList();
-            double SalesTaxRate = SessionHelper.LoginUser.IsDistributor ? (SessionHelper.LoginUser.Distributor.IsFiler ? 17 : 20) : (new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).First().IsFiler ? 17 : 20);
+            DistributorWiseProductDiscountAndPrices.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+            DistributorWiseProductDiscountAndPrices.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
 
             if (model.Id == 0)
             {
-                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductPrice * e.ProductDetail.ProductMaster.Quantity).Sum();
-                model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
+                List<OrderDetail> details = new List<OrderDetail>();
+                foreach (var item in model.DistributorWiseProduct)
+                {
+                    details.Add(new OrderDetail()
+                    {
+                        ProductId = item.ProductDetail.ProductMasterId,
+                        Quantity = item.ProductDetail.ProductMaster.Quantity,
+                        ApprovedQuantity = 0,
+                        Amount = CalculateInclusiveSalesTax(item, DistributorWiseProductDiscountAndPrices) + CalculateIncomeTax(item, DistributorWiseProductDiscountAndPrices),
+                        ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
+                        Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
+                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
+                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
+                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
+                        ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
+                        S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
+                        SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
+                        DistributionChannel = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DistributionChannel,
+                        Division = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.Division,
+                        DispatchPlant = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DispatchPlant,
+                        S_StorageLocation = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_StorageLocation,
+                        SalesItemCategory = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesItemCategory,
+                        CreatedBy = SessionHelper.LoginUser.Id,
+                        CreatedDate = DateTime.Now,
+                    });
+                }
+                model.TotalValue = details.Select(x => x.Amount).Sum();
+                model.DistributorId = Convert.ToInt32(SessionHelper.LoginUser.DistributorId);
                 Add(model);
                 if (model.Id > 0)
                 {
@@ -379,28 +406,7 @@ namespace BusinessLogicLayer.Application
                     model.SNo = item.SNo;
                     UpdateSNo(model);
                 }
-                List<OrderDetail> details = new List<OrderDetail>();
-                foreach (var item in model.DistributorWiseProduct)
-                {
-                    details.Add(new OrderDetail()
-                    {
-                        OrderId = model.Id,
-                        ProductId = item.ProductDetail.ProductMasterId,
-                        Quantity = item.ProductDetail.ProductMaster.Quantity,
-                        ApprovedQuantity = 0,
-                        Amount = (item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice
-                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)))
-                        + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice)
-                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (SalesTaxRate / 100 + 0)),
-                        ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
-                        Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
-                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
-                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
-                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
-                        CreatedBy = SessionHelper.LoginUser.Id,
-                        CreatedDate = DateTime.Now,
-                    });
-                }
+                details.ForEach(x => x.OrderId = model.Id);
                 _orderDetailBLL.AddRange(details);
                 var ProductsIds = _orderDetailBLL.Where(e => e.OrderId == model.Id).ToList().Select(e => e.ProductId);
                 var ProductDetails = DistributorWiseProductDiscountAndPrices.Where(e => ProductsIds.Contains(e.ProductDetail.ProductMasterId) && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
@@ -413,32 +419,37 @@ namespace BusinessLogicLayer.Application
             }
             else
             {
-                model.TotalValue = model.DistributorWiseProduct.Select(e => e.ProductPrice * e.ProductDetail.ProductMaster.Quantity).Sum();
-                model.DistributorId = SessionHelper.LoginUser.DistributorId ?? 1;
-                Update(model);
-                _orderDetailBLL.DeleteRange(_orderDetailBLL.Where(e => e.OrderId == model.Id).ToList());
                 List<OrderDetail> details = new List<OrderDetail>();
                 foreach (var item in model.DistributorWiseProduct)
                 {
                     details.Add(new OrderDetail()
                     {
-                        OrderId = model.Id,
                         ProductId = item.ProductDetail.ProductMasterId,
                         Quantity = item.ProductDetail.ProductMaster.Quantity,
                         ApprovedQuantity = 0,
-                        Amount = (item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice 
-                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100))) 
-                        + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice) 
-                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (SalesTaxRate / 100 + 0)),
+                        Amount = CalculateInclusiveSalesTax(item, DistributorWiseProductDiscountAndPrices) + CalculateIncomeTax(item, DistributorWiseProductDiscountAndPrices),
                         ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
                         QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
                         QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
                         QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
+                        ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
+                        S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
+                        SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
+                        DistributionChannel = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DistributionChannel,
+                        Division = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.Division,
+                        DispatchPlant = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DispatchPlant,
+                        S_StorageLocation = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_StorageLocation,
+                        SalesItemCategory = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesItemCategory,
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
                     });
                 }
+                _orderDetailBLL.DeleteRange(_orderDetailBLL.Where(e => e.OrderId == model.Id).ToList());
+                model.DistributorId = Convert.ToInt32(SessionHelper.LoginUser.DistributorId);
+                model.TotalValue = details.Select(x => x.Amount).Sum();
+                Update(model);
+                details.ForEach(x => x.OrderId = model.Id);
                 _orderDetailBLL.AddRange(details);
                 var ProductsIds = _orderDetailBLL.Where(e => e.OrderId == model.Id).ToList().Select(e => e.ProductId);
                 var ProductDetails = DistributorWiseProductDiscountAndPrices.Where(e => ProductsIds.Contains(e.ProductDetail.ProductMasterId) && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
@@ -454,31 +465,44 @@ namespace BusinessLogicLayer.Application
             }
             return jsonResponse;
         }
+        public double CalculateInclusiveSalesTax(DistributorWiseProductDiscountAndPrices item, List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices)
+        {
+            return (item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice
+                    * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)))
+                    + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice)
+                    * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesTax / 100));
+        }
+        public double CalculateIncomeTax(DistributorWiseProductDiscountAndPrices item, List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices)
+        {
+            return ((item.ProductDetail.ProductMaster.Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice
+                    * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)))
+                    + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice)
+                    * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesTax / 100))) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.IncomeTax / 100);
+        }
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
             var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
-            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:1000000000}", item.OrderId),
-                    ITEMNO = "",
-                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
-                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
-                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    SNO = item.OrderMaster.SNo.ToString(),
+                    ITEMNO = item.ProductId.ToString(),
+                    PARTN_NUMB = !string.IsNullOrEmpty(item.ParentDistributor) ? item.ParentDistributor : item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = item.S_OrderType,
+                    SALES_ORG = item.SaleOrganization,
+                    DISTR_CHAN = item.DistributionChannel,
+                    DIVISION = item.Division,
                     PURCH_NO = item.OrderMaster.ReferenceNo,
                     PURCH_DATE = DateTime.Now,
                     PRICE_DATE = DateTime.Now,
                     ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
-                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    MATERIAL = item.ProductMaster.SAPProductCode,
+                    PLANT = item.DispatchPlant,
+                    STORE_LOC = item.S_StorageLocation,
                     BATCH = "",
-                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    ITEM_CATEG = item.SalesItemCategory,
                     REQ_QTY = item.Quantity.ToString()
                 });
             }
@@ -488,27 +512,26 @@ namespace BusinessLogicLayer.Application
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
             var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
-            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
                 model.Add(new OrderStatusViewModel()
                 {
-                    SNO = string.Format("{0:1000000000}", item.OrderId),
-                    ITEMNO = "",
-                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
-                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
-                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    SNO = item.OrderMaster.SNo.ToString(),
+                    ITEMNO = item.ProductId.ToString(),
+                    PARTN_NUMB = !string.IsNullOrEmpty(item.ParentDistributor) ? item.ParentDistributor : item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = item.S_OrderType,
+                    SALES_ORG = item.SaleOrganization,
+                    DISTR_CHAN = item.DistributionChannel,
+                    DIVISION = item.Division,
                     PURCH_NO = item.OrderMaster.ReferenceNo,
                     PURCH_DATE = DateTime.Now,
                     PRICE_DATE = DateTime.Now,
                     ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
-                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    MATERIAL = item.ProductMaster.SAPProductCode,
+                    PLANT = item.DispatchPlant,
+                    STORE_LOC = item.S_StorageLocation,
                     BATCH = "",
-                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    ITEM_CATEG = item.SalesItemCategory,
                     REQ_QTY = item.Quantity.ToString()
                 });
             }
@@ -543,12 +566,12 @@ namespace BusinessLogicLayer.Application
             }
             var Filter = _repository.Where(LamdaId).ToList();
             var query = (from x in Filter
-                         join u in _UserBLL.GetAllUser().ToList()
+                         join u in _UserBLL.GetUsers().ToList()
                               on x.CreatedBy equals u.Id
-                         join ua in _UserBLL.GetAllUser().ToList()
+                         join ua in _UserBLL.GetUsers().ToList()
                               on x.ApprovedBy equals ua.Id into approvedGroup
                          from a1 in approvedGroup.DefaultIfEmpty()
-                         join ur in _UserBLL.GetAllUser().ToList()
+                         join ur in _UserBLL.GetUsers().ToList()
                               on x.RejectedBy equals ur.Id into rejectedGroup
                          from a2 in rejectedGroup.DefaultIfEmpty()
                          select new OrderMaster
@@ -569,9 +592,9 @@ namespace BusinessLogicLayer.Application
                              RejectedDate = x.RejectedDate,
                              RejectedComment = x.RejectedComment,
                              OnHoldComment = x.OnHoldComment,
-                         }).ToList();
+                         });
 
-            return query.OrderByDescending(x => x.Id).ToList();
+            return query.ToList();
         }
         public DistributorBalance GetBalance(string DistributorCode, Configuration configuration)
         {
@@ -583,7 +606,7 @@ namespace BusinessLogicLayer.Application
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123")); //("Username:Password")  
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                     var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorCode)).Result;
                     if (result.IsSuccessStatusCode)
@@ -632,7 +655,7 @@ namespace BusinessLogicLayer.Application
                 return new List<SAPOrderPendingQuantity>();
             }
         }
-        public List<SAPOrderPendingValue> GetPendingOrderValue(string DistributorCode, Configuration _configuration)
+        public List<SAPOrderPendingValue> GetPendingOrderValue(string DistributorCode, Configuration configuration)
         {
             try
             {
@@ -646,7 +669,7 @@ namespace BusinessLogicLayer.Application
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                     var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getSalesQuery?DISTRIBUTOR=" + DistributorCode)).Result;
                     if (result.IsSuccessStatusCode)
@@ -681,37 +704,88 @@ namespace BusinessLogicLayer.Application
                 return new List<SAPOrderPendingValue>();
             }
         }
+        public async Task<List<SAPOrderPendingValue>> GetPendingOrderValueAsync(string DistributorCode, Configuration configuration)
+        {
+            try
+            {
+                //var Client = new RestClient(_configuration.GetPendingOrderValue + "?DistributorId=" + DistributorCode);
+                //var request = new RestRequest(Method.POST);
+                //IRestResponse response = Client.Execute(request);
+                //var SAPOrderPendingValue = JsonConvert.DeserializeObject<List<SAPOrderPendingValue>>(response.Content);
+                List<SAPOrderPendingValue> sAPOrderPendingValue = new List<SAPOrderPendingValue>();
+                Root root = new Root();
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                    var result = await client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getSalesQuery?DISTRIBUTOR=" + DistributorCode));
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var JsonContent = result.Content.ReadAsStringAsync().Result;
+                        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        if (root != null)
+                        {
+                            for (int i = 0; i < root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item.Count(); i++)
+                            {
+                                sAPOrderPendingValue.Add(new SAPOrderPendingValue()
+                                {
+                                    CompanyCode = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].VKORG,
+                                    PendingValue = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].NETWR,
+                                });
+                            }
+                        }
+                    }
+                }
+                if (sAPOrderPendingValue == null)
+                {
+                    return new List<SAPOrderPendingValue>();
+                }
+                else
+                {
+                    return sAPOrderPendingValue;
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                return new List<SAPOrderPendingValue>();
+            }
+        }
+
         public OrderValueViewModel GetOrderValueModel(List<DistributorWiseProductDiscountAndPrices> productDetails)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
             OrderValueViewModel viewModel = new OrderValueViewModel();
             List<OrderDetail> orderDetails = _orderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
             List<ProductDetail> productDetailList = ProductDetailBLL.Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
+            List<PaymentMaster> PaymentMasterList = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.DistributorId == orderDetails.First().OrderMaster.DistributorId).ToList();
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
-            productDetails.ForEach(e => e.ProductDetail.TotalPrice = e.ProductDetail.ProductMaster.Quantity * e.ProductPrice);
+            productDetails.ForEach(e => e.ProductDetail.TotalPrice = CalculateInclusiveSalesTax(productDetails, e.ProductDetail.ProductMaster.Id, e.ProductDetail.ProductMaster.Quantity) + CalculateIncomeTax(productDetails, e.ProductDetail.ProductMaster.Id, e.ProductDetail.ProductMaster.Quantity));
             var SAMIproductDetails = productDetails.Where(e => e.ProductDetail.CompanyId == sami).ToList();
-            viewModel.SAMISupplies0 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.SAMISupplies1 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.SAMISupplies4 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
+            viewModel.SAMISupplies0 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.SAMISupplies1 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.SAMISupplies4 = SAMIproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.SAMITotalOrderValues = SAMIproductDetails.Sum(e => e.ProductDetail.TotalPrice);
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
                                                         join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                         where p.CompanyId == 1
-                                                        group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                        group new { od } by new { od.OrderId } into odp
                                                         let Amount = odp.Sum(m => m.od.Amount)
                                                         select Amount).Sum(x => x);
             viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
                                                              join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                              where p.CompanyId == 3
-                                                             group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                             group new { od } by new { od.OrderId } into odp
                                                              let Amount = odp.Sum(m => m.od.Amount)
                                                              select Amount).Sum(x => x);
             viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
                                                           join p in productDetailList on od.ProductId equals p.ProductMasterId
                                                           where p.CompanyId == 2
-                                                          group new { od, p } by new { od.OrderId, p.CompanyId } into odp
+                                                          group new { od } by new { od.OrderId } into odp
                                                           let Amount = odp.Sum(m => m.od.Amount)
                                                           select Amount).Sum(x => x);
             if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
@@ -721,19 +795,19 @@ namespace BusinessLogicLayer.Application
             viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.SAMIUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == sami && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.SAMIUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == sami && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.SAMIUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == sami && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             viewModel.SAMINetPayable = viewModel.SAMITotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment <= 0 ? 0 : viewModel.SAMITotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.SAMIPendingOrderValues + viewModel.SAMICurrentBalance - viewModel.SAMIUnConfirmedPayment;
 
             var HealthTekproductDetails = productDetails.Where(e => e.ProductDetail.CompanyId == HealthTek).ToList();
-            viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
+            viewModel.HealthTekSupplies0 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.ProductDetail.TotalPrice);
             if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
             {
                 viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
@@ -741,19 +815,19 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == HealthTek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == HealthTek && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == HealthTek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             viewModel.HealthTekNetPayable = viewModel.HealthTekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment <= 0 ? 0 : viewModel.HealthTekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.HealthTekPendingOrderValues + viewModel.HealthTekCurrentBalance - viewModel.HealthTekUnConfirmedPayment;
 
             var PhytekproductDetails = productDetails.Where(e => e.ProductDetail.CompanyId == Phytek).ToList();
-            viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
-            viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.ProductDetail.TotalPrice - ((e.ProductDetail.TotalPrice / 100) * Math.Abs(e.Discount)));
+            viewModel.PhytekSupplies0 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "0").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice);
+            viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.ProductDetail.TotalPrice);
             if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
             {
                 viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
@@ -761,15 +835,76 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                viewModel.PhytekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.PhytekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == Phytek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             else
             {
-                viewModel.HealthTekUnConfirmedPayment = _PaymentBLL.Where(x => x.CompanyId == Phytek && x.DistributorId == orderDetails.First().OrderMaster.DistributorId && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
+                viewModel.HealthTekUnConfirmedPayment = PaymentMasterList.Where(x => x.CompanyId == Phytek && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount);
             }
             viewModel.PhytekNetPayable = viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalOrderValues + viewModel.TotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
+            SessionHelper.TotalOrderValue = (viewModel.SAMITotalOrderValues + viewModel.HealthTekTotalOrderValues + viewModel.PhytekTotalOrderValues).ToString("#,##0.00");
             return viewModel;
         }
+        public double CalculateInclusiveSalesTax(List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices, int productId, int Quantity)
+        {
+            if (Quantity > 0)
+            {
+                return (Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductPrice
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).Discount / 100)))
+                        + (Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductPrice)
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).Discount / 100)) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductDetail.SalesTax / 100));
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public double CalculateIncomeTax(List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices, int productId, int Quantity)
+        {
+            if (Quantity > 0)
+            {
+                return ((Quantity * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductPrice
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).Discount / 100)))
+                        + (Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductPrice)
+                        * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).Discount / 100)) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductDetail.SalesTax / 100))) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == productId).ProductDetail.IncomeTax / 100);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public List<SAPOrderPendingQuantity> GetDistributorOrderPendingQuantity(string DistributorId, Configuration configuration)
+        {
+            List<SAPOrderPendingQuantity> sAPOrderPendingQuantity = new List<SAPOrderPendingQuantity>();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PendingOrd?DISTRIBUTOR=" + DistributorId)).Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var JsonContent = result.Content.ReadAsStringAsync().Result;
+                    Root root = JsonConvert.DeserializeObject<Root>(JsonContent);
+                    if (root != null)
+                    {
+                        for (int i = 0; i < root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item.Count(); i++)
+                        {
+                            sAPOrderPendingQuantity.Add(new SAPOrderPendingQuantity()
+                            {
+                                ProductCode = root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].MATNR.TrimStart(new char[] { '0' }),
+                                OrderQuantity = root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].KWMENG.TrimEnd(new char[] { '0' }).TrimEnd(new char[] { '.' }),
+                                DispatchQuantity = root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].LFIMG.TrimEnd(new char[] { '0' }).TrimEnd(new char[] { '.' }),
+                                PendingQuantity = root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].PENDING.TrimEnd(new char[] { '0' }).TrimEnd(new char[] { '.' })
+                            });
+                        }
+                    }
+                }
+            }
+            return sAPOrderPendingQuantity;
+        }
+        /*
         public List<SAPOrderPendingQuantity> GetDistributorOrderPendingQuantity(string DistributorId, Configuration _configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
@@ -784,8 +919,8 @@ namespace BusinessLogicLayer.Application
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
             EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DPPendingOrdersRequest_Out&interfaceNamespace=https://www.sami.com/DPPendingOrders");
             DPPendingOrdersRequest_OutClient client = new DPPendingOrdersRequest_OutClient(binding, address);
-            client.ClientCredentials.UserName.UserName = "SAMI_PO";
-            client.ClientCredentials.UserName.Password = "wasay123";
+            client.ClientCredentials.UserName.UserName = _configuration.POUserName;
+            client.ClientCredentials.UserName.Password = _configuration.POPassword;
             if (client.InnerChannel.State == CommunicationState.Faulted)
             {
             }
@@ -811,7 +946,8 @@ namespace BusinessLogicLayer.Application
             }
             return OrderPendingQuantityList;
         }
-        public List<SAPOrderStatus> PostDistributorOrder(int OrderId)
+        */
+        public List<SAPOrderStatus> PostDistributorOrder(int OrderId, Configuration configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
             {
@@ -825,8 +961,8 @@ namespace BusinessLogicLayer.Application
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
             EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DisPortalPORequest_Out&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FSalesOrderCreation");
             DisPortalPORequest_OutClient client = new DisPortalPORequest_OutClient(binding, address);
-            client.ClientCredentials.UserName.UserName = "SAMI_PO";
-            client.ClientCredentials.UserName.Password = "wasay123";
+            client.ClientCredentials.UserName.UserName = configuration.POUserName;
+            client.ClientCredentials.UserName.Password = configuration.POPassword;
             if (client.InnerChannel.State == CommunicationState.Faulted)
             {
             }
@@ -836,7 +972,6 @@ namespace BusinessLogicLayer.Application
             }
             DisPortalRequestIn disPortalRequestIn = new DisPortalRequestIn();
             disPortalRequestIn.IM_SALEDATA = PlaceOrderToSAPPO(OrderId).ToArray();
-            DisPortalPORequest_OutRequest disPortalPORequest_OutRequest = new DisPortalPORequest_OutRequest(disPortalRequestIn);
             ZSD_CREATE_SALE_ORDERResponse zSD_CREATE_SALE_ORDERResponse = client.DisPortalPORequest_Out(disPortalRequestIn);
             client.CloseAsync();
             List<SAPOrderStatus> list = new List<SAPOrderStatus>();
@@ -857,27 +992,26 @@ namespace BusinessLogicLayer.Application
         {
             List<DisPortalRequestInMain> model = new List<DisPortalRequestInMain>();
             var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
-            var ProductDetail = ProductDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {
                 model.Add(new DisPortalRequestInMain()
                 {
-                    SNO = string.Format("{0:1000000000}", item.OrderId),
-                    ITEMNO = item.OrderId.ToString(),
-                    PARTN_NUMB = item.OrderMaster.Distributor.DistributorSAPCode,
-                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_OrderType,
-                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    SNO = item.OrderMaster.SNo.ToString(),
+                    ITEMNO = item.ProductId.ToString(),
+                    PARTN_NUMB = !string.IsNullOrEmpty(item.ParentDistributor) ? item.ParentDistributor : item.OrderMaster.Distributor.DistributorSAPCode,
+                    DOC_TYPE = item.S_OrderType,
+                    SALES_ORG = item.SaleOrganization,
+                    DISTR_CHAN = item.DistributionChannel,
+                    DIVISION = item.Division,
                     PURCH_NO = item.OrderMaster.ReferenceNo,
                     PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
                     PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
                     ST_PARTN = item.OrderMaster.Distributor.DistributorSAPCode,
-                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).S_StorageLocation,
+                    MATERIAL = item.ProductMaster.SAPProductCode,
+                    PLANT = item.DispatchPlant,
+                    STORE_LOC = item.S_StorageLocation,
                     BATCH = "",
-                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SalesItemCategory,
+                    ITEM_CATEG = item.SalesItemCategory,
                     REQ_QTY = item.Quantity.ToString()
                 });
             }

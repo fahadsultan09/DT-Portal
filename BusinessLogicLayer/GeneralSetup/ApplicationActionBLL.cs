@@ -11,8 +11,8 @@ namespace BusinessLogicLayer.GeneralSetup
 {
     public class ApplicationActionBLL
     {
-        private IUnitOfWork _unitOfWork;
-        private IGenericRepository<ApplicationAction> repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<ApplicationAction> repository;
         public ApplicationActionBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

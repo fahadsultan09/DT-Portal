@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<SAPOrderPendingQuantity>
 
 <div class="card-body table-responsive p-0" style="height: 370px;">
-    <table id="example1" class="table table-bordered table-striped"   >
+    <table id="example1" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>S. No.</th>
@@ -21,9 +21,9 @@
                         <td>@(i++)</td>
                         <td>@item.ProductCode</td>
                         <td>@item.ProductName</td>
-                        <td>@(Math.Round(Convert.ToDouble(item.OrderQuantity), 0))</td>
-                        <td>@(Math.Round(Convert.ToDouble(item.PendingQuantity), 0))</td>
-                        <td>@(Math.Round(Convert.ToDouble(item.DispatchQuantity), 0))</td>
+                        <td>@item.OrderQuantity</td>
+                        <td>@item.PendingQuantity</td>
+                        <td>@item.DispatchQuantity</td>
                     </tr>
                 }
             }

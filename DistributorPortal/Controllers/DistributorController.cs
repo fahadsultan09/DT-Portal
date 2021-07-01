@@ -52,7 +52,7 @@ namespace DistributorPortal.Controllers
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes("sami_po:wasay123"));
+                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_configuration.POUserName + ":" + _configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
                     var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getHRMS")).Result;
                     if (result.IsSuccessStatusCode)
@@ -81,10 +81,14 @@ namespace DistributorPortal.Controllers
                 var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
                 addDistributor.ForEach(e =>
                 {
-                    e.CreatedBy = SessionHelper.LoginUser.Id; e.MobileNumber = e.MobileNumber.Replace("-", ""); e.CNIC = e.CNIC.Replace("-", ""); e.IsDeleted = false; e.IsActive = true; e.CreatedDate = DateTime.Now;
+                    e.CreatedBy = SessionHelper.LoginUser.Id;
+                    e.MobileNumber = e.MobileNumber.Replace("-", "");
+                    e.CNIC = e.CNIC.Replace("-", "");
+                    e.IsDeleted = false; e.IsActive = true;
+                    e.CreatedDate = DateTime.Now;
                 });
                 _DistributorBLL.AddRange(addDistributor);
-                var UpdateDistributor = SAPDistributor.Where(e => alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup)));
+                var UpdateDistributor = SAPDistributor.Where(e => alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup))).ToList();
                 foreach (var item in UpdateDistributor)
                 {
                     var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);
@@ -201,22 +205,22 @@ namespace DistributorPortal.Controllers
         {
             return Json(_DistributorBLL.GetAllDistributor().ToList());
         }
-        public JsonResult RegisterDistributor(string DPID)
+        public JsonResult IncomeTaxApplicable(string DPID)
         {
             JsonResponse jsonResponse = new JsonResponse();
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
-            var distributor = _DistributorBLL.GetAllDistributor().FirstOrDefault(e => e.Id == id);
+            var distributor = _DistributorBLL.FirstOrDefault(e => e.Id == id);
 
             if (distributor != null)
             {
-                if (distributor.IsFiler)
+                if (distributor.IsIncomeTaxApplicable)
                 {
-                    distributor.IsFiler = false;
+                    distributor.IsIncomeTaxApplicable = false;
                     _DistributorBLL.UpdateDistributor(distributor);
                 }
                 else
                 {
-                    distributor.IsFiler = true;
+                    distributor.IsIncomeTaxApplicable = true;
                     _DistributorBLL.UpdateDistributor(distributor);
                 }
                 jsonResponse.Status = true;
@@ -225,7 +229,36 @@ namespace DistributorPortal.Controllers
             else
             {
                 jsonResponse.Status = false;
-                jsonResponse.Message = NotificationMessage.Error;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+            }
+            return Json(new { data = jsonResponse });
+        }
+
+        public JsonResult SalesTaxApplicable(string DPID)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+            var distributor = _DistributorBLL.FirstOrDefault(e => e.Id == id);
+
+            if (distributor != null)
+            {
+                if (distributor.IsSalesTaxApplicable)
+                {
+                    distributor.IsSalesTaxApplicable = false;
+                    _DistributorBLL.UpdateDistributor(distributor);
+                }
+                else
+                {
+                    distributor.IsSalesTaxApplicable = true;
+                    _DistributorBLL.UpdateDistributor(distributor);
+                }
+                jsonResponse.Status = true;
+                jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
+            }
+            else
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
             }
             return Json(new { data = jsonResponse });
         }

@@ -32,7 +32,6 @@ namespace BusinessLogicLayer.ApplicationSetup
             repository.Insert(module);
             return _unitOfWork.Save();
         }
-
         public bool AddRange(List<Distributor> distributors)
         {
             var region = regionBLL.GetAllRegion();
@@ -40,7 +39,6 @@ namespace BusinessLogicLayer.ApplicationSetup
             repository.AddRange(distributors);
             return _unitOfWork.Save() > 0;
         }
-
         public int UpdateDistributor(Distributor module)
         {
             var item = GetDistributorBySAPId(module.DistributorSAPCode);
@@ -55,14 +53,13 @@ namespace BusinessLogicLayer.ApplicationSetup
             item.NTN = module.NTN;
             item.CNIC = module.CNIC.Replace("-", "");
             item.MobileNumber = module.MobileNumber.Replace("-", "");
-            item.IsFiler = module.IsFiler;
+            item.CustomerGroup = module.CustomerGroup;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
             return _unitOfWork.Save();
         }
-
         public int DeleteDistributor(int id)
         {
             var item = repository.GetById(id);
@@ -70,22 +67,18 @@ namespace BusinessLogicLayer.ApplicationSetup
             repository.Delete(item);
             return _unitOfWork.Save();
         }
-
         public Distributor GetDistributorById(int id)
         {
             return repository.GetById(id);
         }
-
         public Distributor GetDistributorBySAPId(string id)
         {
             return repository.FirstOrDefault(e => e.DistributorSAPCode == id);
         }
-
         public List<Distributor> GetAllDistributor()
         {
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
-
         public bool CheckDistributorName(int Id, string DistributorCode)
         {
             int? DistributorId = Id == 0 ? null : (int?)Id;
@@ -99,7 +92,6 @@ namespace BusinessLogicLayer.ApplicationSetup
                 return true;
             }
         }
-
         public SelectList DropDownDistributorByUserId(int[] Distributor)
         {
             var selectList = GetAllDistributor().Where(x => x.IsActive == true && Distributor.Contains(x.Id)).Select(x => new SelectListItem
@@ -110,8 +102,6 @@ namespace BusinessLogicLayer.ApplicationSetup
 
             return new SelectList(selectList, "Value", "Text");
         }
-
-
         public SelectList DropDownDistributorList(int? SelectedValue)
         {
             var selectList = GetAllDistributor().Where(x => x.IsActive == true).Select(x => new SelectListItem
@@ -122,7 +112,6 @@ namespace BusinessLogicLayer.ApplicationSetup
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
         }
-
         public MultiSelectList DropDownDistributorMultiList(int[] SelectedValue)
         {
             var selectList = GetAllDistributor().Where(x => x.IsActive == true).Select(x => new
@@ -133,7 +122,6 @@ namespace BusinessLogicLayer.ApplicationSetup
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
         }
-
         public List<Distributor> Where(Expression<Func<Distributor, bool>> predicate)
         {
             return repository.Where(predicate);

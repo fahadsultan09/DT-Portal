@@ -45,7 +45,8 @@ namespace Scheduler
                     item.ComplaintSubCategory = new ComplaintSubCategoryBLL(_unitOfWork).FirstOrDefault(x => x.Id == item.ComplaintSubCategoryId);
                     if (item.CreatedDate.AddDays((int)item.ComplaintSubCategory.KPIDay) <= DateTime.Now)
                     {
-                        var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\")));
+                        var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                        //var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\")));
                         string EmailTemplate = path + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
                         //EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
                         ComplaintEmailUserModel EmailUserModel = new ComplaintEmailUserModel();
@@ -72,7 +73,7 @@ namespace Scheduler
             }
             catch (Exception ex)
             {
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }
     }

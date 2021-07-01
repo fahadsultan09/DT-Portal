@@ -102,7 +102,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 row" style="width:100%;">
                                                 <h6>Return Reason:<span class="text-danger"> *</span></h6>
-                                                <select asp-for="OrderReturnReasonId" asp-items="Model.returnReasonList" class="form-control select2" id="ddlReturnReson">
+                                                <select asp-for="OrderReturnReasonId" asp-items="Model.ReturnReasonList" class="form-control select2" id="ddlReturnReson">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                                 <span asp-validation-for="OrderReturnReasonId" class="text-danger error"></span>
@@ -401,7 +401,7 @@
             confirmButtonText: 'Yes, Return Order Place!'
         }).then((result) => {
             if (result.value == true) {
-                debugger
+                
                 $('[name="btnSubmit"]').val("Submitted");
                 $('#frmOrderReturnMaster').submit();
             }

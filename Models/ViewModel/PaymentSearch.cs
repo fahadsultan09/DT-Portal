@@ -10,6 +10,6 @@ namespace Models.ViewModel
     {
         public PaymentStatus? Status { get; set; }
         public int? PaymentNo { get; set; }
-        public List<PaymentMaster> paymentMasters { get; set; }
+        public List<PaymentMaster> PaymentMasters { get; set; }
     }
 }

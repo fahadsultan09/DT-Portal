@@ -23,6 +23,18 @@ namespace Models.Application
         public double QuanityCarton { get; set; }
         public double QuanitySF { get; set; }
         public double QuanityLoose { get; set; }
+        public string ParentDistributor { get; set; }
+        public string S_OrderType { get; set; }
+        public string SaleOrganization { get; set; }
+        public string DistributionChannel { get; set; }
+        public string Division { get; set; }
+        public string DispatchPlant { get; set; }
+        public string S_StorageLocation { get; set; }
+        public string SalesItemCategory { get; set; }
+        [NotMapped]
+        public double InclusiveSalesTax { get; set; }
+        [NotMapped]
+        public double CalculateIncomeTax { get; set; }
         [NotMapped]
         public bool IsRowDeleted { get; set; }
         [NotMapped]
