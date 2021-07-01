@@ -252,9 +252,16 @@
         $('[data-mask]').inputmask();
 
         $('#DistributorId').attr("disabled", true);
-        $('#CompanyId').attr("disabled", true);
-        $('#PlantLocationId').attr("disabled", true);
-        $('#EmailIntimationId').attr("disabled", true);
+
+        if ($('#IsStoreKeeper').is(':checked')) {
+            $('#CompanyId').attr("disabled", false);
+            $('#PlantLocationId').attr("disabled", false);
+            $('#EmailIntimationId').attr("disabled", false);
+        } else {
+            $('#CompanyId').attr("disabled", true);
+            $('#PlantLocationId').attr("disabled", true);
+            $('#EmailIntimationId').attr("disabled", true);
+        }
 
         $('#IsDistributor').on('change', function () {
             $('#IsDistributor').removeAttr("disabled");
