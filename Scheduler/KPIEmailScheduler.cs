@@ -45,7 +45,9 @@ namespace Scheduler
                     item.ComplaintSubCategory = new ComplaintSubCategoryBLL(_unitOfWork).FirstOrDefault(x => x.Id == item.ComplaintSubCategoryId);
                     if (item.CreatedDate.AddDays((int)item.ComplaintSubCategory.KPIDay) <= DateTime.Now)
                     {
+                        ////Server
                         var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                        ////Local
                         //var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\")));
                         string EmailTemplate = path + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
                         //EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\KPIComplaint.html";
@@ -67,7 +69,7 @@ namespace Scheduler
                         EmailUserModel.CCEmail = string.Join(',', item.UserEmailId);
                         EmailUserModel.Subject = "REMINDER: Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
                         //Sending Email
-                        _EmailLogBLL.ComplaintSendEmail(item.ComplaintSubCategory.User, EmailUserModel);
+                        _EmailLogBLL.ComplaintKPISendEmail(item.ComplaintSubCategory.User, EmailUserModel);
                     }
                 }
             }

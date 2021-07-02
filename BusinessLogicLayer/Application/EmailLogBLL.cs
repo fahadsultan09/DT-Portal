@@ -63,6 +63,21 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
             EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
+        public void ComplaintKPISendEmail(User User, ComplaintEmailUserModel EmailUserModel)
+        {
+            string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{Name}}", User.FirstName + " " + User.LastName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{Day}}", EmailUserModel.Day.ToString());
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintNo}}", EmailUserModel.ComplaintNo.ToString());
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintDate}}", EmailUserModel.ComplaintDate.ToString());
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{DistributorName}}", EmailUserModel.DistributorName);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintCategory}}", EmailUserModel.ComplaintCategory);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{Attachment}}", EmailUserModel.Attachment);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{AttachmentPath}}", EmailUserModel.AttachmentPath);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ComplaintDetail}}", EmailUserModel.ComplaintDetail);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
+            EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration);
+        }
         public void OrderEmail(List<User> UserList, ApprovedOrderEmailUserModel EmailUserModel)
         {
 
