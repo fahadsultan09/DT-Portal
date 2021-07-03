@@ -114,9 +114,43 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.SNo == model.ComplaintNo);
             }
-            if (model.Status != null)
+            if (model.Status != null && !SessionHelper.LoginUser.IsDistributor)
             {
-                LamdaId = LamdaId.And(e => e.Status == model.Status);
+                if (model.Status == ComplaintStatus.Resolved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Approved);
+                }
+                if (model.Status == ComplaintStatus.InProcess)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Resolved);
+                }
+                if (model.Status == ComplaintStatus.Pending)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Pending);
+                }
+                if (model.Status == ComplaintStatus.Rejected)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Rejected);
+                }
+                if (model.Status == ComplaintStatus.Approved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == 0);
+                }
+            }
+            if (model.Status != null && SessionHelper.LoginUser.IsDistributor)
+            {
+                if (model.Status == ComplaintStatus.InProcess)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.InProcess || e.Status == ComplaintStatus.Rejected || e.Status == ComplaintStatus.Resolved);
+                }
+                if (model.Status == ComplaintStatus.Resolved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Approved);
+                }
+                if (model.Status == ComplaintStatus.Pending)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Pending);
+                }
             }
             if (model.FromDate != null)
             {
@@ -159,9 +193,43 @@ namespace BusinessLogicLayer.Application
             {
                 LamdaId = LamdaId.And(e => e.SNo == model.ComplaintNo);
             }
-            if (model.Status != null)
+            if (model.Status != null && !SessionHelper.LoginUser.IsDistributor)
             {
-                LamdaId = LamdaId.And(e => e.Status == model.Status);
+                if (model.Status == ComplaintStatus.Resolved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Approved);
+                }
+                if (model.Status == ComplaintStatus.InProcess)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Resolved);
+                }
+                if (model.Status == ComplaintStatus.Pending)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Pending);
+                }
+                if (model.Status == ComplaintStatus.Rejected)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Rejected);
+                }
+                if (model.Status == ComplaintStatus.Approved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == 0);
+                }
+            }
+            if (model.Status != null && SessionHelper.LoginUser.IsDistributor)
+            {
+                if (model.Status == ComplaintStatus.InProcess)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.InProcess || e.Status == ComplaintStatus.Rejected || e.Status == ComplaintStatus.Resolved);
+                }
+                if (model.Status == ComplaintStatus.Resolved)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Approved);
+                }
+                if (model.Status == ComplaintStatus.Pending)
+                {
+                    LamdaId = LamdaId.And(e => e.Status == ComplaintStatus.Pending);
+                }
             }
             if (model.FromDate != null)
             {

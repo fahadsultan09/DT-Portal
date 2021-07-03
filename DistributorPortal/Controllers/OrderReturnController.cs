@@ -319,7 +319,7 @@ namespace DistributorPortal.Controllers
                 //IRestResponse response = Client.Execute(request);
                 //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
                 List<SAPOrderStatus> SAPProduct = _OrderReturnBLL.PostDistributorOrderReturn(model.Id, _Configuration);
-                if (SAPProduct != null || SAPProduct.Count() == 0)
+                if (SAPProduct != null && SAPProduct.Count() > 0)
                 {
                     OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && model.OrderReturnDetail.Select(e => e.ProductId).Contains(e.ProductId)).ToList();
                     foreach (var item in SAPProduct)
@@ -356,7 +356,7 @@ namespace DistributorPortal.Controllers
                     _NotificationBLL.Add(notification);
 
                     //Sending Email
-                    if (jsonResponse.Status)
+                    if (jsonResponse.Status && SAPProduct.Count() > 0)
                     {
                         string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ReturnOrderFromCustomer.html";
                         string SAPOrderNo = string.Join(", </br>", SAPProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
@@ -369,7 +369,8 @@ namespace DistributorPortal.Controllers
                             RetrunOrderNumber = SAPOrderNo,
                             Subject = "Return Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,
-                        };
+                            URL = _Configuration.URL
+                    };
                         int[] PlantLocationId = OrderreturnProduct.Select(x => x.PlantLocationId).Distinct().ToArray();
                         if (PlantLocationId.Count() > 0)
                         {

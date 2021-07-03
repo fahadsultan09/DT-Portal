@@ -66,7 +66,7 @@ namespace BusinessLogicLayer.Application
                         ProductDetailId = item.ProductDetailId
                     });
                 }
-                _repository.AddRange(distributorWiseProductDiscountAndPricesList);
+                _repository.AddRange(distributorWiseProductDiscountAndPricesList.Distinct().ToList());
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
                 return true;

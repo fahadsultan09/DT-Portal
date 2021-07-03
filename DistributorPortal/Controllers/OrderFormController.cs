@@ -371,7 +371,7 @@ namespace DistributorPortal.Controllers
                 //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
                 List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id, _Configuration);
                 var detail = _orderDetailBll.Where(e => e.OrderId == id).ToList();
-                if (sapProduct != null)
+                if (sapProduct != null && sapProduct.Count() > 0)
                 {
                     foreach (var item in sapProduct)
                     {
@@ -395,7 +395,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = result > 0 ? "Order has been approved successfully" : NotificationMessage.ErrorOccurred;
 
                     //Sending Email
-                    if (jsonResponse.Status)
+                    if (jsonResponse.Status && sapProduct.Count() > 0)
                     {
                         string SAPOrderNo = string.Join("</br>" + Environment.NewLine, sapProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
                         string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ApprovalOfSaleOrder.html";
@@ -412,7 +412,7 @@ namespace DistributorPortal.Controllers
                         int[] PlantLocationId = _productDetailBLL.Where(x => detail.Select(x => x.ProductMaster.Id).Contains(x.ProductMasterId)).Select(x => x.PlantLocationId).Distinct().ToArray();
                         if (PlantLocationId.Count() > 0 && !string.IsNullOrEmpty(SAPOrderNo))
                         {
-                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
+                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && PlantLocationId.Contains(Convert.ToInt32(x.PlantLocationId)) && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
                             _EmailLogBLL.OrderEmail(UserList, EmailUserModel);
                         }
                     }

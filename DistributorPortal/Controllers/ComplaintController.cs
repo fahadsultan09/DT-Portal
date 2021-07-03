@@ -286,12 +286,12 @@ namespace DistributorPortal.Controllers
             {
                 if (SessionHelper.LoginUser.IsDistributor)
                 {
-                    model.ComplaintList = GetComplaintList().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                    model.ComplaintList = model.ComplaintList.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 }
                 else
                 {
                     int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
-                    model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+                    model.ComplaintList = model.ComplaintList.Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
                 }
             }
             return PartialView("List", model.ComplaintList);

@@ -65,19 +65,30 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                            <div class="form-group">
+                                                <label class="control-label">Status</label>
+                                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<ComplaintStatus>()" class="form-control select2">
+                                                    <option value="">--Select option--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                            <div class="form-group">
+                                                <label class="control-label">Status</label>
+                                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<DistributorComplaintStatus>()" class="form-control select2">
+                                                    <option value="">--Select option--</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     }
                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                         <div class="form-group">
-                                            <label class="control-label">Status</label>
-                                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<ComplaintStatus>()" class="form-control select2">
-                                                <option value="">--Select option--</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                        <div class="form-group">
                                             <label class="control-label">Complaint No</label>
-                                            <input type="text" asp-for="ComplaintNo" min="0" maxlength="9" pattern="\d*" oninput="validity.valid||(value='');" id="ComplaintNo" autocomplete="off" class="form-control" />
+                                            <input type="text" asp-for="ComplaintNo" min="0" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" id="ComplaintNo" autocomplete="off" class="form-control" />
                                         </div>
                                     </div>
                                 </div>

@@ -40,7 +40,26 @@
                                     {
                                         <td>@item.Distributor.DistributorName</td>
                                     }
-                                    <td>@Html.DisplayFor(x => item.Status)</td>
+                                    <td>
+                                        @if ((item.Status == ComplaintStatus.Resolved || item.Status == ComplaintStatus.Rejected) && SessionHelper.LoginUser.IsDistributor)
+                                        {
+                                            string description = EnumHelper<ComplaintStatus>.GetDisplayValue(ComplaintStatus.InProcess);
+                                            @Html.DisplayFor(e => description)
+                                        }
+                                        else if (item.Status == ComplaintStatus.Approved)
+                                        {
+                                            @ComplaintStatus.Resolved.ToString()
+                                        }
+                                        else if (item.Status == ComplaintStatus.Resolved)
+                                        {
+                                            string description = EnumHelper<ComplaintStatus>.GetDisplayValue(ComplaintStatus.InProcess);
+                                            @Html.DisplayFor(e => description)
+                                        }
+                                        else
+                                        {
+                                            @item.Status
+                                        }
+                                    </td>
                                     <td>@item.CreatedName</td>
                                     <td>@item.ComplaintCategory.ComplaintCategoryName</td>
                                     <td>@item.ComplaintSubCategory.ComplaintSubCategoryName</td>

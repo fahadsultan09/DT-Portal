@@ -150,6 +150,13 @@ namespace Utility
         [Display(Name = "In Process")]
         InProcess = 5,
     }
+    public enum DistributorComplaintStatus
+    {
+        Pending = 1,
+        Resolved = 2,
+        [Display(Name = "In Process")]
+        InProcess = 5,
+    }
 
     public enum LicenseStatus
     {
