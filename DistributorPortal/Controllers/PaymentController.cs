@@ -169,7 +169,7 @@ namespace DistributorPortal.Controllers
             {
                 if (SessionHelper.SAPOrderPendingValue == null)
                 {
-                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
+                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 }
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
             }

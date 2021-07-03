@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<OrderMaster>
 @{
-    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
-    bool add = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderReturn").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Order").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool add = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "Order").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
 }
 
 <div class="row">
@@ -59,13 +59,13 @@
                                             <i class="fas fa-trash-restore"></i>
                                         </a>
                                     }
-                                    @if (item.Status == OrderStatus.Draft && SessionHelper.LoginUser.IsDistributor)
+                                    @if (item.Status == OrderStatus.Draft && SessionHelper.LoginUser.IsDistributor && approve)
                                     {
                                         <a onclick="DeleteOrder('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Delete" class="btn btn-danger btn-sm">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
                                     }
-                                    @if (item.Status == OrderStatus.PartiallyApproved && !SessionHelper.LoginUser.IsDistributor)
+                                    @if (item.Status == OrderStatus.PartiallyApproved && !SessionHelper.LoginUser.IsDistributor && approve)
                                     {
                                         <a onclick="Sync('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Sync Partially Approved Order" class="btn btn-primary btn-sm">
                                             <i class="fas fa-sync"></i>

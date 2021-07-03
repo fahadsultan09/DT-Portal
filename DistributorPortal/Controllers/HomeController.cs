@@ -57,7 +57,7 @@ namespace DistributorPortal.Controllers
             _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
             if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
             {
-                SessionHelper.Disclaimer = _DisclaimerBLL.GetAllDisclaimer().First().Description;
+                SessionHelper.Disclaimer = _DisclaimerBLL.GetAllDisclaimer().FirstOrDefault(x => x.IsActive)?.Description;
             }
             else
             {
