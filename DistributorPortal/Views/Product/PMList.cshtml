@@ -38,7 +38,7 @@
                               method="GET">
                             @if (sync)
                             {
-                                <button type="submit" class="btn btn-success float-right m-1"><i class="fa fa-sync"></i> Sync</button>
+                                <button type="submit" class="btn btn-success float-right m-1"><i class="fa fa-sync"></i>&nbsp;Sync</button>
                             }
                         </form>&nbsp;
                         @if (export)
@@ -48,7 +48,7 @@
                                asp-route-Id="@ProductEnum.ProductMapping"
                                id="frmImport"
                                class="btn btn-info float-right m-1">
-                                <i class="fa fa-download"></i> Export
+                                <i class="fa fa-download"></i>&nbsp;Export
                             </a>
                         }
                     </div>
@@ -71,7 +71,7 @@
                                 <th>Brand Name </th>
                                 <th>Product Name </th>
                                 <th>Pack Size </th>
-                                <th>Visibility </th>
+                                <th>Product Visibility </th>
                                 <th>Plant Location </th>
                                 <th>Company Name</th>
                                 <th>W.Tax Rate </th>
@@ -181,14 +181,6 @@
             }
             else {
                 UnBlockUI();
-                $('#example1').dataTable().fnDestroy();
-                $("#example1").DataTable({
-                    paging: false,
-                    "lengthMenu": [[-1], ["All"]],
-                    responsive: true,
-                    autoWidth: false,
-                    order: []
-                });
             }
         });
         return false;
@@ -219,14 +211,11 @@
         $("#example1").DataTable({
             paging: false,
             "lengthMenu": [[-1], ["All"]],
-            responsive: true,
-            autoWidth: false,
-            order: []
+            "order": [[1, "asc"]]
         });
     });
 
     $("#example1").on("click", "button[type='button']", function () {
-        debugger
         BlockUI();
         var obj = {
             ProductMasterId: $(this).closest("tr").find("td:eq(0)").find(":input").val(),
@@ -252,10 +241,14 @@
             AdditionalSalesTax: $(this).closest("tr").find("td:eq(24)").find(":input").val(),
             LicenseControlId: $(this).closest("tr").find("td:eq(25)").find(":input").val(),
         };
+
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },
             function (data) {
                 if (data) {
-                    Toast.fire({ icon: 'success', title: '@NotificationMessage.SaveSuccessfully' });
+                    Toast.fire({ icon: 'success', title: data.data.Message });
+                    if (data.data.RedirectURL) {
+                        window.location = window.location = data.data.RedirectURL;
+                    }
                 } else {
                     Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
                 }

@@ -142,7 +142,7 @@ namespace ProductPortal.Controllers
         public IActionResult ProductMapping()
         {
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
-            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
+            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster().OrderBy(x => x.ProductName).ToList();
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             return View("ProductMapping", productMasters);
         }
@@ -177,21 +177,22 @@ namespace ProductPortal.Controllers
                 if (model.Id > 0)
                 {
                     _ProductDetailBLL.UpdateProductDetail(model);
+                    jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
                 }
                 else
                 {
                     _ProductDetailBLL.AddProductDetail(model);
+                    jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                    jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 }
 
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.SaveSuccessfully;
-                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                jsonResponse.Status = true;
+                jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });

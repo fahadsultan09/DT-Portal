@@ -96,7 +96,7 @@
 
                                 <div class="row">
                                     <div class="col-lg-12 scrollmenu" style="height: 480px;">
-                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped" style="width: 150%">
+                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped" style="width: 140%">
                                             <thead>
                                                 <tr>
                                                     <th>Code</th>
@@ -273,7 +273,7 @@
                     "lengthMenu": [[-1], ["All"]],
                     responsive: true,
                     autoWidth: false,
-                    order: []
+                    "order": [[1, "asc"]]
                 });
 
                 $('button[type="submit"]').attr('disabled', false);
@@ -334,15 +334,14 @@
                     LoadModal();
                 } else {
                     UnBlockUI();
-                        
-                        $("#example1").dataTable().fnDestroy();
-                        $("#example1").DataTable({
-                            paging: false,
-                            "lengthMenu": [[-1], ["All"]],
-                            responsive: true,
-                            autoWidth: false,
-                            order: []
-                        });
+                    $("#example1").dataTable().fnDestroy();
+                    $("#example1").DataTable({
+                        paging: false,
+                        "lengthMenu": [[-1], ["All"]],
+                        responsive: true,
+                        autoWidth: false,
+                        "order": [[1, "asc"]]
+                    });
                 }
             });
         return false;
@@ -355,7 +354,7 @@
             "lengthMenu": [[-1], ["All"]],
             responsive: true,
             autoWidth: false,
-            order: []
+            "order": [[1, "asc"]]
         });
 
         $(window).keydown(function (event) {
@@ -392,6 +391,7 @@
     });
 
     function LoadOrderValue(data) {
+        $('.ApproveQuantity').attr('disabled',true);
         BlockUI();
         var intmaxvalue = @Int32.MaxValue;
         var quantity = data.value == "" ? "0" : data.value;
@@ -403,7 +403,7 @@
             });
         }
         else {
-            
+
             var qty = parseInt(quantity);
             var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
             var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
@@ -434,14 +434,12 @@
                     $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = "";
             }
             $.ajax({
-                    type: "GET",
-                    url: '@Url.Action("ApprovedOrderValue", "OrderForm")',
-                    data: { 'Quantity': quantity, 'Product': product },
-                    cache: false,
-                    success: function(response) {
-                        $("#UpdateOrderValueId").html(response);
-                    },
-                complete: function (response) {
+                type: "GET",
+                url: '@Url.Action("ApprovedOrderValue", "OrderForm")',
+                data: { 'Quantity': quantity, 'Product': product },
+                cache: false,
+                success: function (response) {
+                    $("#UpdateOrderValueId").html(response);
                     $.ajax({
                         type: "GET",
                         url: '@Url.Action("GetCurrentOrderValue", "OrderForm")',
@@ -453,6 +451,7 @@
             });
         }
         UnBlockUI();
+        $('.ApproveQuantity').attr('disabled', false);
     }
 
     function SubmitForm() {

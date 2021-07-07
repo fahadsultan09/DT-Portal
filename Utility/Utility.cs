@@ -96,7 +96,11 @@ namespace Utility
     public enum ProductVisibility
     {
         Visible = 1,
-        Hide = 2
+        Hide = 2,
+        [Display(Name = "Order Return")]
+        OrderReturn = 3,
+        [Display(Name = "Order Dispatch")]
+        OrderDispatch = 4
     }
     public enum EmailIntimation
     {
