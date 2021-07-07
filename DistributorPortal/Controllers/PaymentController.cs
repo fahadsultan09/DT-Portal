@@ -28,7 +28,6 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly PaymentBLL _PaymentBLL;
-        private readonly OrderBLL _OrderBLL;
         private readonly NotificationBLL _NotificationBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
@@ -36,7 +35,6 @@ namespace DistributorPortal.Controllers
         {
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
-            _OrderBLL = new OrderBLL(_unitOfWork);
             _NotificationBLL = new NotificationBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
@@ -159,18 +157,10 @@ namespace DistributorPortal.Controllers
 
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                if (SessionHelper.SAPOrderPendingValue == null)
-                {
-                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration).ToList();
-                }
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(SessionHelper.LoginUser.Distributor.Id);
             }
             else
             {
-                if (SessionHelper.SAPOrderPendingValue == null)
-                {
-                    SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
-                }
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(model.Distributor.Id);
             }
             model.PaymentModeList = new PaymentModeBLL(_unitOfWork).DropDownPaymentModeList();
@@ -210,7 +200,7 @@ namespace DistributorPortal.Controllers
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                        var result = client.GetAsync(new Uri(string.Format("http://10.0.3.35:51000/RESTAdapter/payment?REF={0}&COMPANY={1}&AMOUNT={2}&DISTRIBUTOR={3}&B_CODE={4}&PAY_ID={5}", sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
+                        var result = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
                         if (result.IsSuccessStatusCode)
                         {
                             var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -304,7 +294,7 @@ namespace DistributorPortal.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorSAPCode)).Result;
+                    var result = client.GetAsync(new Uri(_Configuration.SyncDistributorBalanceURL + DistributorSAPCode)).Result;
                     if (result.IsSuccessStatusCode)
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;

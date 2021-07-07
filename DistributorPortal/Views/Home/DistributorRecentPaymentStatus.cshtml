@@ -64,7 +64,7 @@
                             @{
                                 if (Model.RecentPayment != null && Model.RecentPayment.Count() > 0)
                                 {
-                                    foreach (var item in Model.RecentPayment)
+                                    foreach (var item in Model.RecentPayment.OrderByDescending(x => x.Id))
                                     {
                                         <tr>
                                             <td>@item.PaymentId</td>

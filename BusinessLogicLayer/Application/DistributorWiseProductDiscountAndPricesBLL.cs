@@ -162,7 +162,7 @@ namespace BusinessLogicLayer.Application
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_configuration.POUserName + ":" + _configuration.POPassword));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PriceDisc?DISTRIBUTOR=" + DistributorSAPCode)).Result;
+                var result = client.GetAsync(new Uri(_configuration.DistributorWiseProduct + DistributorSAPCode)).Result;
                 if (result.IsSuccessStatusCode)
                 {
                     var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -187,6 +187,10 @@ namespace BusinessLogicLayer.Application
                 }
             }
             return distributorsProduct;
+        }
+        public DistributorWiseProductDiscountAndPrices FirstOrDefault(Expression<Func<DistributorWiseProductDiscountAndPrices, bool>> predicate)
+        {
+            return _repository.FirstOrDefault(predicate);
         }
     }
 }

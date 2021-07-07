@@ -31,6 +31,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public int UpdateComplaintSubCategory(ComplaintSubCategory module)
         {
             var item = _repository.GetById(module.Id);
+            item.ComplaintCategoryId = module.ComplaintCategoryId;
             item.ComplaintSubCategoryName = module.ComplaintSubCategoryName;
             item.UserEmailTo = module.UserEmailTo;
             item.KPIDay = module.KPIDay;

@@ -177,5 +177,91 @@ namespace Utility
                 return "just now";
             return string.Empty;
         }
+        public static string ReadTextToFile(string FileName, string folderName)
+        {
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                string path = @"D:\Arslan\JaredCRM_SVN\JaredCRM\";
+                string folderPath = Path.Combine(path, folderName);
+                string filePath = Path.Combine(folderPath, FileName);
+                if (File.Exists(filePath))
+                {
+                    return File.ReadAllText(filePath);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return "";
+            }
+        }
+        public static string WriteTextToFile(string Values, string folderName, string ExistingGuidFileName = null)
+        {
+            string folderPath = @"D:\Arslan\JaredCRM_SVN\JaredCRM\";
+
+            folderPath = Path.Combine(folderPath, folderName);
+
+            string guidValue = Guid.NewGuid().ToString() + ".txt";
+
+            string filePath = Path.Combine(folderPath, guidValue);
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            if (!string.IsNullOrEmpty(Values))
+            {
+                do
+                {
+                    if (File.Exists(filePath))
+                    {
+                        guidValue = Guid.NewGuid().ToString() + ".txt";
+                        filePath = Path.Combine(folderPath, guidValue);
+                    }
+                }
+                while (File.Exists(filePath));
+                File.WriteAllText(filePath, Values);
+
+                if (!string.IsNullOrEmpty(ExistingGuidFileName))
+                {
+                    if (System.IO.File.Exists(Path.Combine(folderPath, ExistingGuidFileName)))
+                    {
+                        System.IO.File.Delete(Path.Combine(folderPath, ExistingGuidFileName));
+                    }
+                }
+
+                return guidValue;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static void WriteToFile(string Message, string FolderName)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\SchedulerLogs\\" + FolderName;
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            string filepath = AppDomain.CurrentDomain.BaseDirectory + DateTime.Now.Date.ToShortDateString().Replace('/', '_') + ".txt";
+            if (!File.Exists(filepath))
+            {
+                // Create a file to write to.   
+                using (StreamWriter sw = File.CreateText(filepath))
+                {
+                    sw.WriteLine(Message);
+                }
+            }
+            else
+            {
+                using (StreamWriter sw = File.AppendText(filepath))
+                {
+                    sw.WriteLine(Message);
+                }
+            }
+        }
     }
 }

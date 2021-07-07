@@ -64,7 +64,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-primary grid">
+                    <div class="card card-primary grid" id="overflow">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="card-tools float-right">
-                                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                        <button id="expand" type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                     </div>
                                 </div>
@@ -213,4 +213,8 @@
             order: []
         });
     });
+
+        $('body').on('click', '#expand', function () {
+            $('#overflow').css('overflow', 'scroll');
+        });
 </script>

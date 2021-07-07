@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using Utility;
 using Utility.HelperClasses;
-using static SalesOrder.DisPortalPORequest_OutClient;
 using static Utility.Constant.Common;
 
 namespace BusinessLogicLayer.Application
@@ -146,9 +145,9 @@ namespace BusinessLogicLayer.Application
                                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                           let Amount = odp.Sum(m => m.od.Amount)
                                                           select Amount).Sum(x => x);
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -166,9 +165,9 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -186,9 +185,9 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.WTaxRate == "1").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.WTaxRate == "4").Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
             viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.TotalPrice - ((e.TotalPrice / 100) * Math.Abs(e.Discount)));
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -220,9 +219,9 @@ namespace BusinessLogicLayer.Application
                 viewModel.SAMISupplies1 = SAMIproductDetails.SuppliesOne;
                 viewModel.SAMISupplies4 = SAMIproductDetails.SuppliesFour;
                 viewModel.SAMITotalOrderValues = SAMIproductDetails.TotalOrderValues;
-                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0)
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.Count() > 0)
                 {
-                    viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
+                    viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
                 }
                 else
                 {
@@ -245,9 +244,9 @@ namespace BusinessLogicLayer.Application
                 viewModel.HealthTekSupplies1 = HealthTekproductDetails.SuppliesOne;
                 viewModel.HealthTekSupplies4 = HealthTekproductDetails.SuppliesFour;
                 viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.TotalOrderValues;
-                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0)
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.Count() > 0)
                 {
-                    viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
+                    viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
                 }
                 else
                 {
@@ -270,9 +269,9 @@ namespace BusinessLogicLayer.Application
                 viewModel.PhytekSupplies1 = PhytekproductDetails.SuppliesOne;
                 viewModel.PhytekSupplies4 = PhytekproductDetails.SuppliesFour;
                 viewModel.PhytekTotalOrderValues = PhytekproductDetails.TotalOrderValues;
-                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.Count() > 0 && SessionHelper.SAPOrderPendingValue.Select(x => x.CompanyCode).Contains(companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode))
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.Count() > 0 && SessionHelper.DistributorPendingValue.Select(x => x.CompanyCode).Contains(companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode))
                 {
-                    viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
+                    viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
                 }
                 else
                 {
@@ -608,7 +607,7 @@ namespace BusinessLogicLayer.Application
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/DistBal?DISTRIBUTOR=" + DistributorCode)).Result;
+                    var result = client.GetAsync(new Uri(configuration.SyncDistributorBalanceURL + DistributorCode)).Result;
                     if (result.IsSuccessStatusCode)
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -671,7 +670,7 @@ namespace BusinessLogicLayer.Application
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getSalesQuery?DISTRIBUTOR=" + DistributorCode)).Result;
+                    var result = client.GetAsync(new Uri(configuration.GetPendingOrderValue + DistributorCode)).Result;
                     if (result.IsSuccessStatusCode)
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -704,56 +703,37 @@ namespace BusinessLogicLayer.Application
                 return new List<SAPOrderPendingValue>();
             }
         }
-        public async Task<List<SAPOrderPendingValue>> GetPendingOrderValueAsync(string DistributorCode, Configuration configuration)
+        public List<DistributorPendingValue> GetDistributorPendingValue(string DistributorSAPCode, Configuration configuration)
         {
-            try
+            List<DistributorPendingValue> sAPOrderPendingValue = new List<DistributorPendingValue>();
+            Root root = new Root();
+            using (var client = new HttpClient())
             {
-                //var Client = new RestClient(_configuration.GetPendingOrderValue + "?DistributorId=" + DistributorCode);
-                //var request = new RestRequest(Method.POST);
-                //IRestResponse response = Client.Execute(request);
-                //var SAPOrderPendingValue = JsonConvert.DeserializeObject<List<SAPOrderPendingValue>>(response.Content);
-                List<SAPOrderPendingValue> sAPOrderPendingValue = new List<SAPOrderPendingValue>();
-                Root root = new Root();
-                using (var client = new HttpClient())
+                client.Timeout = TimeSpan.FromMinutes(5);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                var result = client.GetAsync(new Uri(configuration.GetPendingOrderValue + DistributorSAPCode)).Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = await client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getSalesQuery?DISTRIBUTOR=" + DistributorCode));
-                    if (result.IsSuccessStatusCode)
+                    var JsonContent = result.Content.ReadAsStringAsync().Result;
+                    root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                    if (root != null)
                     {
-                        var JsonContent = result.Content.ReadAsStringAsync().Result;
-                        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
-                        if (root != null)
+                        for (int i = 0; i < root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item.Count(); i++)
                         {
-                            for (int i = 0; i < root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item.Count(); i++)
+                            sAPOrderPendingValue.Add(new DistributorPendingValue()
                             {
-                                sAPOrderPendingValue.Add(new SAPOrderPendingValue()
-                                {
-                                    CompanyCode = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].VKORG,
-                                    PendingValue = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].NETWR,
-                                });
-                            }
+                                CompanyCode = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].VKORG,
+                                PendingValue = root.ZWAS_BI_SALES_QUERY_BAPI.PENDING.item[i].NETWR,
+                            });
                         }
                     }
                 }
-                if (sAPOrderPendingValue == null)
-                {
-                    return new List<SAPOrderPendingValue>();
-                }
-                else
-                {
-                    return sAPOrderPendingValue;
-                }
             }
-            catch (Exception ex)
-            {
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return new List<SAPOrderPendingValue>();
-            }
+            return sAPOrderPendingValue;
         }
-
         public OrderValueViewModel GetOrderValueModel(List<DistributorWiseProductDiscountAndPrices> productDetails)
         {
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
@@ -788,9 +768,9 @@ namespace BusinessLogicLayer.Application
                                                           group new { od } by new { od.OrderId } into odp
                                                           let Amount = odp.Sum(m => m.od.Amount)
                                                           select Amount).Sum(x => x);
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.SAMIPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.SAMI.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.SAMICurrentBalance = SessionHelper.DistributorBalance.SAMI;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -808,9 +788,9 @@ namespace BusinessLogicLayer.Application
             viewModel.HealthTekSupplies1 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice);
             viewModel.HealthTekSupplies4 = HealthTekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice);
             viewModel.HealthTekTotalOrderValues = HealthTekproductDetails.Sum(e => e.ProductDetail.TotalPrice);
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.HealthTekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Healthtek.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.HealthTekCurrentBalance = SessionHelper.DistributorBalance.HealthTek;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -828,9 +808,9 @@ namespace BusinessLogicLayer.Application
             viewModel.PhytekSupplies1 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "1").Sum(e => e.ProductDetail.TotalPrice);
             viewModel.PhytekSupplies4 = PhytekproductDetails.Where(e => e.ProductDetail.WTaxRate == "4").Sum(e => e.ProductDetail.TotalPrice);
             viewModel.PhytekTotalOrderValues = PhytekproductDetails.Sum(e => e.ProductDetail.TotalPrice);
-            if (SessionHelper.SAPOrderPendingValue != null && SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
+            if (SessionHelper.DistributorPendingValue != null && SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode) != null)
             {
-                viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.SAPOrderPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
+                viewModel.PhytekPendingOrderValues = Convert.ToDouble(SessionHelper.DistributorPendingValue.FirstOrDefault(x => x.CompanyCode == companies.FirstOrDefault(x => x.CompanyName == CompanyEnum.Phytek.ToString()).SAPCompanyCode).PendingValue);
             }
             viewModel.PhytekCurrentBalance = SessionHelper.DistributorBalance.PhyTek;
             if (SessionHelper.LoginUser.IsDistributor)
@@ -882,7 +862,7 @@ namespace BusinessLogicLayer.Application
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PendingOrd?DISTRIBUTOR=" + DistributorId)).Result;
+                var result = client.GetAsync(new Uri(configuration.GetPendingQuantity + DistributorId)).Result;
                 if (result.IsSuccessStatusCode)
                 {
                     var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -904,6 +884,39 @@ namespace BusinessLogicLayer.Application
             }
             return sAPOrderPendingQuantity;
         }
+        public List<DistributorPendingQuantity> GetDistributorOrderPendingQuantitys(string DistributorSAPCode, Configuration configuration)
+        {
+            List<DistributorPendingQuantity> distributorPendingQuanities = new List<DistributorPendingQuantity>();
+            using (var client = new HttpClient())
+            {
+                client.Timeout = TimeSpan.FromMinutes(5);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                var result = client.GetAsync(new Uri(configuration.GetPendingQuantity + DistributorSAPCode)).Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var JsonContent = result.Content.ReadAsStringAsync().Result;
+                    Root root = JsonConvert.DeserializeObject<Root>(JsonContent);
+                    if (root != null && root.ZWASDPPENDINGORDERBAPIResponse.PENDING != null)
+                    {
+                        for (int i = 0; i < root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item.Count(); i++)
+                        {
+                            distributorPendingQuanities.Add(new DistributorPendingQuantity()
+                            {
+                                ProductCode = root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].MATNR.TrimStart(new char[] { '0' }),
+                                OrderQuantity = decimal.ToInt32(Convert.ToDecimal(root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].KWMENG)),
+                                DispatchQuantity = decimal.ToInt32(Convert.ToDecimal(root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].LFIMG)),
+                                PendingQuantity = decimal.ToInt32(Convert.ToDecimal(root.ZWASDPPENDINGORDERBAPIResponse.PENDING.item[i].PENDING))
+                            });
+                        }
+                    }
+                }
+            }
+            return distributorPendingQuanities;
+        }
+
         /*
         public List<SAPOrderPendingQuantity> GetDistributorOrderPendingQuantity(string DistributorId, Configuration _configuration)
         {

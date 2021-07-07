@@ -268,9 +268,9 @@
         this.PendingQuantity = PendingQuantity;
     }
 
-    @if (SessionHelper.SAPOrderPendingQuantity != null)
+    @if (SessionHelper.DistributorPendingQuantity != null)
     {
-        foreach (var d in SessionHelper.SAPOrderPendingQuantity)
+        foreach (var d in SessionHelper.DistributorPendingQuantity)
         {
             @:SAPOrderPendingQuantity.push(new obj("@d.Id", "@d.PendingQuantity"));
         }

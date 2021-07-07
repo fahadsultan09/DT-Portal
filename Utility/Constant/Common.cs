@@ -16,6 +16,9 @@
             public const string Payment = "Payment";
             public const string Complaint = "Complaint";
             public const string DistributorLicense = "DistributorLicense";
+            public const string OrderStatus = "OrderStatus";
+            public const string PendingQuantity = "PendingQuantity";
+            public const string PendingValue = "PendingValue";
         }
 
         public class OrderContant

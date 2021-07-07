@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SAPOrderPendingQuantity>
+﻿@model IEnumerable<DistributorPendingQuantity>
 
 <div class="card-body table-responsive p-0" style="height: 370px;">
     <table id="example1" class="table table-bordered table-striped">
@@ -8,8 +8,11 @@
                 <th>Product Code</th>
                 <th>Product Name</th>
                 <th>Ordered Quantity</th>
-                <th>Pending Quantity</th>
                 <th>Delivered Quantity</th>
+                <th>Pending Quantity</th>
+                <th>Rate</th>
+                <th>Discount</th>
+                <th>Pending Value</th>
             </tr>
         </thead>
         <tbody>
@@ -22,8 +25,11 @@
                         <td>@item.ProductCode</td>
                         <td>@item.ProductName</td>
                         <td>@item.OrderQuantity</td>
-                        <td>@item.PendingQuantity</td>
                         <td>@item.DispatchQuantity</td>
+                        <td>@item.PendingQuantity</td>
+                        <td>@item.Rate</td>
+                        <td>@item.Discount</td>
+                        <td>@item.PendingValue.ToString("#,##0.00")</td>
                     </tr>
                 }
             }

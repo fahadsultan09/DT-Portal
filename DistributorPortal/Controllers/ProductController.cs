@@ -58,7 +58,7 @@ namespace ProductPortal.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_configuration.POUserName + ":" + _configuration.POPassword));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/getHRMS")).Result;
+                    var result = client.GetAsync(new Uri(_configuration.SyncProductURL)).Result;
                     if (result.IsSuccessStatusCode)
                     {
                         var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -177,21 +177,22 @@ namespace ProductPortal.Controllers
                 if (model.Id > 0)
                 {
                     _ProductDetailBLL.UpdateProductDetail(model);
+                    jsonResponse.Message = NotificationMessage.UpdateSuccessfully;
                 }
                 else
                 {
                     _ProductDetailBLL.AddProductDetail(model);
+                    jsonResponse.Message = NotificationMessage.SaveSuccessfully;
+                    jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 }
 
                 jsonResponse.Status = true;
-                jsonResponse.Message = NotificationMessage.SaveSuccessfully;
-                jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                jsonResponse.Status = true;
+                jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 jsonResponse.RedirectURL = Url.Action("ProductMapping", "Product");
                 return Json(new { data = jsonResponse });

@@ -44,15 +44,15 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<DistributorBalance>("DistributorBalance");
             set => _httpContextAccessor.HttpContext.Session.Set("DistributorBalance", value);
         }
-        public static List<SAPOrderPendingQuantity> SAPOrderPendingQuantity
+        public static List<DistributorPendingQuantity> DistributorPendingQuantity
         {
-            get => _httpContextAccessor.HttpContext.Session.Get<List<SAPOrderPendingQuantity>>("SAPOrderPendingQuantity");
-            set => _httpContextAccessor.HttpContext.Session.Set("SAPOrderPendingQuantity", value);
+            get => _httpContextAccessor.HttpContext.Session.Get<List<DistributorPendingQuantity>>("DistributorPendingQuantity");
+            set => _httpContextAccessor.HttpContext.Session.Set("DistributorPendingQuantity", value);
         }
-        public static List<SAPOrderPendingValue> SAPOrderPendingValue
+        public static List<DistributorPendingValue> DistributorPendingValue
         {
-            get => _httpContextAccessor.HttpContext.Session.Get<List<SAPOrderPendingValue>>("SAPOrderPendingValue");
-            set => _httpContextAccessor.HttpContext.Session.Set("SAPOrderPendingValue", value);
+            get => _httpContextAccessor.HttpContext.Session.Get<List<DistributorPendingValue>>("DistributorPendingValue");
+            set => _httpContextAccessor.HttpContext.Session.Set("DistributorPendingValue", value);
         }
         public static string URL
         {

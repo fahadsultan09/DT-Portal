@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Models.ApplicationContext;
 using System;
-using System.IO;
-using System.Reflection;
+using Utility;
 using Utility.HelperClasses;
+using static Utility.Constant.Common;
 
 namespace Scheduler
 {
@@ -29,6 +29,7 @@ namespace Scheduler
                 var ServerAddress = configuration.GetSection("Settings:ServerAddress");
                 var POUserName = configuration.GetSection("Settings:POUserName");
                 var POPassword = configuration.GetSection("Settings:POPassword");
+                var URL = configuration.GetSection("Settings:URL");
                 var config = new Configuration(null) 
                 { 
                     ConnectionString = ConnectionString.Value,
@@ -38,6 +39,7 @@ namespace Scheduler
                     ServerAddress = ServerAddress.Value,
                     POUserName = POUserName.Value,
                     POPassword = POPassword.Value,
+                    URL = URL.Value,
                 };
                 var services = new ServiceCollection();
                 services.AddDbContext<DistributorPortalDbContext>(options => options.UseMySQL(config.ConnectionString));
@@ -46,18 +48,28 @@ namespace Scheduler
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
 
+                ExtensionUtility.WriteTextToFile("Console Start" + DateTime.Now, FolderName.OrderStatus);
                 ////Order and Order Return Produc Status
                 //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
                 //distributorOrderStatus.GetInProcessOrderProductStatus();
                 //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
 
-                //Order and Order Return Produc Status
-                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
-                KPIEmailScheduler.GetPendingComplaints();
+                ////Order and Order Return Produc Status
+                //KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
+                //KPIEmailScheduler.GetPendingComplaints();
 
+                ////Get pending value
+                //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
+                //distributorPendingQuanityValue.AddDistributorPendingValue();
+
+                //Get pending quantity
+                DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
+                distributorPendingQuanityValue.AddDistributorPendingQuantity();
+                ExtensionUtility.WriteTextToFile("Console End" + DateTime.Now, FolderName.OrderStatus);
             }
             catch (Exception ex)
             {
+                ExtensionUtility.WriteTextToFile("Error occured" + DateTime.Now, FolderName.OrderStatus);
                 new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }

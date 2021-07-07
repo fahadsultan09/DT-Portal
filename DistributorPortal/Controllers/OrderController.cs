@@ -36,6 +36,7 @@ namespace DistributorPortal.Controllers
         private readonly ICompositeViewEngine _viewEngine;
         private readonly Configuration _Configuration;
         private readonly IConfiguration _IConfiguration;
+        private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
         public OrderController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration)
         {
             _unitOfWork = unitOfWork;
@@ -49,6 +50,7 @@ namespace DistributorPortal.Controllers
             _viewEngine = viewEngine;
             _Configuration = configuration;
             _IConfiguration = iConfiguration;
+            _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
         }
         // GET: Order
         public ActionResult Index(OrderStatus? orderStatus)
@@ -102,8 +104,9 @@ namespace DistributorPortal.Controllers
 
             if (!SessionHelper.LoginUser.IsDistributor)
             {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             return View("AddDetail", BindOrderMaster(model, id));
@@ -120,8 +123,9 @@ namespace DistributorPortal.Controllers
 
             if (!SessionHelper.LoginUser.IsDistributor)
             {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             var order = BindOrderMaster(model, id, true);
@@ -237,8 +241,9 @@ namespace DistributorPortal.Controllers
 
             if (!SessionHelper.LoginUser.IsDistributor)
             {
-                SessionHelper.SAPOrderPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
-                SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
+                SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             return View(BindOrderMaster(model, id));
@@ -438,8 +443,8 @@ namespace DistributorPortal.Controllers
                     model.productDetails.ForEach(x => x.ProductMaster.Amount = orderDetail.First(y => y.ProductId == x.ProductMasterId).Amount);
                     model.productDetails.ForEach(x => x.ProductMaster.ApprovedQuantity = orderDetail.First(y => y.ProductId == x.ProductMasterId).ApprovedQuantity);
                 }
-                model.productDetails.ForEach(x => x.PendingQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
-                model.productDetails.ForEach(x => x.DispatchQuantity = SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.SAPOrderPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).DispatchQuantity)).ToString() : "0");
+                model.productDetails.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.DistributorPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).PendingQuantity)).ToString() : "0");
+                model.productDetails.ForEach(x => x.DispatchQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(y => y.ProductCode == x.ProductMaster.SAPProductCode) != null ? Math.Floor(Convert.ToDouble(SessionHelper.DistributorPendingQuantity.FirstOrDefault(z => z.ProductCode == x.ProductMaster.SAPProductCode).DispatchQuantity)).ToString() : "0");
                 SessionHelper.AddProduct = model.productDetails;
             }
             else

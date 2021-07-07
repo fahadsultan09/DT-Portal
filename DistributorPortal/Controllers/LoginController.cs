@@ -194,8 +194,8 @@ namespace DistributorPortal.Controllers
                 SessionHelper.AddDistributorWiseProduct = null;
                 SessionHelper.AddReturnProduct = null;
                 SessionHelper.DistributorBalance = null;
-                SessionHelper.SAPOrderPendingQuantity = null;
-                SessionHelper.SAPOrderPendingValue = null;
+                SessionHelper.DistributorPendingQuantity = null;
+                SessionHelper.DistributorPendingValue = null;
                 return View();
             }
             else
@@ -208,8 +208,8 @@ namespace DistributorPortal.Controllers
                 SessionHelper.AddDistributorWiseProduct = null;
                 SessionHelper.AddReturnProduct = null;
                 SessionHelper.DistributorBalance = null;
-                SessionHelper.SAPOrderPendingQuantity = null;
-                SessionHelper.SAPOrderPendingValue = null;
+                SessionHelper.DistributorPendingQuantity = null;
+                SessionHelper.DistributorPendingValue = null;
                 return RedirectToAction("Index", "Login");
             }
             

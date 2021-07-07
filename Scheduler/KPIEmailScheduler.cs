@@ -68,6 +68,8 @@ namespace Scheduler
                         EmailUserModel.CreatedBy = complaint.ComplaintSubCategory.User.Id;
                         EmailUserModel.CCEmail = string.Join(',', item.UserEmailId);
                         EmailUserModel.Subject = "REMINDER: Customer Complaint (No. " + EmailUserModel.ComplaintNo.ToString() + ")";
+                        EmailUserModel.URL = _Configuration.URL;
+
                         //Sending Email
                         _EmailLogBLL.ComplaintKPISendEmail(item.ComplaintSubCategory.User, EmailUserModel);
                     }

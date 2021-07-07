@@ -109,6 +109,20 @@
 <script>
     $(document).ready(function () {
 
+        var DistributorId = '@TempData["DistributorId"]';
+
+        if (DistributorId != "") {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdatePQ", "OrderForm")',
+                data: { 'DPID': DistributorId },
+                cache: false,
+                success: function (data) {
+                }
+            });
+        }
+
         $("#example1").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,

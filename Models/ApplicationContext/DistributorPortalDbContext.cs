@@ -62,6 +62,8 @@ namespace Models.ApplicationContext
         public DbSet<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices { get; set; }
         public DbSet<Notification> Notification { get; set; }
         public DbSet<Policy> Policy { get; set; }
-        public DbSet<Disclaimer> Disclaimer { get; set; }  
+        public DbSet<Disclaimer> Disclaimer { get; set; }
+        public DbSet<DistributorPendingQuantity> DistributorPendingQuantity { get; set; }
+        public DbSet<DistributorPendingValue> DistributorPendingValue { get; set; }  
     }
 }
