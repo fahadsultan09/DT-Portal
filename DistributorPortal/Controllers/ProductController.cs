@@ -142,7 +142,7 @@ namespace ProductPortal.Controllers
         public IActionResult ProductMapping()
         {
             List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
-            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
+            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster().OrderBy(x => x.ProductName).ToList();
             productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
             return View("ProductMapping", productMasters);
         }

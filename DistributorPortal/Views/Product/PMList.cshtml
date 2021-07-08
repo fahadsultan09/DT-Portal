@@ -71,7 +71,7 @@
                                 <th>Brand Name </th>
                                 <th>Product Name </th>
                                 <th>Pack Size </th>
-                                <th>Visibility </th>
+                                <th>Product Visibility </th>
                                 <th>Plant Location </th>
                                 <th>Company Name</th>
                                 <th>W.Tax Rate </th>
@@ -181,14 +181,6 @@
             }
             else {
                 UnBlockUI();
-                $('#example1').dataTable().fnDestroy();
-                $("#example1").DataTable({
-                    paging: false,
-                    "lengthMenu": [[-1], ["All"]],
-                    responsive: true,
-                    autoWidth: false,
-                    order: []
-                });
             }
         });
         return false;
@@ -219,7 +211,7 @@
         $("#example1").DataTable({
             paging: false,
             "lengthMenu": [[-1], ["All"]],
-            responsive: true,
+            "order": [[1, "asc"]]
         });
     });
 
@@ -249,6 +241,7 @@
             AdditionalSalesTax: $(this).closest("tr").find("td:eq(24)").find(":input").val(),
             LicenseControlId: $(this).closest("tr").find("td:eq(25)").find(":input").val(),
         };
+
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },
             function (data) {
                 if (data) {

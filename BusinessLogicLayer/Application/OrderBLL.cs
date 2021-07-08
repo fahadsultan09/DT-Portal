@@ -60,6 +60,7 @@ namespace BusinessLogicLayer.Application
         public int Update(OrderMaster module)
         {
             var item = _repository.GetById(module.Id);
+            item.TotalValue = module.TotalValue;
             item.ReferenceNo = module.ReferenceNo;
             item.Remarks = module.Remarks;
             item.Status = module.Status;

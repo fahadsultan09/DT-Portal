@@ -58,16 +58,12 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
-        <div class="col-lg-12 col-md-12 p-2">
-            @*<div class="image">
-                    <img src="~/lib/dist/img/DefaultImage.png" class="img-circle elevation-1" alt="User Image">
-                </div>*@
-            <div class="info" style="word-break: break-all;">
+        <div class="user-panel d-flex">
+            <div class="info">
                 <h5>@SessionHelper.LoginUser.FirstName @SessionHelper.LoginUser.LastName</h5>
-                <span style="word-break: break-all;"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></span>
+                <a href="#" class="d-block"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></a>
             </div>
         </div>
-
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
@@ -108,10 +104,10 @@
                         }
                     }
                 }
-                <li class="nav-item has-treeview" style="word-break: break-all;">
+                <li class="nav-item has-treeview">
                     <a href="@Url.Action("Logout","Login")" class="nav-link">
-                        <i class="fas fa-arrow-circle-right"></i>
-                        Log out
+                        <i class="fas fa-arrow-circle-right nav-icon"></i>
+                        <p>Log out</p>
                     </a>
                 </li>
             </ul>
