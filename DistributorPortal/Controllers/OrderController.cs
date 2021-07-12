@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +38,7 @@ namespace DistributorPortal.Controllers
         private readonly Configuration _Configuration;
         private readonly IConfiguration _IConfiguration;
         private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
+        private readonly PaymentBLL _PaymentBLL;
         public OrderController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration)
         {
             _unitOfWork = unitOfWork;
@@ -51,6 +53,7 @@ namespace DistributorPortal.Controllers
             _Configuration = configuration;
             _IConfiguration = iConfiguration;
             _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
+            _PaymentBLL = new PaymentBLL(_unitOfWork);
         }
         // GET: Order
         public ActionResult Index(OrderStatus? orderStatus)
@@ -62,25 +65,22 @@ namespace DistributorPortal.Controllers
             }
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                DistributorLicense DistributorLicense = _DistributorLicenseBLL.FirstOrDefault(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified);
+                List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
+                List<DistributorLicense> DistributorLicense = _DistributorLicenseBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.DocumentType == DocumentType.License && x.Status == LicenseStatus.Verified).ToList();
                 if (DistributorLicense != null)
                 {
-                    int Days = (DistributorLicense.Expiry.Date - DateTime.Now.Date).Days;
-                    if (Days <= 0)
+                    foreach (var item in DistributorLicense)
                     {
-                        ViewBag.Expired = true;
-                    }
-                    var license = _licenseControlBLL.FirstOrDefault(x => x.IsActive == true && x.IsDeleted == false && x.IsMandatory);
-                    if (license != null)
-                    {
+                        int Days = (item.Expiry.Date - DateTime.Now.Date).Days;
+                        var license = _licenseControlBLL.FirstOrDefault(x => x.Id  == item.LicenseId);
                         if (Days <= license.DaysIntimateBeforeExpiry)
                         {
-                            ViewBag.Days = Days;
+                            list.Add(new KeyValuePair<string, int>(license.LicenseName, Days));
                         }
-                        else
-                        {
-                            ViewBag.Days = string.Empty;
-                        }
+                    }
+                    if (list != null && list.Count() > 0)
+                    {
+                        ViewBag.Days = JsonConvert.SerializeObject(list);
                     }
                 }
             }
@@ -107,7 +107,7 @@ namespace DistributorPortal.Controllers
                 //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+                SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             return View("AddDetail", BindOrderMaster(model, id));
         }
@@ -126,7 +126,7 @@ namespace DistributorPortal.Controllers
                 //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+                SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             var order = BindOrderMaster(model, id, true);
             ViewBag.Status = order.Status;
@@ -244,7 +244,7 @@ namespace DistributorPortal.Controllers
                 //SessionHelper.DistributorPendingValue = _OrderBLL.GetPendingOrderValue(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 //SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorPendingQuantity(model.Distributor.DistributorSAPCode, _Configuration).ToList();
                 SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                SessionHelper.DistributorBalance = _OrderBLL.GetBalance(model.Distributor.DistributorSAPCode, _Configuration);
+                SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(model.Distributor.DistributorSAPCode, _Configuration);
             }
             return View(BindOrderMaster(model, id));
         }
@@ -511,8 +511,8 @@ namespace DistributorPortal.Controllers
                 }
                 if (Product.LicenseControlId is null)
                 {
-                    var Challan = DistributorLicenseList.Where(x => x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
-                    var License = DistributorLicenseList.Where(x => x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var Challan = DistributorLicenseList.Where(x => x.DocumentType == DocumentType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var License = DistributorLicenseList.Where(x => x.DocumentType == DocumentType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => License != null && x.Id == License.LicenseId);
 
                     if (Challan != null)
@@ -541,8 +541,8 @@ namespace DistributorPortal.Controllers
                 }
                 if (Product.LicenseControlId != null)
                 {
-                    var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
-                    var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.Type == LicenseType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var Challan = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.DocumentType == DocumentType.Challan && x.Status == LicenseStatus.Verified && x.Expiry > DateTime.Now).OrderBy(x => x.CreatedDate).FirstOrDefault();
+                    var License = DistributorLicenseList.Where(x => x.LicenseId == Product.LicenseControlId && x.DocumentType == DocumentType.License && x.Status == LicenseStatus.Verified).OrderBy(x => x.CreatedDate).FirstOrDefault();
                     var LicenseControl = LicenseControlList.FirstOrDefault(x => x.Id == Product.LicenseControlId);
 
                     foreach (var item in LicenseControlList)

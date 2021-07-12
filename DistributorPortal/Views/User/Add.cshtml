@@ -254,11 +254,11 @@
         $('#DistributorId').attr("disabled", true);
 
         if ($('#IsStoreKeeper').is(':checked')) {
-            $('#CompanyId').attr("disabled", false);
+            //$('#CompanyId').attr("disabled", false);
             $('#PlantLocationId').attr("disabled", false);
             $('#EmailIntimationId').attr("disabled", false);
         } else {
-            $('#CompanyId').attr("disabled", true);
+            //$('#CompanyId').attr("disabled", true);
             $('#PlantLocationId').attr("disabled", true);
             $('#EmailIntimationId').attr("disabled", true);
         }
@@ -272,9 +272,9 @@
 
                 $('#IsStoreKeeper').prop('checked', false);
                 $('#IsStoreKeeper').attr("disabled", "disabled");
-                $('#CompanyId').attr("disabled", "disabled");
-                $('#CompanyId').val('');
-                $('#CompanyId').trigger('change');
+                //$('#CompanyId').attr("disabled", "disabled");
+                //$('#CompanyId').val('');
+                //$('#CompanyId').trigger('change');
                 $('#PlantLocationId').attr("disabled", "disabled");
                 $('#PlantLocationId').val('');
                 $('#PlantLocationId').trigger('change');
@@ -297,7 +297,7 @@
             $('#IsStoreKeeper').removeAttr("disabled");
 
             if ($('#IsStoreKeeper').is(':checked')) {
-                $('#CompanyId').removeAttr("disabled");
+                //$('#CompanyId').removeAttr("disabled");
                 $('#EmailIntimationId').removeAttr("disabled");
                 $('#PlantLocationId').removeAttr("disabled");
                 $('#IsStoreKeeper').removeAttr("disabled");
@@ -309,9 +309,9 @@
                 $('#DistributorId').trigger('change');
             }
             else {
-                $('#CompanyId').attr("disabled", "disabled");
-                $('#CompanyId').val('');
-                $('#CompanyId').trigger('change');
+                //$('#CompanyId').attr("disabled", "disabled");
+                //$('#CompanyId').val('');
+                //$('#CompanyId').trigger('change');
                 $('#PlantLocationId').attr("disabled", "disabled");
                 $('#PlantLocationId').val('');
                 $('#PlantLocationId').trigger('change');

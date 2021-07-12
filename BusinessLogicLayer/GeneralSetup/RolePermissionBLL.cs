@@ -66,5 +66,10 @@ namespace BusinessLogicLayer.GeneralSetup
             repository.AddRange(list);
             return _unitOfWork.Save();
         }
+        public RolePermission FirstOrDefault(Expression<Func<RolePermission, bool>> predicate)
+        {
+            return repository.FirstOrDefault(predicate);
+        }
+
     }
 }

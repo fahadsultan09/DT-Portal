@@ -1,7 +1,9 @@
 ﻿<!-- Signal R Script -->
 <script src="~/microsoft-signalr/signalr.js"></script>
 <script type="text/javascript">
+    
     var UserId = @SessionHelper.LoginUser.Id;
+    var RoleCompanyIds = @((SessionHelper.LoginUser.RoleId + (SessionHelper.LoginUser.CompanyId ?? 0)).ToString());
     $(function () {
         var url = window.location;
         // for single sidebar menu

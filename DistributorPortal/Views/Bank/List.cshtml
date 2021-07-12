@@ -116,9 +116,7 @@
                 $.post('@Url.Action("Delete", "Bank")?DPID=' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
+                        window.location.reload();
                     } else {
                         Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
                     }

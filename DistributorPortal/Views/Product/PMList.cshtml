@@ -7,6 +7,7 @@
     List<Company> companyList = new CompanyBLL(unitOfWork).GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
     List<LicenseControl> licenseControlList = new LicenseControlBLL(unitOfWork).Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
     var plantLocationList = new PlantLocationBLL(unitOfWork).DropDownPlantLocationList();
+    var productList = new ProductMasterBLL(unitOfWork).DropDownProductList();
 }
 <style type="text/css">
     th, td {
@@ -68,25 +69,26 @@
                                 <td class="d-none"></td>
                                 <td class="d-none"></td>
                                 <th>Product Code</th>
-                                <th>Brand Name </th>
-                                <th>Product Name </th>
-                                <th>Pack Size </th>
-                                <th>Product Visibility </th>
-                                <th>Plant Location </th>
+                                <th>Brand Name</th>
+                                <th>Product Name</th>
+                                <th>Pack Size</th>
+                                <th>FOC Product Code</th>
+                                <th>Product Visibility</th>
+                                <th>Plant Location</th>
                                 <th>Company Name</th>
-                                <th>W.Tax Rate </th>
+                                <th>W.Tax Rate</th>
                                 <th>Factor</th>
-                                <th>Parent Distributor </th>
-                                <th>S.Order Type </th>
-                                <th>R.Order Type </th>
-                                <th>Sale Organization </th>
-                                <th>Distribution Channel </th>
-                                <th>Division </th>
-                                <th>Dispatch Plant </th>
-                                <th>S.Storage Location </th>
-                                <th>R.Storage Location </th>
-                                <th>Sales Item Category </th>
-                                <th>Return Item Category </th>
+                                <th>Parent Distributor</th>
+                                <th>S.Order Type</th>
+                                <th>R.Order Type</th>
+                                <th>Sale Organization</th>
+                                <th>Distribution Channel</th>
+                                <th>Division</th>
+                                <th>Dispatch Plant</th>
+                                <th>S.Storage Location</th>
+                                <th>R.Storage Location</th>
+                                <th>Sales Item Category</th>
+                                <th>Return Item Category</th>
                                 <th>Income Tax</th>
                                 <th>Sales Tax</th>
                                 <th>Additional Sales Tax</th>
@@ -99,52 +101,53 @@
                                 List<ProductMaster> List = Model.ToList();
                                 for (int i = 0; i < List.Count(); i++)
                                 {
-                                    <tr>
-                                        <td class="d-none"><input type="text" asp-for="@List[i].Id" class="form-control" /></td>
-                                        <td class="d-none"><input type="text" asp-for="@List[i].ProductDetail.Id" class="form-control" /></td>
-                                        <td>
-                                            @List[i].SAPProductCode
-                                        </td>
-                                        <td>@List[i].ProductName</td>
-                                        <td>@List[i].ProductDescription</td>
-                                        <td>@List[i].PackSize</td>
-                                        <td>
-                                            <select asp-for="@List[i].ProductDetail.ProductVisibilityId" asp-items="Html.GetEnumSelectList<ProductVisibility>()" class="form-control select2">
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select asp-for="@List[i].ProductDetail.PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control">
-                                                <option disabled="disabled" readonly>--Select option--</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select asp-for="@List[i].ProductDetail.CompanyId" asp-items="@(new SelectList(companyList, "Id", "CompanyName", List[i].ProductDetail.CompanyId))" class="form-control">
-                                                <option disabled="disabled" readonly>--Select option--</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.WTaxRate" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.Factor" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.ParentDistributor" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.S_OrderType" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.R_OrderType" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.SaleOrganization" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.DistributionChannel" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.Division" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.DispatchPlant" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.S_StorageLocation" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.R_StorageLocation" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.SalesItemCategory" class="form-control" /></td>
-                                        <td><input type="text" asp-for="@List[i].ProductDetail.ReturnItemCategory" class="form-control" /></td>
-                                        <td><input type="number" asp-for="@List[i].ProductDetail.IncomeTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
-                                        <td><input type="number" asp-for="@List[i].ProductDetail.SalesTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
-                                        <td><input type="number" asp-for="@List[i].ProductDetail.AdditionalSalesTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
-                                        <td>
-                                            <select asp-for="@List[i].ProductDetail.LicenseControlId" asp-items="@(new SelectList(licenseControlList, "Id", "LicenseName", List[i].ProductDetail.LicenseControlId))" class="form-control">
-                                                <option>--Select option--</option>
-                                            </select>
-                                        </td>
-                                        <td><button type="button" id="btnSubmit@(i)" name="btnSubmit@(i)" class="btn btn-success">Save</button></td>
-                                    </tr>
+                                                        <tr>
+                                                            <td class="d-none"><input type="text" asp-for="@List[i].Id" class="form-control" /></td>
+                                                            <td class="d-none"><input type="text" asp-for="@List[i].ProductDetail.Id" class="form-control" /></td>
+                                                            <td>
+                                                                @List[i].SAPProductCode
+                                                            </td>
+                                                            <td>@List[i].ProductName</td>
+                                                            <td>@List[i].ProductDescription</td>
+                                                            <td>@List[i].PackSize</td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.FOCProductCode" class="form-control FOCProductCode" /></td>
+                                                            <td>
+                                                                <select asp-for="@List[i].ProductDetail.ProductVisibilityId" asp-items="Html.GetEnumSelectList<ProductVisibility>()" class="form-control select2">
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <select asp-for="@List[i].ProductDetail.PlantLocationId" asp-items="@(new SelectList(plantLocationList, "Value", "Text"))" class="form-control">
+                                                                    <option disabled="disabled" readonly>--Select option--</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <select asp-for="@List[i].ProductDetail.CompanyId" asp-items="@(new SelectList(companyList, "Id", "CompanyName", List[i].ProductDetail.CompanyId))" class="form-control">
+                                                                    <option disabled="disabled" readonly>--Select option--</option>
+                                                                </select>
+                                                            </td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.WTaxRate" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.Factor" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.ParentDistributor" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.S_OrderType" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.R_OrderType" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.SaleOrganization" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.DistributionChannel" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.Division" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.DispatchPlant" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.S_StorageLocation" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.R_StorageLocation" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.SalesItemCategory" class="form-control" /></td>
+                                                            <td><input type="text" asp-for="@List[i].ProductDetail.ReturnItemCategory" class="form-control" /></td>
+                                                            <td><input type="number" asp-for="@List[i].ProductDetail.IncomeTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
+                                                            <td><input type="number" asp-for="@List[i].ProductDetail.SalesTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
+                                                            <td><input type="number" asp-for="@List[i].ProductDetail.AdditionalSalesTax" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
+                                                            <td>
+                                                                <select asp-for="@List[i].ProductDetail.LicenseControlId" asp-items="@(new SelectList(licenseControlList, "Id", "LicenseName", List[i].ProductDetail.LicenseControlId))" class="form-control">
+                                                                    <option>--Select option--</option>
+                                                                </select>
+                                                            </td>
+                                                            <td><button type="button" id="btnSubmit@(i)" name="btnSubmit@(i)" class="btn btn-success">Save</button></td>
+                                                        </tr>
                                 }
                             }
                         </tbody>
@@ -158,6 +161,31 @@
     </div>
 </div>
 <script>
+
+    $(function () {
+        $("#FOCProductCode").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Product/FOCProductCodeAC/',
+                    data: { "prefix": request.term },
+                    type: "POST",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return item;
+                        }))
+                    },
+                    error: function (response) {
+                    },
+                    failure: function (response) {
+                    }
+                });
+            },
+            select: function (e, i) {
+                $("#FOCProductCode").val(i.item.val);
+            },
+            minLength: 1
+        });
+    });
 
     function SaveEdit() {
 
@@ -220,26 +248,27 @@
         var obj = {
             ProductMasterId: $(this).closest("tr").find("td:eq(0)").find(":input").val(),
             Id: $(this).closest("tr").find("td:eq(1)").find(":input").val(),
-            ProductVisibilityId: $(this).closest("tr").find("td:eq(6)").find(":input").val(),
-            PlantLocationId: $(this).closest("tr").find("td:eq(7)").find(":input").val(),
-            CompanyId: $(this).closest("tr").find("td:eq(8)").find(":input").val(),
-            WTaxRate: $(this).closest("tr").find("td:eq(9)").find(":input").val(),
-            Factor: $(this).closest("tr").find("td:eq(10)").find(":input").val(),
-            ParentDistributor: $(this).closest("tr").find("td:eq(11)").find(":input").val(),
-            S_OrderType: $(this).closest("tr").find("td:eq(12)").find(":input").val(),
-            R_OrderType: $(this).closest("tr").find("td:eq(13)").find(":input").val(),
-            SaleOrganization: $(this).closest("tr").find("td:eq(14)").find(":input").val(),
-            DistributionChannel: $(this).closest("tr").find("td:eq(15)").find(":input").val(),
-            Division: $(this).closest("tr").find("td:eq(16)").find(":input").val(),
-            DispatchPlant: $(this).closest("tr").find("td:eq(17)").find(":input").val(),
-            S_StorageLocation: $(this).closest("tr").find("td:eq(18)").find(":input").val(),
-            R_StorageLocation: $(this).closest("tr").find("td:eq(19)").find(":input").val(),
-            SalesItemCategory: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
-            ReturnItemCategory: $(this).closest("tr").find("td:eq(21)").find(":input").val(),
-            IncomeTax: $(this).closest("tr").find("td:eq(22)").find(":input").val(),
-            SalesTax: $(this).closest("tr").find("td:eq(23)").find(":input").val(),
-            AdditionalSalesTax: $(this).closest("tr").find("td:eq(24)").find(":input").val(),
-            LicenseControlId: $(this).closest("tr").find("td:eq(25)").find(":input").val(),
+            FOCProductCode: $(this).closest("tr").find("td:eq(6)").find(":input").val(),
+            ProductVisibilityId: $(this).closest("tr").find("td:eq(7)").find(":input").val(),
+            PlantLocationId: $(this).closest("tr").find("td:eq(8)").find(":input").val(),
+            CompanyId: $(this).closest("tr").find("td:eq(9)").find(":input").val(),
+            WTaxRate: $(this).closest("tr").find("td:eq(10)").find(":input").val(),
+            Factor: $(this).closest("tr").find("td:eq(11)").find(":input").val(),
+            ParentDistributor: $(this).closest("tr").find("td:eq(12)").find(":input").val(),
+            S_OrderType: $(this).closest("tr").find("td:eq(13)").find(":input").val(),
+            R_OrderType: $(this).closest("tr").find("td:eq(14)").find(":input").val(),
+            SaleOrganization: $(this).closest("tr").find("td:eq(15)").find(":input").val(),
+            DistributionChannel: $(this).closest("tr").find("td:eq(16)").find(":input").val(),
+            Division: $(this).closest("tr").find("td:eq(17)").find(":input").val(),
+            DispatchPlant: $(this).closest("tr").find("td:eq(18)").find(":input").val(),
+            S_StorageLocation: $(this).closest("tr").find("td:eq(19)").find(":input").val(),
+            R_StorageLocation: $(this).closest("tr").find("td:eq(20)").find(":input").val(),
+            SalesItemCategory: $(this).closest("tr").find("td:eq(21)").find(":input").val(),
+            ReturnItemCategory: $(this).closest("tr").find("td:eq(22)").find(":input").val(),
+            IncomeTax: $(this).closest("tr").find("td:eq(23)").find(":input").val(),
+            SalesTax: $(this).closest("tr").find("td:eq(24)").find(":input").val(),
+            AdditionalSalesTax: $(this).closest("tr").find("td:eq(25)").find(":input").val(),
+            LicenseControlId: $(this).closest("tr").find("td:eq(26)").find(":input").val(),
         };
 
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },

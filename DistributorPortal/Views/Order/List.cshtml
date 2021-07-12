@@ -11,8 +11,8 @@
                 <h2 class="card-title">Order List</h2>
                 @if (SessionHelper.LoginUser.IsDistributor == true)
                 {
-                    <a asp-controller="OrderForm"
-                       asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</a>
+                    @*<a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</a>*@
+                    <a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")">Add</a>
                 }
             </div>
             <div class="card-body scrollmenu">
@@ -97,7 +97,6 @@
             </div>
             <div class="modal-body">
                 <p id="expirecontent">
-
                 </p>
             </div>
             <div class="modal-footer justify-content-between">
@@ -131,18 +130,20 @@
 
         });
 
-        var days = '@ViewBag.Days';
+        var days = JSON.parse('@Html.Raw(ViewBag.Days)');
         if (days != '') {
-            if (parseInt(days) <= 0) {
-                $('#expirecontent').text('Your license has expired, please upload your renewal license.');
-                $('#modal-intimation').modal('toggle');
-                $('#modal-intimation').modal('show');
-            } else if (parseInt(days) > 0) {
-                $('#expirecontent').text('Your license will be expired within ' + days +' days, please upload your license before the expiry date, other wise you can not place the order.');
-                $('#modal-intimation').modal('toggle');
-                $('#modal-intimation').modal('show');
-
-            }
+            $.each(days, function (index, day) {
+                if (parseInt(day.Value) <= 0) {
+                    $('#expirecontent').append('Your ' + day.Key + ' license has expired, please upload your renewal license. <br />');
+                        $('#modal-intimation').modal('toggle');
+                        $('#modal-intimation').modal('show');
+                } else if (parseInt(day.Value) > 0) {
+                    var val = day.Value == '1' ? 'day' : 'days';
+                    $('#expirecontent').append('Your ' + day.Key + ' license will be expired within ' + day.Value + ' ' + val + ', please upload your license before the expiry date, other wise you can not place the order. <br />');
+                    $('#modal-intimation').modal('toggle');
+                    $('#modal-intimation').modal('show');
+                }
+            });
         }
     });
 
@@ -164,11 +165,8 @@
                     data: { 'DPID': Id },
                     cache: false,
                     success: function (response) {
-                        ;
                         Swal.fire('Saved!', response.Message, 'success')
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        window.location.reload();
                     }
                 });
             }
@@ -193,11 +191,8 @@
                     data: { 'DPID': Id },
                     cache: false,
                     success: function (response) {
-                        ;
-                        Swal.fire('Saved!', response.Message, 'success')
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        Swal.fire('Saved!', response.Message, 'success');
+                        window.location.reload();
                     }
                 });
             }

@@ -12,14 +12,13 @@ namespace Models.Application
         public int OrderQuantity { get; set; }
         public int DispatchQuantity { get; set; }
         public int PendingQuantity { get; set; }
+        public double PendingValue { get; set; }
         [NotMapped]
         public string ProductName { get; set; }
         [NotMapped]
         public double Rate { get; set; }
         [NotMapped]
         public double Discount { get; set; }
-        [NotMapped]
-        public double PendingValue { get; set; }
         [NotMapped]
         public int CompanyId { get; set; }
     }

@@ -116,7 +116,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = NotificationMessage.FileSizeAllowed;
                         return Json(new { data = jsonResponse });
                     }
-                    Tuple<bool, string> tuple = FileUtility.UploadFile(model.File, FolderName.Complaint, FolderPath);
+                    Tuple<bool, string> tuple = FileUtility.UploadFile(model.File, FolderName.DistributorLicense, FolderPath);
                     if (tuple.Item1)
                     {
                         model.Attachment = tuple.Item2;

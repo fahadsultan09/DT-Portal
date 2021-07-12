@@ -23,13 +23,15 @@ namespace Scheduler
         private readonly OrderBLL _OrderBLL;
         private readonly DistributorBLL _distributorBll;
         private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
-
+        private readonly DistributorWiseProductDiscountAndPricesBLL _DistributorWiseProductDiscountAndPricesBLL;
         public DistributorPendingQuanityValue(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
             _Configuration = configuration;
+            _Configuration = configuration;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _distributorBll = new DistributorBLL(_unitOfWork);
+            _DistributorWiseProductDiscountAndPricesBLL = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
             _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
 
         }
@@ -43,8 +45,12 @@ namespace Scheduler
                 foreach (var item in distributors)
                 {
                     List<DistributorPendingQuantity> List = _OrderBLL.GetDistributorOrderPendingQuantitys(item.DistributorSAPCode, _Configuration);
+                    var distributorProduct = _DistributorWiseProductDiscountAndPricesBLL.Where(e => e.DistributorId == item.Id && e.ProductDetailId != null);
                     List.ForEach(e => e.DistributorId = item.Id);
                     List.ForEach(e => e.CreatedDate = DateTime.Now);
+                    List.ForEach(x => x.Rate = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Rate : 0);
+                    List.ForEach(x => x.Discount = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Discount : 0);
+                    List.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount)));
                     DistributorPendingQuantitys.AddRange(List);
                 }
                 _unitOfWork.Begin();

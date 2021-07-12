@@ -5,6 +5,7 @@ using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.UserRights;
 using Models.ViewModel;
 using Newtonsoft.Json;
 using RestSharp;
@@ -17,7 +18,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.ServiceModel;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Utility;
 using Utility.HelperClasses;
@@ -36,6 +36,8 @@ namespace BusinessLogicLayer.Application
         private readonly DistributorWiseProductDiscountAndPricesBLL discountAndPricesBll;
         private readonly UserBLL _UserBLL;
         private readonly PaymentBLL _PaymentBLL;
+        private readonly ProductMasterBLL _ProductMasterBLL;
+        private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -47,6 +49,8 @@ namespace BusinessLogicLayer.Application
             _UserBLL = new UserBLL(_unitOfWork);
             _PaymentBLL = new PaymentBLL(_unitOfWork);
             discountAndPricesBll = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
+            _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
+            _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
         }
         public int Add(OrderMaster module)
         {
@@ -384,7 +388,7 @@ namespace BusinessLogicLayer.Application
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
                         QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
                         QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
-                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
+                        QuanityLoose = CalculateLooseQuantity(item.ProductDetail.ProductMaster.SFSize, item.ProductDetail.ProductMaster.Quantity, item.ProductDetail.ProductMaster.CartonSize),
                         ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
                         S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
                         SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
@@ -415,6 +419,14 @@ namespace BusinessLogicLayer.Application
                 AddRange(GetValues(GetOrderValueModel(ProductDetails), model.Id));
                 jsonResponse.Status = true;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft + " Order Id: " + model.SNo : OrderContant.OrderSubmit + " Order Id: " + model.SNo;
+                if (jsonResponse.Status && model.Status != OrderStatus.Draft)
+                {
+                    RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.OrderApprove && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                    if (rolePermission != null)
+                    {
+                        jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = rolePermission.RoleId.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    }
+                }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
             }
             else
@@ -432,7 +444,7 @@ namespace BusinessLogicLayer.Application
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
                         QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
                         QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
-                        QuanityLoose = (item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize)).ToString() == "NaN" ? 0 : (item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize + ((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize) * item.ProductDetail.ProductMaster.SFSize),
+                        QuanityLoose = CalculateLooseQuantity(item.ProductDetail.ProductMaster.SFSize, item.ProductDetail.ProductMaster.Quantity, item.ProductDetail.ProductMaster.CartonSize),
                         ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
                         S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
                         SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
@@ -461,6 +473,14 @@ namespace BusinessLogicLayer.Application
                 model = _repository.GetById(model.Id);
                 model.SNo = model.SNo;
                 jsonResponse.Message = model.Status == OrderStatus.Draft ? OrderContant.OrderDraft + " Order Id: " + model.SNo : OrderContant.OrderSubmit + " Order Id: " + model.SNo;
+                if (jsonResponse.Status && model.Status != OrderStatus.Draft)
+                {
+                    RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.OrderApprove && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                    if (rolePermission != null)
+                    {
+                        jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = rolePermission.RoleId.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    }
+                }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
             }
             return jsonResponse;
@@ -479,6 +499,25 @@ namespace BusinessLogicLayer.Application
                     + (item.ProductDetail.ProductMaster.Quantity * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice)
                     * (1 - (-1 * DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount / 100)) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesTax / 100))) * (DistributorWiseProductDiscountAndPrices.FirstOrDefault(x => x.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.IncomeTax / 100);
         }
+        public double CalculateLooseQuantity(double SFSize, double Quantity, double CartonSize)
+        {
+            if (SFSize > 0 && Quantity > 0)
+            {
+                double value = (Quantity - ((Quantity / CartonSize) * CartonSize) + ((Quantity - ((Quantity / CartonSize) * CartonSize) / SFSize) * SFSize)).ToString() == "NaN" ? 0 : (Quantity / CartonSize) * CartonSize + ((Quantity - ((Quantity / CartonSize) * CartonSize) / SFSize) * SFSize);
+                return value;
+            }
+            if (Quantity > 0)
+            {
+                int val = Convert.ToInt32(Math.Floor(Quantity) / Math.Floor(CartonSize));
+                if (val != 0)
+                {
+                    double val2 = Convert.ToInt32(CartonSize) * val;
+                    return -1 * (Quantity - val2);
+                }
+            }
+            return 0;
+        }
+
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
@@ -595,42 +634,6 @@ namespace BusinessLogicLayer.Application
                          });
 
             return query.ToList();
-        }
-        public DistributorBalance GetBalance(string DistributorCode, Configuration configuration)
-        {
-            try
-            {
-                DistributorBalance distributorBalance = new DistributorBalance();
-                Root root = new Root();
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri(configuration.SyncDistributorBalanceURL + DistributorCode)).Result;
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var JsonContent = result.Content.ReadAsStringAsync().Result;
-                        root = JsonConvert.DeserializeObject<Root>(JsonContent);
-                    }
-                }
-                if (distributorBalance == null)
-                {
-                    return new DistributorBalance();
-                }
-                else
-                {
-                    distributorBalance.SAMI = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_SAMI;
-                    distributorBalance.HealthTek = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_HTL;
-                    return distributorBalance;
-                }
-            }
-            catch (Exception ex)
-            {
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return new DistributorBalance();
-            }
         }
         public List<SAPOrderPendingQuantity> GetDistributorPendingQuantity(string DistributorCode, Configuration _configuration)
         {
@@ -895,7 +898,7 @@ namespace BusinessLogicLayer.Application
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                var result = client.GetAsync(new Uri(configuration.GetPendingQuantity + DistributorSAPCode)).Result;
+                var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PendingOrd?DISTRIBUTOR=" + DistributorSAPCode)).Result;
                 if (result.IsSuccessStatusCode)
                 {
                     var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -1030,6 +1033,37 @@ namespace BusinessLogicLayer.Application
                 });
             }
             return model;
+        }
+        public List<DistributorPendingQuantity> DistributorPendingQuantity(int DistributorId)
+        {
+            var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == DistributorId && e.ProductDetailId != null);
+            List<ProductMaster> _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
+            List<ProductDetail> _ProductDetail = ProductDetailBLL.GetAllProductDetail().ToList();
+            List<DistributorPendingQuantity> DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == DistributorId).ToList();
+            DistributorPendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.First(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
+            DistributorPendingQuantity.ForEach(x => x.CompanyId = _ProductDetail.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) != null ? _ProductDetail.First(y => y.ProductMaster.SAPProductCode == x.ProductCode).CompanyId : 0);
+            DistributorPendingQuantity.ForEach(x => x.Rate = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Rate : 0);
+            DistributorPendingQuantity.ForEach(x => x.Discount = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Discount : 0);
+            DistributorPendingQuantity = DistributorPendingQuantity.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
+            return DistributorPendingQuantity;
+        }
+        public List<DistributorPendingValue> DistributorPendingValue(List<DistributorPendingQuantity> DistributorPendingQuantity)
+        {
+            List<DistributorPendingValue> distributorPendingValue = new List<DistributorPendingValue>();
+            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany().ToList();
+            DistributorPendingValue SAMI = new DistributorPendingValue();
+            DistributorPendingValue Healthtek = new DistributorPendingValue();
+            DistributorPendingValue Phytek = new DistributorPendingValue();
+            SAMI.PendingValue = DistributorPendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.SAMI).Sum(x => x.PendingValue).ToString();
+            SAMI.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.SAMI).SAPCompanyCode;
+            distributorPendingValue.Add(SAMI);
+            Healthtek.PendingValue = DistributorPendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Healthtek).Sum(x => x.PendingValue).ToString();
+            Healthtek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Healthtek).SAPCompanyCode;
+            distributorPendingValue.Add(Healthtek);
+            Phytek.PendingValue = DistributorPendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Phytek).Sum(x => x.PendingValue).ToString();
+            Phytek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Phytek).SAPCompanyCode;
+            distributorPendingValue.Add(Phytek);
+            return distributorPendingValue;
         }
     }
 }

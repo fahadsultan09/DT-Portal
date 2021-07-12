@@ -8,6 +8,7 @@ using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models.Application;
+using Models.UserRights;
 using Models.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -28,6 +29,7 @@ namespace DistributorPortal.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly PaymentBLL _PaymentBLL;
+        private readonly OrderBLL _OrderBLL;
         private readonly NotificationBLL _NotificationBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _Configuration;
@@ -35,6 +37,7 @@ namespace DistributorPortal.Controllers
         {
             _unitOfWork = unitOfWork;
             _PaymentBLL = new PaymentBLL(_unitOfWork);
+            _OrderBLL = new OrderBLL(_unitOfWork);
             _NotificationBLL = new NotificationBLL(_unitOfWork);
             _IConfiguration = _iconfiguration;
             _Configuration = _configuration;
@@ -55,7 +58,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                model.PaymentMaster = _PaymentBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+                model.PaymentMaster = _PaymentBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor ? x.DistributorId == SessionHelper.LoginUser.DistributorId : SessionHelper.LoginUser.CompanyId != null ? x.CompanyId == SessionHelper.LoginUser.CompanyId : true).ToList();
             }
             return model;
         }
@@ -131,6 +134,11 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = NotificationMessage.PaymentSaved;
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApprovePayment && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                if (rolePermission != null)
+                {
+                    jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = (rolePermission.RoleId + model.CompanyId).ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                }
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -144,17 +152,40 @@ namespace DistributorPortal.Controllers
         private PaymentMaster BindPaymentMaster(int Id)
         {
             PaymentMaster model = new PaymentMaster();
+            if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorBalance == null)
+            {
+                SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+            }
             if (Id > 0)
             {
                 model = _PaymentBLL.GetById(Id);
-                SessionHelper.DistributorBalance = GetDistributorBalance(model.Distributor.DistributorSAPCode);
                 model.Distributor = new DistributorBLL(_unitOfWork).Where(x => x.Id == model.DistributorId).FirstOrDefault();
+                if (SessionHelper.DistributorBalance == null)
+                {
+                    SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(model.Distributor.DistributorSAPCode, _Configuration);
+                }
+                if (SessionHelper.LoginUser.IsDistributor && (SessionHelper.DistributorPendingValue == null || SessionHelper.DistributorPendingValue.Count() == 0))
+                {
+                    SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity((int)SessionHelper.LoginUser.DistributorId);
+                    SessionHelper.DistributorPendingValue = _OrderBLL.DistributorPendingValue(SessionHelper.DistributorPendingQuantity);
+                }
+                else
+                {
+                    if (SessionHelper.DistributorBalance == null)
+                    {
+                        SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(model.Distributor.DistributorSAPCode, _Configuration);
+                    }
+                    if (SessionHelper.DistributorPendingValue == null || SessionHelper.DistributorPendingValue.Count() == 0)
+                    {
+                        SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity(model.Distributor.Id);
+                        SessionHelper.DistributorPendingValue = _OrderBLL.DistributorPendingValue(SessionHelper.DistributorPendingQuantity);
+                    }
+                }
             }
             else
             {
                 model.Distributor = SessionHelper.LoginUser.Distributor;
             }
-
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 model.PaymentValueViewModel = _PaymentBLL.GetOrderValueModel(SessionHelper.LoginUser.Distributor.Id);
@@ -279,44 +310,8 @@ namespace DistributorPortal.Controllers
         }
         public List<PaymentMaster> GetPaymentList()
         {
-            var list = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            var list = _PaymentBLL.Where(x => SessionHelper.LoginUser.IsDistributor ? x.DistributorId == SessionHelper.LoginUser.DistributorId : SessionHelper.LoginUser.CompanyId != null ? x.CompanyId == SessionHelper.LoginUser.CompanyId : true).ToList();
             return list;
-        }
-        public DistributorBalance GetDistributorBalance(string DistributorSAPCode)
-        {
-            try
-            {
-                DistributorBalance distributorBalance = new DistributorBalance();
-                Root root = new Root();
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    var result = client.GetAsync(new Uri(_Configuration.SyncDistributorBalanceURL + DistributorSAPCode)).Result;
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var JsonContent = result.Content.ReadAsStringAsync().Result;
-                        root = JsonConvert.DeserializeObject<Root>(JsonContent);
-                    }
-                }
-                if (distributorBalance == null)
-                {
-                    return new DistributorBalance();
-                }
-                else
-                {
-                    distributorBalance.SAMI = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_SAMI;
-                    distributorBalance.HealthTek = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_HTL;
-                    return distributorBalance;
-                }
-            }
-            catch (Exception ex)
-            {
-                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                return new DistributorBalance();
-            }
         }
     }
 }

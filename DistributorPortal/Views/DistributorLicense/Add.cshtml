@@ -2,6 +2,7 @@
 @inject IUnitOfWork unitOfWork
 @{
     List<LicenseForm> LicenseFormList = new LicenseFormBLL(unitOfWork).GetAllLicenseForm();
+    List<LicenseType> LicenseTypeList = new LicenseTypeBLL(unitOfWork).GetAllLicenseType();
     ViewBag.Title = "Add / Update License";
     var j = 0;
 }
@@ -78,6 +79,7 @@
                                         <tr>
                                             <th class="text-center">License</th>
                                             <th class="text-center">License Type<span class="text-danger"> * </span></th>
+                                            <th class="text-center">Document Type<span class="text-danger"> * </span></th>
                                             <th class="text-center">Request Type<span class="text-danger"> * </span></th>
                                             <th class="text-center">License No<span class="text-danger"> * </span></th>
                                             <th class="text-center">Issuing Authority<span class="text-danger"> * </span></th>
@@ -94,7 +96,7 @@
                                         @for (int i = 0; i < Model.Count; i++)
                                         {
                                             <tr>
-                                                @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].Type == LicenseType.Challan)
+                                                @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].DocumentType == DocumentType.Challan)
                                                 {
                                                     if (Model[i].Expiry.Date <= DateTime.Now.Date && Model[i].Id != 0 || Model[i].Status == null)
                                                     {
@@ -108,7 +110,7 @@
                                                         {
                                                             Model[j].Status = LicenseStatus.Expired;
                                                         }
-                                                        Model[j].Type = null;
+                                                        Model[j].DocumentType = null;
                                                         Model[j].RequestType = null;
                                                         Model[j].FormNoId = null;
                                                     }
@@ -119,7 +121,12 @@
                                                         @Model[i].LicenseControl.LicenseName
                                                     </td>
                                                     <td width="10%">
-                                                        <select class="form-control select2" asp-for="@Model[j].Type" asp-items="Html.GetEnumSelectList<LicenseType>()">
+                                                        <select class="form-control select2" asp-for="@Model[j].LicenseTypeId" asp-items="@(new SelectList(LicenseTypeList, "Id", "LicenseTypeName", Model[j].LicenseTypeId))">
+                                                            <option readonly>--Select option--</option>
+                                                        </select>
+                                                    </td>
+                                                    <td width="5%">
+                                                        <select class="form-control select2" asp-for="@Model[j].DocumentType" asp-items="Html.GetEnumSelectList<DocumentType>()">
                                                             <option readonly>--Select option--</option>
                                                         </select>
                                                     </td>
@@ -171,7 +178,7 @@
                                                         @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
                                                     </td>
                                                     <td width="5%">
-                                                        @if (Model.Any(x => x.Status == LicenseStatus.Rejected || x.Type == LicenseType.Challan || x.Expiry.Date <= DateTime.Now.Date))
+                                                        @if (Model.Any(x => x.Status == LicenseStatus.Rejected || x.DocumentType == DocumentType.Challan || x.Expiry.Date <= DateTime.Now.Date))
                                                         {
                                                             <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
                                                         }
@@ -180,12 +187,15 @@
                                                 else
                                                 {
                                                     <td width="5%">
-                                                        <input type="hidden" asp-for="@Model[j].Type" value="@Model[j].Type" />
+                                                        <input type="hidden" asp-for="@Model[j].DocumentType" value="@Model[j].DocumentType" />
                                                         <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
                                                         @Model[i].LicenseControl.LicenseName
                                                     </td>
                                                     <td width="10%">
-                                                        @Model[i].Type
+                                                        @Model[i].LicenseType.LicenseTypeName
+                                                    </td>
+                                                    <td width="10%">
+                                                        @Model[i].DocumentType
                                                     </td>
                                                     <td width="10%">
                                                         @Html.DisplayFor(x => Model[i].RequestType)
@@ -233,7 +243,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive-sm">
-                                <table id="example1" class="table table-bordered table-striped"  >
+                                <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
                                             <th class="text-center">License</th>
@@ -255,7 +265,7 @@
                                                         @(item.LicenseControl is null ? "" : @item.LicenseControl.LicenseName)
                                                     </td>
                                                     <td>
-                                                        @item.Type
+                                                        @item.DocumentType
                                                     </td>
                                                     <td>
                                                         @Html.DisplayFor(x => item.RequestType)
@@ -292,40 +302,44 @@
 <script>
 
     $("#example2").on("click", ".btnSubmit", function () {
-
+        
         if ($(this).closest("tr").find("td:eq(1)").find(":input").val() == "--Select option--") {
             Toast.fire({ icon: 'error', title: 'Select License Type' });
             return false;
         }
         if ($(this).closest("tr").find("td:eq(2)").find(":input").val() == "--Select option--") {
+            Toast.fire({ icon: 'error', title: 'Select Document Type' });
+            return false;
+        }
+        if ($(this).closest("tr").find("td:eq(3)").find(":input").val() == "--Select option--") {
             Toast.fire({ icon: 'error', title: 'Select Request Type' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(3)").find(":input").val() == "") {
+        if ($(this).closest("tr").find("td:eq(4)").find(":input").val() == "") {
             Toast.fire({ icon: 'error', title: 'Enter License No' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(4)").find(":input").val() == "") {
+        if ($(this).closest("tr").find("td:eq(5)").find(":input").val() == "") {
             Toast.fire({ icon: 'error', title: 'Enter Issuing Authority' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(5)").find(":input").val() == "--Select option--") {
+        if ($(this).closest("tr").find("td:eq(6)").find(":input").val() == "--Select option--") {
             Toast.fire({ icon: 'error', title: 'Select Form No' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(6)").find(":input").val() == "") {
+        if ($(this).closest("tr").find("td:eq(7)").find(":input").val() == "") {
             Toast.fire({ icon: 'error', title: 'Select a file' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(7)").find(":input").val() == "") {
+        if ($(this).closest("tr").find("td:eq(8)").find(":input").val() == "") {
             Toast.fire({ icon: 'error', title: 'Select Issue Date' });
             return false;
         }
-        if ($(this).closest("tr").find("td:eq(8)").find(":input").val() == "") {
+        if ($(this).closest("tr").find("td:eq(9)").find(":input").val() == "") {
             Toast.fire({ icon: 'error', title: 'Select Expiry Date' });
             return false;
         }
-        var fileUpload = $(this).closest("tr").find("td:eq(6)").find(":input").get(0);
+        var fileUpload = $(this).closest("tr").find("td:eq(7)").find(":input").get(0);
         var files = fileUpload.files;
 
         var LicenseControl = {
@@ -335,14 +349,15 @@
         model.append('Id', $(this).closest("tr").find("td:eq(0)").find('input.hiddenId').val());
         model.append('LicenseId', $(this).closest("tr").find("td:eq(0)").find('input.hiddenLicenseId').val());
         model.append('LicenseControl', LicenseControl);
-        model.append('Type', $(this).closest("tr").find("td:eq(1)").find(":input").val());
-        model.append('RequestType', $(this).closest("tr").find("td:eq(2)").find(":input").val());
-        model.append('LicenseNo', $(this).closest("tr").find("td:eq(3)").find(":input").val());
-        model.append('IssuingAuthority', $(this).closest("tr").find("td:eq(4)").find(":input").val());
-        model.append('FormNoId', $(this).closest("tr").find("td:eq(5)").find(":input").val());
+        model.append('LicenseTypeId', $(this).closest("tr").find("td:eq(1)").find(":input").val());
+        model.append('DocumentType', $(this).closest("tr").find("td:eq(2)").find(":input").val());
+        model.append('RequestType', $(this).closest("tr").find("td:eq(3)").find(":input").val());
+        model.append('LicenseNo', $(this).closest("tr").find("td:eq(4)").find(":input").val());
+        model.append('IssuingAuthority', $(this).closest("tr").find("td:eq(5)").find(":input").val());
+        model.append('FormNoId', $(this).closest("tr").find("td:eq(6)").find(":input").val());
         model.append('File', files[0]);
-        model.append('IssueDate', $(this).closest("tr").find("td:eq(7)").find(":input").val());
-        model.append('Expiry', $(this).closest("tr").find("td:eq(8)").find(":input").val());
+        model.append('IssueDate', $(this).closest("tr").find("td:eq(8)").find(":input").val());
+        model.append('Expiry', $(this).closest("tr").find("td:eq(9)").find(":input").val());
         BlockUI();
         $.post({
             url: "SaveEdit/DistributorLicense",
@@ -354,9 +369,7 @@
 
                 if (data != null && data.data.Status) {
                     Toast.fire({ icon: 'success', title: data.data.Message });
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1000);
+                    window.location.reload();
                 } else {
                     UnBlockUI();
                     Toast.fire({ icon: 'error', title: data.data.Message });

@@ -12,7 +12,8 @@
                         <tr>
                             <th>Distributor Name</th>
                             <th>License Name</th>
-                            <th>Type</th>
+                            <th>License Type</th>
+                            <th>DocumentType</th>
                             <th>Request Type</th>
                             <th>License No</th>
                             <th>Issuing Authority</th>
@@ -30,7 +31,8 @@
                             <tr>
                                 <td>@item.Distributor.DistributorName</td>
                                 <td>@item.LicenseControl.LicenseName</td>
-                                <td>@item.Type</td>
+                                <td>@item.LicenseType.LicenseTypeName</td>
+                                <td>@item.DocumentType</td>
                                 <td>@Html.DisplayFor(x => item.RequestType)</td>
                                 <td>@item.LicenseNo</td>
                                 <td>@item.IssuingAuthority</td>
@@ -76,10 +78,10 @@
 
         $("#example1").dataTable().fnDestroy();
         $("#example1").DataTable({
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
-            "order": [],
+            "order": [[10, "asc"]]
         });
 
         $('.select2').select2({

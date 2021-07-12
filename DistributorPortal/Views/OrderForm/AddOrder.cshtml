@@ -7,7 +7,6 @@
     List<int> DistributorLicenseId = ((List<int>)ViewBag.LicenseId).Count() == 0 ? new List<int>() : (List<int>)ViewBag.LicenseId;
     List<int> LicenseFormList = new LicenseControlBLL(unitOfWork).Where(x => x.IsMandatory == true).Select(x => x.Id).ToList();
 }
-
 <style>
     .ordervalue > tbody > tr > td {
         text-align: center;
@@ -96,7 +95,8 @@
 
                                 <div class="row">
                                     <div class="col-lg-12 scrollmenu" style="height: 480px;">
-                                        <table id="example1" class="table table-bordered table-condensed table-hover table-striped" style="width: 140%">
+                                        @*<table id="example1" class="table table-head-fixed table-bordered table-condensed table-hover table-striped" style="width: 140%">*@
+                                        <table id="example1" class="table table-head-fixed table-bordered table-condensed table-hover table-striped" style="width: 140%">
                                             <thead>
                                                 <tr>
                                                     <th>Code</th>
@@ -155,9 +155,9 @@
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
-                                                        <td><span class="CurtonQty"></span></td>
-                                                        <td><span class="QtySF"></span></td>
-                                                        <td><span class="QtyLoose"></span></td>
+                                                        <td><span class="CurtonQty">@Model.ProductDetails[i].ProductDetail.QuanityCarton</span></td>
+                                                        <td><span class="QtySF">@Model.ProductDetails[i].ProductDetail.QuanitySF</span></td>
+                                                        <td><span class="QtyLoose">@Model.ProductDetails[i].ProductDetail.QuanityLoose</span></td>
                                                     </tr>
                                                     id++;
                                                 }
@@ -170,7 +170,7 @@
                                         <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp;</label><strong><span id="OrderValue"></span></strong>
                                     </div>
                                     <div class="col-lg-1 offset-11">
-                                        <button type="button" onclick="LoadModal();" class="btn btn-primary pull-right" style="margin-top: 28px"><i class="fa fa-arrow-right"></i>&nbsp;Next</button>
+                                        <button type="button" onclick="LoadModal();" class="btn btn-primary pull-right"><i class="fa fa-arrow-right"></i>&nbsp;Next</button>
                                     </div>
                                 </div>
                             </div>
@@ -251,15 +251,11 @@
                 if (data.data.SignalRResponse !== null) {
                     var result = CallSignalR(data.data.SignalRResponse);
                     if (result) {
-                        setTimeout(function () {
-                            window.location = data.data.RedirectURL;
-                        }, 1000);
+                        window.location = data.data.RedirectURL;
                     }
                 }
                 else {
-                    setTimeout(function () {
-                        window.location = data.data.RedirectURL;
-                    }, 1000);
+                    window.location = data.data.RedirectURL;
                 }
             } else {
 
@@ -405,7 +401,7 @@
         else {
 
             var qty = parseInt(quantity);
-            var size = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
+            var CurtonSize = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
             var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
             var tradePrice = parseFloat($(data).parent('td').parent('tr').find('.TradePrice').val());
             var discount = parseFloat($(data).parent('td').parent('tr').find('.Discount').text());
@@ -417,15 +413,20 @@
             $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue.toFixed(2));
             //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
             if (quantity != "" && quantity != undefined) {
-                if (size != 0) {
-                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / size).toString();
-                        $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = Math.ceil((quantity - ((quantity / size) * size) / SFSize)).toString() == "-Infinity" ? 0 : Math.ceil((quantity - ((quantity / size) * size) / SFSize));
-                        $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = (quantity - ((quantity / size) * size) + ((quantity - ((quantity / size) * size) / SFSize) * SFSize)).toString() == "NaN" ? 0 : (quantity / size) * size + ((quantity - ((quantity / size) * size) / SFSize) * SFSize);
+                if (CurtonSize != 0 && SFSize != 0) {
+                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / CurtonSize).toString();
+                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = (quantity - ((quantity / CurtonSize) * CurtonSize) + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize)).toString() == "NaN" ? 0 : (quantity / CurtonSize) * CurtonSize + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize);
+                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize)).toString() == "-Infinity" ? 0 : Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize));
+                }
+                else if (CurtonSize != 0) {
+                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = CalculateLooseQuantity(qty,CurtonSize);
                 }
                 else {
-                        $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
-                        $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
-                        $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = 0;
                 }
             }
             else {
@@ -486,6 +487,19 @@
             $('[name="btnSubmit"]').val("Draft");
             LoadModal();
         });
+    }
+
+    function CalculateLooseQuantity(qty, CurtonSize) {
+
+        var val = Math.floor(qty) / Math.floor(CurtonSize);
+        if (Math.floor(val) != 0) {
+            var val2 = Math.floor(CurtonSize) * Math.floor(val);
+            var looseQuantity = qty - val2;
+            return looseQuantity;
+        }
+        else {
+            return 0;
+        }
     }
 
 </script>

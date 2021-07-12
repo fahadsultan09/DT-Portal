@@ -232,6 +232,7 @@ namespace ProductPortal.Controllers
                     UpdateProductDetailList.ForEach(x =>
                     {
                         var item = _unitOfWork.GenericRepository<ProductDetail>().FirstOrDefault(y => y.Id == x.Id);
+                        item.FOCProductCode = x.FOCProductCode;
                         item.ProductVisibilityId = x.ProductVisibilityId;
                         item.PlantLocationId = x.PlantLocationId;
                         item.CompanyId = x.CompanyId;

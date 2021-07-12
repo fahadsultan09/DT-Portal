@@ -121,7 +121,7 @@ namespace DistributorPortal.Controllers
         }
         public List<PaymentMaster> GetPaymentList(PaymentSearch model)
         {
-            List<PaymentMaster> list = _PaymentBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            List<PaymentMaster> list = _PaymentBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor ? x.DistributorId == SessionHelper.LoginUser.DistributorId : SessionHelper.LoginUser.CompanyId != null ? x.CompanyId == SessionHelper.LoginUser.CompanyId : true).ToList();
             return list;
         }
         [HttpPost]
@@ -180,7 +180,7 @@ namespace DistributorPortal.Controllers
         #endregion
 
         #region Common
-        public IActionResult Print(ApplicationPages ApplicationPage, string DPID, string SiteTRNo, string KorangiTRNo)
+        public IActionResult Print(ApplicationPages ApplicationPage, string DPID, string SiteTRNo, string KorangiTRNo, string SITEPhytek, string KorangiPhytek)
         {
             JsonResponse jsonResponse = new JsonResponse();
             try
@@ -217,7 +217,21 @@ namespace DistributorPortal.Controllers
                             _OrderReturnDetailBLL.UpdateRange(OrderReturnDetailList);
                             List.AddRange(_OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id && x.PlantLocationId == 2).ToList());
                         }
-                        if (string.IsNullOrEmpty(KorangiTRNo) && string.IsNullOrEmpty(SiteTRNo))
+                        if (!string.IsNullOrEmpty(SITEPhytek))
+                        {
+                            List<OrderReturnDetail> OrderReturnDetailList = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id && x.PlantLocationId == 3).ToList();
+                            OrderReturnDetailList.ForEach(x => x.TRNo = SITEPhytek);
+                            _OrderReturnDetailBLL.UpdateRange(OrderReturnDetailList);
+                            List.AddRange(_OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id && x.PlantLocationId == 3).ToList());
+                        }
+                        if (!string.IsNullOrEmpty(KorangiPhytek))
+                        {
+                            List<OrderReturnDetail> OrderReturnDetailList = _OrderReturnDetailBLL.Where(x => x.OrderReturnId == id && x.PlantLocationId == 4).ToList();
+                            OrderReturnDetailList.ForEach(x => x.TRNo = KorangiPhytek);
+                            _OrderReturnDetailBLL.UpdateRange(OrderReturnDetailList);
+                            List.AddRange(_OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id && x.PlantLocationId == 4).ToList());
+                        }
+                        if (string.IsNullOrEmpty(KorangiTRNo) && string.IsNullOrEmpty(SiteTRNo) && string.IsNullOrEmpty(SITEPhytek) && string.IsNullOrEmpty(KorangiPhytek))
                         {
                             List = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id).ToList();
                         }

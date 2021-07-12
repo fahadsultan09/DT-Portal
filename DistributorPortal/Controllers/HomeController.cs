@@ -4,7 +4,7 @@ using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
-using DistributorPortal.Resource;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -42,11 +42,10 @@ namespace DistributorPortal.Controllers
         private List<ProductMaster> _ProductMaster;
         private List<Distributor> _Distributor;
         private readonly Configuration _configuration;
-        private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
-        private readonly DistributorWiseProductDiscountAndPricesBLL discountAndPricesBll;
         public HomeController(IUnitOfWork unitOfWork, Configuration configuration)
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
             _PaymentBLL = new PaymentBLL(_unitOfWork);
@@ -57,8 +56,6 @@ namespace DistributorPortal.Controllers
             _PolicyBLL = new PolicyBLL(_unitOfWork);
             _NotificationBLL = new NotificationBLL(_unitOfWork);
             _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
-            _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
-            discountAndPricesBll = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
 
             if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
             {
@@ -79,7 +76,6 @@ namespace DistributorPortal.Controllers
             {
                 SessionHelper.Notification = new List<Notification>();
             }
-            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -332,7 +328,7 @@ namespace DistributorPortal.Controllers
         #endregion
 
         #region Distributor
-        public IActionResult DistributorDashboard()
+        public async Task<IActionResult> DistributorDashboard()
         {
             try
             {
@@ -367,10 +363,7 @@ namespace DistributorPortal.Controllers
                 model.ReturnOrder = _OrderReturnMaster.Where(x => x.Status != OrderReturnStatus.Draft).Count();
 
                 model.PolicyList = _PolicyBLL.Where(x => x.IsActive && !x.IsDeleted).ToList();
-                if (SessionHelper.LoginUser.Distributor != null)
-                {
-                    SessionHelper.DistributorBalance = _OrderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
-                }
+                await Get();
                 return View(model);
             }
             catch (Exception ex)
@@ -490,43 +483,50 @@ namespace DistributorPortal.Controllers
 
             return PartialView("DistributorRecentPaymentStatus", model);
         }
-        public IActionResult GetDistributorPendingQuantity()
+        public JsonResult  GetDistributorBalance()
         {
-            JsonResponse jsonResponse = new JsonResponse();
-            List<DistributorPendingValue> distributorPendingValueList = new List<DistributorPendingValue>();
+            List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
             try
             {
-                List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany().ToList();
-                var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null);
-                _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
-                //SessionHelper.SAPOrderPendingQuantity = _OrderBLL.GetDistributorOrderPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
-                List<DistributorPendingQuantity> DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-                var pendingQuantity = DistributorPendingQuantity;
-                pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
-                pendingQuantity.ForEach(x => x.CompanyId = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null && _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDetail != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDetail.CompanyId : 0);
-                pendingQuantity.ForEach(x => x.Rate = discountAndPricesBll.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Rate);
-                pendingQuantity.ForEach(x => x.Discount = discountAndPricesBll.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Discount);
-                pendingQuantity.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount)));
-                DistributorPendingValue SAMI = new DistributorPendingValue();
-                DistributorPendingValue Healthtek = new DistributorPendingValue();
-                DistributorPendingValue Phytek = new DistributorPendingValue();
-                SAMI.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.SAMI).Sum(x => x.PendingValue).ToString();
-                SAMI.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.SAMI).SAPCompanyCode;
-                SessionHelper.DistributorPendingValue.Add(SAMI);
-                Healthtek.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Healthtek).Sum(x => x.PendingValue).ToString();
-                Healthtek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Healthtek).SAPCompanyCode;
-                SessionHelper.DistributorPendingValue.Add(Healthtek);
-                Phytek.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Phytek).Sum(x => x.PendingValue).ToString();
-                Phytek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Phytek).SAPCompanyCode;
-                SessionHelper.DistributorPendingValue.Add(Phytek);
-                SessionHelper.DistributorPendingQuantity = SessionHelper.DistributorPendingQuantity.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
-
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorBalance == null)
+                {
+                    SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
+                    if (SessionHelper.DistributorBalance != null)
+                    {
+                        list.Add(new KeyValuePair<string, double>("SAMI", SessionHelper.DistributorBalance.SAMI));
+                        list.Add(new KeyValuePair<string, double>("HealthTek", SessionHelper.DistributorBalance.HealthTek));
+                        list.Add(new KeyValuePair<string, double>("Min", SessionHelper.DistributorBalance.SAMI < SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                        list.Add(new KeyValuePair<string, double>("Max", SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                    }
+                }
+                else
+                {
+                    list.Add(new KeyValuePair<string, double>("SAMI", SessionHelper.DistributorBalance.SAMI));
+                    list.Add(new KeyValuePair<string, double>("HealthTek", SessionHelper.DistributorBalance.HealthTek));
+                    list.Add(new KeyValuePair<string, double>("Min", SessionHelper.DistributorBalance.SAMI < SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                    list.Add(new KeyValuePair<string, double>("Max", SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                }
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-                jsonResponse.Status = false;
-                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+            }
+            return Json(new { data = list });
+        }
+        public IActionResult GetDistributorPendingQuantity()
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                if (SessionHelper.LoginUser.IsDistributor && (SessionHelper.DistributorPendingQuantity == null || SessionHelper.DistributorPendingQuantity.Count() == 0))
+                {
+                    SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity((int)SessionHelper.LoginUser.DistributorId);
+                    SessionHelper.DistributorPendingValue = _OrderBLL.DistributorPendingValue(SessionHelper.DistributorPendingQuantity);
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(new { data = jsonResponse });
             }
             return PartialView("DistributorPendingQuantity", SessionHelper.DistributorPendingQuantity);
@@ -538,44 +538,18 @@ namespace DistributorPortal.Controllers
             {
                 if (SessionHelper.LoginUser.IsDistributor && (SessionHelper.DistributorPendingValue == null || SessionHelper.DistributorPendingValue.Count() == 0))
                 {
-                    if (SessionHelper.DistributorPendingValue == null)
+
+                    if (SessionHelper.DistributorPendingQuantity == null || SessionHelper.DistributorPendingQuantity.Count() == 0)
                     {
-                        SessionHelper.DistributorPendingValue = new List<DistributorPendingValue>();
+                        SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity((int)SessionHelper.LoginUser.DistributorId);
                     }
-                    DistributorPendingQuantity((int)SessionHelper.LoginUser.DistributorId);
+                    SessionHelper.DistributorPendingValue = _OrderBLL.DistributorPendingValue(SessionHelper.DistributorPendingQuantity);
                 }
             }
             catch (Exception ex)
             {
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
             }
-        }
-        public List<DistributorPendingQuantity> DistributorPendingQuantity(int DistributorId)
-        {
-            List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany().ToList();
-            var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == DistributorId && e.ProductDetailId != null);
-            _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
-            List<DistributorPendingQuantity> DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == DistributorId).ToList();
-            var pendingQuantity = DistributorPendingQuantity;
-            pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductName + " " + _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
-            pendingQuantity.ForEach(x => x.CompanyId = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null && _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDetail != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDetail.CompanyId : 0);
-            pendingQuantity.ForEach(x => x.Rate = discountAndPricesBll.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Rate);
-            pendingQuantity.ForEach(x => x.Discount = discountAndPricesBll.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Discount);
-            pendingQuantity.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount)));
-            DistributorPendingValue SAMI = new DistributorPendingValue();
-            DistributorPendingValue Healthtek = new DistributorPendingValue();
-            DistributorPendingValue Phytek = new DistributorPendingValue();
-            SAMI.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.SAMI).Sum(x => x.PendingValue).ToString();
-            SAMI.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.SAMI).SAPCompanyCode;
-            SessionHelper.DistributorPendingValue.Add(SAMI);
-            Healthtek.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Healthtek).Sum(x => x.PendingValue).ToString();
-            Healthtek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Healthtek).SAPCompanyCode;
-            SessionHelper.DistributorPendingValue.Add(Healthtek);
-            Phytek.PendingValue = pendingQuantity.Where(x => x.CompanyId == (int)CompanyEnum.Phytek).Sum(x => x.PendingValue).ToString();
-            Phytek.CompanyCode = companies.First(x => x.Id == (int)CompanyEnum.Phytek).SAPCompanyCode;
-            SessionHelper.DistributorPendingValue.Add(Phytek);
-            SessionHelper.DistributorPendingQuantity = SessionHelper.DistributorPendingQuantity.OrderByDescending(x => Convert.ToDouble(x.PendingQuantity)).ToList();
-            return SessionHelper.DistributorPendingQuantity;
         }
         #endregion
 

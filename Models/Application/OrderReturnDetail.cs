@@ -26,6 +26,7 @@ namespace Models.Application
         [Column(TypeName = "double")]
         [Required(ErrorMessage = "Amount is required.")]
         public double MRP { get; set; }
+        [StringLength(10)]
         public string BatchNo { get; set; }
         public string InvoiceNo { get; set; }
         public DateTime InvoiceDate { get; set; }

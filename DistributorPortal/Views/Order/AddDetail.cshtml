@@ -268,7 +268,7 @@
         this.PendingQuantity = PendingQuantity;
     }
 
-    @if (SessionHelper.DistributorPendingQuantity != null)
+    @if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
     {
         foreach (var d in SessionHelper.DistributorPendingQuantity)
         {

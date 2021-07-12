@@ -171,15 +171,16 @@ namespace Utility
         Apply = 0
     }
 
-    public enum LicenseType
+    public enum DocumentType
     {
         License = 1,
-        Challan = 2
+        Challan = 2,
+        Application = 3
     }
     public enum LicenseRequestType
     {
-        [Display(Name = "New Application")]
-        NewApplication = 1,
+        [Display(Name = "New License")]
+        NewLicense = 1,
         [Display(Name = "Renewal Of License")]
         RenewalOfLicense = 2,
         [Display(Name = "Change In Particular")]

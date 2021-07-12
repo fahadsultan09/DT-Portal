@@ -4,11 +4,16 @@ using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
 using Models.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Utility;
+using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
 {
@@ -201,6 +206,7 @@ namespace BusinessLogicLayer.Application
                              Id = x.Id,
                              SNo = x.SNo,
                              Company = x.Company,
+                             CompanyId = x.CompanyId,
                              PaymentMode = x.PaymentMode,
                              Distributor = x.Distributor,
                              Status = x.Status,
@@ -317,6 +323,34 @@ namespace BusinessLogicLayer.Application
             }
             viewModel.PhytekNetPayable = viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment <= 0 ? 0 : viewModel.PhytekTotalUnapprovedOrderValues + viewModel.PhytekPendingOrderValues + viewModel.PhytekCurrentBalance - viewModel.PhytekUnConfirmedPayment;
             return viewModel;
+        }
+        public DistributorBalance GetDistributorBalance(string DistributorCode, Configuration configuration)
+        {
+            DistributorBalance distributorBalance = new DistributorBalance();
+            Root root = new Root();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                var result = client.GetAsync(new Uri(configuration.SyncDistributorBalanceURL + DistributorCode)).Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var JsonContent = result.Content.ReadAsStringAsync().Result;
+                    root = JsonConvert.DeserializeObject<Root>(JsonContent);
+                }
+            }
+            if (distributorBalance == null)
+            {
+                return new DistributorBalance();
+            }
+            else
+            {
+                distributorBalance.SAMI = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_SAMI;
+                distributorBalance.HealthTek = root.ZWASITDPDISTBALANCEBAPIResponse.BAL_HTL;
+                return distributorBalance;
+            }
         }
     }
 }

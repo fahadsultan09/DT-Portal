@@ -203,9 +203,7 @@
                 $.post('@Url.Action("VerifyComplaint", "Complaint")/' + e.id, null, function (data) {
                     if (data) {
                         Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
+                        window.location.reload();
                     } else {
                         Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
                     }
@@ -247,9 +245,7 @@
 
                             Toast.fire({ icon: 'success', title: 'Reject successfully.' });
                         }
-                        setTimeout(function () {
-                            window.location = data.data.RedirectURL;
-                        }, 1000);
+                        window.location = data.data.RedirectURL;
                     }
                     else {
                         UnBlockUI();
@@ -264,7 +260,7 @@
     }
 
     function Resolve(e, controllerName, actionName, id) {
-        
+
         $('.error').empty();
         if ($('#ResolvedRemarks').val() == "") {
             $('#errorResolvedRemarks').text('Please enter remarks');
@@ -308,9 +304,7 @@
                             if (data.data.SignalRResponse !== null) {
                                 CallSignalR(data.data.SignalRResponse);
                             }
-                            setTimeout(function () {
-                                window.location = data.data.RedirectURL;
-                            }, 1000);
+                            window.location = data.data.RedirectURL;
                         } else {
                             UnBlockUI();
                             Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });

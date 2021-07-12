@@ -32,6 +32,7 @@ namespace Models.Application
         public string R_StorageLocation { get; set; }
         public string SalesItemCategory { get; set; }
         public string ReturnItemCategory { get; set; }
+        public string FOCProductCode { get; set; }
         public double SalesTax { get; set; }
         public double IncomeTax { get; set; }
         public double AdditionalSalesTax { get; set; }
@@ -47,5 +48,11 @@ namespace Models.Application
         public string DispatchQuantity { get; set; }
         [NotMapped]
         public double Discount { get; set; }
+        [NotMapped]
+        public double QuanityCarton { get; set; }
+        [NotMapped]
+        public double QuanitySF { get; set; }
+        [NotMapped]
+        public double QuanityLoose { get; set; }
     }
 }

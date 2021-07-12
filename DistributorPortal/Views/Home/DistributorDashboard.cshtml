@@ -3,27 +3,6 @@
     ViewData["Title"] = "Home";
     var m = new OrderSearch();
     int MaxOrder = Model.Draft + Model.PendingApproval + Model.OnHold + Model.Reject + Model.Approved + Model.InProcess + Model.PartiallyProcessed + Model.CompletelyProcessed;
-    double value1 = 0;
-    double value2 = 0;
-    if (SessionHelper.DistributorBalance != null)
-    {
-        if (SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek)
-        {
-            value1 = SessionHelper.DistributorBalance.SAMI;
-        }
-        else
-        {
-            value2 = SessionHelper.DistributorBalance.HealthTek;
-        }
-        if (SessionHelper.DistributorBalance.HealthTek > SessionHelper.DistributorBalance.SAMI)
-        {
-            value1 = SessionHelper.DistributorBalance.SAMI;
-        }
-        else
-        {
-            value2 = SessionHelper.DistributorBalance.HealthTek;
-        }
-    }
 }
 
 <div class="content-wrapper">
@@ -139,14 +118,14 @@
                     </div>
                 </div>
             </div>
-            <div class="row d-none" id="Balance">
+            <div class="row">
                 <div class="col-5">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
                             <a asp-controller="Payment" asp-action="Index" class="btn btn-outline-primary float-right">View All</a>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" id="DistributorBalance" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
                             <div class="row">
                                 <div class="col-6 text-center">
                                     <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@Model.VerifiedPayment.ToString("#,##0.00")" value="@Model.VerifiedPayment" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#28a745">
@@ -159,18 +138,11 @@
                             </div>
                             <div class="row">
                                 <div class="col-6 text-center">
-                                    @if (SessionHelper.DistributorBalance != null)
-                                    {
-                                        <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.SAMI.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.SAMI" data-min="@value1" data-max="@value2" data-width="90" data-height="90" data-fgColor="#39CCCC">
-
-                                    }
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" id="SAMIBalance" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#39CCCC">
                                     <div class="knob-label">SAMI Balance</div>
                                 </div>
                                 <div class="col-6 text-center">
-                                    @if (SessionHelper.DistributorBalance != null)
-                                    {
-                                        <input type="text" readonly="readonly" disabled="disabled" class="knob" title="@SessionHelper.DistributorBalance.HealthTek.ToString("#,##0.00")" value="@SessionHelper.DistributorBalance.HealthTek" data-min="@value1" data-max="@value2" data-width="90" data-height="90" data-fgColor="#39CCCC">
-                                    }
+                                    <input type="text" readonly="readonly" disabled="disabled" class="knob" id="HealthtekBalance" data-max="@(Model.VerifiedPayment + Model.UnverifiedPayment)" data-width="90" data-height="90" data-fgColor="#932ab6">
                                     <div class="knob-label">Healthtek Balance</div>
                                 </div>
                             </div>
@@ -312,6 +284,7 @@
                 localStorage.setItem('disclaimer', "true");
             }
             GetDistributorPendingQuantity();
+            GetDistributorBalance();
             GetDistributorPaymentWiseComparision();
             GetDistributorOrderWiseComparision();
             GetDistributorPaymentWiseStatus();
@@ -382,6 +355,25 @@
                 success: function (result) {
                         $('#DistributorPendingQuantity').html(result);
                         $("#DistributorPendingQuantity").next().remove();
+                }
+            });
+        }
+        function GetDistributorBalance() {
+
+            $.ajax({
+                url: '@Url.Action("GetDistributorBalance", "Home")',
+                type: 'POST',
+                success: function (result) {
+                    $('#SAMIBalance').text(result.data[0].Value);
+                    $('#SAMIBalance').val(result.data[0].Value);
+                    $('#SAMIBalance').attr("title",result.data[0].Value);
+                    $('#SAMIBalance').attr("data-min", result.data[2].Value);
+                    $('#SAMIBalance').attr("data-max", result.data[3].Value);
+                    $('#HealthtekBalance').val(result.data[1].Value);
+                    $('#HealthtekBalance').attr("title",result.data[1].Value);
+                    $('#HealthtekBalance').attr("data-min", result.data[2].Value);
+                    $('#HealthtekBalance').attr("data-max", result.data[3].Value);
+                    $("#DistributorBalance").next().remove();
                 }
             });
         }

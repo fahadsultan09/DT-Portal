@@ -28,7 +28,6 @@ namespace DistributorPortal.Controllers
         private readonly UserBLL _UserBLL;
         private readonly IConfiguration _IConfiguration;
         private readonly Configuration _configuration;
-        private readonly OrderBLL orderBLL;
         private readonly DisclaimerBLL _DisclaimerBLL;
 
         public LoginController(IUnitOfWork unitOfWork, IHttpContextAccessor HhttpContextAccessor, IConfiguration IConfiguration, Configuration configuration)
@@ -40,7 +39,6 @@ namespace DistributorPortal.Controllers
             _UserBLL = new UserBLL(_unitOfWork);
             _IConfiguration = IConfiguration;
             _configuration = configuration;
-            orderBLL = new OrderBLL(_unitOfWork);
             _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
         }
         public IActionResult Index()
@@ -109,7 +107,7 @@ namespace DistributorPortal.Controllers
             }
             if (model.Password != null && login.CheckLogin(model) == LoginStatus.Success)
             {
-                if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
+                if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null && string.IsNullOrEmpty(model.MacAddresses))
                 {
                     SessionHelper.Disclaimer = _DisclaimerBLL.GetAllDisclaimer().FirstOrDefault(x => x.IsActive)?.Description;
                 }
@@ -117,7 +115,6 @@ namespace DistributorPortal.Controllers
                 {
                     SessionHelper.Disclaimer = string.Empty;
                 }
-                SessionHelper.DistributorBalance = SessionHelper.LoginUser.IsDistributor ? orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration) : null;
                 SessionHelper.URL = _configuration.URL.ToString();
                 jsonResponse.Status = true;
                 jsonResponse.Message = "Login successfully";
@@ -160,10 +157,6 @@ namespace DistributorPortal.Controllers
 
                 if (login.CheckLogin(model) == LoginStatus.Success)
                 {
-                    if (SessionHelper.LoginUser.IsDistributor)
-                    {
-                        SessionHelper.DistributorBalance = orderBLL.GetBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _configuration);
-                    }
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Login successfully";
                     jsonResponse.RedirectURL = Url.Action("Index", "Home");

@@ -93,7 +93,7 @@ function Begin() {
 }
 
 function OnSuccess(data) {
-
+    
     if (data.data != undefined) {
         if (data.data.Status && data.data != undefined) {
             Toast.fire({
@@ -103,15 +103,11 @@ function OnSuccess(data) {
             if (data.data.SignalRResponse !== null) {
                 var result = CallSignalR(data.data.SignalRResponse);
                 if (result) {
-                    setTimeout(function () {
-                        window.location = data.data.RedirectURL;
-                    }, 1000);
+                    window.location = data.data.RedirectURL;
                 }
             }
             else {
-                setTimeout(function () {
-                    window.location = data.data.RedirectURL;
-                }, 1000);
+                window.location = data.data.RedirectURL;
             }
         } else {
             Toast.fire({
@@ -224,7 +220,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
 
             if (result.value) {
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
-                    
+
                     if (data) {
                         if (data.data.Status) {
                             Toast.fire({ icon: 'success', title: data.data.Message });
@@ -234,9 +230,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                         if (data.data.SignalRResponse !== null) {
                             CallSignalR(data.data.SignalRResponse);
                         }
-                        setTimeout(function () {
-                            window.location = data.data.RedirectURL;
-                        }, 1000);
+                        window.location = data.data.RedirectURL;
                     } else {
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                     }
@@ -266,9 +260,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
                         if (data.data.SignalRResponse !== null) {
                             CallSignalR(data.data.SignalRResponse);
                         }
-                        setTimeout(function () {
-                            window.location = data.data.RedirectURL;
-                        }, 1000);
+                        window.location = data.data.RedirectURL;
                     } else {
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                     }
@@ -322,7 +314,6 @@ function isEmailValidate(email) {
 
 //Print Report
 function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
-
     $('#DPID').val(DPID);
     if (ApplicationPage == "OrderReturn") {
 
@@ -345,6 +336,18 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
                     else {
                         $('#KorangiTRNo').remove();
                     }
+                    if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 3) != undefined) {
+                        $('#SITEPhytek').val(data.data.find(x => x.PlantLocationId == 3).TRNo);
+                    }
+                    else {
+                        $('#SITEPhytek').remove();
+                    }
+                    if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 4) != undefined) {
+                        $('#KorangiPhytek').val(data.data.find(x => x.PlantLocationId == 4).TRNo);
+                    }
+                    else {
+                        $('#KorangiPhytek').remove();
+                    }
                     $('#modalTR').modal('toggle');
                     $('#modalTR').modal('show');
                 } else {
@@ -355,4 +358,27 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
     } else if (ApplicationPage == "Order") {
         window.open(window.location.origin + RedirectToUrl + "ApplicationPage=" + ApplicationPage + "&DPID=" + DPID, '_blank');
     }
+}
+
+function OrderReturnPrintForm() {
+
+    $('.text-danger').empty();
+    if ($('#SiteTRNo').val() == "") {
+        $('#errorSiteTRNo').text('TR No is required.');
+        return false;
+    }
+    if ($('#KorangiTRNo').val() == "") {
+        $('#errorKorangiTRNo').text('TR No is required.');
+        return false;
+    }
+    if ($('#SITEPhytek').val() == "") {
+        $('#errorSITEPhytek').text('TR No is required.');
+        return false;
+    }
+    if ($('#KorangiPhytek').val() == "") {
+        $('#errorKorangiPhytek').text('TR No is required.');
+        return false;
+    }
+    var form = event.target.form;
+    $(form).submit();
 }

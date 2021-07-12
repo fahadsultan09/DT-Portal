@@ -1,11 +1,9 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using Utility;
-using static Utility.Constant.Common;
 
 namespace DistributorPortal.Controllers
 {

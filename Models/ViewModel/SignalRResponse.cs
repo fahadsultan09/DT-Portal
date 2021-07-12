@@ -6,6 +6,7 @@ namespace Models.ViewModel
 {
     public class SignalRResponse
     {
+        public string RoleCompanyIds { get; set; }
         public string UserId { get; set; }
         public string Number { get; set; }
         public string Status { get; set; }

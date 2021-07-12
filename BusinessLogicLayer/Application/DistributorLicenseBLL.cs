@@ -40,6 +40,7 @@ namespace BusinessLogicLayer.Application
         {
             var item = _repository.GetById(module.Id);
             module.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+            item.LicenseTypeId = module.LicenseTypeId;
             item.IssueDate = module.IssueDate;
             item.LicenseId = module.LicenseId;
             item.Attachment = module.Attachment;
@@ -47,7 +48,7 @@ namespace BusinessLogicLayer.Application
             item.Expiry = module.Expiry;
             item.IsActive = module.IsActive;
             item.Status = LicenseStatus.Submitted;
-            item.Type = module.Type;
+            item.DocumentType = module.DocumentType;
             item.RequestType = module.RequestType;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
@@ -120,7 +121,7 @@ namespace BusinessLogicLayer.Application
                              Id = x.Id,
                              Distributor = x.Distributor,
                              LicenseControl = x.LicenseControl,
-                             Type = x.Type,
+                             DocumentType = x.DocumentType,
                              RequestType = x.RequestType,
                              LicenseNo = x.LicenseNo,
                              IssuingAuthority = x.IssuingAuthority,

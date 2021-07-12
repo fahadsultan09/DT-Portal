@@ -190,15 +190,12 @@
                     data: { 'DPID': Id, 'Comments': result.value },
                     cache: false,
                         success: function (response) {
-                             ;
                         Swal.fire('Saved!', response.Message, 'success');
                         if (response.SignalRResponse !== null) {
                             CallSignalR(response.SignalRResponse);
                         }
-                        setTimeout(function () {
                             window.location.reload();
-                        }, 2000);
-                    }
+                        }
                     });
                 UnBlockUI();
             }
@@ -241,9 +238,7 @@
                         if (response.SignalRResponse !== null) {
                             CallSignalR(response.SignalRResponse);
                         }
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        window.location.reload();
                     }
                 });
                 UnBlockUI();

@@ -23,6 +23,9 @@ namespace Models.ViewModel
         public int OnHold { get; set; }
         public int Reject { get; set; }
         public int Draft { get; set; }
+        public double SAMIBalance { get; set; }
+        public double HealthTekBalance { get; set; }
+        public double PhyTekBalance { get; set; }
         public List<OrderWiseComparision> OrderWiseComparision { get; set; }
         public List<PaymentWiseComparision> PaymentWiseComparision { get; set; }
         public List<PaymentWiseStatus> PaymentWiseStatus { get; set; }

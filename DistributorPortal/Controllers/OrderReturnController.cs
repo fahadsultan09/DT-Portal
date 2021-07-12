@@ -490,12 +490,12 @@ namespace DistributorPortal.Controllers
                     }
                 }
                 model.OrderReturnDetail = SessionHelper.AddReturnProduct;
-                model.ProductList = _ProductDetailBLL.DropDownProductList();
+                model.ProductList = _ProductDetailBLL.DropDownProductReturnList();
                 model.ReturnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
             }
             else
             {
-                model.ProductList = _ProductDetailBLL.DropDownProductList();
+                model.ProductList = _ProductDetailBLL.DropDownProductReturnList();
                 model.ReturnReasonList = _orderReturnReasonBLL.DropDownOrderReturnReasonList();
                 model.OrderReturnDetail = new List<OrderReturnDetail>();
                 model.Distributor = SessionHelper.LoginUser.Distributor;

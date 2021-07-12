@@ -20,8 +20,11 @@ namespace Models.Application
         public int? FormNoId { get; set; }
         [ForeignKey("FormNoId")]
         public virtual LicenseForm LicenseForm { get; set; }
-        [DisplayName("License Type")]
-        public LicenseType? Type { get; set; }
+        public int? LicenseTypeId { get; set; }
+        [ForeignKey("LicenseTypeId")]
+        public virtual LicenseType LicenseType { get; set; }
+        [DisplayName("Document Type")]
+        public DocumentType? DocumentType { get; set; }
         [DisplayName("Request Type")]
         public LicenseRequestType? RequestType { get; set; }
         [StringLength(50)]
@@ -37,5 +40,7 @@ namespace Models.Application
         public string Remarks { get; set; }
         [NotMapped]
         public IFormFile File { get; set; }
+        [NotMapped]
+        public int Days { get; set; }
     }
 }

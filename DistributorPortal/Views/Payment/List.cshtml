@@ -24,6 +24,7 @@
                         <tr>
                             <th>Payment No</th>
                             <th>Distributor Name</th>
+                            <th>Company Name</th>
                             <th>Payment Mode</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -37,6 +38,7 @@
                             <tr>
                                 <td>@item.SNo</td>
                                 <td>@item.Distributor.DistributorName</td>
+                                <td>@item.Company.CompanyName</td>
                                 <td>@item.PaymentMode.PaymentName</td>
                                 <td>
                                     @String.Format("{0:N}", item.Amount)

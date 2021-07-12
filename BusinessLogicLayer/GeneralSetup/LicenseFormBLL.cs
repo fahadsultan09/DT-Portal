@@ -51,7 +51,7 @@ namespace BusinessLogicLayer.GeneralSetup
         }
         public List<LicenseForm> GetAllLicenseForm()
         {
-            return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return repository.GetAllList().Where(x => !x.IsDeleted && x.IsActive).ToList();
         }
         public bool CheckLicenseFormName(int Id, string ModuleName)
         {

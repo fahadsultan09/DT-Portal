@@ -162,9 +162,7 @@
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        window.location.reload();
                     }
                 });
             }
@@ -199,9 +197,7 @@
                     cache: false,
                     success: function (response) {
                         Swal.fire('Saved!', response.Message, 'success')
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        window.location.reload();
                     }
                 });
             }

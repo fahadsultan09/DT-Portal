@@ -34,6 +34,7 @@ namespace BusinessLogicLayer.Application
         public int UpdateProductDetail(ProductDetail module)
         {
             var item = _repository.GetById(module.Id);
+            item.FOCProductCode = module.FOCProductCode;
             item.ProductVisibilityId = module.ProductVisibilityId;
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
@@ -96,6 +97,16 @@ namespace BusinessLogicLayer.Application
         public SelectList DropDownProductList()
         {
             var selectList = GetAllProductDetail().Where(x => x.IsActive == true).OrderBy(x => x.ProductMaster.ProductName).Select(x => new SelectListItem
+            {
+                Value = x.ProductMasterId.ToString(),
+                Text = x.ProductMaster.ProductName.Trim() + " " + x.ProductMaster.ProductDescription.Trim()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
+        }
+        public SelectList DropDownProductReturnList()
+        {
+            var selectList = GetAllProductDetail().Where(x => x.IsActive == true && (x.ProductVisibilityId == ProductVisibility.Visible || x.ProductVisibilityId == ProductVisibility.OrderReturn)).OrderBy(x => x.ProductMaster.ProductName).Select(x => new SelectListItem
             {
                 Value = x.ProductMasterId.ToString(),
                 Text = x.ProductMaster.ProductName.Trim() + " " + x.ProductMaster.ProductDescription.Trim()
