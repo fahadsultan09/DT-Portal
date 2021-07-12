@@ -57,6 +57,16 @@
         "summernote.min.js",
         "summernote.min.js.map"
       ]
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/jqueryui/",
+      "files": [
+        "themes/blitzer/jquery-ui.css",
+        "themes/blitzer/jquery-ui.min.css",
+        "themes/blitzer/theme.css",
+        "themes/blitzer/theme.min.css"
+      ]
     }
   ]
 }

@@ -280,6 +280,20 @@ namespace ProductPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+        [HttpPost]
+        public JsonResult FOCProductCodeAC(string prefix)
+        {
+            List<ProductMaster> list = _ProductMasterBLL.GetAllProductMaster().ToList();
+            var customers = (from product in list
+                             where product.SAPProductCode.StartsWith(prefix)
+                             select new
+                             {
+                                 label = product.SAPProductCode,
+                                 val = product.SAPProductCode
+                             }).ToList();
+
+            return Json(customers);
+        }
 
     }
 }
