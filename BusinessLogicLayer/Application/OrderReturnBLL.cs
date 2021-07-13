@@ -1,8 +1,10 @@
-﻿using BusinessLogicLayer.HelperClasses;
+﻿using BusinessLogicLayer.GeneralSetup;
+using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.UserRights;
 using Models.ViewModel;
 using OrderReturn;
 using System;
@@ -24,6 +26,7 @@ namespace BusinessLogicLayer.Application
         private readonly OrderReturnDetailBLL _OrderReturnDetailBLL;
         private readonly UserBLL _UserBLL;
         private readonly ProductDetailBLL productDetailBLL;
+        private readonly NotificationBLL _NotificationBLL;
         public OrderReturnBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -31,6 +34,7 @@ namespace BusinessLogicLayer.Application
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
             productDetailBLL = new ProductDetailBLL(_unitOfWork);
+            _NotificationBLL = new NotificationBLL(_unitOfWork);
         }
         public int Add(OrderReturnMaster module)
         {
@@ -210,6 +214,7 @@ namespace BusinessLogicLayer.Application
         public JsonResponse UpdateOrderReturn(OrderReturnMaster model, OrderReturnStatus btnSubmit, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
             try
             {
                 _unitOfWork.Begin();
@@ -264,6 +269,19 @@ namespace BusinessLogicLayer.Application
                         jsonResponse.Status = true;
                         jsonResponse.Message = model.Status == OrderReturnStatus.Draft ? OrderContant.OrderReturnSubmit + Environment.NewLine + " Order Return Id: " + model.SNo : OrderContant.OrderReturnSubmit + " Order Return Id: " + model.SNo;
                         jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
+                        RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApproveOrderReturn && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                        if (rolePermission != null)
+                        {
+                            jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = rolePermission.RoleId.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                            notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                            notification.ApplicationPageId = (int)ApplicationPages.OrderReturn;
+                            notification.DistributorId = model.DistributorId;
+                            notification.RequestId = model.SNo;
+                            notification.Status = model.Status.ToString();
+                            notification.Message = jsonResponse.SignalRResponse.Message;
+                            notification.URL = "/OrderReturn/View?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
+                            _NotificationBLL.Add(notification);
+                        }
                     }
                 }
                 else

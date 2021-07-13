@@ -69,6 +69,11 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<List<Notification>>("Notification");
             set => _httpContextAccessor.HttpContext.Session.Set("Notification", value);
         }
+        public static int NotificationCount
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<int>("NotificationCount");
+            set => _httpContextAccessor.HttpContext.Session.Set("NotificationCount", value);
+        }
         public static string TotalOrderValue
         {
             get => _httpContextAccessor.HttpContext.Session.Get<string>("TotalOrderValue");

@@ -348,6 +348,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Status = result;
                     jsonResponse.Message = result ? NotificationMessage.ReceivedReturn : NotificationMessage.ErrorOccurred;
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = master.CreatedBy.ToString(), Number = "Order Return #: " + master.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(OrderReturnStatus), model.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = master.DistributorId;
                     notification.RequestId = master.SNo;
                     notification.Status = master.Status.ToString();
@@ -625,6 +626,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Order return rejected successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order Return #: " + order.SNo, Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();
@@ -661,7 +663,7 @@ namespace DistributorPortal.Controllers
                 IRestResponse response = client.Execute(request);
                 var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
                 var updatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id && e.ReturnOrderNumber == null).ToList();
-                if (sapProduct != null)
+                if (sapProduct != null && sapProduct.Count() > 0)
                 {
                     foreach (var item in sapProduct)
                     {
@@ -685,6 +687,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = result ? "Order return has been approved successfully" : NotificationMessage.ErrorOccurred;
                     jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order return #: " + order.SNo, Message = "Order return has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();

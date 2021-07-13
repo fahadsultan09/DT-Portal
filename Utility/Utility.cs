@@ -46,14 +46,14 @@ namespace Utility
         PartiallyProcessed = 5,
         [Display(Name = "Completely Processed")]
         CompletelyProcessed = 6,
-        Reject = 7,
-        Submit = 8,
+        Rejected = 7,
+        Submitted = 8,
         [Display(Name = "On hold")]
         Onhold = 9,
         Approved = 10,
         [Display(Name = "Not Yet Process")]
         NotYetProcess = 11,
-        Cancel = 12,
+        Canceled = 12,
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
@@ -75,14 +75,14 @@ namespace Utility
         PartiallyProcessed = 5,
         [Display(Name = "Completely Processed")]
         CompletelyProcessed = 6,
-        Reject = 7,
-        Submit = 8,
+        Rejected = 7,
+        Submitted = 8,
         [Display(Name = "On hold")]
         Onhold = 9,
         Approved = 10,
         [Display(Name = "Not Yet Process")]
         NotYetProcess = 11,
-        Cancel = 12,
+        Canceled = 12,
         [Display(Name = "Partially Approved")]
         PartiallyApproved = 13
     }
@@ -269,5 +269,22 @@ namespace Utility
     {
         CC = 1,
         KPI = 2
+    }
+    public enum DistributorTransactionStatus
+    {
+        Verified = 1,
+        Rejected = 2,
+        Canceled = 3,
+        Approved = 4,
+        InProcess = 5,
+        PartiallyApproved = 6,
+        Received = 7,
+        PartiallyReceived = 8,
+    }
+    public enum TransactionStatus
+    {
+        PendingApproval = 9,
+        Unverified = 10,
+        Submitted = 11,
     }
 }

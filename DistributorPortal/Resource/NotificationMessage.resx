@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,146 +59,146 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AddLicense" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddLicense" xml:space="preserve">
     <value>License uploaded successfully</value>
   </data>
-	<data name="AddVerifiedLicense" xml:space="preserve">
+  <data name="AddVerifiedLicense" xml:space="preserve">
     <value>Add verified license or challan before placing the order</value>
   </data>
-	<data name="DeletedSuccessfully" xml:space="preserve">
+  <data name="DeletedSuccessfully" xml:space="preserve">
     <value>Deleted successfully.</value>
   </data>
-	<data name="Error" xml:space="preserve">
+  <data name="Error" xml:space="preserve">
     <value>error</value>
   </data>
-	<data name="ErrorOccurred" xml:space="preserve">
+  <data name="ErrorOccurred" xml:space="preserve">
     <value>Error occurred while saving changes</value>
   </data>
-	<data name="FailedReturn" xml:space="preserve">
+  <data name="FailedReturn" xml:space="preserve">
     <value>Unable to received return</value>
   </data>
-	<data name="FileSizeAllowed" xml:space="preserve">
+  <data name="FileSizeAllowed" xml:space="preserve">
     <value>File size should not be greater than 5mb.</value>
   </data>
-	<data name="FileTypeAllowed" xml:space="preserve">
+  <data name="FileTypeAllowed" xml:space="preserve">
     <value>Only image, docx or pdf file is allowed.</value>
   </data>
-	<data name="FileUploadedSuccessfully" xml:space="preserve">
+  <data name="FileUploadedSuccessfully" xml:space="preserve">
     <value>File uploaded successfully.</value>
   </data>
-	<data name="FormStatusApproved" xml:space="preserve">
+  <data name="FormStatusApproved" xml:space="preserve">
     <value>Approved successfully.</value>
   </data>
-	<data name="FormStatusCompleted" xml:space="preserve">
+  <data name="FormStatusCompleted" xml:space="preserve">
     <value>Completed successfully.</value>
   </data>
-	<data name="Information" xml:space="preserve">
+  <data name="Information" xml:space="preserve">
     <value>info</value>
   </data>
-	<data name="OrderSaved" xml:space="preserve">
+  <data name="OrderSaved" xml:space="preserve">
     <value>Order saved successfully</value>
   </data>
-	<data name="OrderTemporarilyAllowed" xml:space="preserve">
-    <value>Your license has been expired, but you are temporarily allowed to place the order.</value>
+  <data name="OrderTemporarilyAllowed" xml:space="preserve">
+    <value>Your license has expired, but you are temporarily allowed to place the order.</value>
   </data>
-	<data name="PaymentSaved" xml:space="preserve">
+  <data name="PaymentSaved" xml:space="preserve">
     <value>Payment saved successfully</value>
   </data>
-	<data name="PaymentVerified" xml:space="preserve">
+  <data name="PaymentVerified" xml:space="preserve">
     <value>Payment verified successfully</value>
   </data>
-	<data name="ReceivedReturn" xml:space="preserve">
+  <data name="ReceivedReturn" xml:space="preserve">
     <value>Successfully received return product</value>
   </data>
-	<data name="RequiredFieldsValidation" xml:space="preserve">
+  <data name="RequiredFieldsValidation" xml:space="preserve">
     <value>Please fill in the information below. The field labels marked with * are required input fields.</value>
   </data>
-	<data name="ResetPasswordSuccessfully" xml:space="preserve">
+  <data name="ResetPasswordSuccessfully" xml:space="preserve">
     <value>Password reset successfully</value>
   </data>
-	<data name="Resolved" xml:space="preserve">
+  <data name="Resolved" xml:space="preserve">
     <value>Resolved successfully</value>
   </data>
-	<data name="SaveSuccessfully" xml:space="preserve">
+  <data name="SaveSuccessfully" xml:space="preserve">
     <value>Data saved successfully.</value>
   </data>
-	<data name="Success" xml:space="preserve">
+  <data name="Success" xml:space="preserve">
     <value>success</value>
   </data>
-	<data name="SyncedSuccessfully" xml:space="preserve">
+  <data name="SyncedSuccessfully" xml:space="preserve">
     <value>Synced successfully</value>
   </data>
-	<data name="UpdateSuccessfully" xml:space="preserve">
+  <data name="UpdateSuccessfully" xml:space="preserve">
     <value>Data updated successfully.</value>
   </data>
-	<data name="Warning" xml:space="preserve">
+  <data name="Warning" xml:space="preserve">
     <value>warning</value>
   </data>
-	<data name="ComplaintResolved" xml:space="preserve">
+  <data name="ComplaintResolved" xml:space="preserve">
     <value>Complaint resolved successfully</value>
   </data>
-	<data name="ComplaintApproved" xml:space="preserve">
+  <data name="ComplaintApproved" xml:space="preserve">
     <value>Complaint approved successfully</value>
   </data>
-	<data name="ComplaintRejected" xml:space="preserve">
-    <value>Complaint rejected successfully</value>
+  <data name="ComplaintRejected" xml:space="preserve">
+    <value>Complaint has rejected</value>
   </data>
 </root>

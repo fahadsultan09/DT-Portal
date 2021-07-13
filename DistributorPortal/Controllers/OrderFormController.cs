@@ -308,6 +308,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Order on hold";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order marked on hold by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();
@@ -333,14 +334,14 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 var order = _OrderBLL.GetOrderMasterById(id);
-                if (order != null && (order.Status == OrderStatus.Reject || order.Status == OrderStatus.Approved))
+                if (order != null && (order.Status == OrderStatus.Rejected || order.Status == OrderStatus.Approved))
                 {
                     jsonResponse.Status = false;
                     jsonResponse.Message = "Order already " + order.Status;
                     jsonResponse.RedirectURL = Url.Action("Index", "OrderForm");
                     return Json(new { data = jsonResponse });
                 }
-                order.Status = OrderStatus.Reject;
+                order.Status = OrderStatus.Rejected;
                 order.RejectedComment = Comments;
                 order.RejectedBy = SessionHelper.LoginUser.Id;
                 order.RejectedDate = DateTime.Now;
@@ -351,6 +352,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Order Rejected successfully";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();
@@ -376,7 +378,7 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 var order = _OrderBLL.GetOrderMasterById(id);
-                if (order != null && (order.Status == OrderStatus.Reject || order.Status == OrderStatus.Approved))
+                if (order != null && (order.Status == OrderStatus.Rejected || order.Status == OrderStatus.Approved))
                 {
                     jsonResponse.Status = false;
                     jsonResponse.Message = "Order already " + order.Status;
@@ -438,6 +440,7 @@ namespace DistributorPortal.Controllers
                         }
                     }
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();
@@ -476,7 +479,7 @@ namespace DistributorPortal.Controllers
                 //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
                 List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(id, _Configuration);
                 var updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
-                if (sapProduct != null)
+                if (sapProduct != null && sapProduct.Count() > 0)
                 {
                     foreach (var item in sapProduct)
                     {
@@ -498,8 +501,31 @@ namespace DistributorPortal.Controllers
                     var result = _OrderBLL.Update(order);
                     jsonResponse.Status = result > 0;
                     jsonResponse.Message = result > 0 ? "Order has been approved successfully" : NotificationMessage.ErrorOccurred;
-                    jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                    TempData["DistributorId"] = EncryptDecrypt.Encrypt(order.DistributorId.ToString());
+                    //Sending Email
+                    if (jsonResponse.Status)
+                    {
+                        string SAPOrderNo = string.Join("</br>" + Environment.NewLine, sapProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
+                        string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ApprovalOfSaleOrder.html";
+                        ApprovedOrderEmailUserModel EmailUserModel = new ApprovedOrderEmailUserModel()
+                        {
+                            ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
+                            Date = Convert.ToDateTime(order.ApprovedDate).ToString("dd/MMM/yyyy"),
+                            City = order.Distributor.City,
+                            ShipToPartyName = order.Distributor.DistributorName,
+                            OrderNumber = SAPOrderNo,
+                            Subject = "Order Delivery",
+                            CreatedBy = SessionHelper.LoginUser.Id,
+                        };
+                        int[] PlantLocationId = _productDetailBLL.Where(x => updatedOrderDetail.Select(x => x.ProductMaster.Id).Contains(x.ProductMasterId)).Select(x => x.PlantLocationId).Distinct().ToArray();
+                        if (PlantLocationId.Count() > 0 && !string.IsNullOrEmpty(SAPOrderNo))
+                        {
+                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && PlantLocationId.Contains(Convert.ToInt32(x.PlantLocationId)) && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
+                            _EmailLogBLL.OrderEmail(UserList, EmailUserModel);
+                        }
+                    }
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.DistributorId = order.DistributorId;
                     notification.RequestId = order.SNo;
                     notification.Status = order.Status.ToString();
@@ -507,6 +533,12 @@ namespace DistributorPortal.Controllers
                     notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
                     _NotificationBLL.Add(notification);
                 }
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Unable to approved order";
+                }
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

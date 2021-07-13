@@ -166,7 +166,7 @@ namespace DistributorPortal.Controllers
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
-                order.Status = OrderStatus.Reject;
+                order.Status = OrderStatus.Rejected;
                 order.RejectedComment = Comments;
                 order.RejectedBy = SessionHelper.LoginUser.Id;
                 order.RejectedDate = DateTime.Now;
@@ -194,7 +194,7 @@ namespace DistributorPortal.Controllers
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
-                order.Status = OrderStatus.Cancel;
+                order.Status = OrderStatus.Canceled;
                 var result = _OrderBLL.Update(order);
                 if (result > 0)
                 {
@@ -491,7 +491,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).ToList();
+                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
             }
         }
         public JsonResult CheckProductLicense(int ProductMasterId)
@@ -720,7 +720,7 @@ namespace DistributorPortal.Controllers
             }
             else
             {
-                model.OrderMaster = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Cancel && x.Status != OrderStatus.Draft).ToList();
+                model.OrderMaster = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
             }
             return model;
         }

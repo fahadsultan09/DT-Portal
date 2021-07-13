@@ -174,7 +174,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Batch No:<span class="text-danger"> *</span></h6>
-                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" class="form-control" />
+                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" max="9999999999" maxlength="10" oninput="validity.valid||(value='');" class="form-control" />
                                                 <span id="ErrorBatchNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
