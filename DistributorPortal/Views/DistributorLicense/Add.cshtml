@@ -178,7 +178,7 @@
                                                         @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
                                                     </td>
                                                     <td width="5%">
-                                                        @if (Model.Any(x => x.Status == LicenseStatus.Rejected || x.DocumentType == DocumentType.Challan || x.Expiry.Date <= DateTime.Now.Date))
+                                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert)) && Model.Any(x => x.Status == LicenseStatus.Rejected || x.DocumentType == DocumentType.Challan || x.Expiry.Date <= DateTime.Now.Date))
                                                         {
                                                             <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
                                                         }
@@ -328,7 +328,7 @@
             return false;
         }
         if ($(this).closest("tr").find("td:eq(7)").find(":input").val() == "") {
-            Toast.fire({ icon: 'error', title: 'Select a file' });
+            Toast.fire({ icon: 'error', title: 'Please attach a licence' });
             return false;
         }
         if ($(this).closest("tr").find("td:eq(8)").find(":input").val() == "") {

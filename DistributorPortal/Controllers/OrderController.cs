@@ -199,7 +199,7 @@ namespace DistributorPortal.Controllers
                 if (result > 0)
                 {
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Order has been cancelled";
+                    jsonResponse.Message = "Order has been canceled";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 }
                 return Json(jsonResponse);

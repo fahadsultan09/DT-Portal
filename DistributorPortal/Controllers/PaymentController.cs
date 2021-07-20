@@ -283,16 +283,26 @@ namespace DistributorPortal.Controllers
                 {
                     _PaymentBLL.UpdateStatus(model, Status, Remarks);
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully.";
-                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                    notification.ApplicationPageId = (int)ApplicationPages.Payment;
-                    notification.DistributorId = model.DistributorId;
-                    notification.RequestId = model.SNo;
-                    notification.Status = model.Status.ToString();
-                    notification.Message = jsonResponse.SignalRResponse.Message;
-                    notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                    if (model.Status == PaymentStatus.Rejected)
+                    {
+                        jsonResponse.Message = "Payment has been rejected";
+                    }
+                    else
+                    {
+                        jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully";
+                    }
+                    if (model.Status != PaymentStatus.Canceled)
+                    {
+                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                        notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                        notification.DistributorId = model.DistributorId;
+                        notification.RequestId = model.SNo;
+                        notification.Status = model.Status.ToString();
+                        notification.Message = jsonResponse.SignalRResponse.Message;
+                        notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                    }
                     _NotificationBLL.Add(notification);
                 }
                 _unitOfWork.Save();

@@ -66,5 +66,7 @@ namespace Models.ApplicationContext
         public DbSet<DistributorPendingQuantity> DistributorPendingQuantity { get; set; }
         public DbSet<DistributorPendingValue> DistributorPendingValue { get; set; }
         public DbSet<LicenseType> LicenseType { get; set; }
+        public DbSet<TaxChallan> TaxChallan { get; set; }
+        public DbSet<PaymentSection> PaymentSection { get; set; }
     }
 }

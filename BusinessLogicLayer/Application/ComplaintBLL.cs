@@ -280,7 +280,7 @@ namespace BusinessLogicLayer.Application
         }
         public List<Complaint> GetPendingComplaint()
         {
-            return _repository.GetAllList().Where(x => x.Status != ComplaintStatus.Approved).ToList();
+            return _repository.Where(x => x.Status != ComplaintStatus.Approved).ToList();
         }
     }
 }

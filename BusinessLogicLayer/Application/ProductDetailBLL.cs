@@ -134,6 +134,7 @@ namespace BusinessLogicLayer.Application
                     BrandName = item.ProductMaster.ProductName,
                     ProductDescription = item.ProductMaster.ProductDescription,
                     PackSize = item.ProductMaster.PackSize,
+                    FOCProductCode = item.FOCProductCode,
                     Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
                     PlantLocation = item.PlantLocation.PlantLocationName,
                     Company = item.Company.CompanyName,

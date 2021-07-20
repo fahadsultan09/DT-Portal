@@ -360,7 +360,7 @@ namespace DistributorPortal.Controllers
                 model.UnverifiedPaymentAllCount = paymentMasters.Where(x => x.Status == PaymentStatus.Unverified).Count();
                 model.UnverifiedPaymentAll = ExtensionUtility.FormatNumberAmount(paymentMasters.Where(x => x.CreatedDate.Year == DateTime.Now.Year && x.Status == PaymentStatus.Unverified).Sum(x => x.Amount));
 
-                model.InProcessOrderCount = orderMasters.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Rejected).Count();
+                model.InProcessOrderCount = orderMasters.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Rejected && x.Status != OrderStatus.Canceled).Count();
                 model.InProcessOrderValue = ExtensionUtility.FormatNumberAmount(orderMasters.Where(x => x.Status != OrderStatus.CompletelyProcessed && x.Status != OrderStatus.Draft && x.Status != OrderStatus.Rejected).Sum(x => x.TotalValue));
 
                 model.Complaint = _Complaint.Where(x => x.Status == ComplaintStatus.Pending).Count();

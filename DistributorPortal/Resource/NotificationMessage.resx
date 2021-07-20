@@ -201,4 +201,7 @@
   <data name="ComplaintRejected" xml:space="preserve">
     <value>Complaint has rejected</value>
   </data>
+  <data name="TaxChallanSaved" xml:space="preserve">
+    <value>Tax Challan saved successfully</value>
+  </data>
 </root>

@@ -349,7 +349,7 @@ namespace DistributorPortal.Controllers
                 if (result > 0)
                 {
                     jsonResponse.Status = true;
-                    jsonResponse.Message = "Order Rejected successfully";
+                    jsonResponse.Message = "Order has been rejected";
                     jsonResponse.RedirectURL = Url.Action("Index", "Order");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been rejected by Admin", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
                     notification.CompanyId = SessionHelper.LoginUser.CompanyId;

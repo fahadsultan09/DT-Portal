@@ -1,0 +1,243 @@
+﻿@model TaxChallan
+@{ ViewBag.Title = "Add Tax Challan"; }
+
+<div class="content-wrapper">
+    <section class="content-header" disabled>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <form asp-controller="TaxChallan"
+                          asp-action="SaveEdit"
+                          id="frmTaxChallan"
+                          data-ajax-begin="Begin"
+                          data-ajax-success="OnSuccess"
+                          data-ajax-complete="Complete"
+                          data-ajax="true"
+                          data-ajax-method="POST"
+                          autocomplete="off"
+                          enctype="multipart/form-data">
+                        <input asp-for="Id" type="hidden" />
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card card-primary">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Distributor Information</h3>
+                                    </div>
+                                    <div class="card-body" style="padding: 10px 0px 0px 20px;">
+                                        <div class="row">
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                <h6>Name:</h6>
+                                            </div>
+                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.DistributorName</strong></span>
+                                            </div>
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                <h6>City:</h6>
+                                            </div>
+                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.City</strong></span>
+                                            </div>
+
+                                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                                <h6>Code:</h6>
+                                            </div>
+                                            <div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
+                                                <span><strong>@Model.Distributor.DistributorSAPCode</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card card-primary">
+                                    <div class="card-header">
+                                        <h3 class="card-title">TaxChallan Value</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>CPR No<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="CPRNo" class="form-control" />
+                                                <span asp-validation-for="CPRNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>CPR Date</h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="CPRDate" value="" readonly="readonly" id="CPRDate" class="form-control datepicker" style="background: white;" />
+                                                    <div class="input-group-append" data-target="#CPRDate" data-toggle="datepicker" id="input-group-append-CPRDate">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="CPRDate" class="text-danger"></span>
+                                            </div>
+                                        </div><br />
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Payment Section<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <select asp-for="PaymentSection" asp-items="@(new SelectList(Model.PaymentSectionList, "Value", "Text"))" class="form-control select2">
+                                                    <option value="">--Select option--</option>
+                                                </select><br />
+                                                <span asp-validation-for="PaymentSection" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Tax Period</h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <div class="input-group date" data-target-input="nearest">
+                                                    <input type="text" asp-for="TaxPeriod" value="" readonly="readonly" id="TaxPeriod" class="form-control Monthdate" style="background: white;" />
+                                                    <div class="input-group-append" data-target="#TaxPeriod" data-toggle="datepickerDeposite" id="input-group-append-TaxPeriod">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="TaxPeriod" class="text-danger"></span>
+                                            </div>
+                                        </div><br />
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Amount On Which Tax Is On Witheld<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="AmountOnTaxWitheld" value="@(Model.Id == 0 ? "" : Model.AmountOnTaxWitheld.ToString())" min="0" maxlength="9" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" id="Amount" />
+                                                <span asp-validation-for="AmountOnTaxWitheld" class="text-danger"></span>
+                                                <span class="text-info" id="AmountInWords"></span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Tax Amount<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="TaxAmount" value="@(Model.Id == 0 ? "" : Model.TaxAmount.ToString())" min="0" maxlength="9" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" id="TaxAmount" />
+                                                <span asp-validation-for="TaxAmount" class="text-danger"></span>
+                                                <span class="text-info" id="TaxAmountInWords"></span>
+                                            </div>
+                                        </div><br />
+                                        <input type="text" asp-for="Attachment" style="width: 0.01em; border: white; height: 0.01em;" readonly="readonly" />
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Attachment<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="custom-file">
+                                                        <input type="file" asp-for="FormFile" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                                    </div>
+                                                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                                                </div>
+                                                <span class="caption">
+                                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.Attachment != null ? Model.Attachment : "")" target="_blank">@(Model.Attachment != null ? Model.Attachment.Split('_')[1] : "")</a>
+                                                </span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Remarks<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <input type="text" asp-for="Remarks" class="form-control" />
+                                                <span asp-validation-for="Remarks" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-6">
+                                            </div>
+                                            <div class="col-6 pull-right">
+                                                <button type="button" onclick="SaveTaxChallan();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
+                                                    Submit
+                                                </button>
+                                                <a asp-controller="TaxChallan" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                                    Back
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+
+    $('#customFile').on("change", function () {
+        if (this.files[0].size > 5242880) {
+        }
+        else {
+            $('#Attachment').val($(this).val().split("\\").pop());
+        }
+    });
+
+    $(".datepicker").datepicker({
+        autoclose: true,
+        orientation: 'bottom',
+        endDate: new Date()
+    });
+
+    $('.Monthdate').datepicker({
+        format: "MM/yyyy",
+        viewMode: "months",
+        minViewMode: "months",
+        autoclose: true,
+        odayHighlight: true,
+        endDate: '+0d',
+    });
+
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '100%',
+        });
+
+        $('body').on('keyup change', '#Amount', function () {
+            $('#AmountInWords').html(inWords($('#Amount').val()));
+        });
+
+        $('body').on('keyup change', '#TaxAmount', function () {
+            $('#TaxAmountInWords').html(inWords($('#TaxAmount').val()));
+        });
+
+    });
+
+    function SaveTaxChallan() {
+
+        var form = event.target.form; // storing the form
+        $(form).each(function () {
+            $(this).children().find('textarea').each(function () {
+                $(this).val($(this).val().trim());
+            });
+            $(this).children().find('input[type="text"]').each(function () {
+                $(this).val($(this).val().trim());
+            });
+        });
+
+        $.validator.unobtrusive.parse(form);
+
+        if ($(form).valid()) {
+
+            Swal.fire({
+                title: "Are you sure you want to continue?",
+                type: "warning",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                closeOnConfirm: true,
+                showLoaderOnConfirm: true
+            }).then(function (result) {
+                if (result.value) {
+                    $('#Spinner').show();
+                    $(form).submit();
+                }
+            });
+        }
+    }
+
+</script>

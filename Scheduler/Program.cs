@@ -17,9 +17,10 @@ namespace Scheduler
         private static DistributorPortalDbContext _DistributorPortalDbContext;
         private static IUnitOfWork _unitOfWork;
         private static IWebHostEnvironment _env;
+        private static string fileName = Guid.NewGuid().ToString() + ".txt";
         static void Main(string[] args)
         {
-            try
+                        try
             {
                 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
                 var ConnectionString = configuration.GetSection("ConnectionStrings:DistributorPortalDbContext");
@@ -48,28 +49,34 @@ namespace Scheduler
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
 
-                ExtensionUtility.WriteTextToFile("Console Start" + DateTime.Now, FolderName.OrderStatus);
-                ////Order and Order Return Produc Status
+                ////Order and Order Return Product Status
+                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.OrderStatus, fileName);
                 //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
                 //distributorOrderStatus.GetInProcessOrderProductStatus();
                 //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
+                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.OrderStatus, fileName);
 
-                ////Order and Order Return Produc Status
+                ////Complaint Status
+                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.Complaint, fileName);
                 //KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
                 //KPIEmailScheduler.GetPendingComplaints();
+                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.Complaint, fileName);
 
                 ////Get pending value
+                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.PendingValue, fileName);
                 //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
                 //distributorPendingQuanityValue.AddDistributorPendingValue();
+                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.PendingValue, fileName);
 
                 //Get pending quantity
+                ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.PendingQuantity, fileName);
                 DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
                 distributorPendingQuanityValue.AddDistributorPendingQuantity();
-                ExtensionUtility.WriteTextToFile("Console End" + DateTime.Now, FolderName.OrderStatus);
+                ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.PendingQuantity, fileName);
             }
             catch (Exception ex)
             {
-                ExtensionUtility.WriteTextToFile("Error occured" + DateTime.Now, FolderName.OrderStatus);
+                ExtensionUtility.WriteToFile("Error occured-" + DateTime.Now, FolderName.PendingQuantity, fileName);
                 new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }

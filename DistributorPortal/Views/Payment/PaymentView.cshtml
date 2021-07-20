@@ -264,27 +264,4 @@
         $('#AmountInWords').html(inWords(@Model.Amount));
     });
 
-    function Delete(e) {
-        Swal.fire({
-            title: "Are you sure you want to verify payment?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes",
-            closeOnConfirm: true,
-            showLoaderOnConfirm: true
-        }).then((result) => {
-            if (result.value) {
-                $.post('@Url.Action("VerifyPayment", "Payment")/' + e.id, null, function (data) {
-                    if (data) {
-                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
-                        window.location.reload();
-                    } else {
-                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
-                    }
-                });
-            }
-        });
-    }
-
 </script>

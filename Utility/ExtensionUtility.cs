@@ -200,7 +200,7 @@ namespace Utility
         }
         public static string WriteTextToFile(string Values, string folderName, string ExistingGuidFileName = null)
         {
-            string folderPath = @"D:\Arslan\JaredCRM_SVN\JaredCRM\";
+            string folderPath = @"D:\Scheduler\Logs\" + folderName + "\\";
 
             folderPath = Path.Combine(folderPath, folderName);
 
@@ -239,28 +239,24 @@ namespace Utility
                 return null;
             }
         }
-        public static void WriteToFile(string Message, string FolderName)
+        public static void WriteToFile(string Message, string FolderName, string fileName)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "\\SchedulerLogs\\" + FolderName;
-            if (!Directory.Exists(path))
+            string folderPath = @"D:\Scheduler\Logs\" + FolderName;
+            if (!Directory.Exists(folderPath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(folderPath);
             }
-            string filepath = AppDomain.CurrentDomain.BaseDirectory + DateTime.Now.Date.ToShortDateString().Replace('/', '_') + ".txt";
+            string filepath = folderPath + "\\" + fileName;
             if (!File.Exists(filepath))
             {
                 // Create a file to write to.   
-                using (StreamWriter sw = File.CreateText(filepath))
-                {
-                    sw.WriteLine(Message);
-                }
+                using StreamWriter sw = File.CreateText(filepath);
+                sw.WriteLine(Message);
             }
             else
             {
-                using (StreamWriter sw = File.AppendText(filepath))
-                {
-                    sw.WriteLine(Message);
-                }
+                using StreamWriter sw = File.AppendText(filepath);
+                sw.WriteLine(Message);
             }
         }
     }

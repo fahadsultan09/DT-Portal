@@ -1,4 +1,8 @@
 ﻿@model List<DistributorLicense>
+@{
+    bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+}
 
 <div class="row">
     <div class="col-12">
@@ -7,7 +11,7 @@
                 <h2 class="card-title">License List</h2>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped"  >
+                <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Distributor Name</th>
@@ -57,12 +61,18 @@
                                     }
                                 </td>
                                 <td class="p-1">
-                                    <a onclick="UpdateStatus('Verified', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Approve" class="btn btn-success btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
-                                        <i class="fas fa-thumbs-up"></i>
-                                    </a>
-                                    <a onclick="UpdateStatus('Rejected', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Reject" class="btn btn-danger btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
-                                        <i class="fas fa-thumbs-down"></i>
-                                    </a>
+                                    @if (approve)
+                                    {
+                                        <a onclick="UpdateStatus('Verified', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Approve" class="btn btn-success btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </a>
+                                    }
+                                    @if (reject)
+                                    {
+                                        <a onclick="UpdateStatus('Rejected', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Reject" class="btn btn-danger btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                            <i class="fas fa-thumbs-down"></i>
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }

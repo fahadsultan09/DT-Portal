@@ -91,6 +91,16 @@ namespace BusinessLogicLayer.GeneralSetup
 
             return new MultiSelectList(selectList, "Value", "Text", selectedValues: SelectedValue);
         }
+        public SelectList DropDownCompanyList(int? SelectedValue)
+        {
+            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.CompanyName.ToString()
+            });
+
+            return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
         public SelectList DropDownCompanyList(bool IsPaymentAllowed)
         {
             var selectList = GetAllCompany().Where(x => x.IsDeleted == false && x.IsActive == true && x.IsPaymentAllowed == IsPaymentAllowed).Select(x => new SelectListItem

@@ -20,7 +20,7 @@
     }
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" id="NotificationCount">
+            <a class="nav-link" data-toggle="dropdown" id="NotificationCount" style="cursor:pointer;">
                 <i class="far fa-bell"></i>
                 <span class="badge badge-warning navbar-badge" id="NotificationCountValue">@(SessionHelper.NotificationCount > 0 ? SessionHelper.NotificationCount.ToString() : "")</span>
             </a>
@@ -52,7 +52,7 @@
 
     <a class="brand-link pl-0">
         <img src="~/Images/favicon.png" alt="AdminLTE Logo" class="brand-image">
-        <span class="brand-text">SAMI Pharmaceuticals (Pvt.) Ltd.<sup>®</sup></span>
+        <span class="brand-text">SAMI Pharmaceuticals (Pvt.) Ltd.<sup>&#174;</sup></span>
     </a>
 
     <!-- Sidebar -->

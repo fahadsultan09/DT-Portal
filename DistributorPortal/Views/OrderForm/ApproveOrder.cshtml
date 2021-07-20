@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Approve Order";
     var m = ViewBag.OrderValue;
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
+    bool onhold = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Onhold));
 }
 
 <style>
@@ -62,7 +65,6 @@
             </div>
         </div>
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-12">
                     <div class="card card-primary grid">
@@ -177,7 +179,6 @@
                                                     <td>@item.QuanityLoose</td>
                                                 </tr>
                                             }
-
                                         </tbody>
                                     </table>
                                 </div>
@@ -187,22 +188,21 @@
                                     <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp;</label><strong>@(((OrderValueViewModel)ViewBag.OrderValue).NetPayable.ToString("#,##0.00"))</strong>
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
-                                        if (Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.PartiallyApproved || Model[0].OrderMaster.Status == OrderStatus.Onhold)
+                                        if ((Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.PartiallyApproved || Model[0].OrderMaster.Status == OrderStatus.Onhold) && approve)
                                         {
                                             <button type="button" onclick="Approve('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-success float-right m-2" id="btnApprove">
                                                 Approve
                                             </button>
                                         }
-                                        if (Model[0].OrderMaster.Status == OrderStatus.PendingApproval)
+                                        if (Model[0].OrderMaster.Status == OrderStatus.PendingApproval && onhold)
                                         {
                                             <button type="button" onclick="OnHold('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-warning float-right m-2" id="btnHold">
                                                 On Hold
                                             </button>
                                         }
-                                        if (Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.Onhold)
+                                        if ((Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.Onhold) && reject)
                                         {
                                             <button type="button" onclick="Reject('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-danger float-right m-2" id="btnReject">
                                                 Reject

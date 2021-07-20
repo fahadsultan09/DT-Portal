@@ -123,6 +123,7 @@ namespace BusinessLogicLayer.Application
                              LicenseControl = x.LicenseControl,
                              DocumentType = x.DocumentType,
                              RequestType = x.RequestType,
+                             LicenseType = x.LicenseType,
                              LicenseNo = x.LicenseNo,
                              IssuingAuthority = x.IssuingAuthority,
                              Attachment = x.Attachment,

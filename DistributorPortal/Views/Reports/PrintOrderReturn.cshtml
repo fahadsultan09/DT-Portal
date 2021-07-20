@@ -55,7 +55,7 @@
                 <div>
                     <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
                         <tbody>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>SAMI Pharmaceuticals (Pvt.) Ltd.®</strong></p>
                                 </td>
@@ -66,7 +66,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>Return Address: @Model.First(x => x.PlantLocation.PlantLocationName == "SITE").PlantLocation.Address</strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>@Model.First(x => x.PlantLocation.PlantLocationName == "SITE").PlantLocation.PlantLocationName</span></strong></p>
                                 </td>
@@ -86,7 +86,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Page No.: @(PageNo++)</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:8.7pt;">
+                            <tr style="height:9pt;">
                                 <td colspan="2" style=" background-color:#bfbfbf;">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Customer Details</span></strong></p>
                                 </td>
@@ -100,7 +100,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Code:</span></strong></p>
                                 </td>
@@ -130,7 +130,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "> </p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Name:</span></strong></p>
                                 </td>
@@ -159,7 +159,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><span>@Model.First().OrderReturnMaster.DebitNoteDate.ToString("dd-MMM-yyyy")</span></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>City:</span></strong></p>
                                 </td>
@@ -224,7 +224,7 @@
 
                             @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "SITE").Id))
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; ">
                                         <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; ">@(i++)</p>
                                     </td>
@@ -274,7 +274,7 @@
                         <tbody>
                             @if (Model.First().OrderReturnMaster.OrderReturnReasonId == 3)
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td colspan="4">
                                     </td>
                                     <td style="width:10%; border-bottom-style:solid; border-bottom-width:0.5pt; vertical-align:middle;">
@@ -306,7 +306,7 @@
                                     </td>
                                 </tr>
                             }
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Distributor Sign Date:</span></strong></p>
                                 </td>
@@ -347,7 +347,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
@@ -388,7 +388,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Stamp:</span></strong></p>
                                 </td>
@@ -446,7 +446,7 @@
                 <div>
                     <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
                         <tbody>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>SAMI Pharmaceuticals (Pvt.) Ltd.®</strong></p>
                                 </td>
@@ -457,7 +457,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>Return Address: @Model.First(x => x.PlantLocation.PlantLocationName == "Korangi").PlantLocation.Address</strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>@Model.First(x => x.PlantLocation.PlantLocationName == "Korangi").PlantLocation.PlantLocationName</span></strong></p>
                                 </td>
@@ -477,7 +477,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Page No.: @(PageNo++)</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:8.7pt;">
+                            <tr style="height:9pt;">
                                 <td colspan="2" style=" background-color:#bfbfbf;">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Customer Details</span></strong></p>
                                 </td>
@@ -491,7 +491,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Code:</span></strong></p>
                                 </td>
@@ -521,7 +521,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "> </p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Name:</span></strong></p>
                                 </td>
@@ -550,7 +550,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><span>@Model.First().OrderReturnMaster.DebitNoteDate.ToString("dd-MMM-yyyy")</span></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>City:</span></strong></p>
                                 </td>
@@ -615,7 +615,7 @@
 
                             @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "Korangi").Id))
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; ">
                                         <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; ">@(j++)</p>
                                     </td>
@@ -665,7 +665,7 @@
                         <tbody>
                             @if (Model.First().OrderReturnMaster.OrderReturnReasonId == 3)
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td colspan="4">
                                     </td>
                                     <td style="width:10%; border-bottom-style:solid; border-bottom-width:0.5pt; ">
@@ -697,7 +697,7 @@
                                     </td>
                                 </tr>
                             }
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Distributor Sign Date:</span></strong></p>
                                 </td>
@@ -738,7 +738,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
@@ -779,7 +779,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Stamp:</span></strong></p>
                                 </td>
@@ -837,7 +837,7 @@
                 <div>
                     <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
                         <tbody>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>SAMI Pharmaceuticals (Pvt.) Ltd.®</strong></p>
                                 </td>
@@ -848,7 +848,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>Return Address: @Model.First(x => x.PlantLocation.PlantLocationName == "SITE-Phytek").PlantLocation.Address</strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>@Model.First(x => x.PlantLocation.PlantLocationName == "SITE-Phytek").PlantLocation.PlantLocationName</span></strong></p>
                                 </td>
@@ -868,7 +868,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Page No.: @(PageNo++)</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:8.7pt;">
+                            <tr style="height:9pt;">
                                 <td colspan="2" style=" background-color:#bfbfbf;">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Customer Details</span></strong></p>
                                 </td>
@@ -882,7 +882,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Code:</span></strong></p>
                                 </td>
@@ -912,7 +912,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "> </p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Name:</span></strong></p>
                                 </td>
@@ -941,7 +941,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><span>@Model.First().OrderReturnMaster.DebitNoteDate.ToString("dd-MMM-yyyy")</span></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>City:</span></strong></p>
                                 </td>
@@ -1006,7 +1006,7 @@
 
                             @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "SITE-Phytek").Id))
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; ">
                                         <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; ">@(k++)</p>
                                     </td>
@@ -1056,7 +1056,7 @@
                         <tbody>
                             @if (Model.First().OrderReturnMaster.OrderReturnReasonId == 3)
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td colspan="4">
                                     </td>
                                     <td style="width:10%; border-bottom-style:solid; border-bottom-width:0.5pt; ">
@@ -1088,7 +1088,7 @@
                                     </td>
                                 </tr>
                             }
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Distributor Sign Date:</span></strong></p>
                                 </td>
@@ -1129,7 +1129,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
@@ -1170,7 +1170,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Stamp:</span></strong></p>
                                 </td>
@@ -1228,7 +1228,7 @@
                 <div>
                     <table class="table-bordered" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
                         <tbody>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>SAMI Pharmaceuticals (Pvt.) Ltd.®</strong></p>
                                 </td>
@@ -1239,7 +1239,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong>Return Address: @Model.First(x => x.PlantLocation.PlantLocationName == "Korangi-Phytek").PlantLocation.Address</strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td colspan="2">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>@Model.First(x => x.PlantLocation.PlantLocationName == "Korangi-Phytek").PlantLocation.PlantLocationName</span></strong></p>
                                 </td>
@@ -1259,7 +1259,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Page No.: @(PageNo++)</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:8.7pt;">
+                            <tr style="height:9pt;">
                                 <td colspan="2" style=" background-color:#bfbfbf;">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Customer Details</span></strong></p>
                                 </td>
@@ -1273,7 +1273,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Code:</span></strong></p>
                                 </td>
@@ -1303,7 +1303,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "> </p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>Name:</span></strong></p>
                                 </td>
@@ -1332,7 +1332,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><span>@Model.First().OrderReturnMaster.DebitNoteDate.ToString("dd-MMM-yyyy")</span></p>
                                 </td>
                             </tr>
-                            <tr style="height:16.5pt;">
+                            <tr style="height:15pt;">
                                 <td style="width:6.06%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; "><strong><span>City:</span></strong></p>
                                 </td>
@@ -1397,7 +1397,7 @@
 
                             @foreach (var item in Model.Where(x => x.PlantLocationId == PlantLocationList.First(x => x.PlantLocationName == "Korangi-Phytek").Id))
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td style="width:4.26%; border-right-style:solid; border-right-width:0.75pt; ">
                                         <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; ">@(l++)</p>
                                     </td>
@@ -1447,7 +1447,7 @@
                         <tbody>
                             @if (Model.First().OrderReturnMaster.OrderReturnReasonId == 3)
                             {
-                                <tr style="height:15pt;">
+                                <tr style="height:18pt;">
                                     <td colspan="4">
                                     </td>
                                     <td style="width:10%; border-bottom-style:solid; border-bottom-width:0.5pt; ">
@@ -1479,7 +1479,7 @@
                                     </td>
                                 </tr>
                             }
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Distributor Sign Date:</span></strong></p>
                                 </td>
@@ -1520,7 +1520,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
@@ -1561,7 +1561,7 @@
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; "><strong><span>&nbsp;</span></strong></p>
                                 </td>
                             </tr>
-                            <tr style="height:15pt;">
+                            <tr style="height:18pt;">
                                 <td style="width:14%; ">
                                     <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; "><strong><span>Stamp:</span></strong></p>
                                 </td>

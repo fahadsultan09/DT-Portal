@@ -214,11 +214,14 @@
                                 <div class="col-6">
                                 </div>
                                 <div class="col-6 pull-right">
-                                    @if (SessionHelper.NavigationMenu.Any(x => x.ApplicationActionId == 5 && x.ApplicationPageId == 16))
+                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve)))
                                     {
                                         <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
                                             Verify
                                         </button>
+                                    }
+                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject)))
+                                    {
                                         <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
                                             Reject
                                         </button>
@@ -263,28 +266,5 @@
         $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
         $('#AmountInWords').html(inWords(@Model.Amount));
     });
-
-    function Delete(e) {
-        Swal.fire({
-            title: "Are you sure you want to verify payment?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes",
-            closeOnConfirm: true,
-            showLoaderOnConfirm: true
-        }).then((result) => {
-            if (result.value) {
-                $.post('@Url.Action("VerifyPayment", "Payment")/' + e.id, null, function (data) {
-                    if (data) {
-                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
-                        window.location.reload();
-                    } else {
-                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
-                    }
-                });
-            }
-        });
-    }
 
 </script>

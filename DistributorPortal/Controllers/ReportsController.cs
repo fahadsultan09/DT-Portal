@@ -269,5 +269,29 @@ namespace DistributorPortal.Controllers
             return model;
         }
         #endregion
+        #region Customer Ledger
+        public ActionResult CustomerLedger()
+        {
+            return View();
+        }
+        #endregion
+        #region Invoice Ledger
+        public ActionResult Invoice()
+        {
+            return View();
+        }
+        #endregion
+        #region Sale Return Credit Note
+        public ActionResult SaleReturnCreditNote()
+        {
+            return View();
+        }
+        #endregion
+        #region Customer Balance report
+        public ActionResult CustomerBalance()
+        {
+            return View();
+        }
+        #endregion
     }
 }

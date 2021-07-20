@@ -295,6 +295,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tax Challan saved successfully.
+        /// </summary>
+        public static string TaxChallanSaved {
+            get {
+                return ResourceManager.GetString("TaxChallanSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data updated successfully..
         /// </summary>
         public static string UpdateSuccessfully {

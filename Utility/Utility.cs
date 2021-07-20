@@ -93,6 +93,13 @@ namespace Utility
         Rejected = 3,
         Canceled = 4,
     }
+    public enum TaxChallanStatus
+    {
+        Verified = 1,
+        Unverified = 2,
+        Rejected = 3,
+        Canceled = 4,
+    }
     public enum ProductVisibility
     {
         Visible = 1,
@@ -264,6 +271,8 @@ namespace Utility
         AddComplaint = 44,
         GetFile = 45,
         ApproveComplaint = 46,
+        ApproveTaxChallan = 61,
+        TaxChallan = 60,
     }
     public enum EmailType
     {
