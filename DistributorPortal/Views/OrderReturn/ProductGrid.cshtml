@@ -27,24 +27,48 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
-                        <div class="icheck-success d-inline">
-                            <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
-                            <label for="checkbox@(item.Id)">
-                            </label>
-                        </div>
-                    </td>
-                    <td>@item.ProductMaster.SAPProductCode</td>
-                    <td>@item.ProductMaster.ProductDescription</td>
-                    <td>@item.Company.CompanyName</td>
-                    <td>@item.PlantLocation.PlantLocationName</td>
-                    <td>@item.BatchNo</td>
-                    <td>@item.MRP</td>
-                    @*<td>@item.TotalPrice</td>*@
+            <tr>
+                <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                    <div class="icheck-success d-inline">
+                        <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
+                        <label for="checkbox@(item.Id)">
+                        </label>
+                    </div>
+                </td>
+                <td>@item.ProductMaster.SAPProductCode</td>
+                <td>@item.ProductMaster.ProductDescription</td>
+                <td>@item.Company.CompanyName</td>
+                <td>@item.PlantLocation.PlantLocationName</td>
+                @if (item.IsFOCProduct)
+                {
                     <td>
-                        <input type="text" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="1" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
+                        <input type="text" asp-for="@item.BatchNo" class="form-control" _ProductId="@item.ProductId" />
                     </td>
+                }
+                else
+                {
+                    <td>@item.BatchNo</td>
+                }
+
+                <td>@item.MRP</td>
+                @*<td>@item.TotalPrice</td>*@
+                <td>
+                    <input type="text" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="1" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
+                </td>
+                @if (item.IsFOCProduct)
+                {
+                    <td>0 %</td>
+                    <td><span class="NetAmount">0</span></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>
+                }
+                else
+                {
                     <td>@item.ProductMaster.Discount %</td>
                     <td><span class="NetAmount">@item.NetAmount</span></td>
                     <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
@@ -53,18 +77,20 @@
                     <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
                     <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
                     <td>@item.Remarks</td>
-                    <td>
+                    <td rowspan="2">
                         <a asp-action="Delete"
                            asp-controller="OrderReturn"
                            asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
-                           asp-route-BatchNo="@item.BatchNo.ToString()"
+                           asp-route-BatchNo="@item.BatchNo"
                            class="btn btn-danger"
                            data-ajax="true"
                            data-ajax-complete="UpdateOrderValue"
                            data-ajax-update="#ProductGrid"
                            data-ajax-method="POST">Delete</a>
                     </td>
-                </tr>
+                }
+
+            </tr>
             }
         </tbody>
         <tfoot>
@@ -97,7 +123,6 @@
         });
 
         $('body').on('change', '.ReturnQuantity', function (data) {
-
             if (data.currentTarget.value == "0") {
                 $(this).val(1);
                 return false;

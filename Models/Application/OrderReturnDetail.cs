@@ -47,5 +47,7 @@ namespace Models.Application
         public int OrderReturnNumber { get; set; }        
         [NotMapped]
         public Company Company { get; set; }
+        [NotMapped]
+        public bool IsFOCProduct { get; set; }
     }
 }
