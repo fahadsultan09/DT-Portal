@@ -150,6 +150,8 @@ namespace BusinessLogicLayer.Application
                          {
                              Id = x.Id,
                              SNo = x.SNo,
+                             CompanyId = x.CompanyId,
+                             Company = x.Company,
                              Distributor = x.Distributor,
                              PaymentMode = x.PaymentMode,
                              Amount = x.Amount,
