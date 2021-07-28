@@ -38,6 +38,7 @@ namespace BusinessLogicLayer.Application
         private readonly PaymentBLL _PaymentBLL;
         private readonly ProductMasterBLL _ProductMasterBLL;
         private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
+        private readonly NotificationBLL _NotificationBLL;
         public OrderBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -51,6 +52,7 @@ namespace BusinessLogicLayer.Application
             discountAndPricesBll = new DistributorWiseProductDiscountAndPricesBLL(_unitOfWork);
             _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
             _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
+            _NotificationBLL = new NotificationBLL(_unitOfWork);
         }
         public int Add(OrderMaster module)
         {
@@ -369,6 +371,7 @@ namespace BusinessLogicLayer.Application
         public JsonResponse Save(OrderMaster model, IUrlHelper Url)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
             List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetail != null).ToList();
             DistributorWiseProductDiscountAndPrices.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
             DistributorWiseProductDiscountAndPrices.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
@@ -425,6 +428,14 @@ namespace BusinessLogicLayer.Application
                     if (rolePermission != null)
                     {
                         jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = rolePermission.RoleId.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                        notification.ApplicationPageId = (int)ApplicationPages.Order;
+                        notification.DistributorId = model.DistributorId;
+                        notification.RequestId = model.SNo;
+                        notification.Status = model.Status.ToString();
+                        notification.Message = jsonResponse.SignalRResponse.Message;
+                        notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
+                        _NotificationBLL.Add(notification);
                     }
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
@@ -479,6 +490,14 @@ namespace BusinessLogicLayer.Application
                     if (rolePermission != null)
                     {
                         jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = rolePermission.RoleId.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                        notification.ApplicationPageId = (int)ApplicationPages.Order;
+                        notification.DistributorId = model.DistributorId;
+                        notification.RequestId = model.SNo;
+                        notification.Status = model.Status.ToString();
+                        notification.Message = jsonResponse.SignalRResponse.Message;
+                        notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
+                        _NotificationBLL.Add(notification);
                     }
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");

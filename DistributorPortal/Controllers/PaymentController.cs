@@ -89,6 +89,7 @@ namespace DistributorPortal.Controllers
         public JsonResult SaveEdit(PaymentMaster model)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
@@ -138,6 +139,14 @@ namespace DistributorPortal.Controllers
                 if (rolePermission != null)
                 {
                     jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = (rolePermission.RoleId + model.CompanyId).ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    notification.CompanyId = model.CompanyId;
+                    notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                    notification.DistributorId = model.DistributorId;
+                    notification.RequestId = model.SNo;
+                    notification.Status = model.Status.ToString();
+                    notification.Message = jsonResponse.SignalRResponse.Message;
+                    notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
+                    _NotificationBLL.Add(notification);
                 }
                 return Json(new { data = jsonResponse });
             }
@@ -252,6 +261,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
                         jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                         jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                         notification.ApplicationPageId = (int)ApplicationPages.Payment;
                         notification.DistributorId = model.DistributorId;
                         notification.RequestId = model.SNo;
@@ -276,6 +286,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully.";
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.ApplicationPageId = (int)ApplicationPages.Payment;
                     notification.DistributorId = model.DistributorId;
                     notification.RequestId = model.SNo;

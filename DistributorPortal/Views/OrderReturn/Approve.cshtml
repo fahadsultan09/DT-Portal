@@ -111,7 +111,7 @@
                                                 <label style="margin-top: 15px;">Total Value:&nbsp;&nbsp;&nbsp;</label><strong><span id="TotalValue">@Model.TotalValue.ToString("#,##0.00")</span></strong>
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-danger float-right mr-3">
+                                                <button type="button" disabled="@btnDisable" onclick="Reject('@EncryptDecrypt.Encrypt(Model.Id.ToString())');" class="btn btn-danger float-right mr-3">
                                                     Reject
                                                 </button>
                                                 <button type="submit" disabled="@btnDisable" onclick="return SubmitForm();" id="btnReceived" name="btnSubmit" value="@OrderReturnStatus.Received" class="btn btn-success mr-1 float-right">
@@ -154,7 +154,7 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Batch No:</h6>
-                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" class="form-control" />
+                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" min="0" max="9999999999" maxlength="10" oninput="validity.valid||(value='');" class="form-control" />
                                                 <span id="ErrorBatchNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
@@ -269,7 +269,6 @@
     });
 
     function SubmitForm() {
-
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',
@@ -285,8 +284,13 @@
             });
 
             if (result.value == true) {
+                BlockUI()
                 $('#frmOrderReturnMaster').submit();
             }
+            else {
+                UnBlockUI();
+            }
+
         })
         return false;
     }

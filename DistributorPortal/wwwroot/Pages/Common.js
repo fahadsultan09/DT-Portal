@@ -191,7 +191,6 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
 }
 
 function UpdateStatus(e, controllerName, actionName, id) {
-    BlockUI();
     var val = '';
     if (e.value == undefined) {
         val = e;
@@ -219,6 +218,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
         }).then(function (result) {
 
             if (result.value) {
+                BlockUI();
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val, Remarks: result.value }, function (data) {
 
                     if (data) {
@@ -232,9 +232,13 @@ function UpdateStatus(e, controllerName, actionName, id) {
                         }
                         window.location = data.data.RedirectURL;
                     } else {
+                        UnBlockUI();
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                     }
                 });
+            }
+            else {
+                UnBlockUI();
             }
         });
     }
@@ -249,7 +253,9 @@ function UpdateStatus(e, controllerName, actionName, id) {
             closeOnConfirm: true,
             showLoaderOnConfirm: true
         }).then((result) => {
+
             if (result.value) {
+                BlockUI();
                 $.post(window.location.origin + "/" + controllerName + "/" + actionName, { Id: id, Status: val }, function (data) {
                     if (data) {
                         if (data.data.Status) {
@@ -262,13 +268,16 @@ function UpdateStatus(e, controllerName, actionName, id) {
                         }
                         window.location = data.data.RedirectURL;
                     } else {
+                        UnBlockUI();
                         Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
                     }
                 });
             }
+            else {
+                UnBlockUI();
+            }
         });
     }
-    UnBlockUI();
 }
 
 function inWords(num) {

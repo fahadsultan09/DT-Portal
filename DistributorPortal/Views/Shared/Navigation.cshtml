@@ -18,18 +18,18 @@
             </marquee>
         </span>
     }
-    <ul class="navbar-nav ml-auto @(SessionHelper.LoginUser.IsDistributor ? null : "d-none")">
+    <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" id="NotificationCount">
                 <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge" id="NotificationCountValue">@(SessionHelper.Notification != null ? SessionHelper.Notification.Where(x => !x.IsView).Count().ToString() : "")</span>
+                <span class="badge badge-warning navbar-badge" id="NotificationCountValue">@(SessionHelper.NotificationCount > 0 ? SessionHelper.NotificationCount.ToString() : "")</span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right scrollmenu" id="AppendNotification" style="height: 600px;">
-                @if (SessionHelper.Notification != null)
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right scrollmenu @(SessionHelper.Notification.Count().ToString() == "0" ? "d-none" : "")" id="AppendNotification" style="height: 600px;">
+                @if (SessionHelper.Notification != null && SessionHelper.Notification.Count() > 0)
                 {
                     @foreach (var item in SessionHelper.Notification)
                     {
-                        <a href="@(SessionHelper.URL + item.URL)" class="dropdown-item" style="background-color:@(item.Status == "Verified" ||item.Status ==  "Approved" ||item.Status ==  "InProcess" || item.Status == "Received" || item.Status == "PartiallyApproved" ? "#28a745cc" : item.Status == "Rejected" || item.Status == "Reject" ? "#dc3545cc" : "#11aabbcc"); color: #fff;">
+                        <a href="@(item.URL)" class="dropdown-item" style="background-color:@(item.Status == "Verified" ||item.Status ==  "Approved" ||item.Status ==  "InProcess" || item.Status == "Received" || item.Status == "PartiallyApproved" ? "#28a745cc" : item.Status == "Rejected" || item.Status == "Reject" ? "#dc3545cc" : "#11aabbcc"); color: #fff;">
                             <div class="media">
                                 <div class="media-body">
                                     <p class="dropdown-item-title">Request #: @item.RequestId</p>
@@ -144,7 +144,7 @@
             $('.disclaimerModalNav').html(disclaimerModal.replace(/<[\/]{0,1}(p)[^><]*>/ig, ""));
         }
 
-        var count = '@(SessionHelper.Notification != null ? SessionHelper.Notification.Where(x => !x.IsView).Count().ToString() : "0")';
+        var count = '@(SessionHelper.NotificationCount > 0 ? SessionHelper.NotificationCount.ToString() : "0")';
         if (count == "0") {
             $('#NotificationCountValue').css('display', 'none');
         }
@@ -152,10 +152,10 @@
 
     $('body').on('click', '#NotificationCount', function () {
 
-        var url = '@Url.Action("UpdateCount", "Notification")';
+        var url = '@Url.Action("UpdateCount", "Notification",new { ApplicationPageId = (SessionHelper.Notification.Count() > 0 ? SessionHelper.Notification.Select(x => x.ApplicationPageId).First() : 0) })';
         $.get(url, function (context) {
-            }).done(function (context) {
-            });
+        }).done(function (context) {
+        });
         $('#NotificationCountValue').css('display','none');
     });
 

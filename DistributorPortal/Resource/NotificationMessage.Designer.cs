@@ -88,7 +88,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Complaint rejected successfully.
+        ///   Looks up a localized string similar to Complaint has rejected.
         /// </summary>
         public static string ComplaintRejected {
             get {
@@ -205,7 +205,7 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your license has been expired, but you are temporarily allowed to place the order..
+        ///   Looks up a localized string similar to Your license has expired, but you are temporarily allowed to place the order..
         /// </summary>
         public static string OrderTemporarilyAllowed {
             get {
