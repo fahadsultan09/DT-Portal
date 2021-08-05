@@ -1,7 +1,7 @@
-﻿@model InvoiceSearch
+﻿@model SaleReturnCreditNoteSearch
 @inject IUnitOfWork iUnitOfWork
 @{
-    ViewBag.Title = "Invoice";
+    ViewBag.Title = "Sale Return Credit Note";
     var distributors = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
     var companies = new CompanyBLL(iUnitOfWork).DropDownCompanyList(null);
 }
@@ -10,12 +10,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Invoice</h1>
+                    <h1>Sale Return Credit Note</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Invoice</li>
+                        <li class="breadcrumb-item active">Sale Return Credit Note</li>
                     </ol>
                 </div>
             </div>
@@ -30,8 +30,8 @@
                             <h2 class="card-title">Search</h2>
                         </div>
                         <form asp-controller="Reports"
-                              asp-action="Invoice"
-                              id="frmInvoiceSearch"
+                              asp-action="CreditNoteViewPDF"
+                              id="frmSaleReturnCreditNoteSearch"
                               data-ajax-begin="Begin"
                               data-ajax-complete="Complete"
                               data-ajax-update="#divform"
@@ -41,8 +41,8 @@
                                 <div class="row">
                                     <div class="col-lg-2 col-md-2 col col-sm-12 col-xs-12">
                                         <div class="form-group">
-                                            <label class="control-label">Invoice No<span class="text-danger"> * </span></label>
-                                            <input type="text" asp-for="InvoiceNo" id="InvoiceNo" min="0" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" autocomplete="off" class="form-control" />
+                                            <label class="control-label">Credit Note No<span class="text-danger"> * </span></label>
+                                            <input type="text" asp-for="SaleReturnNo" min="0" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" id="SaleReturnNo" autocomplete="off" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-2">
@@ -85,9 +85,9 @@
     });
 
     $('body').on('click', '#btnSearch', function () {
-        
-        if ($('#InvoiceNo').val() == "") {
-            Toast.fire({ icon: 'error', title: 'Enter Invoice No' });
+        debugger
+        if ($('#SaleReturnNo').val() == "") {
+            Toast.fire({ icon: 'error', title: 'Enter Credit Note No' });
             return false;
         }
         $('#frmInvoiceSearch').submit();

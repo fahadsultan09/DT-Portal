@@ -2,8 +2,8 @@
 @inject IUnitOfWork iUnitOfWork
 @{
     ViewBag.Title = "Customer Balance";
-    var distributors = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
-    var companies = new CompanyBLL(iUnitOfWork).DropDownCompanyList(null);
+    var distributors = new DistributorBLL(iUnitOfWork).DropDownDistributorList();
+    var companies = new CompanyBLL(iUnitOfWork).DropDownCompanyList();
 }
 <div class="content-wrapper">
     <section class="content-header">
@@ -30,7 +30,7 @@
                             <h2 class="card-title">Search</h2>
                         </div>
                         <form asp-controller="Reports"
-                              asp-action="CustomerBalanceSearch"
+                              asp-action="CustomerBalanceView"
                               id="frmCustomerBalanceSearch"
                               data-ajax-begin="Begin"
                               data-ajax-complete="Complete"
@@ -39,31 +39,20 @@
                               data-ajax-method="POST">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <div class="form-group">
-                                            <label class="control-label">From Date</label>
-                                            <div class="input-group date" data-target-input="nearest">
-                                                <input type="text" asp-for="Date" readonly="readonly" id="FromDate" class="form-control datepicker" style="background: white;" />
-                                                <div class="input-group-append" data-target="#FromDate" id="input-group-append-From" data-toggle="datepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <div class="form-group">
-                                            <label class="control-label">Company</label>
-                                            <select asp-for="CompanyId" asp-items="@(new SelectList(companies, "Value", "Text"))" class="form-control select2">
+                                            <label class="control-label">Company<span class="text-danger"> * </span></label>
+                                            <select asp-for="SAPCompanyCode" asp-items="@(new SelectList(companies, "Value", "Text"))" class="form-control select2">
                                                 <option value="">--Select option--</option>
                                             </select>
                                         </div>
                                     </div>
                                     @if (!SessionHelper.LoginUser.IsDistributor)
                                     {
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                             <div class="form-group">
                                                 <label class="control-label">Distributor</label>
-                                                <select asp-for="DistributorId" asp-items="@(new SelectList(distributors, "Value", "Text"))" class="form-control select2">
+                                                <select asp-for="DistributorSAPCode" asp-items="@(new SelectList(distributors, "Value", "Text"))" class="form-control select2">
                                                     <option value="">--Select option--</option>
                                                 </select>
                                             </div>
@@ -71,20 +60,18 @@
                                     }
                                     else
                                     {
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         </div>
                                     }
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 p-2">
                                         <div class="form-group">
                                             <label class="col-form-label font-weight-bold" for="Search"></label>
-                                            <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
+                                            <button type="submit" name="Search" class="btn btn-block btn-info" value="Search" id="btnSearch">
                                                 Search
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-2">
                                         <div class="form-group">
                                             <label class="col-form-label font-weight-bold" for="Clear"></label>
                                             <button type="button" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
@@ -101,7 +88,37 @@
         </div>
     </section>    <section class="content">
         <div class="container-fluid scrollmenu" id="divform">
-            @*<partial name="OrderList" model="" />*@
         </div>
     </section>
 </div>
+<script>
+
+    $(".datepicker").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'bottom',
+    });
+
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '100%',
+        });
+    });
+
+    $('body').on('click', '#btnClear', function () {
+
+        $('.select2').val('');
+        $('.select2').trigger('change');
+        $('.form-control, .datepicker').val('');
+    });
+
+    $('body').on('click', '#btnSearch', function () {
+
+        if ($('#SAPCompanyCode').val() == "") {
+            Toast.fire({ icon: 'error', title: 'Select Company' });
+            return false;
+        }
+        $('#frmCustomerBalanceSearch').submit();
+    });
+</script>

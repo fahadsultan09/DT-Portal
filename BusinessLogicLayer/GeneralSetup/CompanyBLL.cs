@@ -93,13 +93,23 @@ namespace BusinessLogicLayer.GeneralSetup
         }
         public SelectList DropDownCompanyList(int? SelectedValue)
         {
-            var selectList = GetAllCompany().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllCompany().Where(x => x.IsActive == true && !x.IsDeleted).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.CompanyName.ToString()
             });
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
+        public SelectList DropDownCompanyList()
+        {
+            var selectList = GetAllCompany().Where(x => x.IsActive == true && !x.IsDeleted && x.IsPaymentAllowed).Select(x => new SelectListItem
+            {
+                Value = x.SAPCompanyCode.ToString(),
+                Text = x.CompanyName.ToString()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
         }
         public SelectList DropDownCompanyList(bool IsPaymentAllowed)
         {

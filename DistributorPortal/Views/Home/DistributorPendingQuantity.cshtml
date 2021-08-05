@@ -18,19 +18,22 @@
         <tbody>
             @{
                 int i = 1;
-                foreach (var item in Model)
+                if (Model != null)
                 {
-                    <tr>
-                        <td>@(i++)</td>
-                        <td>@item.ProductCode</td>
-                        <td>@item.ProductName</td>
-                        <td>@item.OrderQuantity</td>
-                        <td>@item.DispatchQuantity</td>
-                        <td>@item.PendingQuantity</td>
-                        <td>@item.Rate</td>
-                        <td>@item.Discount</td>
-                        <td>@item.PendingValue.ToString("#,##0.00")</td>
-                    </tr>
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(i++)</td>
+                            <td>@item.ProductCode</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.OrderQuantity</td>
+                            <td>@item.DispatchQuantity</td>
+                            <td>@item.PendingQuantity</td>
+                            <td>@item.Rate</td>
+                            <td>@item.Discount</td>
+                            <td>@item.PendingValue.ToString("#,##0.00")</td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

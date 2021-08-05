@@ -4,7 +4,7 @@ namespace Models.ViewModel
 {
     public class InvoiceSearch : Search
     {
-        public int? InvoiceNo { get; set; }
+        public string InvoiceNo { get; set; }
         public int? CompanyId { get; set; }
         public SelectList CompanyList { get; set; }
     }

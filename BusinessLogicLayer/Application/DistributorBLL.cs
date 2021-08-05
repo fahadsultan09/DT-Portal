@@ -104,13 +104,23 @@ namespace BusinessLogicLayer.ApplicationSetup
         }
         public SelectList DropDownDistributorList(int? SelectedValue)
         {
-            var selectList = GetAllDistributor().Where(x => x.IsActive == true).Select(x => new SelectListItem
+            var selectList = GetAllDistributor().Where(x => x.IsActive == true && !x.IsDeleted).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.DistributorName.ToString()
             });
 
             return new SelectList(selectList, "Value", "Text", SelectedValue);
+        }
+        public SelectList DropDownDistributorList()
+        {
+            var selectList = GetAllDistributor().Where(x => x.IsActive == true && !x.IsDeleted).Select(x => new SelectListItem
+            {
+                Value = x.DistributorSAPCode.ToString(),
+                Text = x.DistributorName.ToString()
+            });
+
+            return new SelectList(selectList, "Value", "Text");
         }
         public MultiSelectList DropDownDistributorMultiList(int[] SelectedValue)
         {
