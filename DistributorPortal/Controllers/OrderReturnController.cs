@@ -199,7 +199,23 @@ namespace DistributorPortal.Controllers
                         model.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
                         model.NetAmount = model.Quantity * model.MRP;
                         model.Company = productDetail.Company;
+                        model.IsFOCProduct = false;
                         list.Add(model);
+                        if (!string.IsNullOrEmpty(productDetail.FOCProductCode))
+                        {
+                            var focProduct = _ProductDetailBLL.Where(e => e.FOCProductCode == productDetail.FOCProductCode).FirstOrDefault();
+                            OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
+                            orderReturnDetail.PlantLocationId = focProduct.PlantLocationId;
+                            orderReturnDetail.PlantLocation = focProduct.PlantLocation;
+                            orderReturnDetail.ProductMaster = _ProductMasterBLL.GetProductMasterById(focProduct.ProductMasterId);
+                            orderReturnDetail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == focProduct.PlantLocationId).FirstOrDefault();
+                            orderReturnDetail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
+                            orderReturnDetail.NetAmount = 0;
+                            orderReturnDetail.Company = focProduct.Company;
+                            orderReturnDetail.IsFOCProduct = true;
+                            orderReturnDetail.Quantity = model.Quantity;
+                            list.Add(orderReturnDetail);
+                        }
                         SessionHelper.AddReturnProduct = list;
                         jsonResponse.Status = true;
                         jsonResponse.Message = "Product added successfully";
