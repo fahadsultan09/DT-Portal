@@ -176,7 +176,7 @@
                                                     <td>@item.Amount.ToString("#,##0.00")</td>
                                                     <td>@item.QuanityCarton</td>
                                                     <td>@item.QuanitySF</td>
-                                                    <td>@item.QuanityLoose</td>
+                                                    <td>@Math.Abs(item.QuanityLoose)</td>
                                                 </tr>
                                             }
                                         </tbody>

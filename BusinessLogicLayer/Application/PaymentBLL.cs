@@ -254,7 +254,7 @@ namespace BusinessLogicLayer.Application
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
 
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-            List<OrderDetail> orderDetails = _OrderDetailBLL.Where(x => x.OrderMaster.IsDeleted == false && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
+            List<OrderDetail> orderDetails = _OrderDetailBLL.Where(x => x.OrderMaster.IsActive && !x.OrderMaster.IsDeleted && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
             List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
 
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails

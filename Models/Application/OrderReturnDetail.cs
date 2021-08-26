@@ -22,7 +22,7 @@ namespace Models.Application
         public int ReceivedQty { get; set; }
         public int? ReceivedBy { get; set; }
         public DateTime? ReceivedDate { get; set; }
-        [Range(1, 9999999999)]
+        [Range(0, 9999999999)]
         [Column(TypeName = "double")]
         [Required(ErrorMessage = "Amount is required.")]
         public double MRP { get; set; }

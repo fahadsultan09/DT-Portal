@@ -34,14 +34,19 @@ namespace Invoice
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:sap-com:document:sap:rfc:functions", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string P_KUNAG;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:sap-com:document:sap:rfc:functions", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string P_VBELN;
         
         public POservRespOutRequest()
         {
         }
         
-        public POservRespOutRequest(string P_VBELN)
+        public POservRespOutRequest(string P_KUNAG, string P_VBELN)
         {
+            this.P_KUNAG = P_KUNAG;
             this.P_VBELN = P_VBELN;
         }
     }
@@ -116,9 +121,10 @@ namespace Invoice
             return base.Channel.POservRespOut(request);
         }
         
-        public string POservRespOut(string P_VBELN)
+        public string POservRespOut(string P_KUNAG, string P_VBELN)
         {
             Invoice.POservRespOutRequest inValue = new Invoice.POservRespOutRequest();
+            inValue.P_KUNAG = P_KUNAG;
             inValue.P_VBELN = P_VBELN;
             Invoice.POservRespOutResponse retVal = ((Invoice.POservRespOut)(this)).POservRespOut(inValue);
             return retVal.LV_STRING;
@@ -130,9 +136,10 @@ namespace Invoice
             return base.Channel.POservRespOutAsync(request);
         }
         
-        public System.Threading.Tasks.Task<Invoice.POservRespOutResponse> POservRespOutAsync(string P_VBELN)
+        public System.Threading.Tasks.Task<Invoice.POservRespOutResponse> POservRespOutAsync(string P_KUNAG, string P_VBELN)
         {
             Invoice.POservRespOutRequest inValue = new Invoice.POservRespOutRequest();
+            inValue.P_KUNAG = P_KUNAG;
             inValue.P_VBELN = P_VBELN;
             return ((Invoice.POservRespOut)(this)).POservRespOutAsync(inValue);
         }

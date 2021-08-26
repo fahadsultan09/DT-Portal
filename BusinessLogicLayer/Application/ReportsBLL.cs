@@ -110,7 +110,7 @@ namespace BusinessLogicLayer.Application
             {
                 client.OpenAsync();
             }
-            string base64 = client.POservRespOut(invoiceSearch.InvoiceNo.ToString());
+            string base64 = client.POservRespOut(SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.Distributor.DistributorSAPCode : string.Empty, invoiceSearch.InvoiceNo.ToString());
             client.CloseAsync();
             return base64;
         }
@@ -137,7 +137,7 @@ namespace BusinessLogicLayer.Application
             {
                 client.OpenAsync();
             }
-            string base64 = client.POserRespOut(saleReturnCreditNoteSearch.SaleReturnNo.ToString());
+            string base64 = client.POserRespOut(SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.Distributor.DistributorSAPCode : string.Empty, saleReturnCreditNoteSearch.SaleReturnNo.ToString());
             client.CloseAsync();
             return base64;
         }

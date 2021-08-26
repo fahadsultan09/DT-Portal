@@ -26,7 +26,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-3">
-                    <div class="info-box">
+                    <div class="info-box" data-toggle="Sum of Pending Approval + Partially Approved + On Hold" title="Pending Approval + Partially Approved + On Hold">
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-truck"></i></span>
                         <div class="info-box-content">
                             <span>Total in Process Orders</span>
@@ -122,7 +122,7 @@
                 <div class="col-5">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments - @DateTime.Now.Year</h3>
+                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Payments</h3>
                             <a asp-controller="Payment" asp-action="Index" class="btn btn-outline-primary float-right">View All</a>
                         </div>
                         <div class="card-body" id="DistributorBalance" data-card-widget="card-refresh" data-source="~/Pages/widgets.html" data-source-selector="#card-refresh-content" data-load-on-init="true">
@@ -152,7 +152,7 @@
                 <div class="col-7">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Orders - @DateTime.Now.Year</h3>
+                            <h3 class="card-title"><i class="far fa-chart-bar"></i>Orders</h3>
                             <a asp-controller="Order" asp-action="Index" class="btn btn-outline-primary float-right">View All</a>
                         </div>
                         <div class="card-body">

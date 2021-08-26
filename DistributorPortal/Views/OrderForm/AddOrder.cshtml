@@ -157,7 +157,7 @@
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
                                                         <td><span class="CurtonQty">@Model.ProductDetails[i].ProductDetail.QuanityCarton</span></td>
                                                         <td><span class="QtySF">@Model.ProductDetails[i].ProductDetail.QuanitySF</span></td>
-                                                        <td><span class="QtyLoose">@Model.ProductDetails[i].ProductDetail.QuanityLoose</span></td>
+                                                        <td><span class="QtyLoose">@Math.Abs(Model.ProductDetails[i].ProductDetail.QuanityLoose)</span></td>
                                                     </tr>
                                                     id++;
                                                 }
@@ -490,7 +490,7 @@
     }
 
     function CalculateLooseQuantity(qty, CurtonSize) {
-
+        
         var val = Math.floor(qty) / Math.floor(CurtonSize);
         if (Math.floor(val) != 0) {
             var val2 = Math.floor(CurtonSize) * Math.floor(val);
@@ -498,7 +498,7 @@
             return looseQuantity;
         }
         else {
-            return 0;
+            return qty;
         }
     }
 

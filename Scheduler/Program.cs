@@ -20,7 +20,7 @@ namespace Scheduler
         private static string fileName = Guid.NewGuid().ToString() + ".txt";
         static void Main(string[] args)
         {
-                        try
+            try
             {
                 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
                 var ConnectionString = configuration.GetSection("ConnectionStrings:DistributorPortalDbContext");
@@ -31,8 +31,8 @@ namespace Scheduler
                 var POUserName = configuration.GetSection("Settings:POUserName");
                 var POPassword = configuration.GetSection("Settings:POPassword");
                 var URL = configuration.GetSection("Settings:URL");
-                var config = new Configuration(null) 
-                { 
+                var config = new Configuration(null)
+                {
                     ConnectionString = ConnectionString.Value,
                     FromEmail = FromEmail.Value,
                     Password = Password.Value,

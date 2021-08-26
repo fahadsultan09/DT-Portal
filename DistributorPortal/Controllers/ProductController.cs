@@ -205,17 +205,27 @@ namespace ProductPortal.Controllers
             ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(id);
             return Json(new { productMaster });
         }
-        public IActionResult ProductsExportToExcel(ProductEnum Id)
+        public IActionResult ProductsExportToExcel(ProductEnum productEnum)
         {
-            if (Id == ProductEnum.ProductMaster)
+            List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
+            List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
+            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+            ViewBag.productEnum = (int)productEnum;
+
+            if (productEnum == ProductEnum.ProductMapping)
             {
-                var data = _ProductMasterBLL.GetAllProductMaster();
-                return new ExcelResult<ProductMaster>(data, "Products", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+                productMasters = _ProductMasterBLL.Where(x => productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
+                return new ExcelResult<ProductMaster>(productMasters, "Products", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+            }
+            else if (productEnum == ProductEnum.ProductMaster)
+            {
+                productMasters = _ProductMasterBLL.Where(x => !productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
+                return new ExcelResult<ProductMaster>(productMasters, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
             else
             {
-                var data = _ProductDetailBLL.GetViewModelForExcel();
-                return new ExcelResult<ProductMappingModel>(data, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+                productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+                return new ExcelResult<ProductMaster>(productMasters, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
         }
         [HttpPost]

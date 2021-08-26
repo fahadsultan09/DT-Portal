@@ -34,14 +34,19 @@ namespace SaleReturnCreditNote
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:sap-com:document:sap:rfc:functions", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string P_KUNRG;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:sap-com:document:sap:rfc:functions", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string P_VBELN;
         
         public POserRespOutRequest()
         {
         }
         
-        public POserRespOutRequest(string P_VBELN)
+        public POserRespOutRequest(string P_KUNRG, string P_VBELN)
         {
+            this.P_KUNRG = P_KUNRG;
             this.P_VBELN = P_VBELN;
         }
     }
@@ -116,9 +121,10 @@ namespace SaleReturnCreditNote
             return base.Channel.POserRespOut(request);
         }
         
-        public string POserRespOut(string P_VBELN)
+        public string POserRespOut(string P_KUNRG, string P_VBELN)
         {
             SaleReturnCreditNote.POserRespOutRequest inValue = new SaleReturnCreditNote.POserRespOutRequest();
+            inValue.P_KUNRG = P_KUNRG;
             inValue.P_VBELN = P_VBELN;
             SaleReturnCreditNote.POserRespOutResponse retVal = ((SaleReturnCreditNote.POserRespOut)(this)).POserRespOut(inValue);
             return retVal.LV_STRING;
@@ -130,9 +136,10 @@ namespace SaleReturnCreditNote
             return base.Channel.POserRespOutAsync(request);
         }
         
-        public System.Threading.Tasks.Task<SaleReturnCreditNote.POserRespOutResponse> POserRespOutAsync(string P_VBELN)
+        public System.Threading.Tasks.Task<SaleReturnCreditNote.POserRespOutResponse> POserRespOutAsync(string P_KUNRG, string P_VBELN)
         {
             SaleReturnCreditNote.POserRespOutRequest inValue = new SaleReturnCreditNote.POserRespOutRequest();
+            inValue.P_KUNRG = P_KUNRG;
             inValue.P_VBELN = P_VBELN;
             return ((SaleReturnCreditNote.POserRespOut)(this)).POserRespOutAsync(inValue);
         }

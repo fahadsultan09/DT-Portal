@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Application
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
+            module.UpdatedDate = DateTime.Now;
             _repository.Insert(module);
             _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Insert, module, "Save Distributor License", module.CreatedBy);
             return _unitOfWork.Save();

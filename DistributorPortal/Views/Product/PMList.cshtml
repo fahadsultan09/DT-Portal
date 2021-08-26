@@ -34,25 +34,26 @@
                         <form asp-controller="Product"
                               asp-action="Sync"
                               id="frmAdd"
-                              data-ajax-success="Success"
+                              data-ajax-begin="Begin"
+                              data-ajax-success="OnSuccess"
                               data-ajax="true"
                               data-ajax-method="GET"
                               method="GET">
                             @if (sync)
                             {
-                                <button type="submit" class="btn btn-success float-right m-1"><i class="fa fa-sync"></i>&nbsp;Sync</button>
+                                <button type="submit" class="btn btn-success float-right m-1"><i class="fa fa-sync"></i>&nbsp;Sync Product</button>
                             }
                         </form>&nbsp;
-                        @if (export)
-                        {
-                            <a asp-controller="Product"
-                               asp-action="ProductsExportToExcel"
-                               asp-route-Id="@ProductEnum.ProductMapping"
-                               id="frmImport"
-                               class="btn btn-info float-right m-1">
-                                <i class="fa fa-download"></i>&nbsp;Export
-                            </a>
-                        }
+                        <form asp-controller="Product"
+                              asp-action="ProductsExportToExcel"
+                              data-ajax-method="GET"
+                              method="GET">
+                            @if (export)
+                            {
+                                <button class="btn btn-info float-right" style="margin-top: -17px;"><i class="fa fa-download"></i>&nbsp;Export</button>
+                            }
+                            <input type="hidden" name="productEnum" id="productEnum" />
+                        </form>
                     </div>
                 </div>
             </div>
@@ -163,6 +164,10 @@
 </div>
 <script>
 
+    $('body').on('change', '#ddlMappedId', function () {
+        $('#productEnum').val($('#ddlMappedId option:selected').val());
+    });
+
     function FOCProductCodeAC(e) {
         $(e).autocomplete({
             source: function (request, response) {
@@ -187,7 +192,7 @@
             },
             minLength: 1
         });
-    }     
+    }
     function SaveEdit() {
 
         Swal.fire({
@@ -236,6 +241,7 @@
 
         var productEnum = '@ViewBag.productEnum';
         $('#ddlMappedId').val(productEnum);
+        $('#productEnum').val(productEnum);
 
         $("#example1").DataTable({
             paging: false,

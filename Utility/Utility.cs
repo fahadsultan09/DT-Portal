@@ -47,7 +47,6 @@ namespace Utility
         [Display(Name = "Completely Processed")]
         CompletelyProcessed = 6,
         Rejected = 7,
-        Submitted = 8,
         [Display(Name = "On hold")]
         Onhold = 9,
         Approved = 10,

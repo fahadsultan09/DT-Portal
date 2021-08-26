@@ -84,6 +84,7 @@ namespace UserLoginRegistration
         {
             try
             {
+                Cursor = Cursors.WaitCursor;
                 lblError.Text = string.Empty;
                 if (string.IsNullOrEmpty(txtUserName.Text) || string.IsNullOrEmpty(txtPassword.Text))
                 {
@@ -136,6 +137,7 @@ namespace UserLoginRegistration
                 }
                 btnLogin.Enabled = true;
             }
+            Cursor = Cursors.Default;
         }
         private void btnUserName_KeyPress(object sender, KeyPressEventArgs e)
         {

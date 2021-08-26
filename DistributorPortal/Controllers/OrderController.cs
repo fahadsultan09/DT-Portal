@@ -66,7 +66,7 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
-                List<DistributorLicense> DistributorLicense = _DistributorLicenseBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.DocumentType == DocumentType.License && x.Status == LicenseStatus.Verified).ToList();
+                List<DistributorLicense> DistributorLicense = _DistributorLicenseBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status == LicenseStatus.Verified).ToList();
                 if (DistributorLicense != null)
                 {
                     foreach (var item in DistributorLicense)
@@ -487,11 +487,11 @@ namespace DistributorPortal.Controllers
         {
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                return _OrderBLL.Where(x => x.IsDeleted == false && x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                return _OrderBLL.Where(x => x.IsActive && !x.IsDeleted && x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             }
             else
             {
-                return _OrderBLL.Where(x => x.IsDeleted == false && x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
+                return _OrderBLL.Where(x => x.IsActive && !x.IsDeleted && x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
             }
         }
         public JsonResult CheckProductLicense(int ProductMasterId)

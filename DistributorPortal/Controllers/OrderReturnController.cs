@@ -203,17 +203,22 @@ namespace DistributorPortal.Controllers
                         list.Add(model);
                         if (!string.IsNullOrEmpty(productDetail.FOCProductCode))
                         {
-                            var focProduct = _ProductDetailBLL.Where(e => e.FOCProductCode == productDetail.FOCProductCode).FirstOrDefault();
+                            var focProductMaster = _ProductMasterBLL.Where(e => e.SAPProductCode == productDetail.FOCProductCode).FirstOrDefault();
+                            var focProductDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == focProductMaster.Id).FirstOrDefault();
                             OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
-                            orderReturnDetail.PlantLocationId = focProduct.PlantLocationId;
-                            orderReturnDetail.PlantLocation = focProduct.PlantLocation;
-                            orderReturnDetail.ProductMaster = _ProductMasterBLL.GetProductMasterById(focProduct.ProductMasterId);
-                            orderReturnDetail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == focProduct.PlantLocationId).FirstOrDefault();
+                            orderReturnDetail.PlantLocationId = focProductDetail.PlantLocationId;
+                            orderReturnDetail.PlantLocation = focProductDetail.PlantLocation;
+                            orderReturnDetail.ProductMaster = _ProductMasterBLL.GetProductMasterById(focProductDetail.ProductMasterId);
+                            orderReturnDetail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == focProductDetail.PlantLocationId).FirstOrDefault();
                             orderReturnDetail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
                             orderReturnDetail.NetAmount = 0;
-                            orderReturnDetail.Company = focProduct.Company;
+                            orderReturnDetail.Company = focProductDetail.Company;
                             orderReturnDetail.IsFOCProduct = true;
                             orderReturnDetail.Quantity = model.Quantity;
+                            orderReturnDetail.BatchNo = model.BatchNo;
+                            orderReturnDetail.InvoiceNo = model.InvoiceNo;
+                            orderReturnDetail.InvoiceDate = model.InvoiceDate;
+                            orderReturnDetail.ProductId = focProductDetail.ProductMasterId;
                             list.Add(orderReturnDetail);
                         }
                         SessionHelper.AddReturnProduct = list;
@@ -535,8 +540,17 @@ namespace DistributorPortal.Controllers
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             var list = SessionHelper.AddReturnProduct;
             var item = list.FirstOrDefault(e => e.ProductId == id && e.BatchNo.Trim() == BatchNo.Trim());
+
             if (item != null)
             {
+                ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == item.Id).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(productDetail.FOCProductCode))
+                {
+                    var focProductMaster = _ProductMasterBLL.Where(e => e.SAPProductCode == productDetail.FOCProductCode).FirstOrDefault();
+                    var item1 = list.FirstOrDefault(e => e.ProductId == id && e.BatchNo.Trim() == BatchNo.Trim());
+                    list.Remove(item);
+                }
                 list.Remove(item);
             }
             SessionHelper.AddReturnProduct = list;
