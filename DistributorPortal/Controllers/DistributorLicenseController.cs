@@ -73,8 +73,11 @@ namespace DistributorPortal.Controllers
             foreach (var item in ATBLLDistributorLicense)
             {
                 var license = JsonConvert.DeserializeObject<DistributorLicense>(item.JsonObject.ToString());
-                license.LicenseControl = new LicenseControl { LicenseName = licenseControl.FirstOrDefault(x => x.Id == license.LicenseId).LicenseName };
-                distributorLicensesHistory.Add(license);
+                if (licenseControl.FirstOrDefault(x => x.Id == license.LicenseId) != null)
+                {
+                    license.LicenseControl = new LicenseControl { LicenseName = licenseControl.FirstOrDefault(x => x.Id == license.LicenseId).LicenseName };
+                    distributorLicensesHistory.Add(license);
+                }
             }
             ViewBag.distributorLicensesHistory = distributorLicensesHistory.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
             return View(DistributorLicenseList);

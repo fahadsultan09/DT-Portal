@@ -124,6 +124,7 @@
                                         <table id="example2" class="table table-bordered table-hover table-striped table-responsive">
                                             <thead>
                                                 <tr>
+                                                    <th>Product Code</th>
                                                     <th>Product Name</th>
                                                     <th>Company</th>
                                                     <th>Location</th>
@@ -139,6 +140,7 @@
                                                     <th>Invoice No</th>
                                                     <th>Invoice Date</th>
                                                     <th>Intimation Date</th>
+                                                    <th>Remarks</th>
                                                     <th>SAP Order Number</th>
                                                     <th>SAP Order Status</th>
                                                 </tr>
@@ -147,6 +149,7 @@
                                                 @foreach (var item in OrderReturnDetail)
                                                 {
                                                     <tr>
+                                                        <td>@item.ProductMaster.SAPProductCode</td>
                                                         <td>@item.ProductMaster.ProductDescription</td>
                                                         <td>@item.Company.CompanyName</td>
                                                         <td>@item.PlantLocation.PlantLocationName</td>
@@ -162,6 +165,7 @@
                                                         <td>@item.InvoiceNo</td>
                                                         <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
                                                         <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                                                        <td>@item.Remarks</td>
                                                         <td>@item.ReturnOrderNumber</td>
                                                         <td>@item.ReturnOrderStatus</td>
                                                     </tr>
@@ -169,7 +173,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="9"><span class="float-right">Grand Total</span></td>
+                                                    <td colspan="10"><span class="float-right">Grand Total</span></td>
                                                     <td colspan="8"><strong><span class="TotalNetValue"></span></strong></td>
                                                 </tr>
                                             </tfoot>

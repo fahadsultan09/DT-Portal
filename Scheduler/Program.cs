@@ -16,13 +16,15 @@ namespace Scheduler
     {
         private static DistributorPortalDbContext _DistributorPortalDbContext;
         private static IUnitOfWork _unitOfWork;
-        private static IWebHostEnvironment _env;
+        private static readonly IWebHostEnvironment _env;
         private static string fileName = Guid.NewGuid().ToString() + ".txt";
         static void Main(string[] args)
         {
             try
             {
-                IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
+                var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                ExtensionUtility.WriteToFile(environmentName, FolderName.OrderStatus, fileName);
+                IConfiguration configuration = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true).AddJsonFile($"appsettings.{environmentName}.json", true, true).Build();
                 var ConnectionString = configuration.GetSection("ConnectionStrings:DistributorPortalDbContext");
                 var FromEmail = configuration.GetSection("Settings:FromEmail");
                 var Password = configuration.GetSection("Settings:Password");
@@ -31,6 +33,7 @@ namespace Scheduler
                 var POUserName = configuration.GetSection("Settings:POUserName");
                 var POPassword = configuration.GetSection("Settings:POPassword");
                 var URL = configuration.GetSection("Settings:URL");
+                var GetInProcessOrderStatus = configuration.GetSection("AppSettings:GetInProcessOrderStatus");
                 var config = new Configuration(null)
                 {
                     ConnectionString = ConnectionString.Value,
@@ -41,6 +44,7 @@ namespace Scheduler
                     POUserName = POUserName.Value,
                     POPassword = POPassword.Value,
                     URL = URL.Value,
+                    GetInProcessOrderStatus = GetInProcessOrderStatus.Value,
                 };
                 var services = new ServiceCollection();
                 services.AddDbContext<DistributorPortalDbContext>(options => options.UseMySQL(config.ConnectionString));
@@ -48,31 +52,30 @@ namespace Scheduler
                 var serviceProvider = services.BuildServiceProvider();
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
+                ExtensionUtility.WriteToFile("Console Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
 
-                ////Order and Order Return Product Status
-                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.OrderStatus, fileName);
-                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
-                //distributorOrderStatus.GetInProcessOrderProductStatus();
-                //distributorOrderStatus.GetInProcessOrderReturnProductStatus();
-                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.OrderStatus, fileName);
+                //Order and Order Return Product Status
+                DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
+                ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                distributorOrderStatus.GetInProcessOrderProductStatus(config.GetInProcessOrderStatus);
+                ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                distributorOrderStatus.GetInProcessOrderReturnProductStatus(config.GetInProcessOrderStatus);
+                ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
 
                 ////Complaint Status
-                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.Complaint, fileName);
                 //KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
                 //KPIEmailScheduler.GetPendingComplaints();
-                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.Complaint, fileName);
 
                 ////Get pending value
-                //ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.PendingValue, fileName);
                 //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
                 //distributorPendingQuanityValue.AddDistributorPendingValue();
-                //ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.PendingValue, fileName);
 
-                //Get pending quantity
-                ExtensionUtility.WriteToFile("Console Start-" + DateTime.Now, FolderName.PendingQuantity, fileName);
-                DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
-                distributorPendingQuanityValue.AddDistributorPendingQuantity();
-                ExtensionUtility.WriteToFile("Console End-" + DateTime.Now, FolderName.PendingQuantity, fileName);
+                ////Get pending quantity
+                //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
+                //distributorPendingQuanityValue.AddDistributorPendingQuantity();
+
+                ExtensionUtility.WriteToFile("Console End - " + DateTime.Now, FolderName.OrderStatus, fileName);
             }
             catch (Exception ex)
             {

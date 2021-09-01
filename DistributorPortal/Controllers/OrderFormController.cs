@@ -125,6 +125,7 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
+                    List<DistributorPendingQuantity> pendingQuantity = new List<DistributorPendingQuantity>();
                     if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorBalance == null)
                     {
                         SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
@@ -133,13 +134,12 @@ namespace DistributorPortal.Controllers
                     {
                         SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                         List<ProductMaster> _ProductMaster = _ProductMasterBLL.GetAllProductMaster().ToList();
-                        //List<SAPOrderPendingQuantity> pendingQuantity = SessionHelper.DistributorPendingQuantity = _OrderBLL.GetDistributorOrderPendingQuantity(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-                        List<DistributorPendingQuantity> pendingQuantity = SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                        pendingQuantity = SessionHelper.DistributorPendingQuantity = _DistributorPendingQuanityBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                         pendingQuantity.ForEach(x => x.Id = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).Id : 0);
                         pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
                         SessionHelper.DistributorPendingQuantity = pendingQuantity;
                     }
-                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode)?.PendingQuantity.ToString());
+                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = pendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode)?.PendingQuantity.ToString());
                     distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                     distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                     SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
@@ -451,7 +451,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to approved order";
+                    jsonResponse.Message = "Unable to approve order";
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 return Json(new { data = jsonResponse });
@@ -536,7 +536,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to approved order";
+                    jsonResponse.Message = "Unable to approve order";
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 return Json(new { data = jsonResponse });

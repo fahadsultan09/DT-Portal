@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Models.Application;
 using Models.ViewModel;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -72,7 +73,7 @@ namespace DistributorPortal.Controllers
                 && Enum.GetValues(typeof(DistributorTransactionStatus)).OfType<DistributorTransactionStatus>().Select(s => s.ToString()).Contains(x.Status)
                 : x.CompanyId == SessionHelper.LoginUser.CompanyId && Enum.GetValues(typeof(TransactionStatus)).OfType<TransactionStatus>().Select(s => s.ToString()).Contains(x.Status)
                 && SessionHelper.NavigationMenu.Where(y => y.ApplicationActionId == (int)ApplicationActions.View).Select(y => y.ApplicationPageId).Contains(x.ApplicationPageId))
-                && x.CreatedDate.Date >= DateTime.Now.Date.AddDays(-10)).OrderByDescending(x => x.CreatedDate).ToList();
+                && x.CreatedDate.Date >= DateTime.Now.Date.AddDays(-10)).OrderByDescending(x => x.CreatedDate).DistinctBy(x => x.RequestId).ToList();
 
                 var list = SessionHelper.Notification;
                 list.ForEach(x => x.RelativeTime = ExtensionUtility.TimeAgo(x.CreatedDate));

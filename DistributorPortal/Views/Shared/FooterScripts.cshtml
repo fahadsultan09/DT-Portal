@@ -3,7 +3,7 @@
 <script type="text/javascript">
     
     var UserId = @SessionHelper.LoginUser.Id;
-    var RoleCompanyIds = @((SessionHelper.LoginUser.RoleId + (SessionHelper.LoginUser.CompanyId ?? 0)).ToString());
+    var RoleCompanyIds = @(SessionHelper.LoginUser.IsDistributor ? null : (SessionHelper.LoginUser.RoleId + (SessionHelper.LoginUser.CompanyId ?? 0)).ToString());
     $(function () {
         var url = window.location;
         // for single sidebar menu

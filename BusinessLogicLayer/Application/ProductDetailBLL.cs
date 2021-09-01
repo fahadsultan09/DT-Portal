@@ -99,7 +99,7 @@ namespace BusinessLogicLayer.Application
             var selectList = GetAllProductDetail().Where(x => x.IsActive == true).OrderBy(x => x.ProductMaster.ProductName).Select(x => new SelectListItem
             {
                 Value = x.ProductMasterId.ToString(),
-                Text = x.ProductMaster.ProductName.Trim() + " " + x.ProductMaster.ProductDescription.Trim()
+                Text = x.ProductMaster.ProductDescription.Trim()
             });
 
             return new SelectList(selectList, "Value", "Text");
@@ -109,7 +109,7 @@ namespace BusinessLogicLayer.Application
             var selectList = GetAllProductDetail().Where(x => x.IsActive == true && (x.ProductVisibilityId == ProductVisibility.Visible || x.ProductVisibilityId == ProductVisibility.OrderReturn)).OrderBy(x => x.ProductMaster.ProductName).Select(x => new SelectListItem
             {
                 Value = x.ProductMasterId.ToString(),
-                Text = x.ProductMaster.ProductName.Trim() + " " + x.ProductMaster.ProductDescription.Trim()
+                Text = x.ProductMaster.ProductDescription.Trim()
             });
 
             return new SelectList(selectList, "Value", "Text");
@@ -122,39 +122,116 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.Where(expression);
         }
-        public List<ProductMappingModel> GetViewModelForExcel()
+        public List<ProductMappingModel> GetViewModelForExcelMapped(List<ProductMaster> productMasters, List<ProductDetail> productDetails)
         {
+            productMasters = productMasters.Where(x => productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
             var GetAllProduct = GetAllProductDetail();
             List<ProductMappingModel> ProductMappingModel = new List<ProductMappingModel>();
-            foreach (var item in GetAllProduct)
+            foreach (var item in productMasters)
             {
                 ProductMappingModel.Add(new ProductMappingModel()
                 {
-                    ProductCode = item.ProductMaster.SAPProductCode,
-                    BrandName = item.ProductMaster.ProductName,
-                    ProductDescription = item.ProductMaster.ProductDescription,
-                    PackSize = item.ProductMaster.PackSize,
-                    FOCProductCode = item.FOCProductCode,
-                    Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductVisibilityId),
-                    PlantLocation = item.PlantLocation.PlantLocationName,
-                    Company = item.Company.CompanyName,
-                    WTaxRate = item.WTaxRate,
-                    Factor = item.Factor,
-                    ParentDistributor = item.ParentDistributor,
-                    S_OrderType = item.S_OrderType,
-                    R_OrderType = item.R_OrderType,
-                    SaleOrganization = item.SaleOrganization,
-                    DistributionChannel = item.DistributionChannel,
-                    Division = item.Division,
-                    DispatchPlant = item.DispatchPlant,
-                    S_StorageLocation = item.S_StorageLocation,
-                    R_StorageLocation = item.R_StorageLocation,
-                    SalesItemCategory = item.SalesItemCategory,
-                    ReturnItemCategory = item.ReturnItemCategory,
-                    IncomeTax = item.IncomeTax.ToString(),
-                    SalesTax = item.SalesTax.ToString(),
-                    AdditionalSalesTax = item.AdditionalSalesTax.ToString(),
-                    LicenseType = item.LicenseControl is null ? "" : item.LicenseControl.LicenseName,
+                    ProductCode = item.SAPProductCode,
+                    BrandName = item.ProductName,
+                    ProductDescription = item.ProductDescription,
+                    PackSize = item.PackSize,
+                    FOCProductCode = item.ProductDetail.FOCProductCode,
+                    Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId),
+                    PlantLocation = item.ProductDetail.PlantLocation is null ? "" : item.ProductDetail.PlantLocation.PlantLocationName,
+                    Company = item.ProductDetail.Company is null ? "" : item.ProductDetail.Company.CompanyName,
+                    WTaxRate = item.ProductDetail.WTaxRate,
+                    Factor = item.ProductDetail.Factor,
+                    ParentDistributor = item.ProductDetail.ParentDistributor,
+                    S_OrderType = item.ProductDetail.S_OrderType,
+                    R_OrderType = item.ProductDetail.R_OrderType,
+                    SaleOrganization = item.ProductDetail.SaleOrganization,
+                    DistributionChannel = item.ProductDetail.DistributionChannel,
+                    Division = item.ProductDetail.Division,
+                    DispatchPlant = item.ProductDetail.DispatchPlant,
+                    S_StorageLocation = item.ProductDetail.S_StorageLocation,
+                    R_StorageLocation = item.ProductDetail.R_StorageLocation,
+                    SalesItemCategory = item.ProductDetail.SalesItemCategory,
+                    ReturnItemCategory = item.ProductDetail.ReturnItemCategory,
+                    IncomeTax = item.ProductDetail.IncomeTax.ToString(),
+                    SalesTax = item.ProductDetail.SalesTax.ToString(),
+                    AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
+                    LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
+                });
+            }
+            return ProductMappingModel;
+        }
+        public List<ProductMappingModel> GetViewModelForExcelUnMapped(List<ProductMaster> productMasters, List<ProductDetail> productDetails)
+        {
+            productMasters = productMasters.Where(x => !productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
+            var GetAllProduct = GetAllProductDetail();
+            List<ProductMappingModel> ProductMappingModel = new List<ProductMappingModel>();
+            foreach (var item in productMasters)
+            {
+                ProductMappingModel.Add(new ProductMappingModel()
+                {
+                    ProductCode = item.SAPProductCode,
+                    BrandName = item.ProductName,
+                    ProductDescription = item.ProductDescription,
+                    PackSize = item.PackSize,
+                    FOCProductCode = item.ProductDetail.FOCProductCode,
+                    Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId),
+                    PlantLocation = item.ProductDetail.PlantLocation is null ? "" : item.ProductDetail.PlantLocation.PlantLocationName,
+                    Company = item.ProductDetail.Company is null ? "" : item.ProductDetail.Company.CompanyName,
+                    WTaxRate = item.ProductDetail.WTaxRate,
+                    Factor = item.ProductDetail.Factor,
+                    ParentDistributor = item.ProductDetail.ParentDistributor,
+                    S_OrderType = item.ProductDetail.S_OrderType,
+                    R_OrderType = item.ProductDetail.R_OrderType,
+                    SaleOrganization = item.ProductDetail.SaleOrganization,
+                    DistributionChannel = item.ProductDetail.DistributionChannel,
+                    Division = item.ProductDetail.Division,
+                    DispatchPlant = item.ProductDetail.DispatchPlant,
+                    S_StorageLocation = item.ProductDetail.S_StorageLocation,
+                    R_StorageLocation = item.ProductDetail.R_StorageLocation,
+                    SalesItemCategory = item.ProductDetail.SalesItemCategory,
+                    ReturnItemCategory = item.ProductDetail.ReturnItemCategory,
+                    IncomeTax = item.ProductDetail.IncomeTax.ToString(),
+                    SalesTax = item.ProductDetail.SalesTax.ToString(),
+                    AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
+                    LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
+                });
+            }
+            return ProductMappingModel;
+        }
+        public List<ProductMappingModel> GetViewModelForExcelAll(List<ProductMaster> productMasters, List<ProductDetail> productDetails)
+        {
+            var GetAllProduct = GetAllProductDetail();
+            productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
+            List<ProductMappingModel> ProductMappingModel = new List<ProductMappingModel>();
+            foreach (var item in productMasters)
+            {
+                ProductMappingModel.Add(new ProductMappingModel()
+                {
+                    ProductCode = item.SAPProductCode,
+                    BrandName = item.ProductName,
+                    ProductDescription = item.ProductDescription,
+                    PackSize = item.PackSize,
+                    FOCProductCode = item.ProductDetail.FOCProductCode,
+                    Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId),
+                    PlantLocation = item.ProductDetail.PlantLocation is null ? "" : item.ProductDetail.PlantLocation.PlantLocationName,
+                    Company = item.ProductDetail.Company is null ? "" : item.ProductDetail.Company.CompanyName,
+                    WTaxRate = item.ProductDetail.WTaxRate,
+                    Factor = item.ProductDetail.Factor,
+                    ParentDistributor = item.ProductDetail.ParentDistributor,
+                    S_OrderType = item.ProductDetail.S_OrderType,
+                    R_OrderType = item.ProductDetail.R_OrderType,
+                    SaleOrganization = item.ProductDetail.SaleOrganization,
+                    DistributionChannel = item.ProductDetail.DistributionChannel,
+                    Division = item.ProductDetail.Division,
+                    DispatchPlant = item.ProductDetail.DispatchPlant,
+                    S_StorageLocation = item.ProductDetail.S_StorageLocation,
+                    R_StorageLocation = item.ProductDetail.R_StorageLocation,
+                    SalesItemCategory = item.ProductDetail.SalesItemCategory,
+                    ReturnItemCategory = item.ProductDetail.ReturnItemCategory,
+                    IncomeTax = item.ProductDetail.IncomeTax.ToString(),
+                    SalesTax = item.ProductDetail.SalesTax.ToString(),
+                    AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
+                    LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
                 });
             }
             return ProductMappingModel;

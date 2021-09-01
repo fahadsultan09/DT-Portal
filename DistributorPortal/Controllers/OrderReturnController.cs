@@ -204,22 +204,25 @@ namespace DistributorPortal.Controllers
                         if (!string.IsNullOrEmpty(productDetail.FOCProductCode))
                         {
                             var focProductMaster = _ProductMasterBLL.Where(e => e.SAPProductCode == productDetail.FOCProductCode).FirstOrDefault();
-                            var focProductDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == focProductMaster.Id).FirstOrDefault();
-                            OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
-                            orderReturnDetail.PlantLocationId = focProductDetail.PlantLocationId;
-                            orderReturnDetail.PlantLocation = focProductDetail.PlantLocation;
-                            orderReturnDetail.ProductMaster = _ProductMasterBLL.GetProductMasterById(focProductDetail.ProductMasterId);
-                            orderReturnDetail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == focProductDetail.PlantLocationId).FirstOrDefault();
-                            orderReturnDetail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
-                            orderReturnDetail.NetAmount = 0;
-                            orderReturnDetail.Company = focProductDetail.Company;
-                            orderReturnDetail.IsFOCProduct = true;
-                            orderReturnDetail.Quantity = model.Quantity;
-                            orderReturnDetail.BatchNo = model.BatchNo;
-                            orderReturnDetail.InvoiceNo = model.InvoiceNo;
-                            orderReturnDetail.InvoiceDate = model.InvoiceDate;
-                            orderReturnDetail.ProductId = focProductDetail.ProductMasterId;
-                            list.Add(orderReturnDetail);
+                            if (focProductMaster != null)
+                            {
+                                var focProductDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == focProductMaster.Id).FirstOrDefault();
+                                OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
+                                orderReturnDetail.PlantLocationId = focProductDetail.PlantLocationId;
+                                orderReturnDetail.PlantLocation = focProductDetail.PlantLocation;
+                                orderReturnDetail.ProductMaster = _ProductMasterBLL.GetProductMasterById(focProductDetail.ProductMasterId);
+                                orderReturnDetail.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == focProductDetail.PlantLocationId).FirstOrDefault();
+                                orderReturnDetail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
+                                orderReturnDetail.NetAmount = 0;
+                                orderReturnDetail.Company = focProductDetail.Company;
+                                orderReturnDetail.IsFOCProduct = true;
+                                orderReturnDetail.Quantity = model.Quantity;
+                                orderReturnDetail.BatchNo = model.BatchNo;
+                                orderReturnDetail.InvoiceNo = model.InvoiceNo;
+                                orderReturnDetail.InvoiceDate = model.InvoiceDate;
+                                orderReturnDetail.ProductId = focProductDetail.ProductMasterId;
+                                list.Add(orderReturnDetail);
+                            }
                         }
                         SessionHelper.AddReturnProduct = list;
                         jsonResponse.Status = true;
@@ -392,7 +395,7 @@ namespace DistributorPortal.Controllers
                             Subject = "Return Delivery",
                             CreatedBy = SessionHelper.LoginUser.Id,
                             URL = _Configuration.URL
-                    };
+                        };
                         int[] PlantLocationId = OrderreturnProduct.Select(x => x.PlantLocationId).Distinct().ToArray();
                         if (PlantLocationId.Count() > 0)
                         {
@@ -404,7 +407,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to received order";
+                    jsonResponse.Message = "Unable to receive order";
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
                 return Json(new { data = jsonResponse });
@@ -543,13 +546,13 @@ namespace DistributorPortal.Controllers
 
             if (item != null)
             {
-                ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == item.Id).FirstOrDefault();
+                ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == item.ProductId).FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(productDetail.FOCProductCode))
                 {
                     var focProductMaster = _ProductMasterBLL.Where(e => e.SAPProductCode == productDetail.FOCProductCode).FirstOrDefault();
-                    var item1 = list.FirstOrDefault(e => e.ProductId == id && e.BatchNo.Trim() == BatchNo.Trim());
-                    list.Remove(item);
+                    var focItem = list.FirstOrDefault(e => e.ProductId == focProductMaster.Id && e.BatchNo.Trim() == BatchNo.Trim());
+                    list.Remove(focItem);
                 }
                 list.Remove(item);
             }
@@ -688,47 +691,115 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
                 var order = _OrderReturnBLL.GetById(id);
-                var client = new RestClient(_Configuration.PostOrder);
-                var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderPartiallyApprovedToSAP(id), "json");
-                IRestResponse response = client.Execute(request);
-                var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                var updatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id && e.ReturnOrderNumber == null).ToList();
-                if (sapProduct != null && sapProduct.Count() > 0)
+
+                var master = _OrderReturnBLL.FirstOrDefault(e => e.Id == id);
+                _unitOfWork.Begin();
+                var OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id).ToList();
+                foreach (var item in OrderreturnProduct)
                 {
-                    foreach (var item in sapProduct)
+                    OrderReturnDetail orderReturnDetail = new OrderReturnDetail();
+                    if (OrderreturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()) == null)
                     {
-                        var product = updatedOrderDetail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
-                        if (product != null)
+                        var detail = SessionHelper.AddReturnProduct.First(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim());
+                        detail.IsProductSelected = SessionHelper.AddReturnProduct.FirstOrDefault(x => x.ProductId == item.ProductId).IsProductSelected;
+                        detail.OrderReturnId = id;
+                        detail.CreatedBy = SessionHelper.LoginUser.Id;
+                        detail.CreatedDate = DateTime.Now;
+                        detail.ReceivedQty = item.ReceivedQty;
+                        detail.ReceivedBy = SessionHelper.LoginUser.Id;
+                        detail.ReceivedDate = DateTime.Now;
+                        detail.ProductMaster = null;
+                        detail.PlantLocation = null;
+                        _OrderReturnDetailBLL.Add(detail);
+                        _unitOfWork.Save();
+                    }
+                    else
+                    {
+                        var product = OrderreturnProduct.First(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim());
+                        product.ReceivedQty = item.ReceivedQty;
+                        product.IsProductSelected = true;
+                        product.ReceivedBy = SessionHelper.LoginUser.Id;
+                        product.ReceivedDate = DateTime.Now;
+                        _OrderReturnDetailBLL.Update(product);
+                        _unitOfWork.Save();
+                    }
+                }
+                //var Client = new RestClient(_Configuration.PostReturnOrder);
+                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderReturnBLL.PlaceReturnOrderToSAP(model.Id), "json");
+                //IRestResponse response = Client.Execute(request);
+                //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+                List<SAPOrderStatus> SAPProduct = _OrderReturnBLL.PostDistributorOrderReturn(id, _Configuration);
+                if (SAPProduct != null && SAPProduct.Count() > 0)
+                {
+                    OrderreturnProduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id).ToList();
+                    foreach (var item in SAPProduct)
+                    {
+                        var productList = OrderreturnProduct.Where(e => e.ProductMaster.SAPProductCode == item.ProductCode).ToList();
+                        if (productList != null)
                         {
-                            if (!string.IsNullOrEmpty(item.SAPOrderNo))
+                            foreach (var product in productList)
                             {
                                 product.ReturnOrderNumber = item.SAPOrderNo;
                                 product.ReturnOrderStatus = OrderStatus.InProcess;
+                                product.ReceivedBy = SessionHelper.LoginUser.Id;
+                                product.ReceivedDate = DateTime.Now;
                                 _OrderReturnDetailBLL.Update(product);
+                                _unitOfWork.Save();
+
                             }
                         }
                     }
-                    updatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id && e.ReturnOrderNumber == null).ToList();
-                    order.Status = updatedOrderDetail.Count > 0 ? OrderReturnStatus.PartiallyReceived : OrderReturnStatus.Received;
-                    order.ReceivedBy = SessionHelper.LoginUser.Id;
-                    order.ReceivedDate = DateTime.Now;
-                    var result = _OrderReturnBLL.Update(order);
+                    var UpdatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == id && e.ReturnOrderNumber == null).ToList();
+                    master.Status = UpdatedOrderDetail.Count > 0 ? OrderReturnStatus.PartiallyReceived : OrderReturnStatus.Received;
+                    master.ReceivedBy = SessionHelper.LoginUser.Id;
+                    master.ReceivedDate = DateTime.Now;
+                    var result = _OrderReturnBLL.Update(master);
+                    _unitOfWork.Commit();
                     jsonResponse.Status = result;
-                    jsonResponse.Message = result ? "Order return has been approved successfully" : NotificationMessage.ErrorOccurred;
-                    jsonResponse.RedirectURL = Url.Action("Index", "OrderReturn");
-                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order return #: " + order.SNo, Message = "Order return has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+                    jsonResponse.Message = result ? NotificationMessage.ReceivedReturn : NotificationMessage.ErrorOccurred;
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = master.CreatedBy.ToString(), Number = "Order Return #: " + master.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(OrderReturnStatus), result) };
                     notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                    notification.DistributorId = order.DistributorId;
-                    notification.RequestId = order.SNo;
-                    notification.Status = order.Status.ToString();
+                    notification.DistributorId = master.DistributorId;
+                    notification.RequestId = master.SNo;
+                    notification.Status = master.Status.ToString();
                     notification.Message = jsonResponse.SignalRResponse.Message;
-                    notification.URL = "/OrderReturn/View?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                    notification.URL = "/OrderReturn/View?DPID=" + EncryptDecrypt.Encrypt(master.Id.ToString());
                     _NotificationBLL.Add(notification);
+
+                    //Sending Email
+                    if (jsonResponse.Status && SAPProduct.Count() > 0)
+                    {
+                        string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ReturnOrderFromCustomer.html";
+                        string SAPOrderNo = string.Join(", </br>", SAPProduct.Select(x => x.SAPOrderNo).Distinct().ToArray());
+                        ReturnOrderEmailUserModel EmailUserModel = new ReturnOrderEmailUserModel()
+                        {
+                            ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
+                            Date = Convert.ToDateTime(master.ReceivedDate).ToString("dd/MMM/yyyy"),
+                            City = master.Distributor.City,
+                            ShipToPartyName = master.Distributor.DistributorName,
+                            RetrunOrderNumber = SAPOrderNo,
+                            Subject = "Return Delivery",
+                            CreatedBy = SessionHelper.LoginUser.Id,
+                            URL = _Configuration.URL
+                        };
+                        int[] PlantLocationId = OrderreturnProduct.Select(x => x.PlantLocationId).Distinct().ToArray();
+                        if (PlantLocationId.Count() > 0)
+                        {
+                            List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.PlantLocationId != null && PlantLocationId.Contains((int)x.PlantLocationId) || Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) && x.Equals(2)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
+                            _EmailLogBLL.RetrunOrderEmail(UserList, EmailUserModel);
+                        }
+                    }
+                }
+                else
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Unable to receive order";
                 }
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
             {
+                _unitOfWork.Rollback();
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 jsonResponse.Status = false;
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;

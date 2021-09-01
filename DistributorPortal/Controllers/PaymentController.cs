@@ -302,10 +302,11 @@ namespace DistributorPortal.Controllers
                         notification.Status = model.Status.ToString();
                         notification.Message = jsonResponse.SignalRResponse.Message;
                         notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                        _NotificationBLL.Add(notification);
                     }
-                    _NotificationBLL.Add(notification);
                 }
                 _unitOfWork.Save();
+                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

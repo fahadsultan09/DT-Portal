@@ -302,12 +302,12 @@ namespace DistributorPortal.Controllers
                     order.ApprovedDate = DateTime.Now;
                     var result = _OrderBLL.Update(order);
                     jsonResponse.Status = result > 0;
-                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approved order";
+                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
                 }
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to approved order";
+                    jsonResponse.Message = "Unable to approve order";
                 }
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };

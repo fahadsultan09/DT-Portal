@@ -30,8 +30,7 @@
     }
 
     div.sticky {
-        position: -webkit-sticky;
-        position: sticky;
+        position: relative;
         top: 0;
         z-index: 1
     }
@@ -148,7 +147,7 @@
                                                                    onchange="LoadOrderValue(this);"
                                                                    onkeypress="return isNumberKey(event)"
                                                                    class="form-control ApproveQuantity" min="0" max="9999999" pattern="\\d*" maxlength="6"
-                                                                   disabled="@(LicenseFormList.Any(x => DistributorLicenseId.Any(y => y == x)) ? (Model.ProductDetails[i].ProductDetail.LicenseControlId != null ? DistributorLicenseId.Contains((int)Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : "disabled" : null) : "disabled")" />
+                                                                   disabled="@(LicenseFormList.Any(x => DistributorLicenseId.Any(y => y == x)) || LicenseFormList.Count() == 0 ? (Model.ProductDetails[i].ProductDetail.LicenseControlId != null && LicenseFormList.Count() > 0 ? DistributorLicenseId.Contains((int)Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : "disabled" : null) : "disabled")" />
                                                         </td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.PendingQuantity</td>
                                                         <td></td>
@@ -290,7 +289,6 @@
         }
     }
 
-
     function isNumberKey(evt) {
 
         var charCode = (evt.which) ? evt.which : event.keyCode;
@@ -372,7 +370,6 @@
                 else
                     $('[tabindex="1"]').focus();
             }
-
         });
 
         if ($('#Id').val() != "0") {
@@ -392,6 +389,7 @@
         var intmaxvalue = @Int32.MaxValue;
         var quantity = data.value == "" ? "0" : data.value;
         var product = data.getAttribute("ProductId");
+
         if (quantity > intmaxvalue) {
             Toast.fire({
                 icon: 'error',
@@ -399,7 +397,6 @@
             });
         }
         else {
-
             var qty = parseInt(quantity);
             var CurtonSize = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
             var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
@@ -411,14 +408,14 @@
             var CalculateIncomeTax = (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) + (((qty * tradePrice) * (1 - ((-1 * discount) / 100))) * ((SalesTax / 100)))) * (IncomeTax / 100);
             var netValue = InclusiveSalesTax + CalculateIncomeTax;
             $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue.toFixed(2));
-            //$(data).parent('td').parent('tr').find('#NetValue').val().mask('000,000,000,000');
+
             if (quantity != "" && quantity != undefined) {
                 if (CurtonSize != 0 && SFSize != 0) {
                     $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / CurtonSize).toString();
                     $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = (quantity - ((quantity / CurtonSize) * CurtonSize) + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize)).toString() == "NaN" ? 0 : (quantity / CurtonSize) * CurtonSize + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize);
                     $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize)).toString() == "-Infinity" ? 0 : Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize));
                 }
-                else if (CurtonSize != 0) {
+                else if (CurtonSize != 0 && SFSize == 0) {
                     $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
                     $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
                     $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = CalculateLooseQuantity(qty,CurtonSize);
@@ -490,7 +487,7 @@
     }
 
     function CalculateLooseQuantity(qty, CurtonSize) {
-        
+
         var val = Math.floor(qty) / Math.floor(CurtonSize);
         if (Math.floor(val) != 0) {
             var val2 = Math.floor(CurtonSize) * Math.floor(val);

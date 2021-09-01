@@ -186,6 +186,7 @@ function bindDropDownList(dropdown, url, params, defaultvalue = "") {
             $.each(response, function () {
                 dropdown.append($("<option></option>").val(this['Value']).html(this['Text']));
             });
+            $('.ddlCompanyBank').change();
         },
     });
 }

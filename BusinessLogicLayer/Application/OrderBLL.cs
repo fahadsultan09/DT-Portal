@@ -526,16 +526,19 @@ namespace BusinessLogicLayer.Application
                 double value = (Quantity - ((Quantity / CartonSize) * CartonSize) + ((Quantity - ((Quantity / CartonSize) * CartonSize) / SFSize) * SFSize)).ToString() == "NaN" ? 0 : (Quantity / CartonSize) * CartonSize + ((Quantity - ((Quantity / CartonSize) * CartonSize) / SFSize) * SFSize);
                 return value;
             }
-            if (Quantity > 0)
+            else
             {
-                int val = Convert.ToInt32(Math.Floor(Quantity) / Math.Floor(CartonSize));
-                if (val != 0)
+                if (Quantity > 0)
                 {
-                    double val2 = Convert.ToInt32(CartonSize) * val;
-                    return -1 * (Quantity - val2);
+                    int val = Convert.ToInt32(Math.Floor(Quantity) / Math.Floor(CartonSize));
+                    if (val != 0)
+                    {
+                        double val2 = Convert.ToInt32(CartonSize) * val;
+                        return -1 * (Quantity - val2);
+                    }
                 }
             }
-            return 0;
+            return Quantity;
         }
 
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)

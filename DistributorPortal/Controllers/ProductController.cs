@@ -214,18 +214,18 @@ namespace ProductPortal.Controllers
 
             if (productEnum == ProductEnum.ProductMapping)
             {
-                productMasters = _ProductMasterBLL.Where(x => productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
-                return new ExcelResult<ProductMaster>(productMasters, "Products", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+                var data = _ProductDetailBLL.GetViewModelForExcelMapped(productMasters, productDetails);
+                return new ExcelResult<ProductMappingModel>(data, "Products", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
             else if (productEnum == ProductEnum.ProductMaster)
             {
-                productMasters = _ProductMasterBLL.Where(x => !productDetails.Select(y => y.ProductMasterId).Contains(x.Id)).ToList();
-                return new ExcelResult<ProductMaster>(productMasters, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+                var data = _ProductDetailBLL.GetViewModelForExcelUnMapped(productMasters, productDetails);
+                return new ExcelResult<ProductMappingModel>(data, "Product", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
             else
             {
-                productMasters.ForEach(x => x.ProductDetail = productDetails.Where(y => y.ProductMasterId == x.Id).FirstOrDefault() ?? new ProductDetail());
-                return new ExcelResult<ProductMaster>(productMasters, "Product Mapping", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
+                var data = _ProductDetailBLL.GetViewModelForExcelAll(productMasters, productDetails);
+                return new ExcelResult<ProductMappingModel>(data, "Product", "Product List_" + DateTime.Now.ToString("dd-MM-yyyy"));
             }
         }
         [HttpPost]

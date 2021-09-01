@@ -12,6 +12,7 @@
                             <label for="example-select-all"></label>
                         </div>
                     </th>
+                    <th>Product Code</th>
                     <th>Product Name</th>
                     <th>Company</th>
                     <th>Location</th>
@@ -27,12 +28,14 @@
                     <th>Invoice No</th>
                     <th>Invoice Date</th>
                     <th>Intimation Date</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>
                 @for (int i = 0; i < Model.OrderReturnDetail.Count(); i++)
                 {
                     <tr>
+                        <td>@Model.OrderReturnDetail[i].ProductMaster.SAPProductCode</td>
                         <td>
                             <div class="icheck-success d-inline">
                                 <input type="checkbox" id="checkbox@(Model.OrderReturnDetail[i].Id)" asp-for="@Model.OrderReturnDetail[i].IsProductSelected" value="@EncryptDecrypt.Encrypt(Model.OrderReturnDetail[i].ProductId.ToString())" checked="@(Model.OrderReturnDetail[i].IsProductSelected == true ? "checked" : null)" />
@@ -64,13 +67,14 @@
                         <td>@Model.OrderReturnDetail[i].InvoiceNo</td>
                         <td>@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")</td>
                         <td>@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")</td>
+                        <td>@Model.OrderReturnDetail[i].Remarks</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "10" : "10")"><span class="float-right">Grand Total</span></td>
-                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "7" : "6")"><strong><span class="TotalNetValue"></span></strong></td>
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "11" : "11")"><span class="float-right">Grand Total</span></td>
+                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "7")"><strong><span class="TotalNetValue"></span></strong></td>
                 </tr>
             </tfoot>
         </table>

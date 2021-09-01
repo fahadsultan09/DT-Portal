@@ -90,6 +90,16 @@ namespace DistributorPortal.Controllers
         public List<OrderReturnMaster> GetOrderReturnList(OrderReturnSearch model)
         {
             List<OrderReturnMaster> list = _OrderReturnBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                list = _OrderReturnBLL.SearchReport(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            else
+            {
+                List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
+                List<int> OrderReturnIds = _OrderReturnDetailBLL.Where(x => ProductMasterIds.Contains(x.ProductMaster.Id)).Select(x => x.OrderReturnId).ToList();
+                list = _OrderReturnBLL.SearchReport(model).Where(x => x.IsDeleted == false && OrderReturnIds.Contains(x.Id) && x.Status != OrderReturnStatus.Draft).ToList();
+            }
             return list;
         }
         [HttpPost]

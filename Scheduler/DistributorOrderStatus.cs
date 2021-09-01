@@ -24,7 +24,7 @@ namespace Scheduler
             _OrderReturnDetailBLL = new OrderReturnDetailBLL(_unitOfWork);
             _Configuration = _configuration;
         }
-        public void GetInProcessOrderProductStatus()
+        public void GetInProcessOrderProductStatus(string GetInProcessOrderStatus)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Scheduler
                 };
                 binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
                 binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=Ord_status_Request_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
+                EndpointAddress address = new EndpointAddress(GetInProcessOrderStatus);
                 Ord_status_Request_OUTClient client = new Ord_status_Request_OUTClient(binding, address);
                 client.ClientCredentials.UserName.UserName = _Configuration.POUserName;
                 client.ClientCredentials.UserName.Password = _Configuration.POPassword;
@@ -75,7 +75,7 @@ namespace Scheduler
                 new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }
-        public void GetInProcessOrderReturnProductStatus()
+        public void GetInProcessOrderReturnProductStatus(string GetInProcessOrderStatus)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace Scheduler
                 };
                 binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
                 binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=Ord_status_Request_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
+                EndpointAddress address = new EndpointAddress(GetInProcessOrderStatus);
                 Ord_status_Request_OUTClient client = new Ord_status_Request_OUTClient(binding, address);
                 client.ClientCredentials.UserName.UserName = _Configuration.POUserName;
                 client.ClientCredentials.UserName.Password = _Configuration.POPassword;

@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
         public bool AddRange(List<ProductMaster> ProductMaster)
-        {            
+        {
             repository.AddRange(ProductMaster);
             return _unitOfWork.Save() > 0;
         }
@@ -56,7 +56,7 @@ namespace BusinessLogicLayer.Application
             return _unitOfWork.Save();
         }
         public int UpdateRange(List<ProductMaster> module)
-       {
+        {
             repository.UpdateRange(module);
             return _unitOfWork.Save();
         }
@@ -88,7 +88,7 @@ namespace BusinessLogicLayer.Application
             var selectList = GetAllProductMaster().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
-                Text = x.ProductName.Trim() + " - " + x.ProductDescription.Trim() 
+                Text = x.ProductDescription.Trim()
             });
 
             return new SelectList(selectList, "Value", "Text");
@@ -98,7 +98,7 @@ namespace BusinessLogicLayer.Application
             var selectList = GetAllProductMaster().Where(x => x.IsActive == true).Select(x => new SelectListItem
             {
                 Value = x.SAPProductCode.ToString(),
-                Text = x.ProductName.Trim() + " - " + x.ProductDescription.Trim()
+                Text = x.ProductDescription.Trim()
             });
 
             return new SelectList(selectList, "Value", "Text");
