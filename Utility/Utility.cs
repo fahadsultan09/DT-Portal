@@ -120,8 +120,8 @@ namespace Utility
     public enum CompanyEnum
     {
         SAMI = 1,
-        Phytek = 2,
-        Healthtek = 3
+        Healthtek = 2,
+        Phytek = 3
     }
 
     public enum SubmitStatus

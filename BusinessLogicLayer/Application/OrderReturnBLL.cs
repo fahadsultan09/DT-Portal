@@ -299,7 +299,7 @@ namespace BusinessLogicLayer.Application
                 throw ex;
             }
         }
-        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId, Configuration _Configuration)
+        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId, Configuration configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
             {
@@ -311,10 +311,10 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=Ord_return_Request_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
+            EndpointAddress address = new EndpointAddress(configuration.PostReturnOrder);
             Ord_return_Request_OUTClient client = new Ord_return_Request_OUTClient(binding, address);
-            client.ClientCredentials.UserName.UserName = _Configuration.POUserName;
-            client.ClientCredentials.UserName.Password = _Configuration.POPassword;
+            client.ClientCredentials.UserName.UserName = configuration.POUserName;
+            client.ClientCredentials.UserName.Password = configuration.POPassword;
             if (client.InnerChannel.State == CommunicationState.Faulted)
             {
             }

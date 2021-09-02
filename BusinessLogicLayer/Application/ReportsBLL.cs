@@ -26,7 +26,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=ServerPORespOut&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FFormPDF");
+            EndpointAddress address = new EndpointAddress(configuration.CustomerLedger);
             ServerPORespOutClient client = new ServerPORespOutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;
@@ -53,7 +53,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=CustPORespOut&interfaceNamespace=http://www.sami.com/DP_Cust_Bal");
+            EndpointAddress address = new EndpointAddress(configuration.CustomerBalance);
             CustPORespOutClient client = new CustPORespOutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;
@@ -99,7 +99,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=POservRespOut&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP_Invoice");
+            EndpointAddress address = new EndpointAddress(configuration.Invoice);
             POservRespOutClient client = new POservRespOutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;
@@ -126,7 +126,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=POserRespOut&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP_Credit_Note");
+            EndpointAddress address = new EndpointAddress(configuration.SaleReturnCreditNote);
             POserRespOutClient client = new POserRespOutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;

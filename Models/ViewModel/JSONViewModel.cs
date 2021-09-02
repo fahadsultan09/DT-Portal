@@ -55,7 +55,7 @@ namespace Models.ViewModel
         //public string MVGR3T { get; set; }
         //public object MVGR4 { get; set; }
         public string MVGR4T { get; set; }
-        //public string MVGR5 { get; set; }
+        public string MVGR5 { get; set; }
         //public string MVGR5T { get; set; }
         public string WRKST { get; set; }
         public string KBETR { get; set; }

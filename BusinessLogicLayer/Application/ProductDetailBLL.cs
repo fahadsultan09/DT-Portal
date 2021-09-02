@@ -210,6 +210,8 @@ namespace BusinessLogicLayer.Application
                     ProductCode = item.SAPProductCode,
                     BrandName = item.ProductName,
                     ProductDescription = item.ProductDescription,
+                    PackCode = item.PackCode,
+                    CartonSize = item.CartonSize.ToString(),
                     PackSize = item.PackSize,
                     FOCProductCode = item.ProductDetail.FOCProductCode,
                     Visibility = Enum.GetName(typeof(ProductVisibility), item.ProductDetail.ProductVisibilityId),

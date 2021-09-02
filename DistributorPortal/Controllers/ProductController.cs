@@ -68,6 +68,7 @@ namespace ProductPortal.Controllers
                             SAPProduct.Add(new ProductMaster()
                             {
                                 SAPProductCode = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MATNR.TrimStart(new char[] { '0' }),
+                                PackCode = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MVGR5,
                                 PackSize = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MVGR2T,
                                 ProductName = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MVGR4T,
                                 ProductDescription = root.ZWASITHRMSBAPIResponse.PRODUCTS.item[i].MAKTX,

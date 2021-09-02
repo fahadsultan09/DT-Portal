@@ -540,7 +540,6 @@ namespace BusinessLogicLayer.Application
             }
             return Quantity;
         }
-
         public List<OrderStatusViewModel> PlaceOrderToSAP(int OrderId)
         {
             List<OrderStatusViewModel> model = new List<OrderStatusViewModel>();
@@ -921,7 +920,7 @@ namespace BusinessLogicLayer.Application
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(configuration.POUserName + ":" + configuration.POPassword));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                var result = client.GetAsync(new Uri("http://10.0.3.35:51000/RESTAdapter/PendingOrd?DISTRIBUTOR=" + DistributorSAPCode)).Result;
+                var result = client.GetAsync(new Uri(configuration.GetPendingQuantity + DistributorSAPCode)).Result;
                 if (result.IsSuccessStatusCode)
                 {
                     var JsonContent = result.Content.ReadAsStringAsync().Result;
@@ -944,49 +943,6 @@ namespace BusinessLogicLayer.Application
             return distributorPendingQuanities;
         }
 
-        /*
-        public List<SAPOrderPendingQuantity> GetDistributorOrderPendingQuantity(string DistributorId, Configuration _configuration)
-        {
-            BasicHttpBinding binding = new BasicHttpBinding
-            {
-                SendTimeout = TimeSpan.FromSeconds(100000),
-                MaxBufferSize = int.MaxValue,
-                MaxReceivedMessageSize = int.MaxValue,
-                AllowCookies = true,
-                ReaderQuotas = XmlDictionaryReaderQuotas.Max,
-            };
-            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DPPendingOrdersRequest_Out&interfaceNamespace=https://www.sami.com/DPPendingOrders");
-            DPPendingOrdersRequest_OutClient client = new DPPendingOrdersRequest_OutClient(binding, address);
-            client.ClientCredentials.UserName.UserName = _configuration.POUserName;
-            client.ClientCredentials.UserName.Password = _configuration.POPassword;
-            if (client.InnerChannel.State == CommunicationState.Faulted)
-            {
-            }
-            else
-            {
-                client.OpenAsync();
-            }
-            ZST_PENDING_ORDER_OUT[] ZST_PENDING_ORDER_OUTList = client.DPPendingOrdersRequest_Out(SessionHelper.LoginUser.Distributor.DistributorSAPCode);
-            client.CloseAsync();
-            List<SAPOrderPendingQuantity> OrderPendingQuantityList = new List<SAPOrderPendingQuantity>();
-            if (ZST_PENDING_ORDER_OUTList != null)
-            {
-                for (int i = 0; i < ZST_PENDING_ORDER_OUTList.Length; i++)
-                {
-                    OrderPendingQuantityList.Add(new SAPOrderPendingQuantity()
-                    {
-                        ProductCode = ZST_PENDING_ORDER_OUTList[i].MATNR.TrimStart(new char[] { '0' }),
-                        OrderQuantity = ZST_PENDING_ORDER_OUTList[i].KWMENG.ToString(),
-                        DispatchQuantity = ZST_PENDING_ORDER_OUTList[i].LFIMG.ToString(),
-                        PendingQuantity = ZST_PENDING_ORDER_OUTList[i].PENDING.ToString(),
-                    });
-                }
-            }
-            return OrderPendingQuantityList;
-        }
-        */
         public List<SAPOrderStatus> PostDistributorOrder(int OrderId, Configuration configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
@@ -999,7 +955,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DisPortalPORequest_Out&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FSalesOrderCreation");
+            EndpointAddress address = new EndpointAddress(configuration.SalesOrder);
             DisPortalPORequest_OutClient client = new DisPortalPORequest_OutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;

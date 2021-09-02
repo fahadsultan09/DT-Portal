@@ -26,6 +26,13 @@ namespace Utility.HelperClasses
         public int Port { get; set; }
         public string ServerAddress { get; set; }
         public string DistributorWiseProduct { get; set; }
+        public string ProductWisePriceDiscount { get; set; }
+        public string SalesOrder { get; set; }
+        public string OrderReturn { get; set; }
+        public string Invoice { get; set; }
+        public string SaleReturnCreditNote { get; set; }
+        public string CustomerBalance { get; set; }
+        public string CustomerLedger { get; set; }
         public string POUserName { get; set; }
         public string POPassword { get; set; }
         public Configuration(IConfiguration configuration)
@@ -51,6 +58,13 @@ namespace Utility.HelperClasses
                 Password = configuration["Settings:Password"];
                 ServerAddress = configuration["Settings:ServerAddress"];
                 DistributorWiseProduct = configuration["AppSettings:DistributorWiseProduct"];
+                ProductWisePriceDiscount = configuration["AppSettings:ProductWisePriceDiscount"];
+                SalesOrder = configuration["AppSettings:SalesOrder"];
+                OrderReturn = configuration["AppSettings:OrderReturn"];
+                Invoice = configuration["AppSettings:Invoice"];
+                SaleReturnCreditNote = configuration["AppSettings:SaleReturnCreditNote"];
+                CustomerBalance = configuration["AppSettings:CustomerBalance"];
+                CustomerLedger = configuration["AppSettings:CustomerLedger"];
                 POUserName = configuration["Settings:POUserName"];
                 POPassword = configuration["Settings:POPassword"];
                 int.TryParse(configuration["Settings:Port"], out int portnumber);

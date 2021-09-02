@@ -104,7 +104,7 @@ namespace BusinessLogicLayer.Application
             };
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            EndpointAddress address = new EndpointAddress("http://s049sappodev.samikhi.com:51000/XISOAPAdapter/MessageServlet?senderParty=&senderService=NSAP_DEV&receiverParty=&receiverService=&interface=DIS_REQ_OUT&interfaceNamespace=http%3A%2F%2Fwww.sami.com%2FDP");
+            EndpointAddress address = new EndpointAddress(configuration.ProductWisePriceDiscount);
             DIS_REQ_OUTClient client = new DIS_REQ_OUTClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;

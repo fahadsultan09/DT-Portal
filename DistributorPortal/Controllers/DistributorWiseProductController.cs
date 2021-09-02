@@ -102,14 +102,12 @@ namespace DistributorPortal.Controllers
                     var request = new RestRequest(Method.GET);
                     var distributors = _distributorBll.Where(e => e.IsActive && !e.IsDeleted);
                     var productDetail = _productDetailBll.GetAllProductDetail();
-                    foreach (var item in ProductIds)
-                    {
-                        List<DistributorWiseProductViewModel> distributorsProduct = _DistributorWiseProductDiscountAndPricesBLL.GetProductWiseDiscountAndPrices(ProductIds, _Configuration);
-                        distributorsProduct = distributorsProduct.Where(x => distributors.Select(y => y.DistributorSAPCode).Contains(x.SAPDistributorCode)).ToList();
-                        distributorsProduct.ForEach(x => x.DistributorId = distributors.FirstOrDefault(c => c.DistributorSAPCode == x.SAPDistributorCode).Id);
-                        distributorsProduct.ForEach(x => x.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == x.SAPProductCode)?.Id);
-                        master.AddRange(distributorsProduct);
-                    }
+                    List<DistributorWiseProductViewModel> distributorsProduct = _DistributorWiseProductDiscountAndPricesBLL.GetProductWiseDiscountAndPrices(ProductIds, _Configuration);
+                    distributorsProduct = distributorsProduct.Where(x => distributors.Select(y => y.DistributorSAPCode).Contains(x.SAPDistributorCode)).ToList();
+                    distributorsProduct.ForEach(x => x.DistributorId = distributors.FirstOrDefault(c => c.DistributorSAPCode == x.SAPDistributorCode).Id);
+                    distributorsProduct.ForEach(x => x.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == x.SAPProductCode)?.Id);
+                    master.AddRange(distributorsProduct);
+
                     if (master.Count() > 0 && master != null)
                     {
                         _DistributorWiseProductDiscountAndPricesBLL.AddRange(master, 0, ProductIds);
