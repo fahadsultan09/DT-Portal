@@ -1,7 +1,12 @@
 ﻿@model List<OrderDetail>
+@inject IUnitOfWork unitOfWork
 @{
-    ViewData["Title"] = "View Order";
+    ViewData["Title"] = "Approve Order";
     var m = ViewBag.OrderValue;
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
+    bool onhold = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Onhold));
+    MultiSelectList companyList = new CompanyBLL(unitOfWork).DropDownCompanyList(Model.Where(x => x.IsProductSelected == true).Select(x => x.ProductDetail.CompanyId).ToArray(), false);
 }
 
 <style>
@@ -64,7 +69,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-primary grid" id="overflow">
+                    <div class="card card-primary grid">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -75,7 +80,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="card-tools float-right">
-                                        <button id="expand" type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                                     </div>
                                 </div>
@@ -139,57 +144,36 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row" id="approveGrid">
+                                <partial name="PartiallyApproveOrderGrid" model="Model" />
+                            </div>
                             <div class="row">
-                                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp;</label><strong>@(((OrderValueViewModel)ViewBag.OrderValue).NetPayable.ToString("#,##0.00"))</strong>
                                 </div>
-                            </div>
-                            <br />
-                            <div class="row">
-                                <div class="col-lg-12 scrollmenu">
-                                    <table id="example1" class="table table-bordered table-condensed table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Code</th>
-                                                <th>Product Name</th>
-                                                <th>Pack Size</th>
-                                                <th>Carton Size</th>
-                                                <th>SF Size</th>
-                                                <th>Qty. (Units)</th>
-                                                <th>Trade Price</th>
-                                                <th>Discount</th>
-                                                <th>Income Tax</th>
-                                                <th>Sales Tax</th>
-                                                <th>Advance Income Tax</th>
-                                                <th>Net Value</th>
-                                                <th>QTY. (CTN)</th>
-                                                <th>QTY. (SF)</th>
-                                                <th>QTY. (Loose)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                    <td>@item.ProductMaster.SAPProductCode</td>
-                                                    <td>@item.ProductMaster.ProductDescription</td>
-                                                    <td>@item.ProductMaster.PackSize</td>
-                                                    <td>@item.ProductMaster.CartonSize</td>
-                                                    <td>@item.ProductMaster.SFSize</td>
-                                                    <td>@item.Quantity</td>
-                                                    <td>@item.ProductPrice.ToString("#,##0.00")</td>
-                                                    <td>@item.Discount %</td>
-                                                    <td>@item.IncomeTax %</td>
-                                                    <td>@item.SalesTax %</td>
-                                                    <td>@item.AdditionalSalesTax %</td>
-                                                    <td>@item.Amount.ToString("#,##0.00")</td>
-                                                    <td>@item.QuanityCarton</td>
-                                                    <td>@item.QuanitySF</td>
-                                                    <td>@Math.Abs(item.QuanityLoose)</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                    @if (!SessionHelper.LoginUser.IsDistributor)
+                                    {
+                                        if ((Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.PartiallyApproved || Model[0].OrderMaster.Status == OrderStatus.Onhold) && approve)
+                                        {
+                                            <button type="button" onclick="Approve('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-success float-right m-2" id="btnApprove">
+                                                Approve
+                                            </button>
+                                        }
+                                        if (Model[0].OrderMaster.Status == OrderStatus.PendingApproval && onhold)
+                                        {
+                                            <button type="button" onclick="OnHold('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-warning float-right m-2" id="btnHold">
+                                                On Hold
+                                            </button>
+                                        }
+                                        if ((Model[0].OrderMaster.Status == OrderStatus.PendingApproval || Model[0].OrderMaster.Status == OrderStatus.Onhold) && reject)
+                                        {
+                                            <button type="button" onclick="Reject('@EncryptDecrypt.Encrypt(Model[0].OrderMaster.Id.ToString())');" class="btn btn-danger float-right m-2" id="btnReject">
+                                                Reject
+                                            </button>
+                                        }
+                                        <a asp-controller="Order" asp-action="Index" class="btn btn-secondary float-right m-2">Back</a>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -200,27 +184,123 @@
     </section>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
 <script>
+
     $(document).ready(function () {
-        $("#example1").DataTable({
-            //scrollX: true,
-            //scrollY: "410px",
-            //sScrollXInner: "150%",
-            scrollCollapse: true,
-            paging: false,
-            //fixedColumns: {
-            //    leftColumns: 4
-            //},
-            lengthMenu: [[14, 25, 50, -1], [14, 25, 50, "All"]],
-            responsive: true,
-            autoWidth: false,
-            order: []
+
+        $('.select2').select2({
+            width: '20%',
         });
     });
+    function OnHold(Id) {
 
-    $('body').on('click', '#expand', function () {
-        $('#overflow').css('overflow', 'scroll');
-    });
+        Swal.fire({
+            title: 'Enter Comment before onhold',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'On Hold Now',
+            showLoaderOnConfirm: true,
+            preConfirm: (Comments) => {
+                if (Comments == "") {
+                    Swal.showValidationMessage(
+                        "Request failed: Enter Comments"
+                    )
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+
+            if (result.value != null || result.value != undefined) {
+                Begin();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("OnHold", "OrderForm")',
+                    data: { 'DPID': Id, 'Comments': result.value },
+                    cache: false,
+                    success: function (data) {
+                        OnSuccess(data);
+                    }
+                });
+            }
+        });
+    }
+
+    function Reject(Id) {
+
+        Swal.fire({
+            title: 'Enter Comment before Reject',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Reject',
+            showLoaderOnConfirm: true,
+            preConfirm: (Comments) => {
+                if (Comments == "") {
+                    Swal.showValidationMessage(
+                        "Request failed: Enter Comments"
+                    );
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to write something!'
+                }
+                if (value.length > 255) {
+                    return 'You have exceeded 255 characters';
+                }
+            }
+        }).then((result) => {
+
+            if (result.value != null || result.value != undefined) {
+                Begin();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Reject", "OrderForm")',
+                    data: { 'DPID': Id, 'Comments': result.value },
+                    cache: false,
+                    success: function (data) {
+                        OnSuccess(data);
+                    }
+                });
+            }
+        });
+    }
+
+    function Approve(Id) {
+
+        $('#example2').dataTable().fnDestroy();
+        $("#example2").DataTable({
+            "lengthMenu": [[-1], ["All"]]
+        });
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to approve this order!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Approve it!'
+        }).then((result) => {
+
+            if (result.value) {
+                Begin();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("OnApprove", "OrderForm")',
+                    data: { 'DPID': Id, 'companyId': $('#ddlCompany').val().map(i => Number(i)) },
+                    cache: false,
+                    success: function (data) {
+                        OnSuccess(data);
+                    }
+                });
+            }
+        });
+    }
+
 </script>

@@ -49,9 +49,9 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     }
-                                    @if ((item.Status == OrderStatus.PendingApproval || item.Status == OrderStatus.Onhold) && !SessionHelper.LoginUser.IsDistributor && approve)
+                                    @if ((item.Status == OrderStatus.PendingApproval || item.Status == OrderStatus.Onhold || item.Status == OrderStatus.PartiallyApproved) && !SessionHelper.LoginUser.IsDistributor && approve)
                                     {
-                                        <a asp-controller="OrderForm" asp-action="Approve" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm">
+                                        <a asp-controller="OrderForm" asp-action="ApproveOrder" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Approve" class="btn btn-success btn-sm">
                                             <i class="fas fa-thumbs-up"></i>
                                         </a>
                                     }
@@ -67,13 +67,13 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
                                     }
-                                    @if (item.Status == OrderStatus.PartiallyApproved && !SessionHelper.LoginUser.IsDistributor && approve)
+                                    @*@if (item.Status == OrderStatus.PartiallyApproved && !SessionHelper.LoginUser.IsDistributor && approve)
                                     {
                                         <a onclick="Sync('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Sync Partially Approved Order" class="btn btn-primary btn-sm">
                                             <i class="fas fa-sync"></i>
                                         </a>
-                                    }
-                                    @if (item.Status == OrderStatus.PendingApproval && SessionHelper.LoginUser.IsDistributor)
+                                    }*@
+                                    @if (item.Status != OrderStatus.Draft)
                                     {
                                         <a onclick="Print('/Reports/Print?', '@ApplicationPages.Order', '@EncryptDecrypt.Encrypt(item.Id.ToString())');" class="btn btn-success btn-sm">
                                             <i class="fas fa-print"></i>
@@ -141,7 +141,7 @@
                         $('#modal-intimation').modal('show');
                 } else if (parseInt(day.Value) > 0) {
                     var val = day.Value == '1' ? 'day' : 'days';
-                    $('#expirecontent').append('Your ' + day.Key + ' license will be expired within ' + day.Value + ' ' + val + ', please upload your license before the expiry date, other wise you can not place the order. <br />');
+                    $('#expirecontent').append('Your ' + day.Key + ' will be expired within ' + day.Value + ' ' + val + ', please upload your license before the expiry date, other wise you can not place the order. <br />');
                     $('#modal-intimation').modal('toggle');
                     $('#modal-intimation').modal('show');
                 }
@@ -205,7 +205,7 @@
         Begin();
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SyncPartiallyApproved", "OrderForm")',
+            url: '@Url.Action("OnApprove", "OrderForm")',
             data: { 'DPID': Id },
             cache: false,
             success: function (data) {

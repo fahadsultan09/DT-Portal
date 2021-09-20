@@ -96,9 +96,9 @@
                                         @for (int i = 0; i < Model.Count; i++)
                                         {
                                             <tr>
-                                                @if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].DocumentType == DocumentType.Challan)
-                                                {
-                                                    if (Model[i].Expiry.Date <= DateTime.Now.Date && Model[i].Id != 0 || Model[i].Status == null)
+                                                @*@if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].DocumentType == DocumentType.Challan)
+                                                {*@
+                                                    @if (Model[i].Expiry.Date <= DateTime.Now.Date && Model[i].Id != 0 || Model[i].Status == null)
                                                     {
                                                         Model[j].LicenseNo = string.Empty;
                                                         Model[j].IssuingAuthority = string.Empty;
@@ -178,12 +178,12 @@
                                                         @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
                                                     </td>
                                                     <td width="5%">
-                                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert)) && Model.Any(x => x.Status == LicenseStatus.Rejected || x.DocumentType == DocumentType.Challan || x.Expiry.Date <= DateTime.Now.Date))
+                                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert)))
                                                         {
                                                             <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
                                                         }
                                                     </td>
-                                                }
+                                                @*}
                                                 else
                                                 {
                                                     <td width="5%">
@@ -227,7 +227,7 @@
                                                     <td width="5%">
                                                     </td>
                                                     j++;
-                                                }
+                                                }*@
                                             </tr>
                                         }
                                     </tbody>

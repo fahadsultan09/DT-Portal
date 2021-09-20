@@ -31,6 +31,9 @@ namespace Models.Application
         public string DispatchPlant { get; set; }
         public string S_StorageLocation { get; set; }
         public string SalesItemCategory { get; set; }
+        public double? SalesTax { get; set; }
+        public double? IncomeTax { get; set; }
+        public double? AdditionalSalesTax { get; set; }
         [NotMapped]
         public double InclusiveSalesTax { get; set; }
         [NotMapped]

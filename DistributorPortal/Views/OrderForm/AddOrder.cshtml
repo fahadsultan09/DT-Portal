@@ -5,7 +5,7 @@
     var m = new OrderValueViewModel();
     var id = 1;
     List<int> DistributorLicenseId = ((List<int>)ViewBag.LicenseId).Count() == 0 ? new List<int>() : (List<int>)ViewBag.LicenseId;
-    List<int> LicenseFormList = new LicenseControlBLL(unitOfWork).Where(x => x.IsMandatory == true).Select(x => x.Id).ToList();
+    List<int> LicenseFormList = new LicenseControlBLL(unitOfWork).Where(x => x.IsMandatory).Select(x => x.Id).ToList();
 }
 <style>
     .ordervalue > tbody > tr > td {
@@ -94,7 +94,6 @@
 
                                 <div class="row">
                                     <div class="col-lg-12 scrollmenu" style="height: 480px;">
-                                        @*<table id="example1" class="table table-head-fixed table-bordered table-condensed table-hover table-striped" style="width: 140%">*@
                                         <table id="example1" class="table table-head-fixed table-bordered table-condensed table-hover table-striped" style="width: 140%">
                                             <thead>
                                                 <tr>
@@ -108,6 +107,9 @@
                                                     <th>Current Stock</th>
                                                     <th>Trade Price</th>
                                                     <th>Discount</th>
+                                                    <th>Income Tax</th>
+                                                    <th>Sales Tax</th>
+                                                    <th>Advance Income Tax</th>
                                                     <th>Net Value</th>
                                                     <th>QTY. (CTN)</th>
                                                     <th>QTY. (SF)</th>
@@ -147,16 +149,22 @@
                                                                    onchange="LoadOrderValue(this);"
                                                                    onkeypress="return isNumberKey(event)"
                                                                    class="form-control ApproveQuantity" min="0" max="9999999" pattern="\\d*" maxlength="6"
-                                                                   disabled="@(LicenseFormList.Any(x => DistributorLicenseId.Any(y => y == x)) || LicenseFormList.Count() == 0 ? (Model.ProductDetails[i].ProductDetail.LicenseControlId != null && LicenseFormList.Count() > 0 ? DistributorLicenseId.Contains((int)Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : "disabled" : null) : "disabled")" />
+                                                                   disabled="@(LicenseFormList.Any(x => DistributorLicenseId.Any(y => y == x)) || LicenseFormList.Count() == 0
+                                                                    ? (Model.ProductDetails[i].ProductDetail.LicenseControlId != null
+                                                                    ? DistributorLicenseId.Contains((int)Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : "disabled" : "disabled")
+                                                                    : "disabled")" />
                                                         </td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.PendingQuantity</td>
                                                         <td></td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.SalesTax %</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.IncomeTax %</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.AdditionalSalesTax %</td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
-                                                        <td><span class="CurtonQty">@Model.ProductDetails[i].ProductDetail.QuanityCarton</span></td>
-                                                        <td><span class="QtySF">@Model.ProductDetails[i].ProductDetail.QuanitySF</span></td>
-                                                        <td><span class="QtyLoose">@Math.Abs(Model.ProductDetails[i].ProductDetail.QuanityLoose)</span></td>
+                                                        <td><input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.QuanityCarton" value="@Model.ProductDetails[i].ProductDetail.QuanityCarton" class="form-control CurtonQty" readonly="readonly"></td>
+                                                        <td><input type="text" asp-for=">@Model.ProductDetails[i].ProductDetail.QuanitySF" value="@Model.ProductDetails[i].ProductDetail.QuanitySF" class="form-control QtySF" readonly="readonly"></td>
+                                                        <td><input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.QuanityLoose" value="@Model.ProductDetails[i].ProductDetail.QuanityLoose" class="form-control QtyLoose" readonly="readonly"></td>
                                                     </tr>
                                                     id++;
                                                 }
@@ -164,7 +172,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class=" row">
                                     <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                                         <label style="margin-top: 15px;">Total Value of Order:&nbsp;&nbsp;&nbsp;</label><strong><span id="OrderValue"></span></strong>
                                     </div>
@@ -235,7 +243,6 @@
         </div>
     </div>
 </form>
-@*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>*@
 
 <script>
 
@@ -308,36 +315,25 @@
     function SaveEdit() {
 
         BlockUI();
-        $('#example1').dataTable().fnDestroy();
-        $("#example1").DataTable({
-            "lengthMenu": [[-1], ["All"]]
-        });
-            $('#SubmitStatus').val('1');
-            Swal.fire({
-                html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Order Place!'
-            }).then((result) => {
+        $('#SubmitStatus').val('1');
+        Swal.fire({
+            html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Order Place!'
+        }).then((result) => {
 
-                if (result.value == true) {
-                    $('[name="btnSubmit"]').val("Submit");
-                    $('#frmOrderMaster').submit();
-                    LoadModal();
-                } else {
-                    UnBlockUI();
-                    $("#example1").dataTable().fnDestroy();
-                    $("#example1").DataTable({
-                        paging: false,
-                        "lengthMenu": [[-1], ["All"]],
-                        responsive: true,
-                        autoWidth: false,
-                        "order": [[1, "asc"]]
-                    });
-                }
-            });
+            if (result.value == true) {
+                $('[name="btnSubmit"]').val("Submit");
+                $('#frmOrderMaster').submit();
+                LoadModal();
+            }
+            else {
+                UnBlockUI();
+            }
+        });
         return false;
     }
 
@@ -384,7 +380,6 @@
     });
 
     function LoadOrderValue(data) {
-        $('.ApproveQuantity').attr('disabled',true);
         BlockUI();
         var intmaxvalue = @Int32.MaxValue;
         var quantity = data.value == "" ? "0" : data.value;
@@ -398,8 +393,8 @@
         }
         else {
             var qty = parseInt(quantity);
-            var CurtonSize = parseInt($(data).parent('td').parent('tr').find('.CurtonSize').text());
-            var SFSize = parseInt($(data).parent('td').parent('tr').find('.SFSize').text());
+            var CurtonSize = parseFloat($(data).parent('td').parent('tr').find('.CurtonSize').text());
+            var SFSize = parseFloat($(data).parent('td').parent('tr').find('.SFSize').text());
             var tradePrice = parseFloat($(data).parent('td').parent('tr').find('.TradePrice').val());
             var discount = parseFloat($(data).parent('td').parent('tr').find('.Discount').text());
             var SalesTax = parseFloat($(data).parent('td').parent('tr').find('.SalesTax').val());
@@ -410,26 +405,44 @@
             $(data).parent('td').parent('tr').find('.TotalPrice').val(netValue.toFixed(2));
 
             if (quantity != "" && quantity != undefined) {
+
+                var CartonQuantity = CalculateCartonQuantity(qty, CurtonSize);
+                var SFQuantity = CalculateSFQuantity(qty, CartonQuantity, CurtonSize, SFSize);
+                var SFLooseQuantity = CalculateSFLooseQuantity(qty, CartonQuantity, CurtonSize, SFQuantity, SFSize);
+                var LooseQuantity = CalculateLooseQuantity(qty, CurtonSize);
+
                 if (CurtonSize != 0 && SFSize != 0) {
-                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = Math.ceil(parseInt(quantity) / CurtonSize).toString();
-                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = (quantity - ((quantity / CurtonSize) * CurtonSize) + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize)).toString() == "NaN" ? 0 : (quantity / CurtonSize) * CurtonSize + ((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize) * SFSize);
-                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize)).toString() == "-Infinity" ? 0 : Math.ceil((quantity - ((quantity / CurtonSize) * CurtonSize) / SFSize));
+                    $(data).parent('td').parent('tr').find('.CurtonQty').text(CartonQuantity);
+                    $(data).parent('td').parent('tr').find('.QtySF').text(SFQuantity);
+                    $(data).parent('td').parent('tr').find('.QtyLoose').text(SFLooseQuantity);
+                    $(data).parent('td').parent('tr').find('.CurtonQty').val(CartonQuantity);
+                    $(data).parent('td').parent('tr').find('.QtySF').val(SFQuantity);
+                    $(data).parent('td').parent('tr').find('.QtyLoose').val(SFLooseQuantity);
                 }
                 else if (CurtonSize != 0 && SFSize == 0) {
-                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
-                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
-                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = CalculateLooseQuantity(qty,CurtonSize);
+                    $(data).parent('td').parent('tr').find('.CurtonQty').text(CartonQuantity);
+                    $(data).parent('td').parent('tr').find('.QtySF').text(0);
+                    $(data).parent('td').parent('tr').find('.QtyLoose').text(LooseQuantity);
+                    $(data).parent('td').parent('tr').find('.CurtonQty').val(CartonQuantity);
+                    $(data).parent('td').parent('tr').find('.QtySF').val(0);
+                    $(data).parent('td').parent('tr').find('.QtyLoose').val(LooseQuantity);
                 }
                 else {
-                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = 0;
-                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = 0;
-                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = 0;
+                    $(data).parent('td').parent('tr').find('.CurtonQty').text('0');
+                    $(data).parent('td').parent('tr').find('.QtySF').text('0');
+                    $(data).parent('td').parent('tr').find('.QtyLoose').text('0');
+                    $(data).parent('td').parent('tr').find('.CurtonQty').val('0');
+                    $(data).parent('td').parent('tr').find('.QtySF').val('0');
+                    $(data).parent('td').parent('tr').find('.QtyLoose').val('0');
                 }
             }
             else {
-                    $(data).parent('td').parent('tr').find('.CurtonQty')[0].innerText = "";
-                    $(data).parent('td').parent('tr').find('.QtySF')[0].innerText = "";
-                    $(data).parent('td').parent('tr').find('.QtyLoose')[0].innerText = "";
+                $(data).parent('td').parent('tr').find('.CurtonQty').text('0');
+                $(data).parent('td').parent('tr').find('.QtySF').text('0');
+                $(data).parent('td').parent('tr').find('.QtyLoose').text('0');
+                $(data).parent('td').parent('tr').find('.CurtonQty').val('0');
+                $(data).parent('td').parent('tr').find('.QtySF').val('0');
+                $(data).parent('td').parent('tr').find('.QtyLoose').val('0');
             }
             $.ajax({
                 type: "GET",
@@ -449,7 +462,6 @@
             });
         }
         UnBlockUI();
-        $('.ApproveQuantity').attr('disabled', false);
     }
 
     function SubmitForm() {
@@ -486,17 +498,31 @@
         });
     }
 
+    function CalculateCartonQuantity(qty, CurtonSize) {
+
+        var CartonQuantity = parseFloat(qty) / parseFloat(CurtonSize);
+        return Math.floor(CartonQuantity);
+    }
+
+    function CalculateSFQuantity(qty, CartonQuantity, CartonSize, SFSize) {
+
+        var a = parseFloat(CartonQuantity) * parseFloat(CartonSize);
+        var SFQuantity = parseFloat(parseFloat(qty) - Math.floor(a)) / parseFloat(SFSize);
+        return Math.floor(SFQuantity);
+    }
+
+    function CalculateSFLooseQuantity(qty, CartonQuantity, CartonSize, SFQuantity, SFSize) {
+
+        var a = parseFloat(CartonQuantity) * parseFloat(CartonSize);
+        var b = parseFloat(SFQuantity) * parseFloat(SFSize);
+        var LooseQuantity = parseFloat(qty) - parseFloat(a) - parseFloat(b);
+        return LooseQuantity;
+    }
+
     function CalculateLooseQuantity(qty, CurtonSize) {
 
-        var val = Math.floor(qty) / Math.floor(CurtonSize);
-        if (Math.floor(val) != 0) {
-            var val2 = Math.floor(CurtonSize) * Math.floor(val);
-            var looseQuantity = qty - val2;
-            return looseQuantity;
-        }
-        else {
-            return qty;
-        }
+        var LooseQuantity = parseFloat(qty) % parseFloat(CurtonSize);
+        return LooseQuantity;
     }
 
 </script>

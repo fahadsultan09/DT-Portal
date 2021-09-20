@@ -62,27 +62,27 @@
                         <div class="card-body" style="padding: 10px 15px 0px 15px;">
                             <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Transporter:</h6>
+                                    <strong>Transporter:</strong>
                                     <p asp-for="Transporter">@Model.Transporter</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>TR Number:</h6>
+                                    <strong>TR Number:</strong>
                                     <p asp-for="TRNo">@Model.TRNo</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>TR Date:</h6>
+                                    <strong>TR Date:</strong>
                                     <span asp-for="TRDate" class="form-control">@Model.TRDate.ToString("dd/MM/yyyy")</span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Debit Note No:</h6>
+                                    <strong>Debit Note No:</strong>
                                     <p asp-for="DebitNoteNo">@Model.DebitNoteNo</p>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Debit Note Date:</h6>
+                                    <strong>Debit Note Date:</strong>
                                     <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToString("dd/MM/yyyy")</span>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Return Reason:</h6>
+                                    <strong>Return Reason:</strong>
                                     <span asp-for="OrderReturnReason.ReasonName" class="form-control">@Model.OrderReturnReason.ReasonName</span>
                                 </div>
                             </div>
@@ -130,10 +130,10 @@
                                                     <th>Location</th>
                                                     <th>Batch No</th>
                                                     <th>MRP</th>
-                                                    <th>Total Price</th>
+                                                    <th>Trade Price</th>
+                                                    <th>Discount</th>
                                                     <th>Quantity</th>
                                                     <th>Received Qty</th>
-                                                    <th>Discount</th>
                                                     <th>Net Amount</th>
                                                     <th>Mfg. Date</th>
                                                     <th>Expiry Date</th>
@@ -155,10 +155,10 @@
                                                         <td>@item.PlantLocation.PlantLocationName</td>
                                                         <td>@item.BatchNo</td>
                                                         <td>@item.MRP</td>
-                                                        <td>@item.TotalPrice</td>
+                                                        <td>@item.TradePrice</td>
+                                                        <td>@item.Discount %</td>
                                                         <td>@item.Quantity</td>
                                                         <td>@item.ReceivedQty</td>
-                                                        <td>@item.ProductMaster.Discount %</td>
                                                         <td><span class="NetAmount">@item.NetAmount</span></td>
                                                         <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
                                                         <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>

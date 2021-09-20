@@ -55,11 +55,16 @@ namespace DistributorPortal.Controllers
                 var request = new RestRequest(Method.GET);
                 var distributors = _distributorBll.Where(e => e.IsActive && !e.IsDeleted);
                 var productDetail = _productDetailBll.GetAllProductDetail();
+                var AllDistributorWiseProductDiscountAndPrices = _DistributorWiseProductDiscountAndPricesBLL.GetAllDistributorWiseProductDiscountAndPrices();
                 if (DistributorId > 0)
                 {
                     List<DistributorWiseProductViewModel> distributorsProduct = _DistributorWiseProductDiscountAndPricesBLL.GetDistributorWiseDiscountAndPrices(distributors.First(x => x.Id == DistributorId).DistributorSAPCode, _Configuration);
                     distributorsProduct.ForEach(e => e.DistributorId = DistributorId);
                     distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
+                    if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
+                    {
+                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                    }
                     master.AddRange(distributorsProduct);
                 }
                 else
@@ -69,6 +74,10 @@ namespace DistributorPortal.Controllers
                         List<DistributorWiseProductViewModel> distributorsProduct = _DistributorWiseProductDiscountAndPricesBLL.GetDistributorWiseDiscountAndPrices(item.DistributorSAPCode, _Configuration);
                         distributorsProduct.ForEach(e => e.DistributorId = item.Id);
                         distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
+                        if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
+                        {
+                            distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                        }
                         master.AddRange(distributorsProduct);
                     }
                 }
@@ -102,10 +111,15 @@ namespace DistributorPortal.Controllers
                     var request = new RestRequest(Method.GET);
                     var distributors = _distributorBll.Where(e => e.IsActive && !e.IsDeleted);
                     var productDetail = _productDetailBll.GetAllProductDetail();
+                    var AllDistributorWiseProductDiscountAndPrices = _DistributorWiseProductDiscountAndPricesBLL.GetAllDistributorWiseProductDiscountAndPrices();
                     List<DistributorWiseProductViewModel> distributorsProduct = _DistributorWiseProductDiscountAndPricesBLL.GetProductWiseDiscountAndPrices(ProductIds, _Configuration);
                     distributorsProduct = distributorsProduct.Where(x => distributors.Select(y => y.DistributorSAPCode).Contains(x.SAPDistributorCode)).ToList();
                     distributorsProduct.ForEach(x => x.DistributorId = distributors.FirstOrDefault(c => c.DistributorSAPCode == x.SAPDistributorCode).Id);
                     distributorsProduct.ForEach(x => x.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == x.SAPProductCode)?.Id);
+                    if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
+                    {
+                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                    }
                     master.AddRange(distributorsProduct);
 
                     if (master.Count() > 0 && master != null)

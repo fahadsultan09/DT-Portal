@@ -81,6 +81,51 @@ namespace DistributorPortal.Controllers
             return PartialView("OrderDetailList", Detail);
         }
         #endregion
+        #region Order
+        public IActionResult OrderPlantWise()
+        {
+            return View();
+        }
+        public List<OrderMaster> GetOrderPlantWiseList(OrderSearch model)
+        {
+            List<OrderMaster> list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
+            if (SessionHelper.LoginUser.IsDistributor)
+            {
+                list = _OrderBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            }
+            else
+            {
+                List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
+                List<int> OrderIds = _OrderDetailBLL.Where(x => ProductMasterIds.Contains(x.ProductMaster.Id)).Select(x => x.OrderId).ToList();
+                list = _OrderBLL.Search(model).Where(x => x.IsDeleted == false && OrderIds.Contains(x.Id)).ToList();
+            }
+            return list;
+        }
+        [HttpPost]
+        public IActionResult OrderPlantWiseSearch(OrderSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("OrderPlantWiseList", GetOrderPlantWiseList(model));
+            }
+            else
+            {
+                return PartialView("OrderPlantWiseList", GetOrderPlantWiseList(model));
+            }
+        }
+        [HttpGet]
+        public IActionResult GetOrderPlantWiseDetailList(string DPID)
+        {
+            int id = 0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
+            List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
+            var Detail = _OrderDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => ProductMasterIds.Contains(x.ProductId)).ToList();
+            return PartialView("OrderPlantWiseDetailList", Detail);
+        }
+        #endregion
 
         #region OrderReturn
         public IActionResult OrderReturn()
@@ -209,14 +254,12 @@ namespace DistributorPortal.Controllers
                 switch (ApplicationPage)
                 {
                     case ApplicationPages.Order:
-
                         return new ViewAsPdf("PrintOrder", BindOrderMaster(id))
                         {
                             PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,
                             CustomSwitches = "--footer-left \" Use Controlled Copy Only \" --footer-center \" [page]/[toPage] \" --footer-right \" For Internal Use Only \"" +
                             " --footer-line --footer-font-size \"12\" --footer-spacing 1 --footer-font-name \"Segoe UI\""
                         };
-
                     case ApplicationPages.OrderReturn:
                         if (!string.IsNullOrEmpty(SiteTRNo))
                         {
@@ -250,7 +293,6 @@ namespace DistributorPortal.Controllers
                         {
                             List = _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id).Where(x => x.OrderReturnId == id).ToList();
                         }
-                        //return View("PrintOrderReturn", _OrderReturnDetailBLL.GetOrderDetailByIdByMasterId(id));
                         return new ViewAsPdf("PrintOrderReturn", List)
                         {
                             PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape,

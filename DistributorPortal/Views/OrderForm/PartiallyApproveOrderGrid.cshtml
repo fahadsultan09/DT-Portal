@@ -1,0 +1,156 @@
+﻿@model List<OrderDetail>
+@inject IUnitOfWork unitOfWork
+@{
+    ViewData["Title"] = "Approve Order";
+    var m = ViewBag.OrderValue;
+    bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
+    bool onhold = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "OrderForm").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Onhold));
+    MultiSelectList companyList = new CompanyBLL(unitOfWork).DropDownCompanyList(Model.Where(x => x.IsProductSelected == true).Select(x => x.ProductDetail.CompanyId).ToArray(), false);
+}
+
+<div class="col-lg-12 scrollmenu">
+    <table id="example1" class="table table-bordered table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th colspan="@(SessionHelper.LoginUser.IsDistributor ? "15" : "16")" class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                    Company:
+                    <select name="companyId" asp-items="@(new MultiSelectList(companyList, "Value", "Text", companyList.SelectedValues))" class="select2" id="ddlCompany" multiple="multiple" data-placeholder="All Companies">
+                        <option disabled>--Select company--</option>
+                    </select>
+                </th>
+            </tr>
+            <tr>
+                <th class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                    <div class="icheck-success d-inline">
+                        <input type="checkbox" name="select_all" id="example-select-all" value="false" />
+                        <label for="example-select-all"></label>
+                    </div>
+                </th>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Pack Size</th>
+                <th>Carton Size</th>
+                <th>SF Size</th>
+                <th>Qty. (Units)</th>
+                <th>Trade Price</th>
+                <th>Discount</th>
+                <th>Income Tax</th>
+                <th>Sales Tax</th>
+                <th>Advance Income Tax</th>
+                <th>Net Value</th>
+                <th>QTY. (CTN)</th>
+                <th>QTY. (SF)</th>
+                <th>QTY. (Loose)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                        <div class="icheck-success d-inline">
+                            <input type="checkbox" id="checkbox@(item.ProductId)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
+                            <label for="checkbox@(item.ProductId)">
+                            </label>
+                        </div>
+                    </td>
+                    <td>@item.ProductMaster.SAPProductCode</td>
+                    <td>@item.ProductMaster.ProductDescription</td>
+                    <td>@item.ProductMaster.PackSize</td>
+                    <td>@item.ProductMaster.CartonSize</td>
+                    <td>@item.ProductMaster.SFSize</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.ProductPrice.ToString("#,##0.00")</td>
+                    <td>@item.Discount %</td>
+                    <td>@item.IncomeTax %</td>
+                    <td>@item.SalesTax %</td>
+                    <td>@item.AdditionalSalesTax %</td>
+                    <td>@item.Amount.ToString("#,##0.00")</td>
+                    <td>@item.QuanityCarton</td>
+                    <td>@item.QuanitySF</td>
+                    <td>@Math.Abs(item.QuanityLoose)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    var table;
+
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '20%',
+        });
+
+        $("#example1").dataTable().fnDestroy();
+        table = $("#example1").DataTable({
+            //scrollX: true,
+            //scrollY: "410px",
+            //sScrollXInner: "150%",
+            //scrollCollapse: true,
+            //paging: false,
+            //fixedColumns: {
+            //    leftColumns: 4
+            //},
+            lengthMenu: [[14, 25, 50, -1], [14, 25, 50, "All"]],
+            responsive: true,
+            autoWidth: false,
+            order: []
+        });
+
+        $("input[type='checkbox']").change(function (e) {
+
+            if ($(this).attr('Id') != "example-select-all") {
+                $.post(window.location.origin + "/OrderForm/SelectProduct", { DPID: $(this).val() }, function (response) {
+                });
+            }
+        });
+
+        $("#example-select-all").change(function (e) {
+
+            $.post(window.location.origin + "/OrderForm/SelectAllProduct", { IsSelected: $('#example-select-all').is(':checked') }, function (response) {
+            });
+        });
+
+        //// Handle click on "Select all" control
+        $('#example-select-all').on('click', function () {
+            
+            // Check/uncheck all checkboxes in the table
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        //// Handle click on checkbox to set state of "Select all" control
+        $('#example1 tbody').on('change', 'input[type="checkbox"]', function () {
+            
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#example-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+    });
+
+    $('body').on('change', '#ddlCompany', function () {
+        BlockUI();
+        $.post(window.location.origin + "/OrderForm/GetCompanyWiseProduct", { companyId: $('#ddlCompany').val().map(i => Number(i)) }, function (response) {
+
+            if (response.data.HtmlString != null) {
+                $("#approveGrid").html(response.data.HtmlString.Result);
+                $('#ddlCompany').val(response.companyId);
+            }
+            UnBlockUI();
+        });
+    });
+
+</script>

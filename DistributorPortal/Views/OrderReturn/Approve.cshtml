@@ -71,27 +71,27 @@
                                     <div class="card-body" style="padding: 10px 15px 0px 15px;">
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Transporter:</h6>
+                                                <strong>Transporter:</strong>
                                                 <p asp-for="Transporter">@Model.Transporter</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>TR Number:</h6>
+                                                <strong>TR Number:</strong>
                                                 <p asp-for="TRNo">@Model.TRNo</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>TR Date:</h6>
+                                                <strong>TR Date:</strong>
                                                 <span asp-for="TRDate" class="form-control">@Model.TRDate.ToString("dd/MM/yyyy")</span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Debit Note No:</h6>
+                                                <strong>Debit Note No:</strong>
                                                 <p asp-for="DebitNoteNo">@Model.DebitNoteNo</p>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Debit Note Date:</h6>
+                                                <strong>Debit Note Date:</strong>
                                                 <span asp-for="DebitNoteDate" class="form-control">@Model.DebitNoteDate.ToString("dd/MM/yyyy")</span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Return Reason:</h6>
+                                                <strong>Return Reason:</strong>
                                                 <span asp-for="OrderReturnReason.ReasonName" class="form-control">@Model.OrderReturnReason.ReasonName</span>
                                             </div>
                                         </div>
@@ -334,16 +334,13 @@
             return false;
         }
         var jsonarray = { productId, Quantity, MRP, BatchNo, IntimationDate, InvoiceNo, InvoiceDate, ExpiryDate, ManufactureDate, Remarks };
+        BlockUI();
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddApproveReturnProduct", "OrderReturn")',
             data: { 'model': jsonarray, 'OrderId': OrderId },
-            cache: false,
-            begin: function () {
-                BlockUI();
-            },
             success: function (data) {
-                
+                UnBlockUI();
                 if (data.data.Status) {
                     $('#frmOrderDetails input[type="text"],input[type="date"],input[type="number"]').val('');
                     Toast.fire({
@@ -414,10 +411,6 @@
                     // Prevent actual form submission
                     e.preventDefault();
                 });
-            },
-            complete: function (response) {
-                
-                UnBlockUI();
             }
         });
     }

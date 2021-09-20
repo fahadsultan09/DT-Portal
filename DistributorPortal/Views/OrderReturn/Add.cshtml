@@ -152,7 +152,9 @@
                                           asp-action="AddProduct"
                                           id="frmOrderDetails"
                                           data-ajax="true"
+                                          data-ajax-begin="BlockUI"
                                           data-ajax-success="GetResponse"
+                                          data-ajax-complete="UnBlockUI"
                                           data-ajax-method="POST">
                                         <div class="row">
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 row" style="width:100%;">
@@ -164,17 +166,17 @@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Quantity:<span class="text-danger"> *</span></h6>
-                                                <input type="text" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" />
+                                                <input type="text" name="Quantity" id="Quantity" placeholder="Enter Quantity" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" autocomplete="off" />
                                                 <span id="ErrorQuantity" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>MRP:<span class="text-danger"> *</span></h6>
-                                                <input type="text" name="MRP" id="MRP" placeholder="Enter MRP" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" />
+                                                <input type="text" name="MRP" id="MRP" placeholder="Enter MRP" class="form-control" min="0" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" autocomplete="off" />
                                                 <span id="ErrorMRP" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Batch No:<span class="text-danger"> *</span></h6>
-                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" max="9999999999" maxlength="10" oninput="validity.valid||(value='');" class="form-control" />
+                                                <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" max="9999999999" maxlength="10" oninput="validity.valid||(value='');" class="form-control" autocomplete="off" />
                                                 <span id="ErrorBatchNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
@@ -382,7 +384,7 @@
     }
 
     function SubmitForm() {
-        
+
         $('.error').empty();
         if ($("#ddlReturnReson option:selected").text() == "Leakage & Breakage" && $('#TRNo').val().trim() == "") {
             $('#ErrorTRNo').text('TR No is mandatory.');
@@ -401,7 +403,7 @@
             confirmButtonText: 'Yes, Return Order Place!'
         }).then((result) => {
             if (result.value == true) {
-                
+
                 $('[name="btnSubmit"]').val("Submitted");
                 $('#frmOrderReturnMaster').submit();
             }

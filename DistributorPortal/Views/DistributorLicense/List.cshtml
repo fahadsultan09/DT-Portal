@@ -26,6 +26,7 @@
                             <th>Expiry Date</th>
                             <th>Uploaded Date</th>
                             <th>Status</th>
+                            <th>Active / Inactive</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -60,6 +61,13 @@
                                         <span class="badge badge-danger">@item.Status</span>
                                     }
                                 </td>
+                                <td>
+                                    <div class="icheck-success d-inline">
+                                        <input type="checkbox" id="IsActive@(item.Id)" asp-for="@item.IsActive" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" onchange="ActiveInactiveLicense(this);" checked="@(item.IsActive ? "checked" : null)" />
+                                        <label for="IsActive@(item.Id)">
+                                        </label>
+                                    </div>
+                                </td>
                                 <td class="p-1">
                                     @if (approve)
                                     {
@@ -91,12 +99,51 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
-            "order": [[10, "desc"]]
         });
 
         $('.select2').select2({
             width: '100%',
         });
     });
+
+    function ActiveInactiveLicense(e) {
+
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+
+            if (result.value) {
+                BlockUI();
+                $.post(window.location.origin + "/DistributorLicense/ActiveInactiveLicense", { DPID: e.value }, function (data) {
+
+                    if (data.data != undefined) {
+                        if (data.data.Status && data.data != undefined) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: data.data.Message
+                            });
+                            UnBlockUI();
+                        }
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.data.Message
+                        });
+                        UnBlockUI();
+                    }
+                });
+            }
+            else {
+                UnBlockUI();
+            }
+        });
+    }
 
 </script>

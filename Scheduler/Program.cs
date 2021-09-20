@@ -52,20 +52,20 @@ namespace Scheduler
                 var serviceProvider = services.BuildServiceProvider();
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
-                ExtensionUtility.WriteToFile("Console Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                ExtensionUtility.WriteToFile("Console Start - " + DateTime.Now, FolderName.Complaint, fileName);
 
-                //Order and Order Return Product Status
-                DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
-                ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
-                distributorOrderStatus.GetInProcessOrderProductStatus(config.GetInProcessOrderStatus);
-                ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
-                ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
-                distributorOrderStatus.GetInProcessOrderReturnProductStatus(config.GetInProcessOrderStatus);
-                ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                ////Order and Order Return Product Status
+                //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
+                //ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                //distributorOrderStatus.GetInProcessOrderProductStatus(config.GetInProcessOrderStatus);
+                //ExtensionUtility.WriteToFile("GetInProcessOrderProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                //ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus Start - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                //distributorOrderStatus.GetInProcessOrderReturnProductStatus(config.GetInProcessOrderStatus);
+                //ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
 
-                ////Complaint Status
-                //KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
-                //KPIEmailScheduler.GetPendingComplaints();
+                //Complaint Status
+                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
+                KPIEmailScheduler.GetPendingComplaints();
 
                 ////Get pending value
                 //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
@@ -75,11 +75,11 @@ namespace Scheduler
                 //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
                 //distributorPendingQuanityValue.AddDistributorPendingQuantity();
 
-                ExtensionUtility.WriteToFile("Console End - " + DateTime.Now, FolderName.OrderStatus, fileName);
+                ExtensionUtility.WriteToFile("Console End - " + DateTime.Now, FolderName.Complaint, fileName);
             }
             catch (Exception ex)
             {
-                ExtensionUtility.WriteToFile("Error occured-" + DateTime.Now, FolderName.PendingQuantity, fileName);
+                ExtensionUtility.WriteToFile("Error occured-" + DateTime.Now, FolderName.Complaint, fileName);
                 new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }

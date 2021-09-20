@@ -224,7 +224,7 @@ namespace BusinessLogicLayer.Application
                     {
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                         var detail = SessionHelper.AddReturnProduct;
-                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
+                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum();
                         Add(model);
 
                         if (model.Id > 0)
@@ -244,7 +244,7 @@ namespace BusinessLogicLayer.Application
                         model.SNo = item.SNo;
                         model.Status = btnSubmit;
                         var detail = SessionHelper.AddReturnProduct;
-                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => e.NetAmount).Sum();
+                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum();
                         Update(model);
                         var list = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id).ToList();
                         _OrderReturnDetailBLL.DeleteRange(list);
@@ -324,7 +324,6 @@ namespace BusinessLogicLayer.Application
             }
             Ord_return_Request_IN disPortalRequestIn = new Ord_return_Request_IN();
             disPortalRequestIn.ORDERS = PlaceReturnOrderToSAP(OrderId).ToArray();
-            Ord_return_Request_OUTRequest disPortalPORequest_OutRequest = new Ord_return_Request_OUTRequest(disPortalRequestIn);
             ZWAS_ORDER_RETURN_UPLOADResponse zSD_CREATE_SALE_ORDERResponse = client.Ord_return_Request_OUT(disPortalRequestIn);
             client.CloseAsync();
             List<SAPOrderStatus> list = new List<SAPOrderStatus>();
@@ -364,8 +363,8 @@ namespace BusinessLogicLayer.Application
                     MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
                     PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
                     STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_StorageLocation,
-                    BATCH = item.BatchNo,
                     ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ReturnItemCategory,
+                    BATCH = item.ReceivedBatchNo,
                     REQ_QTY = item.ReceivedQty.ToString()
                 });
             }

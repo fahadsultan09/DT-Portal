@@ -51,6 +51,7 @@ namespace BusinessLogicLayer.Application
             item.EmailIntimationId = module.EmailIntimationId;
             item.DesignationId = module.DesignationId;
             item.CityId = module.CityId;
+            item.AccessToken = module.AccessToken;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

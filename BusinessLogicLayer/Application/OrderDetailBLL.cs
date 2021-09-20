@@ -25,36 +25,39 @@ namespace BusinessLogicLayer.Application
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<OrderDetail>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
 
         public int AddRange(List<OrderDetail> module)
         {
-            _unitOfWork.GenericRepository<OrderDetail>().AddRange(module);
+            _repository.AddRange(module);
             return _unitOfWork.Save();
         }
 
         public int DeleteRange(List<OrderDetail> module)
         {
-            _unitOfWork.GenericRepository<OrderDetail>().DeleteRange(module);
+            _repository.DeleteRange(module);
             return _unitOfWork.Save();
         }
         public int Update(OrderDetail module)
         {
-            var item = _unitOfWork.GenericRepository<OrderDetail>().GetById(module.Id);
-            _unitOfWork.GenericRepository<OrderDetail>().Update(item);
+            var item = _repository.GetById(module.Id);
+            item.IsProductSelected = module.IsProductSelected;
+            item.SAPOrderNumber = module.SAPOrderNumber;
+            item.OrderProductStatus = module.OrderProductStatus;
+            _repository.Update(item);
             return _unitOfWork.Save();
         }
         public int Delete(int id)
         {
-            var item = _unitOfWork.GenericRepository<OrderDetail>().GetById(id);
-            _unitOfWork.GenericRepository<OrderDetail>().Delete(item);
+            var item = _repository.GetById(id);
+            _repository.Delete(item);
             return _unitOfWork.Save();
         }
         public OrderDetail GetOrderDetailById(int id)
         {
-            return _unitOfWork.GenericRepository<OrderDetail>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<OrderDetail> GetOrderDetailByIdByMasterId(int OrderId)
         {
@@ -62,7 +65,7 @@ namespace BusinessLogicLayer.Application
         }
         public List<OrderDetail> GetAllOrderDetail()
         {
-            return _unitOfWork.GenericRepository<OrderDetail>().GetAllList().ToList();
+            return _repository.GetAllList().ToList();
         }
         public List<OrderDetail> Where(Expression<Func<OrderDetail, bool>> predicate)
         {

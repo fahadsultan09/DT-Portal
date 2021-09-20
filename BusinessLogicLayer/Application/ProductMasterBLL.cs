@@ -75,6 +75,10 @@ namespace BusinessLogicLayer.Application
         {
             return _unitOfWork.GenericRepository<ProductMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
+        public List<ProductMaster> GetAllProducts()
+        {
+            return _unitOfWork.GenericRepository<ProductMaster>().GetAllList().ToList();
+        }
         public List<ProductMaster> Where(Expression<Func<ProductMaster, bool>> predicate)
         {
             return repository.Where(predicate);

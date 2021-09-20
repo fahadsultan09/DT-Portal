@@ -54,7 +54,8 @@ namespace BusinessLogicLayer.ApplicationSetup
             item.CNIC = module.CNIC.Replace("-", "");
             item.MobileNumber = module.MobileNumber.Replace("-", "");
             item.CustomerGroup = module.CustomerGroup;
-            item.IsActive = module.IsActive;
+            item.IsActive = true;
+            item.IsDeleted = false;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
@@ -78,6 +79,10 @@ namespace BusinessLogicLayer.ApplicationSetup
         public List<Distributor> GetAllDistributor()
         {
             return repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
+        }
+        public List<Distributor> GetAllDistributors()
+        {
+            return repository.GetAllList().ToList();
         }
         public bool CheckDistributorName(int Id, string DistributorCode)
         {

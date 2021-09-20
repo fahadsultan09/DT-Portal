@@ -3,7 +3,7 @@
   "Version": "15.0.40203.910",
   "ExtendedData": {
     "inputs": [
-      "http://s049sappoprd.samipharma.com.pk:51100/dir/wsdl?p=ic/06c94054bb92337abb81e1d06c26732b"
+      "http://s049sappoprd.samipharma.com.pk:51100/dir/wsdl?p=ic/f96fa985b6ce3323bed38447ec7f78bc"
     ],
     "collectionTypes": [
       "System.Collections.Generic.Dictionary`2",

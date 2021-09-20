@@ -20,5 +20,6 @@ namespace Models.ViewModel
         public string LicenseType { get; set; }
         public string SFSize { get; set; }
         public int? ProductDetailId { get; set; }
+        public double ReturnMRPDicount { get; set; }
     }
 }

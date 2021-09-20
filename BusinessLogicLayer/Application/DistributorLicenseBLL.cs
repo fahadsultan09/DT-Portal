@@ -58,6 +58,16 @@ namespace BusinessLogicLayer.Application
             _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Update, module, "Update Distributor License", (int)item.UpdatedBy);
             return _unitOfWork.Save();
         }
+        public int UpdateActive(DistributorLicense module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.IsActive = module.IsActive;
+            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedDate = DateTime.Now;
+            _repository.Update(item);
+            module.File = null;
+            return _unitOfWork.Save();
+        }
         public int Delete(int id)
         {
             var item = _repository.GetById(id);

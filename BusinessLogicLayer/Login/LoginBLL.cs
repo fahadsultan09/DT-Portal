@@ -45,6 +45,14 @@ namespace BusinessLogicLayer.Login
                         LoginUser = null;
                         return LoginStatus.Failed;
                     }
+                    else
+                    {
+                        LoginUser.AccessToken = user.AccessToken;
+                        if (!string.IsNullOrEmpty(LoginUser.AccessToken))
+                        {
+                            _UserBLL.UpdateUser(LoginUser);
+                        }
+                    }
                 }
                 string[] MacAddresses = user.MacAddresses.Split(',').ToArray();
                 List<UserSystemInfo> UserSystemInfoList = _UserSystemInfoBLL.Where(x => x.IsActive && !x.IsDeleted && x.DistributorId == LoginUser.DistributorId && MacAddresses.Contains(x.MACAddress)).ToList();
@@ -53,29 +61,6 @@ namespace BusinessLogicLayer.Login
                     LoginUser = null;
                     return LoginStatus.NotRegistered;
                 }
-                //if (UserSystemInfoList != null)
-                //{
-                //    foreach (var item in UserSystemInfoList.Select(x => x.MACAddress).ToList())
-                //    {
-                //        if (!string.IsNullOrEmpty(item))
-                //        {
-                //            MACAddresses.Add(item);
-                //        }
-                //    }
-                //}
-                //bool check = false;
-                //if (MACAddresses.Count > 0)
-                //{
-                //    if (MACAddresses.Contains(user.RegisteredAddress.Replace("-", "")))
-                //    {
-                //        check = true;
-                //    }
-                //}
-                //if (check == false)
-                //{
-                //    LoginUser = null;
-                //    return LoginStatus.NotRegistered;
-                //}
             }
             if (LoginUser != null)
             {

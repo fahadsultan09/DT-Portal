@@ -63,7 +63,8 @@ namespace BusinessLogicLayer.Application
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
                         DistributorId = item.DistributorId,
-                        ProductDetailId = item.ProductDetailId
+                        ProductDetailId = item.ProductDetailId,
+                        ReturnMRPDicount = item.ReturnMRPDicount
                     });
                 }
                 _repository.AddRange(distributorWiseProductDiscountAndPricesList.Distinct().ToList());

@@ -31,6 +31,7 @@ namespace BusinessLogicLayer.GeneralSetup
         {
             var item = repository.GetById(module.Id);
             item.PlantLocationName = module.PlantLocationName.Trim();
+            item.CCEmail = module.CCEmail;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
@@ -40,7 +41,7 @@ namespace BusinessLogicLayer.GeneralSetup
         public bool DeletePlantLocation(int id)
         {
             var item = repository.GetById(id);
-            item.IsDeleted = false;
+            item.IsDeleted = true;
             repository.Delete(item);
             return _unitOfWork.Save() > 0;
         }

@@ -56,7 +56,7 @@ namespace DistributorPortal.Controllers
             {
                 AccessToken = EncryptDecrypt.Decrypt(AccessToken);
                 user = JsonConvert.DeserializeObject<User>(AccessToken);
-                user.AccessToken = AccessToken;
+                user.AccessToken = HttpContext.Request.Query["AccessToken"].ToString();
                 new AuditLogBLL(_unitOfWork).AddAuditLog("", user.UserName, user.MacAddresses);
             }
             if (string.IsNullOrEmpty(Convert.ToString(user.UpdatedDate)))

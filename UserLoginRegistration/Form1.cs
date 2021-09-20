@@ -88,6 +88,7 @@ namespace UserLoginRegistration
                 lblError.Text = string.Empty;
                 if (string.IsNullOrEmpty(txtUserName.Text) || string.IsNullOrEmpty(txtPassword.Text))
                 {
+                    Cursor = Cursors.Default;
                     lblError.Text = "Please enter username and password.";
                     return;
                 }

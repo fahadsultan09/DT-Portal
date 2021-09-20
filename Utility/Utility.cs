@@ -272,6 +272,8 @@ namespace Utility
         ApproveComplaint = 46,
         ApproveTaxChallan = 61,
         TaxChallan = 60,
+        PlantLocation = 69,
+        OrderPlantWiseReport = 70,
     }
     public enum EmailType
     {

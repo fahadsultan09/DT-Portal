@@ -9,5 +9,6 @@ namespace Models.Application
         public string PlantLocationName { get; set; }
         [StringLength(255)]
         public string Address { get; set; }
+        public string CCEmail { get; set; }
     }
 }

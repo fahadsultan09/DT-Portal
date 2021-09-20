@@ -13,7 +13,7 @@ namespace Models.Application
         public int DistributorId { get; set; }
         [ForeignKey("DistributorId")]
         public virtual Distributor Distributor { get; set; }
-        public int? LicenseId { get; set; }
+        public int LicenseId { get; set; }
         [ForeignKey("LicenseId")]
         public virtual LicenseControl LicenseControl { get; set; }
         [DisplayName("Form No")]

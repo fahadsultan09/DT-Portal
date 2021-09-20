@@ -37,17 +37,18 @@ namespace Models.Application
         public string ReturnOrderNumber { get; set; }
         public OrderStatus? ReturnOrderStatus { get; set; }
         public bool IsProductSelected { get; set; }
+        public double? TradePrice { get; set; }
+        public double? Discount { get; set; }
+        public double? ReceivedMRP { get; set; }
+        public double? NetAmount { get; set; }
+        [StringLength(10)]
+        public string ReceivedBatchNo { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
-        [NotMapped]
-        public double Discount { get; set; }
-        [NotMapped]
-        public double NetAmount { get; set; }
         [NotMapped]
         public int OrderReturnNumber { get; set; }        
         [NotMapped]
         public Company Company { get; set; }
-        [NotMapped]
         public bool IsFOCProduct { get; set; }
     }
 }

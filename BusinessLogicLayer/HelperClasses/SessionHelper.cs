@@ -34,6 +34,16 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<List<DistributorWiseProductDiscountAndPrices>>("AddDistributorWiseProduct");
             set => _httpContextAccessor.HttpContext.Session.Set("AddDistributorWiseProduct", value);
         }
+        public static List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductOrderReturn
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<DistributorWiseProductDiscountAndPrices>>("DistributorWiseProductOrderReturn");
+            set => _httpContextAccessor.HttpContext.Session.Set("DistributorWiseProductOrderReturn", value);
+        }
+        public static List<OrderDetail> OrderDetail
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<OrderDetail>>("OrderDetail");
+            set => _httpContextAccessor.HttpContext.Session.Set("OrderDetail", value);
+        }
         public static List<OrderReturnDetail> AddReturnProduct
         {
             get => _httpContextAccessor.HttpContext.Session.Get<List<OrderReturnDetail>>("AddReturnProduct");

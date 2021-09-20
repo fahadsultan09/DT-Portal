@@ -56,12 +56,30 @@ namespace DistributorPortal.Controllers
                 {
                     if (_LicenseControlBLL.CheckLicenseControlName(model.Id, model.LicenseName))
                     {
+                        //if (_LicenseControlBLL.Where(x => x.IsMandatory && x.IsActive && !x.IsDeleted).Count() == 0 && _LicenseControlBLL.Where(x => x.IsActive && !x.IsDeleted).Count() > 0 && !model.IsMandatory)
+                        //{
+                        //    TempData["Message"] = "Atleast one license should be mandatory";
+                        //    return PartialView("Add", model);
+                        //}
                         if (model.Id > 0)
                         {
+                            //if (_LicenseControlBLL.Where(x => x.IsMandatory && x.IsActive && !x.IsDeleted).Count() == 0 && !model.IsMandatory)
+                            //{
+                            //    model.IsMandatory = true;
+                            //}
+                            //else if (_LicenseControlBLL.Where(x => x.IsMandatory && x.IsActive && !x.IsDeleted).Count() == 1 && !model.IsMandatory)
+                            //{
+                            //    TempData["Message"] = "Atleast one license should be mandatory";
+                            //    return PartialView("Add", model);
+                            //}
                             _LicenseControlBLL.UpdateLicenseControl(model);
                         }
                         else
                         {
+                            //if (_LicenseControlBLL.Where(x => x.IsActive && !x.IsDeleted).Count() == 0 || _LicenseControlBLL.Where(x => x.IsMandatory && x.IsActive && !x.IsDeleted).Count() == 0 )
+                            //{
+                            //    model.IsMandatory = true;
+                            //}
                             _LicenseControlBLL.AddLicenseControl(model);
                         }
                         jsonResponse.Status = true;

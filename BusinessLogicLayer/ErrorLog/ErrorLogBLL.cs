@@ -33,7 +33,6 @@ namespace BusinessLogicLayer.ErrorLog
             _repository.GenericRepository<ExceptionLog>().Insert(module);
             return _repository.Save() > 0;
         }
-
         public bool AddSchedulerExceptionLog(Exception ex)
         {
             System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace(ex, true);
@@ -49,6 +48,19 @@ namespace BusinessLogicLayer.ErrorLog
                 Source = ex.Source,
                 HelpLink = ex.HelpLink,
                 MemberType = ex.GetType().Name
+            };
+            _repository.GenericRepository<ExceptionLog>().Insert(module);
+            return _repository.Save() > 0;
+        }
+        public bool ExceptionLog(ExceptionLog ExceptionLog)
+        {
+            ExceptionLog module = new ExceptionLog()
+            {
+                MethodBase = ExceptionLog.MethodBase,
+                ClassName = ExceptionLog.ClassName,
+                ExceptionMessage = ExceptionLog.ExceptionMessage,
+                CreatedBy = SessionHelper.LoginUser == null ? 0 : SessionHelper.LoginUser.Id,
+                CreatedDate = DateTime.Now,
             };
             _repository.GenericRepository<ExceptionLog>().Insert(module);
             return _repository.Save() > 0;

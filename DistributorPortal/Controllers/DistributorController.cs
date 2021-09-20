@@ -77,18 +77,19 @@ namespace DistributorPortal.Controllers
                         }
                     }
                 }
-                var alldist = _DistributorBLL.GetAllDistributor();
+                var alldist = _DistributorBLL.GetAllDistributors();
                 var addDistributor = SAPDistributor.Where(e => !alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode) && e.CustomerGroup.Contains("Local")).ToList();
                 addDistributor.ForEach(e =>
                 {
-                    e.CreatedBy = SessionHelper.LoginUser.Id;
                     e.MobileNumber = e.MobileNumber.Replace("-", "");
                     e.CNIC = e.CNIC.Replace("-", "");
-                    e.IsDeleted = false; e.IsActive = true;
+                    e.IsActive = true;
+                    e.IsDeleted = false;
+                    e.CreatedBy = SessionHelper.LoginUser.Id;
                     e.CreatedDate = DateTime.Now;
                 });
                 _DistributorBLL.AddRange(addDistributor);
-                var UpdateDistributor = SAPDistributor.Where(e => alldist.Any(c => c.DistributorSAPCode == e.DistributorSAPCode && (c.City != e.City || c.DistributorCode != e.DistributorCode || c.DistributorName != e.DistributorName || c.DistributorAddress != e.DistributorAddress || c.NTN != c.NTN || e.CNIC != e.CNIC || c.EmailAddress != e.EmailAddress || c.MobileNumber != e.MobileNumber || c.CustomerGroup != e.CustomerGroup))).ToList();
+                var UpdateDistributor = SAPDistributor.Where(e => alldist.Select(x => x.DistributorSAPCode).Contains(e.DistributorSAPCode)).ToList();
                 foreach (var item in UpdateDistributor)
                 {
                     var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);

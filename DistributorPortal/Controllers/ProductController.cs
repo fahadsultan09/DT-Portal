@@ -84,16 +84,16 @@ namespace ProductPortal.Controllers
                         }
                     }
                 }
-                var allproduct = _ProductMasterBLL.GetAllProductMaster();
+                var allproduct = _ProductMasterBLL.GetAllProducts();
                 var addProduct = SAPProduct.Where(e => !allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
                 var updateProduct = SAPProduct.Where(e => allproduct.Any(c => c.SAPProductCode == e.SAPProductCode)).ToList();
                 if (addProduct != null && addProduct.Count() > 0)
                 {
                     addProduct.ForEach(e =>
                     {
-                        e.CreatedBy = SessionHelper.LoginUser.Id;
                         e.IsDeleted = false;
                         e.IsActive = true;
+                        e.CreatedBy = SessionHelper.LoginUser.Id;
                         e.CreatedDate = DateTime.Now;
                     });
                     _ProductMasterBLL.AddRange(addProduct);
@@ -118,6 +118,7 @@ namespace ProductPortal.Controllers
                         item.ProductPrice = e.ProductPrice;
                         item.ProductDescription = e.ProductDescription;
                         item.LicenseType = e.LicenseType;
+                        item.IsDeleted = false;
                         item.IsActive = true;
                         item.UpdatedBy = SessionHelper.LoginUser.Id;
                         item.UpdatedDate = DateTime.Now;
@@ -264,6 +265,7 @@ namespace ProductPortal.Controllers
                         item.IncomeTax = x.IncomeTax;
                         item.AdditionalSalesTax = x.AdditionalSalesTax;
                         item.LicenseControlId = x.LicenseControlId;
+                        item.IsPlaceOrderInSAP = x.IsPlaceOrderInSAP;
                         item.UpdatedBy = SessionHelper.LoginUser.Id;
                         item.UpdatedDate = DateTime.Now;
                         ProductDetailList.Add(item);

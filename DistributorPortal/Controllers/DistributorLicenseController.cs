@@ -202,7 +202,7 @@ namespace DistributorPortal.Controllers
         }
         public List<DistributorLicense> GetDistributorLicenseList()
         {
-            var list = _DistributorLicenseBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            var list = _DistributorLicenseBLL.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).OrderByDescending(x => x.CreatedDate).ToList();
             return list;
         }
         [HttpPost]
@@ -217,6 +217,36 @@ namespace DistributorPortal.Controllers
                 model.DistributorLicenseList = GetDistributorLicenseList();
             }
             return PartialView("List", model.DistributorLicenseList);
+        }
+        public JsonResult ActiveInactiveLicense(string DPID) 
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+            var distributorLicense = _DistributorLicenseBLL.FirstOrDefault(e => e.Id == id);
+
+            if (distributorLicense != null)
+            {
+                if (distributorLicense.IsActive)
+                {
+                    distributorLicense.IsActive = false;
+                    _DistributorLicenseBLL.UpdateActive(distributorLicense);
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "License has been inactive";
+                }
+                else
+                {
+                    distributorLicense.IsActive = true;
+                    _DistributorLicenseBLL.UpdateActive(distributorLicense);
+                    jsonResponse.Status = true;
+                    jsonResponse.Message = "License has been active";
+                }
+            }
+            else
+            {
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+            }
+            return Json(new { data = jsonResponse });
         }
     }
 }

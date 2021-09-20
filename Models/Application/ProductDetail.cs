@@ -36,6 +36,7 @@ namespace Models.Application
         public double SalesTax { get; set; }
         public double IncomeTax { get; set; }
         public double AdditionalSalesTax { get; set; }
+        public bool IsPlaceOrderInSAP { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
         [NotMapped]

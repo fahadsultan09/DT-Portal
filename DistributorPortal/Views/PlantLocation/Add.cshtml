@@ -1,0 +1,124 @@
+﻿@model PlantLocation
+
+<link href="~/lib/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+
+<style>
+    .bootstrap-tagsinput .tag {
+        margin-right: 2px;
+        color: black;
+    }
+</style>
+
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">Plant Location</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-controller="PlantLocation"
+                      asp-action="SaveEdit"
+                      id="frmDosageForm"
+                      data-ajax-update="#divform"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="MessageDisappear"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      autocomplete="off">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox ">
+                                <input asp-for="Id" type="hidden" />
+                                <div class="ibox-content">
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Name<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="PlantLocationName" type="text" placeholder="Plant Location Name" class="form-control" />
+                                            <span asp-validation-for="PlantLocationName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Address<span class="text-danger"> * </span></label>
+                                        <div class="col-lg-9">
+                                            <input asp-for="Address" type="text" placeholder="Address" class="form-control" />
+                                            <span asp-validation-for="Address" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">CC Email</label>
+                                        <div class="col-lg-9">
+                                            <input type="text" asp-for="CCEmail" id="CCEmail" placeholder="Email" class="form-control email">
+                                            <span id="errorUserEmailCC" class="text-danger"></span><br />
+                                            <small>e.g: abc@domain.com ... ...</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label">Is Active</label>
+                                        <div class="col-lg-9">
+                                            <div class="i-checks"><input asp-for="IsActive" type="checkbox"><i></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 ">
+                                            <button class="btn btn-sm btn-success float-right" type="submit" onclick="Save();">
+                                                @(Model.Id > 0 ? "Update" : "Add")
+                                            </button>
+                                            <a data-ajax-update="#divform"
+                                               data-ajax="true"
+                                               data-ajax-method="GET"
+                                               asp-controller="PlantLocation" asp-action="List"
+                                               class="btn btn-sm btn-default float-right mr-3">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $('.bootstrap-tagsinput').css('width', '100%');
+    });
+
+    $('#CCEmail').tagsinput({
+        trimValue: true,
+        allowDuplicates: false
+    });
+
+    $('#CCEmail').on('beforeItemAdd', function (event) {
+        $('.text-danger').empty();
+
+        if (!validateEmail(event.item)) {
+            event.cancel = true;
+            $('#errorUserEmailCC').text('Input string was not in a correct email format');
+        }
+    });
+
+    function validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    var message = '@((string)TempData["Message"])';
+
+    var MessageDisappear = function (data) {
+
+        if (message != "") {
+            Toast.fire({
+                icon: 'error',
+                title: message
+            });
+            message = '';
+        }
+        UnBlockUI();
+    }
+</script>

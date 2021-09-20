@@ -76,6 +76,11 @@ namespace DistributorPortal.Controllers
                 model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => x.IsDeleted == false && OrderReturnIds.Contains(x.Id) && x.Status != OrderReturnStatus.Draft).ToList();
             }
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
+
+            if (SessionHelper.DistributorWiseProductOrderReturn is null || SessionHelper.DistributorWiseProductOrderReturn.Count() == 0)
+            {
+                SessionHelper.DistributorWiseProductOrderReturn = new List<DistributorWiseProductDiscountAndPrices>();
+            }
             return View(model);
         }
         public OrderReturnViewModel List(OrderReturnViewModel model)
@@ -165,12 +170,24 @@ namespace DistributorPortal.Controllers
             JsonResponse jsonResponse = new JsonResponse();
             var list = SessionHelper.AddReturnProduct;
             list.First(e => e.ProductId == Product).Quantity = Quantity;
+            list.First(e => e.ProductId == Product).NetAmount = Convert.ToDouble((list.First(e => e.ProductId == Product).TradePrice - (-1 * list.First(e => e.ProductId == Product).TradePrice / 100) * list.First(e => e.ProductId == Product).Discount) * Quantity);
+            SessionHelper.AddReturnProduct = list;
+            return Json(new { ProductId = list.First(e => e.ProductId == Product).ProductId, list.First(e => e.ProductId == Product).Quantity, list.First(e => e.ProductId == Product).NetAmount });
+        }
+        public JsonResult BQMRP(string ProductCode, int ReceivedQty, double ReceivedMRP, string BatchNo, string ReceivedBatchNo)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            var list = SessionHelper.AddReturnProduct;
+            list.First(e => e.ProductMaster.SAPProductCode == ProductCode && e.BatchNo == BatchNo).ReceivedQty = ReceivedQty;
+            list.First(e => e.ProductMaster.SAPProductCode == ProductCode && e.BatchNo == BatchNo).ReceivedMRP = ReceivedMRP;
+            list.First(e => e.ProductMaster.SAPProductCode == ProductCode && e.BatchNo == BatchNo).ReceivedBatchNo = ReceivedBatchNo;
             SessionHelper.AddReturnProduct = list;
             return Json(new { data = jsonResponse });
         }
         public JsonResult AddProduct(OrderReturnDetail model)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            List<DistributorWiseProductDiscountAndPrices> distributorWiseProductDiscountAndPrices = new List<DistributorWiseProductDiscountAndPrices>();
             try
             {
                 if (SessionHelper.AddReturnProduct is null || SessionHelper.AddReturnProduct.Count() == 0)
@@ -189,6 +206,14 @@ namespace DistributorPortal.Controllers
                 {
                     ProductMaster productMaster = _ProductMasterBLL.GetProductMasterById(model.ProductId);
                     ProductDetail productDetail = _ProductDetailBLL.Where(e => e.ProductMasterId == productMaster.Id).FirstOrDefault();
+                    if (SessionHelper.DistributorWiseProductOrderReturn == null || SessionHelper.DistributorWiseProductOrderReturn.Count() == 0)
+                    {
+                        distributorWiseProductDiscountAndPrices = SessionHelper.DistributorWiseProductOrderReturn = _DistributorWiseProductDiscountAndPricesBLL.Where(e => (!SessionHelper.LoginUser.IsDistributor || e.DistributorId == SessionHelper.LoginUser.DistributorId) && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderReturn)).ToList();
+                    }
+                    else
+                    {
+                        distributorWiseProductDiscountAndPrices = SessionHelper.DistributorWiseProductOrderReturn;
+                    }
                     if (productMaster != null)
                     {
                         var list = SessionHelper.AddReturnProduct;
@@ -197,7 +222,10 @@ namespace DistributorPortal.Controllers
                         model.ProductMaster = productMaster;
                         model.PlantLocation = new PlantLocationBLL(_unitOfWork).GetAllPlantLocation().Where(x => x.Id == model.PlantLocationId).FirstOrDefault();
                         model.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
-                        model.NetAmount = model.Quantity * model.MRP;
+                        model.TradePrice = model.MRP - (model.MRP / 100) * distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).ReturnMRPDicount;
+                        model.NetAmount = Convert.ToDouble((model.TradePrice - (-1 * model.TradePrice / 100) * distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).Discount) * model.Quantity);
+                        model.TotalPrice = distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).ProductPrice;
+                        model.Discount = distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).Discount;
                         model.Company = productDetail.Company;
                         model.IsFOCProduct = false;
                         list.Add(model);
@@ -315,11 +343,14 @@ namespace DistributorPortal.Controllers
                     if (OrderreturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()) == null)
                     {
                         var detail = SessionHelper.AddReturnProduct.First(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim());
-                        detail.IsProductSelected = SessionHelper.AddReturnProduct.FirstOrDefault(x => x.ProductId == item.ProductId).IsProductSelected;
+
+                        detail.ReceivedMRP = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedMRP != null ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedMRP : item.MRP;
+                        detail.ReceivedBatchNo = !string.IsNullOrEmpty(SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedBatchNo) ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedBatchNo : item.BatchNo;
+                        detail.ReceivedQty = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedQty > 0 ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedQty : item.Quantity;
+                        detail.IsProductSelected = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).IsProductSelected;
                         detail.OrderReturnId = model.Id;
                         detail.CreatedBy = SessionHelper.LoginUser.Id;
                         detail.CreatedDate = DateTime.Now;
-                        detail.ReceivedQty = item.ReceivedQty;
                         detail.ReceivedBy = SessionHelper.LoginUser.Id;
                         detail.ReceivedDate = DateTime.Now;
                         detail.ProductMaster = null;
@@ -330,7 +361,9 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         var product = OrderreturnProduct.First(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim());
-                        product.ReceivedQty = item.ReceivedQty;
+                        product.ReceivedMRP = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedMRP != null ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedMRP : item.MRP;
+                        product.ReceivedBatchNo = !string.IsNullOrEmpty(SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedBatchNo) ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedBatchNo : item.BatchNo;
+                        product.ReceivedQty = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedQty > 0 ? SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).ReceivedQty : item.Quantity;
                         product.IsProductSelected = SessionHelper.AddReturnProduct.FirstOrDefault(e => e.ProductId == item.ProductId && e.BatchNo.Trim() == item.BatchNo.Trim()).IsProductSelected;
                         product.ReceivedBy = SessionHelper.LoginUser.Id;
                         product.ReceivedDate = DateTime.Now;
@@ -364,6 +397,7 @@ namespace DistributorPortal.Controllers
                         }
                     }
                     var UpdatedOrderDetail = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id && e.ReturnOrderNumber == null).ToList();
+                    master.TotalValue = SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum();
                     master.Status = UpdatedOrderDetail.Count > 0 ? OrderReturnStatus.PartiallyReceived : OrderReturnStatus.Received;
                     master.ReceivedBy = SessionHelper.LoginUser.Id;
                     master.ReceivedDate = DateTime.Now;
@@ -485,12 +519,12 @@ namespace DistributorPortal.Controllers
                     {
                         var list = SessionHelper.AddReturnProduct;
                         detail.Id = item.Id;
-                        detail.BatchNo = item.BatchNo;
-                        detail.MRP = item.MRP;
-                        detail.TotalPrice = distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == allproductDetail.First(x => x.ProductMasterId == item.ProductId).Id).ProductPrice;
-                        detail.Discount = item.Discount;
-                        detail.Quantity = item.Quantity;
-                        detail.ReceivedQty = item.ReceivedQty;
+                        detail.ReceivedBatchNo = detail.BatchNo = item.BatchNo;
+                        detail.ReceivedMRP = detail.MRP = item.MRP;
+                        detail.ReceivedQty = detail.Quantity = item.Quantity;
+                        detail.TradePrice = item.TradePrice;
+                        detail.NetAmount = item.NetAmount;
+                        detail.TotalPrice = item.TotalPrice;
                         detail.Discount = item.Discount;
                         detail.ManufactureDate = item.ManufactureDate;
                         detail.IntimationDate = item.IntimationDate;
@@ -499,17 +533,17 @@ namespace DistributorPortal.Controllers
                         detail.InvoiceDate = item.InvoiceDate;
                         detail.IntimationDate = item.IntimationDate;
                         detail.ProductMaster = productMaster;
-                        detail.PlantLocation = item.PlantLocation;
                         detail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
-                        detail.NetAmount = detail.Quantity * detail.MRP;
                         detail.Remarks = item.Remarks;
                         detail.ProductId = item.ProductId;
                         detail.OrderReturnId = item.OrderReturnId;
                         detail.PlantLocationId = item.PlantLocationId;
+                        detail.PlantLocation = productDetail.PlantLocation;
                         detail.Company = productDetail.Company;
                         detail.ReturnOrderNumber = item.ReturnOrderNumber;
                         detail.ReturnOrderStatus = item.ReturnOrderStatus;
                         detail.IsProductSelected = true;
+                        detail.IsFOCProduct = item.IsFOCProduct;
                         list.Add(detail);
                         SessionHelper.AddReturnProduct = list;
                     }
@@ -592,25 +626,33 @@ namespace DistributorPortal.Controllers
         private OrderReturnMaster AddProductonExistingList(int Id, OrderReturnDetail model)
         {
             OrderReturnDetail detail = new OrderReturnDetail();
+            List<DistributorWiseProductDiscountAndPrices> distributorWiseProductDiscountAndPrices = new List<DistributorWiseProductDiscountAndPrices>();
+            if (SessionHelper.DistributorWiseProductOrderReturn == null || SessionHelper.DistributorWiseProductOrderReturn.Count() == 0)
+            {
+                distributorWiseProductDiscountAndPrices = SessionHelper.DistributorWiseProductOrderReturn = _DistributorWiseProductDiscountAndPricesBLL.Where(e => (!SessionHelper.LoginUser.IsDistributor || e.DistributorId == SessionHelper.LoginUser.DistributorId) && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderReturn)).ToList();
+            }
+            else
+            {
+                distributorWiseProductDiscountAndPrices = SessionHelper.DistributorWiseProductOrderReturn;
+            }
             ProductMaster productMaster = _ProductMasterBLL.FirstOrDefault(e => e.Id == model.ProductId);
             ProductDetail productDetail = _ProductDetailBLL.FirstOrDefault(e => e.ProductMasterId == model.ProductId);
             var list = SessionHelper.AddReturnProduct;
-            detail.BatchNo = model.BatchNo;
-            detail.MRP = model.MRP;
+            detail.ReceivedBatchNo = detail.BatchNo = model.BatchNo;
+            detail.ReceivedMRP = detail.MRP = model.MRP;
+            detail.ReceivedQty = detail.Quantity = model.Quantity;
+            detail.TradePrice = model.MRP - (model.MRP / 100) * distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).ReturnMRPDicount;
+            detail.NetAmount = Convert.ToDouble((detail.TradePrice - (-1 * detail.TradePrice / 100) * distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).Discount) * model.Quantity);
+            detail.TotalPrice = distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).ProductPrice;
+            detail.Discount = distributorWiseProductDiscountAndPrices.First(x => x.ProductDetailId == productDetail.Id).Discount;
             detail.TotalPrice = model.TotalPrice;
-            detail.Discount = model.Discount;
-            detail.Quantity = model.Quantity;
-            detail.ReceivedQty = model.ReceivedQty;
-            detail.Discount = model.Discount;
             detail.ManufactureDate = model.ManufactureDate;
             detail.IntimationDate = model.IntimationDate;
             detail.ExpiryDate = model.ExpiryDate;
             detail.InvoiceNo = model.InvoiceNo;
             detail.InvoiceDate = model.InvoiceDate;
             detail.ProductMaster = productMaster;
-            detail.PlantLocation = model.PlantLocation;
             detail.OrderReturnNumber = list.Count == 0 ? 1 : list.Max(e => e.OrderReturnNumber) + 1;
-            detail.NetAmount = detail.Quantity * detail.MRP;
             detail.Remarks = model.Remarks;
             detail.ProductId = model.ProductId;
             detail.OrderReturnId = model.OrderReturnId;

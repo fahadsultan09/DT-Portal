@@ -57,9 +57,9 @@ namespace BusinessLogicLayer.GeneralSetup
             _repository.AddRange(list);
             return _unitOfWork.Save() > 0;
         }
-        public List<ComplaintUserEmail> GetAllComplaintUserEmailByComplaintSubCategoryId(int[] ComplaintSubCategoryId)
+        public List<ComplaintUserEmail> GetAllComplaintUserEmailByComplaintSubCategoryId(int ComplaintSubCategoryId)
         {
-            return _repository.Where(x => ComplaintSubCategoryId.Distinct().Contains(x.ComplaintSubCategoryId) && x.EmailType == EmailType.KPI).ToList();
+            return _repository.Where(x => x.ComplaintSubCategoryId == ComplaintSubCategoryId && x.EmailType == EmailType.KPI).ToList();
         }
     }
 }

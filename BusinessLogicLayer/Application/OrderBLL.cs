@@ -5,6 +5,7 @@ using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Microsoft.AspNetCore.Mvc;
 using Models.Application;
+using Models.ErrorLog;
 using Models.UserRights;
 using Models.ViewModel;
 using Newtonsoft.Json;
@@ -63,7 +64,7 @@ namespace BusinessLogicLayer.Application
             _repository.Insert(module);
             return _unitOfWork.Save();
         }
-        public int Update(OrderMaster module)
+        public bool Update(OrderMaster module)
         {
             var item = _repository.GetById(module.Id);
             item.TotalValue = module.TotalValue;
@@ -83,7 +84,7 @@ namespace BusinessLogicLayer.Application
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _repository.Update(item);
-            return _unitOfWork.Save();
+            return _unitOfWork.Save() > 0;
         }
         public int UpdateSNo(OrderMaster module)
         {
@@ -389,9 +390,9 @@ namespace BusinessLogicLayer.Application
                         Amount = CalculateInclusiveSalesTax(item, DistributorWiseProductDiscountAndPrices) + CalculateIncomeTax(item, DistributorWiseProductDiscountAndPrices),
                         ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
-                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
-                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
-                        QuanityLoose = CalculateLooseQuantity(item.ProductDetail.ProductMaster.SFSize, item.ProductDetail.ProductMaster.Quantity, item.ProductDetail.ProductMaster.CartonSize),
+                        QuanityCarton = item.ProductDetail.QuanityCarton,
+                        QuanitySF = item.ProductDetail.QuanitySF,
+                        QuanityLoose = item.ProductDetail.QuanityLoose,
                         ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
                         S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
                         SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
@@ -400,6 +401,9 @@ namespace BusinessLogicLayer.Application
                         DispatchPlant = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DispatchPlant,
                         S_StorageLocation = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_StorageLocation,
                         SalesItemCategory = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesItemCategory,
+                        IncomeTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.IncomeTax,
+                        SalesTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesTax,
+                        AdditionalSalesTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.AdditionalSalesTax,
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
                     });
@@ -453,9 +457,9 @@ namespace BusinessLogicLayer.Application
                         Amount = CalculateInclusiveSalesTax(item, DistributorWiseProductDiscountAndPrices) + CalculateIncomeTax(item, DistributorWiseProductDiscountAndPrices),
                         ProductPrice = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductPrice,
                         Discount = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).Discount,
-                        QuanityCarton = Math.Ceiling(item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize),
-                        QuanitySF = Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)).ToString() == "-∞" ? 0 : Math.Ceiling((item.ProductDetail.ProductMaster.Quantity - ((item.ProductDetail.ProductMaster.Quantity / item.ProductDetail.ProductMaster.CartonSize) * item.ProductDetail.ProductMaster.CartonSize) / item.ProductDetail.ProductMaster.SFSize)),
-                        QuanityLoose = CalculateLooseQuantity(item.ProductDetail.ProductMaster.SFSize, item.ProductDetail.ProductMaster.Quantity, item.ProductDetail.ProductMaster.CartonSize),
+                        QuanityCarton = item.ProductDetail.QuanityCarton,
+                        QuanitySF = item.ProductDetail.QuanitySF,
+                        QuanityLoose = item.ProductDetail.QuanityLoose,
                         ParentDistributor = !string.IsNullOrEmpty(DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor) ? DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.ParentDistributor : SessionHelper.LoginUser.Distributor.DistributorSAPCode,
                         S_OrderType = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_OrderType,
                         SaleOrganization = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SaleOrganization,
@@ -464,6 +468,9 @@ namespace BusinessLogicLayer.Application
                         DispatchPlant = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.DispatchPlant,
                         S_StorageLocation = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.S_StorageLocation,
                         SalesItemCategory = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesItemCategory,
+                        IncomeTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.IncomeTax,
+                        SalesTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.SalesTax,
+                        AdditionalSalesTax = DistributorWiseProductDiscountAndPrices.First(y => y.ProductDetail.ProductMasterId == item.ProductDetail.ProductMasterId).ProductDetail.AdditionalSalesTax,
                         CreatedBy = SessionHelper.LoginUser.Id,
                         CreatedDate = DateTime.Now,
                     });
@@ -943,7 +950,7 @@ namespace BusinessLogicLayer.Application
             return distributorPendingQuanities;
         }
 
-        public List<SAPOrderStatus> PostDistributorOrder(int OrderId, Configuration configuration)
+        public List<SAPOrderStatus> PostDistributorOrder(List<OrderDetail> orderDetails, Configuration configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
             {
@@ -967,7 +974,7 @@ namespace BusinessLogicLayer.Application
                 client.OpenAsync();
             }
             DisPortalRequestIn disPortalRequestIn = new DisPortalRequestIn();
-            disPortalRequestIn.IM_SALEDATA = PlaceOrderToSAPPO(OrderId).ToArray();
+            disPortalRequestIn.IM_SALEDATA = PlaceOrderToSAPPO(orderDetails).ToArray();
             ZSD_CREATE_SALE_ORDERResponse zSD_CREATE_SALE_ORDERResponse = client.DisPortalPORequest_Out(disPortalRequestIn);
             client.CloseAsync();
             List<SAPOrderStatus> list = new List<SAPOrderStatus>();
@@ -981,13 +988,21 @@ namespace BusinessLogicLayer.Application
                         SAPOrderNo = zSD_CREATE_SALE_ORDERResponse.EX_OUTPUT[i].VBELN
                     });
                 }
+                if (!string.IsNullOrEmpty(zSD_CREATE_SALE_ORDERResponse.MESSAGE))
+                {
+                    ExceptionLog ex = new ExceptionLog();
+                    ex.MethodBase = "PostDistributorOrder";
+                    ex.MethodBase = "OrderBLL";
+                    ex.MethodBase = zSD_CREATE_SALE_ORDERResponse.MESSAGE;
+                    new ErrorLogBLL(_unitOfWork).ExceptionLog(ex);
+                }
             }
             return list;
         }
-        public List<DisPortalRequestInMain> PlaceOrderToSAPPO(int OrderId)
+        public List<DisPortalRequestInMain> PlaceOrderToSAPPO(List<OrderDetail> orderDetails)
         {
             List<DisPortalRequestInMain> model = new List<DisPortalRequestInMain>();
-            var orderproduct = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.SAPOrderNumber == null).ToList();
+            var orderproduct = orderDetails.Where(e => e.SAPOrderNumber == null).ToList();
             foreach (var item in orderproduct)
             {
                 model.Add(new DisPortalRequestInMain()
@@ -1006,7 +1021,8 @@ namespace BusinessLogicLayer.Application
                     MATERIAL = item.ProductMaster.SAPProductCode,
                     PLANT = item.DispatchPlant,
                     STORE_LOC = item.S_StorageLocation,
-                    BATCH = "",
+                    BATCH = item.ProductDetail.PlantLocation.PlantLocationName,
+                    YOUR_REF = item.ProductDetail.LicenseControlId == 2 ? "YES" : "NO",
                     ITEM_CATEG = item.SalesItemCategory,
                     REQ_QTY = item.Quantity.ToString()
                 });

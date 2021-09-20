@@ -55,6 +55,7 @@ namespace BusinessLogicLayer.Application
             item.IncomeTax = module.IncomeTax;
             item.AdditionalSalesTax = module.AdditionalSalesTax;
             item.LicenseControlId = module.LicenseControlId;
+            item.IsPlaceOrderInSAP = module.IsPlaceOrderInSAP;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _repository.Update(item);

@@ -69,7 +69,8 @@
                                                     <label class="col-lg-3 col-form-label">CC Emails</label>
                                                     <div class="col-lg-9">
                                                         <input type="text" name="UserEmailCC" id="UserEmailCC" value="@CCEmail" placeholder="Email" class="form-control email">
-                                                        <span id="errorUserEmailCC" class="text-danger"></span>
+                                                        <span id="errorUserEmailCC" class="text-danger"></span><br />
+                                                        <small>e.g: abc@domain.com ... ...</small>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -82,10 +83,11 @@
                                                     <label class="col-lg-3 col-form-label">KPI Emails</label>
                                                     <div class="col-lg-9">
                                                         @*<select asp-for="UserEmailKPI" asp-items="@(Model.UserEmailKPIList)" class="select2" multiple="multiple" data-placeholder="--Select options--" style="width: 100%;">
-                                                                <option readonly disabled>--Please Select--</option>
-                                                            </select>*@
+                                                            <option readonly disabled>--Please Select--</option>
+                                                        </select>*@
                                                         <input type="text" name="UserEmailKPI" id="UserEmailKPI" value="@KPIEmail" placeholder="Email" class="form-control email">
-                                                        <span id="errorUserEmailKPI" class="text-danger"></span>
+                                                        <span id="errorUserEmailKPI" class="text-danger"></span><br />
+                                                        <small>e.g: abc@domain.com ... ...</small>
                                                     </div>
                                                 </div>
                                             </div>

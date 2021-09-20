@@ -127,7 +127,7 @@ namespace BusinessLogicLayer.Application
             binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
             EndpointAddress address = new EndpointAddress(configuration.SaleReturnCreditNote);
-            POserRespOutClient client = new POserRespOutClient(binding, address);
+            CN_SerRespOutClient client = new CN_SerRespOutClient(binding, address);
             client.ClientCredentials.UserName.UserName = configuration.POUserName;
             client.ClientCredentials.UserName.Password = configuration.POPassword;
             if (client.InnerChannel.State == CommunicationState.Faulted)
@@ -137,7 +137,7 @@ namespace BusinessLogicLayer.Application
             {
                 client.OpenAsync();
             }
-            string base64 = client.POserRespOut(SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.Distributor.DistributorSAPCode : string.Empty, saleReturnCreditNoteSearch.SaleReturnNo.ToString());
+            string base64 = client.CN_SerRespOut(SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.Distributor.DistributorSAPCode : string.Empty, saleReturnCreditNoteSearch.SaleReturnNo.ToString());
             client.CloseAsync();
             return base64;
         }

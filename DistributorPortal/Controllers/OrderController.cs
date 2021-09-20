@@ -72,10 +72,10 @@ namespace DistributorPortal.Controllers
                     foreach (var item in DistributorLicense)
                     {
                         int Days = (item.Expiry.Date - DateTime.Now.Date).Days;
-                        var license = _licenseControlBLL.FirstOrDefault(x => x.Id  == item.LicenseId);
-                        if (Days <= license.DaysIntimateBeforeExpiry)
+                        var license = _licenseControlBLL.FirstOrDefault(x => x.Id == item.LicenseId);
+                        if (Days <= license.DaysIntimateBeforeExpiry || item.DocumentType == DocumentType.Challan)
                         {
-                            list.Add(new KeyValuePair<string, int>(license.LicenseName, Days));
+                            list.Add(new KeyValuePair<string, int>(license.LicenseName + " " + item.DocumentType, Days));
                         }
                     }
                     if (list != null && list.Count() > 0)
@@ -143,8 +143,8 @@ namespace DistributorPortal.Controllers
                 order.OnHoldComment = Comments;
                 order.OnHoldBy = SessionHelper.LoginUser.Id;
                 order.OnHoldDate = DateTime.Now;
-                var result = _OrderBLL.Update(order);
-                if (result > 0)
+                bool result = _OrderBLL.Update(order);
+                if (result)
                 {
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order on hold";
@@ -170,8 +170,8 @@ namespace DistributorPortal.Controllers
                 order.RejectedComment = Comments;
                 order.RejectedBy = SessionHelper.LoginUser.Id;
                 order.RejectedDate = DateTime.Now;
-                var result = _OrderBLL.Update(order);
-                if (result > 0)
+                bool result = _OrderBLL.Update(order);
+                if (result)
                 {
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order rejected";
@@ -195,8 +195,8 @@ namespace DistributorPortal.Controllers
                 JsonResponse jsonResponse = new JsonResponse();
                 var order = _OrderBLL.GetOrderMasterById(id);
                 order.Status = OrderStatus.Canceled;
-                var result = _OrderBLL.Update(order);
-                if (result > 0)
+                bool result = _OrderBLL.Update(order);
+                if (result)
                 {
                     jsonResponse.Status = true;
                     jsonResponse.Message = "Order has been canceled";
@@ -274,12 +274,8 @@ namespace DistributorPortal.Controllers
                     Detail.IsProductSelected = item.ProductMaster.ApprovedQuantity == 0 ? false : SessionHelper.AddProduct.FirstOrDefault(x => x.ProductMasterId == item.ProductMasterId).IsProductSelected;
                     _orderDetailBLL.Update(Detail);
                 }
-                //var Client = new RestClient(_Configuration.PostOrder);
-                //var orderdddd = _OrderBLL.PlaceOrderToSAP(OrderId).ToDataTable();
-                //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderToSAP(OrderId), "json");
-                //IRestResponse response = Client.Execute(request);
-                //var SAPProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-                List<SAPOrderStatus> SAPProduct = _OrderBLL.PostDistributorOrder(OrderId, _Configuration);
+                var OrderDetails = _orderDetailBLL.Where(e => e.OrderId == OrderId && e.ProductDetail.IsPlaceOrderInSAP).ToList();
+                List<SAPOrderStatus> SAPProduct = _OrderBLL.PostDistributorOrder(OrderDetails, _Configuration);
                 var detail = _orderDetailBLL.Where(e => e.OrderId == OrderId).ToList();
                 if (SAPProduct != null)
                 {
@@ -301,8 +297,8 @@ namespace DistributorPortal.Controllers
                     order.ApprovedBy = SessionHelper.LoginUser.Id;
                     order.ApprovedDate = DateTime.Now;
                     var result = _OrderBLL.Update(order);
-                    jsonResponse.Status = result > 0;
-                    jsonResponse.Message = result > 0 ? "Order has been approved" : "Unable to approve order";
+                    jsonResponse.Status = result;
+                    jsonResponse.Message = result ? "Order has been approved" : "Unable to approve order";
                 }
                 else
                 {

@@ -45,7 +45,7 @@ namespace UserLoginRegistration
             // txtUserName
             // 
             this.txtUserName.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtUserName.Location = new System.Drawing.Point(158, 184);
+            this.txtUserName.Location = new System.Drawing.Point(165, 165);
             this.txtUserName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtUserName.MaxLength = 8;
             this.txtUserName.Name = "txtUserName";
@@ -68,7 +68,7 @@ namespace UserLoginRegistration
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label3.Location = new System.Drawing.Point(27, 182);
+            this.label3.Location = new System.Drawing.Point(34, 163);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(112, 28);
             this.label3.TabIndex = 6;
@@ -78,7 +78,7 @@ namespace UserLoginRegistration
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label4.Location = new System.Drawing.Point(42, 235);
+            this.label4.Location = new System.Drawing.Point(49, 216);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(97, 28);
             this.label4.TabIndex = 7;
@@ -87,7 +87,7 @@ namespace UserLoginRegistration
             // txtPassword
             // 
             this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtPassword.Location = new System.Drawing.Point(158, 237);
+            this.txtPassword.Location = new System.Drawing.Point(165, 218);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPassword.MaxLength = 50;
             this.txtPassword.Name = "txtPassword";
@@ -98,10 +98,11 @@ namespace UserLoginRegistration
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(303, 329);
+            this.btnLogin.Font = new System.Drawing.Font("Calibri", 10F);
+            this.btnLogin.Location = new System.Drawing.Point(310, 311);
             this.btnLogin.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(95, 30);
+            this.btnLogin.Size = new System.Drawing.Size(95, 35);
             this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = true;
@@ -109,10 +110,11 @@ namespace UserLoginRegistration
             // 
             // btnRegister
             // 
-            this.btnRegister.Location = new System.Drawing.Point(158, 329);
+            this.btnRegister.Font = new System.Drawing.Font("Calibri", 10F);
+            this.btnRegister.Location = new System.Drawing.Point(165, 311);
             this.btnRegister.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnRegister.Name = "btnRegister";
-            this.btnRegister.Size = new System.Drawing.Size(95, 30);
+            this.btnRegister.Size = new System.Drawing.Size(95, 35);
             this.btnRegister.TabIndex = 3;
             this.btnRegister.Text = "Register";
             this.btnRegister.UseVisualStyleBackColor = true;
@@ -122,18 +124,18 @@ namespace UserLoginRegistration
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(110, 102);
+            this.label1.Location = new System.Drawing.Point(160, 102);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(263, 28);
+            this.label1.Size = new System.Drawing.Size(179, 28);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Login to Distributor Portal";
+            this.label1.Text = "Distributor Portal";
             // 
             // lblError
             // 
             this.lblError.AutoSize = true;
             this.lblError.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblError.ForeColor = System.Drawing.Color.Red;
-            this.lblError.Location = new System.Drawing.Point(155, 291);
+            this.lblError.Location = new System.Drawing.Point(162, 272);
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(0, 18);
             this.lblError.TabIndex = 8;
@@ -141,10 +143,10 @@ namespace UserLoginRegistration
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Calibri", 7.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(13, 374);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(60, 13);
+            this.label5.Size = new System.Drawing.Size(68, 15);
             this.label5.TabIndex = 9;
             this.label5.Text = "Version 1.1";
             // 
@@ -152,6 +154,7 @@ namespace UserLoginRegistration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(482, 403);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblError);

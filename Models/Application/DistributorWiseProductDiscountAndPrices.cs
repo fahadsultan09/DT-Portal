@@ -22,5 +22,6 @@ namespace Models.Application
         public double CartonSize { get; set; }
         public double Rate { get; set; }
         public double Discount { get; set; }
+        public double ReturnMRPDicount { get; set; }
     }
 }
