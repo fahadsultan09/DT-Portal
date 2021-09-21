@@ -5,7 +5,7 @@
     var m = new OrderValueViewModel();
     var id = 1;
     List<int> DistributorLicenseId = ((List<int>)ViewBag.LicenseId).Count() == 0 ? new List<int>() : (List<int>)ViewBag.LicenseId;
-    List<int> LicenseFormList = new LicenseControlBLL(unitOfWork).Where(x => x.IsMandatory).Select(x => x.Id).ToList();
+    List<int> LicenseFormList = new LicenseControlBLL(unitOfWork).Where(x => x.IsMandatory && x.IsActive && !x.IsDeleted).Select(x => x.Id).ToList();
 }
 <style>
     .ordervalue > tbody > tr > td {

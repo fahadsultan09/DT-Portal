@@ -63,7 +63,7 @@ namespace DistributorPortal.Controllers
                     distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
                     if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
                     {
-                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId) != null ? AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount : 0);
                     }
                     master.AddRange(distributorsProduct);
                 }
@@ -76,7 +76,7 @@ namespace DistributorPortal.Controllers
                         distributorsProduct.ForEach(e => e.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == e.SAPProductCode)?.Id);
                         if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
                         {
-                            distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                            distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId) != null ? AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount : 0);
                         }
                         master.AddRange(distributorsProduct);
                     }
@@ -118,7 +118,7 @@ namespace DistributorPortal.Controllers
                     distributorsProduct.ForEach(x => x.ProductDetailId = productDetail.FirstOrDefault(c => c.ProductMaster.SAPProductCode == x.SAPProductCode)?.Id);
                     if (AllDistributorWiseProductDiscountAndPrices != null && AllDistributorWiseProductDiscountAndPrices.Count() > 0)
                     {
-                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount);
+                        distributorsProduct.ForEach(e => e.ReturnMRPDicount = AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId) != null ? AllDistributorWiseProductDiscountAndPrices.FirstOrDefault(c => c.DistributorId == e.DistributorId && c.ProductDetailId == e.ProductDetailId).ReturnMRPDicount : 0);
                     }
                     master.AddRange(distributorsProduct);
 
