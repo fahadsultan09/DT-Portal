@@ -109,7 +109,7 @@
                                                     <th>Discount</th>
                                                     <th>Income Tax</th>
                                                     <th>Sales Tax</th>
-                                                    <th>Advance Income Tax</th>
+                                                    <th>Additional Income Tax</th>
                                                     <th>Net Value</th>
                                                     <th>QTY. (CTN)</th>
                                                     <th>QTY. (SF)</th>
@@ -158,8 +158,8 @@
                                                         <td></td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.SalesTax %</td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.IncomeTax %</td>
+                                                        <td>@Model.ProductDetails[i].ProductDetail.SalesTax %</td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.AdditionalSalesTax %</td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
                                                         <td><input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.QuanityCarton" value="@Model.ProductDetails[i].ProductDetail.QuanityCarton" class="form-control CurtonQty" readonly="readonly"></td>
