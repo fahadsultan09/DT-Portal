@@ -35,9 +35,9 @@
                 <th>Qty. (Units)</th>
                 <th>Trade Price</th>
                 <th>Discount</th>
-                <th>Income Tax</th>
+                <th>Advance Income Tax</th>
                 <th>Sales Tax</th>
-                <th>Additional Income Tax</th>
+                <th>Additional Sales Tax</th>
                 <th>Net Value</th>
                 <th>QTY. (CTN)</th>
                 <th>QTY. (SF)</th>
@@ -118,7 +118,7 @@
 
         //// Handle click on "Select all" control
         $('#example-select-all').on('click', function () {
-            
+
             // Check/uncheck all checkboxes in the table
             var rows = table.rows({ 'search': 'applied' }).nodes();
             $('input[type="checkbox"]', rows).prop('checked', this.checked);
@@ -126,7 +126,7 @@
 
         //// Handle click on checkbox to set state of "Select all" control
         $('#example1 tbody').on('change', 'input[type="checkbox"]', function () {
-            
+
             // If checkbox is not checked
             if (!this.checked) {
                 var el = $('#example-select-all').get(0);
