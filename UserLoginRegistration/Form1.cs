@@ -166,7 +166,7 @@ namespace UserLoginRegistration
             }
             catch
             {
-                MessageBox.Show("Please installed chrome browser to run distributor portal.");
+                MessageBox.Show("Please install chrome browser to run distributor portal.");
                 //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 //{
                 //    url = url.Replace("&", "^&");
