@@ -74,6 +74,7 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             OrderViewModel model = new OrderViewModel();
+            SessionHelper.AddDistributorWiseProduct = new List<DistributorWiseProductDiscountAndPrices>();
             try
             {
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)).OrderBy(x => x.ProductDescription).ToList();
@@ -92,14 +93,14 @@ namespace DistributorPortal.Controllers
                     var orderDetails = _orderDetailBll.Where(e => e.OrderId == id);
                     if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
                     {
-                        distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) != null ? SessionHelper.DistributorPendingQuantity.First(e => e.ProductCode == x.SAPProductCode).PendingQuantity.ToString() : "0");
+                        distributorProduct.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
                     }
                     else
                     {
                         SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity((int)SessionHelper.LoginUser.DistributorId);
                         if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
                         {
-                            distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) != null ? SessionHelper.DistributorPendingQuantity.First(e => e.ProductCode == x.SAPProductCode).PendingQuantity.ToString() : "0");
+                            distributorProduct.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
                         }
                     }
                     if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DistributorBalance == null)
@@ -120,8 +121,9 @@ namespace DistributorPortal.Controllers
                     model.OrderValues = _OrderBLL.GetOrderValueModel(_orderValueBll.GetOrderValueByOrderId(id));
                     SessionHelper.TotalOrderValue = orderDetails.First().OrderMaster.TotalValue.ToString("#,##0.00");
                     model.Id = id;
-                    distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
-                    distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
                     SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
@@ -141,9 +143,10 @@ namespace DistributorPortal.Controllers
                         pendingQuantity.ForEach(x => x.ProductName = _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? _ProductMaster.FirstOrDefault(y => y.SAPProductCode == x.ProductCode).ProductDescription : null);
                         SessionHelper.DistributorPendingQuantity = pendingQuantity;
                     }
-                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = pendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode)?.PendingQuantity.ToString());
-                    distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
-                    distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    distributorProduct.ForEach(x => x.PendingQuantity = pendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : pendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode).PendingQuantity);
+                    distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                    distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
                     SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
@@ -154,10 +157,11 @@ namespace DistributorPortal.Controllers
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)).OrderBy(x => x.ProductDescription).ToList();
                 if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
                 {
-                    distributorProduct.ForEach(x => x.ProductDetail.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(y => y.ProductCode == x.SAPProductCode) == null ? string.Empty : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity.ToString());
+                    distributorProduct.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
                 }
-                distributorProduct.ForEach(x => x.ProductDetail.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
-                distributorProduct.ForEach(x => x.ProductDetail.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                distributorProduct.ForEach(x => x.AdditionalSalesTax =  x.ProductDetail.AdditionalSalesTax);
                 SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                 return View("AddOrder", model);
             }
@@ -199,7 +203,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     List<int> distributorLicenses = new List<int>();
-                    distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x=>x.LicenseId).ToList();
+                    distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                     if (distributorLicenses.Count() == 0)
                     {
                         jsonResponse.Status = false;
@@ -633,11 +637,21 @@ namespace DistributorPortal.Controllers
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out int DistributorId);
                 var distributor = _distributorBll.FirstOrDefault(x => x.IsActive && !x.IsDeleted && x.Id == DistributorId);
-
                 List<DistributorPendingQuantity> DistributorPendingQuantityList = _OrderBLL.GetDistributorOrderPendingQuantitys(distributor.DistributorSAPCode, _Configuration);
 
                 if (DistributorPendingQuantityList != null)
                 {
+                    List<ProductDetail> productDetails = _productDetailBLL.GetAllProductDetail();
+                    List<DistributorWiseProductDiscountAndPrices> DistributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(e => e.DistributorId == DistributorId).ToList();
+                    DistributorPendingQuantityList.ForEach(x => x.Rate = DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail == null ? true : y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode) != null
+                    ? DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode).Rate : 0);
+                    DistributorPendingQuantityList.ForEach(x => x.Discount = DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode) != null
+                    ? DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode).Discount : 0);
+                    DistributorPendingQuantityList.ForEach(x => x.ProductDetail = productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) != null ? productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) : null);
+                    DistributorPendingQuantityList.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount))
+                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.SalesTax)
+                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.IncomeTax)
+                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.AdditionalSalesTax));
                     DistributorPendingQuantityList.ForEach(e => e.DistributorId = DistributorId);
                     DistributorPendingQuantityList.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
                     DistributorPendingQuantityList.ForEach(e => e.CreatedDate = DateTime.Now);

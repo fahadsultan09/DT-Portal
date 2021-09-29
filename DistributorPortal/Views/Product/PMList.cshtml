@@ -174,7 +174,7 @@
                     </table>
                 </div>
                 <div class="row m-2 float-right">
-                    <button type="submit" id="btnSubmit" onclick="return SaveEdit(this);" name="btnSubmit" class="btn btn-success">Save All</button>
+                    <button type="button" id="btnSubmit" onclick="return SaveEdit(this);" name="btnSubmit" class="btn btn-success">Save All</button>
                 </div>
             </form>
         </div>
@@ -239,7 +239,33 @@
                 $("#example1").DataTable({
                     "lengthMenu": [[-1], ["All"]]
                 });
-                $('#frmProduct').submit();
+
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Product/SaveEdit")',
+                    datatype: "JSON",
+                    data: $("#frmProduct").serialize(),
+                    success: function (data) {
+
+                        if (data) {
+                            if (data.data.Status) {
+                                Toast.fire({ icon: 'success', title: data.data.Message });
+                            } else {
+                                UnBlockUI();
+                                Toast.fire({ icon: 'error', title: data.data.Message });
+                                return false;
+                            }
+                            if (data.data.SignalRResponse !== null) {
+                                CallSignalR(data.data.SignalRResponse);
+                            }
+                            window.location = data.data.RedirectURL;
+                        } else {
+                            UnBlockUI();
+                            Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                            return false;
+                        }
+                    }
+                });
             }
             else {
                 UnBlockUI();

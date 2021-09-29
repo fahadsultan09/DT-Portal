@@ -39,6 +39,7 @@ namespace UserLoginRegistration
         }
         private void btnRegister_Click(object sender, EventArgs e)
         {
+            string GetPath = KnownFolders.GetPath(KnownFolder.Desktop);
             string processorId = string.Empty;
             string HostName = string.Empty;
             string MACAddress = string.Empty;
@@ -67,7 +68,8 @@ namespace UserLoginRegistration
             {
                 drive = driveInfo[0].Name[0];
             }
-            StreamWriter File = new StreamWriter(drive + @":\Registration.txt");
+            //StreamWriter File = new StreamWriter(drive + @":\Registration.txt");
+            StreamWriter File = new StreamWriter(GetPath + "\\Registration.txt");
             File.Write("Processor Id: " + processorId + Environment.NewLine);
             File.Write("Host Name: " + HostName + Environment.NewLine);
             foreach (var item in MacAddressList)
@@ -78,7 +80,7 @@ namespace UserLoginRegistration
                 }
             }
             File.Close();
-            MessageBox.Show("File created successfully in " + drive.ToString().ToUpper() + " drive named: Registration.txt");
+            MessageBox.Show("File created successfully on your desktop " + GetPath + "\\Registration.txt");
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {

@@ -185,10 +185,17 @@ namespace DistributorPortal.Controllers
                 SessionHelper.NavigationMenu = null;
                 SessionHelper.AddProduct = null;
                 SessionHelper.AddDistributorWiseProduct = null;
+                SessionHelper.DistributorWiseProductOrderReturn = null;
+                SessionHelper.OrderDetail = null;
                 SessionHelper.AddReturnProduct = null;
                 SessionHelper.DistributorBalance = null;
                 SessionHelper.DistributorPendingQuantity = null;
                 SessionHelper.DistributorPendingValue = null;
+                SessionHelper.URL = null;
+                SessionHelper.Disclaimer = null;
+                SessionHelper.Notification = null;
+                SessionHelper.NotificationCount = 0;
+                SessionHelper.TotalOrderValue = null;
                 return View();
             }
             else
@@ -199,10 +206,17 @@ namespace DistributorPortal.Controllers
                 SessionHelper.NavigationMenu = null;
                 SessionHelper.AddProduct = null;
                 SessionHelper.AddDistributorWiseProduct = null;
+                SessionHelper.DistributorWiseProductOrderReturn = null;
+                SessionHelper.OrderDetail = null;
                 SessionHelper.AddReturnProduct = null;
                 SessionHelper.DistributorBalance = null;
                 SessionHelper.DistributorPendingQuantity = null;
                 SessionHelper.DistributorPendingValue = null;
+                SessionHelper.URL = null;
+                SessionHelper.Disclaimer = null;
+                SessionHelper.Notification = null;
+                SessionHelper.NotificationCount = 0;
+                SessionHelper.TotalOrderValue = null;
                 return RedirectToAction("Index", "Login");
             }
             

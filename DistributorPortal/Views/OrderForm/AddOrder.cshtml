@@ -134,11 +134,13 @@
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.S_StorageLocation)
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.SalesItemCategory)
                                                             @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.ParentDistributor)
-                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.SalesTax, htmlAttributes: new { @class = "SalesTax d-none" })
-                                                            @Html.HiddenFor(e => Model.ProductDetails[i].ProductDetail.IncomeTax, htmlAttributes: new { @class = "IncomeTax d-none" })
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].SalesTax, htmlAttributes: new { @class = "SalesTax d-none" })
+                                                            @Html.HiddenFor(e => Model.ProductDetails[i].IncomeTax, htmlAttributes: new { @class = "IncomeTax d-none" })
                                                             @Model.ProductDetails[i].ProductDetail.ProductMaster.SAPProductCode
                                                         </td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.ProductDescription</td>
+                                                        <td>
+                                                            @Model.ProductDetails[i].ProductDetail.ProductMaster.ProductDescription
+                                                        </td>
                                                         <td>@Model.ProductDetails[i].ProductDetail.ProductMaster.PackSize</td>
                                                         <td><span class="CurtonSize">@Model.ProductDetails[i].ProductDetail.ProductMaster.CartonSize</span></td>
                                                         <td><span class="SFSize">@Model.ProductDetails[i].ProductDetail.ProductMaster.SFSize</span></td>
@@ -154,13 +156,13 @@
                                                                     ? DistributorLicenseId.Contains((int)Model.ProductDetails[i].ProductDetail.LicenseControlId) ? null : "disabled" : "disabled")
                                                                     : "disabled")" />
                                                         </td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.PendingQuantity</td>
+                                                        <td>@Model.ProductDetails[i].PendingQuantity</td>
                                                         <td></td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.IncomeTax %</td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.SalesTax %</td>
-                                                        <td>@Model.ProductDetails[i].ProductDetail.AdditionalSalesTax %</td>
+                                                        <td>@Model.ProductDetails[i].IncomeTax %</td>
+                                                        <td>@Model.ProductDetails[i].SalesTax %</td>
+                                                        <td>@Model.ProductDetails[i].AdditionalSalesTax %</td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
                                                         <td><input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.QuanityCarton" value="@Model.ProductDetails[i].ProductDetail.QuanityCarton" class="form-control CurtonQty" readonly="readonly"></td>
                                                         <td><input type="text" asp-for=">@Model.ProductDetails[i].ProductDetail.QuanitySF" value="@Model.ProductDetails[i].ProductDetail.QuanitySF" class="form-control QtySF" readonly="readonly"></td>
@@ -235,9 +237,8 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" onclick="return SaveEdit(this);" name="Submit" value="@SubmitStatus.Submit" class="btn btn-success float-right">Submit</button>
-                    <button type="submit" onclick="return DraftForm(this);" name="Draft" value="@SubmitStatus.Draft" class="btn btn-info float-right mr-3">Draft</button>
-                    <input type="hidden" name="btnSubmit" value="">
+                    <button type="button" onclick="return SubmitForm(this);" name="Submit" value="@SubmitStatus.Submit" class="btn btn-success float-right ladda-button">Submit</button>
+                    <button type="button" onclick="return DraftForm(this);" name="Draft" value="@SubmitStatus.Draft" class="btn btn-info float-right mr-3 ladda-button">Draft</button>
                 </div>
             </div>
         </div>
@@ -450,6 +451,7 @@
                 data: { 'Quantity': quantity, 'Product': product },
                 cache: false,
                 success: function (response) {
+                    UnBlockUI();
                     $("#UpdateOrderValueId").html(response);
                     $.ajax({
                         type: "GET",
@@ -458,17 +460,18 @@
                             $("#OrderValue").html(response.data);
                         }
                     });
+                },
+                error: function () {
+                    UnBlockUI();
                 }
             });
         }
-        UnBlockUI();
     }
 
     function SubmitForm() {
+        Ladda.create($(".ladda-button")[0]).start();
         BlockUI();
-
         Swal.fire({
-            title: 'Are you sure?',
             html: "<p style='text-align: justify'>All prices and order amount are based on current rates which are subject to change without prior notice. Invoicing will be done according to the rate exist at the time of delivery and the same would be payable by the customer. In case of any error, the company reserves the right to re-invoice with correct price</p>",
             icon: 'warning',
             showCancelButton: true,
@@ -476,25 +479,114 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Order Place!'
         }).then((result) => {
-            UnBlockUI();
+
             if (result.value == true) {
-                $('#frmOrderMaster').submit();
+                LoadModal();
+                $('#example1').dataTable().fnDestroy();
+                $("#example1").DataTable({
+                    "lengthMenu": [[-1], ["All"]]
+                });
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/OrderForm/SaveEdit")',
+                    datatype: "JSON",
+                    data: $("#frmOrderMaster").serialize() + "&btnSubmit=Submit",
+                    success: function (data) {
+
+                        if (data) {
+                            if (data.data.Status) {
+                                Toast.fire({ icon: 'success', title: data.data.Message });
+                            } else {
+                                if ($(".ladda-button")[0] != undefined) {
+                                    Ladda.create($(".ladda-button")[0]).stop();
+                                }
+                                UnBlockUI();
+                                Toast.fire({ icon: 'error', title: data.data.Message });
+                                return false;
+                            }
+                            if (data.data.SignalRResponse !== null) {
+                                CallSignalR(data.data.SignalRResponse);
+                            }
+                            window.location = data.data.RedirectURL;
+                        } else {
+                            if ($(".ladda-button")[0] != undefined) {
+                                Ladda.create($(".ladda-button")[0]).stop();
+                            }
+                            UnBlockUI();
+                            Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                            return false;
+                        }
+                    }
+                });
+            }
+            else {
+                if ($(".ladda-button")[0] != undefined) {
+                    Ladda.create($(".ladda-button")[0]).stop();
+                }
+                UnBlockUI();
             }
         });
-        UnBlockUI();
-        return false;
     }
 
     function DraftForm() {
-
+        Ladda.create($(".ladda-button")[0]).start();
+        Ladda.create($(".ladda-button")[1]).start();
+        setTimeout(function () {
+        BlockUI();
+        LoadModal();
         $('#example1').dataTable().fnDestroy();
         $("#example1").DataTable({
             "lengthMenu": [[-1], ["All"]]
         });
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/OrderForm/SaveEdit")',
+            datatype: "JSON",
+            data: $("#frmOrderMaster").serialize() + "&btnSubmit=Draft",
+            success: function (data) {
 
-        $("#frmOrderMaster").submit(function () {
-            $('[name="btnSubmit"]').val("Draft");
-            LoadModal();
+                if (data) {
+                    if (data.data.Status) {
+                        Toast.fire({ icon: 'success', title: data.data.Message });
+                    } else {
+                        UnBlockUI();
+                        if ($(".ladda-button")[1] != undefined) {
+                            Ladda.create($(".ladda-button")[0]).stop();
+                            Ladda.create($(".ladda-button")[1]).stop();
+                        }
+                        Toast.fire({ icon: 'error', title: data.data.Message });
+                        return false;
+                    }
+                    if (data.data.SignalRResponse !== null) {
+                        CallSignalR(data.data.SignalRResponse);
+                    }
+                    window.location = data.data.RedirectURL;
+                } else {
+                    if ($(".ladda-button")[q] != undefined) {
+                        Ladda.create($(".ladda-button")[0]).stop();
+                        Ladda.create($(".ladda-button")[1]).stop();
+                    }
+                    UnBlockUI();
+                    Toast.fire({ icon: 'error', title: 'Error occured while saving changes.' });
+                    return false;
+                }
+            }
+        });
+        }, 500);
+    }
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
         });
     }
 

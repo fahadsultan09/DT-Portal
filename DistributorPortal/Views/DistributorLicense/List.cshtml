@@ -17,7 +17,7 @@
                             <th>Distributor Name</th>
                             <th>License Name</th>
                             <th>License Type</th>
-                            <th>DocumentType</th>
+                            <th>Document Type</th>
                             <th>Request Type</th>
                             <th>License No</th>
                             <th>Issuing Authority</th>
@@ -46,7 +46,7 @@
                                 </td>
                                 <td>@item.IssueDate.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Expiry.ToString("dd/MM/yyyy")</td>
-                                <td>@(item.UpdatedDate != null ?  Convert.ToDateTime(item.UpdatedDate).ToString("dd/MM/yyyy") : null)</td>
+                                <td>@(item.UpdatedDate != null ?  Convert.ToDateTime(item.UpdatedDate).ToString("dd/MM/yyyy") : item.CreatedDate.ToString("dd/MM/yyyy"))</td>
                                 <td>
                                     @if (item.Status == LicenseStatus.Verified)
                                     {
@@ -99,6 +99,7 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
+            "order": [],
         });
 
         $('.select2').select2({

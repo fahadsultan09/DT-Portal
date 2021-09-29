@@ -21,5 +21,7 @@ namespace Models.Application
         public double Discount { get; set; }
         [NotMapped]
         public int CompanyId { get; set; }
+        [NotMapped]
+        public ProductDetail ProductDetail { get; set; }
     }
 }

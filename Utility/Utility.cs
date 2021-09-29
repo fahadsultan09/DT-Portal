@@ -54,7 +54,9 @@ namespace Utility
         NotYetProcess = 11,
         Canceled = 12,
         [Display(Name = "Partially Approved")]
-        PartiallyApproved = 13
+        PartiallyApproved = 13,
+        [Display(Name = "Approved Canceled")]
+        ApprovedCanceled = 14
     }
     public enum SAPProductOrderStatus
     {

@@ -4,7 +4,6 @@
     List<LicenseForm> LicenseFormList = new LicenseFormBLL(unitOfWork).GetAllLicenseForm();
     List<LicenseType> LicenseTypeList = new LicenseTypeBLL(unitOfWork).GetAllLicenseType();
     ViewBag.Title = "Add / Update License";
-    var j = 0;
 }
 
 <div class="content-wrapper">
@@ -97,137 +96,132 @@
                                         {
                                             <tr>
                                                 @*@if (Model[i].Expiry <= DateTime.Now.Date || Model[i].Status == LicenseStatus.Rejected || Model[i].DocumentType == DocumentType.Challan)
-                                                {*@
+                                                    {*@
+                                                <td width="5%">
+                                                    <input type="hidden" asp-for="@Model[i].LicenseControl.LicenseName" value="@Model[i].LicenseControl.LicenseName" />
+                                                    <input type="hidden" asp-for="@Model[i].LicenseId" value="@Model[i].LicenseControl.Id" class="hiddenLicenseId" />
+                                                    <input type="hidden" asp-for="@Model[i].Id" value="@Model[i].Id" class="hiddenId" />
+                                                    @Model[i].LicenseControl.LicenseName
+                                                </td>
+                                                <td width="10%">
+                                                    <select class="form-control select2" asp-for="@Model[i].LicenseTypeId" asp-items="@(new SelectList(LicenseTypeList, "Id", "LicenseTypeName", Model[i].LicenseTypeId))">
+                                                        <option readonly>--Select option--</option>
+                                                    </select>
+                                                </td>
+                                                <td width="5%">
+                                                    <select class="form-control select2" asp-for="@Model[i].DocumentType" asp-items="Html.GetEnumSelectList<DocumentType>()">
+                                                        <option readonly>--Select option--</option>
+                                                    </select>
+                                                </td>
+                                                <td width="10%">
+                                                    <select class="form-control select2" asp-for="@Model[i].RequestType" asp-items="Html.GetEnumSelectList<LicenseRequestType>()">
+                                                        <option readonly>--Select option--</option>
+                                                    </select>
+                                                </td>
+                                                <td width="6%">
+                                                    <input type="text" asp-for="@Model[i].LicenseNo" value="@Model[i].LicenseNo" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" asp-for="@Model[i].IssuingAuthority" value="@Model[i].IssuingAuthority" class="form-control" />
+                                                </td>
+                                                <td width="10%">
+                                                    <select class="form-control select2" asp-for="@Model[i].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[i].FormNoId))">
+                                                        <option readonly>--Select option--</option>
+                                                    </select>
+                                                </td>
+                                                <td width="10%">
+                                                    <div class="custom-file">
+                                                        <input type="file" asp-for="@Model[i].File" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
+                                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                                    </div>
+                                                    <span class="caption">
+                                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(!string.IsNullOrEmpty(Model[i].Attachment) ? Model[i].Attachment : "")" target="_blank">@(Model[i].Attachment != null ? Model[i].Attachment.Split('_')[1] : "")</a>
+                                                    </span>
+                                                </td>
+                                                <td width="10%">
+                                                    <div class="input-group date" data-target-input="nearest">
+                                                        <input type="text" asp-for="@Model[i].IssueDate" readonly="readonly" value="@(Model[i].Id == 0 ? null : Model[i].IssueDate.ToShortDateString())" id="IssueDate@(i)" class="form-control datepicker1" style="background-color:white;" />
+                                                        <div class="input-group-append" data-target="#IssueDate@(i)" data-toggle="datepicker">
+                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td width="10%">
+                                                    <div class="input-group date" data-target-input="nearest">
+                                                        <input type="text" asp-for="@Model[i].Expiry" readonly="readonly" value="@(Model[i].Id == 0 ? null : Model[i].Expiry.ToShortDateString())" id="Expiry@(i)" class="form-control datepicker2" style="background-color:white;" />
+                                                        <div class="input-group-append" data-target="#Expiry@(i)" data-toggle="datepicker">
+                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td width="4%">
                                                     @if (Model[i].Expiry.Date <= DateTime.Now.Date && Model[i].Id != 0 || Model[i].Status == null)
                                                     {
-                                                        Model[j].LicenseNo = string.Empty;
-                                                        Model[j].IssuingAuthority = string.Empty;
                                                         if (Model[i].Id == 0)
                                                         {
-                                                            Model[j].Status = null;
+                                                            Model[i].Status = null;
                                                         }
                                                         else
                                                         {
-                                                            Model[j].Status = LicenseStatus.Expired;
+                                                            Model[i].Status = LicenseStatus.Expired;
                                                         }
-                                                        Model[j].DocumentType = null;
-                                                        Model[j].RequestType = null;
-                                                        Model[j].FormNoId = null;
                                                     }
-                                                    <td width="5%">
-                                                        <input type="hidden" asp-for="@Model[j].LicenseControl.LicenseName" value="@Model[i].LicenseControl.LicenseName" />
-                                                        <input type="hidden" asp-for="@Model[j].LicenseId" value="@Model[i].LicenseControl.Id" class="hiddenLicenseId" />
-                                                        <input type="hidden" asp-for="@Model[j].Id" value="@Model[i].Id" class="hiddenId" />
-                                                        @Model[i].LicenseControl.LicenseName
-                                                    </td>
-                                                    <td width="10%">
-                                                        <select class="form-control select2" asp-for="@Model[j].LicenseTypeId" asp-items="@(new SelectList(LicenseTypeList, "Id", "LicenseTypeName", Model[j].LicenseTypeId))">
-                                                            <option readonly>--Select option--</option>
-                                                        </select>
-                                                    </td>
-                                                    <td width="5%">
-                                                        <select class="form-control select2" asp-for="@Model[j].DocumentType" asp-items="Html.GetEnumSelectList<DocumentType>()">
-                                                            <option readonly>--Select option--</option>
-                                                        </select>
-                                                    </td>
-                                                    <td width="10%">
-                                                        <select class="form-control select2" asp-for="@Model[j].RequestType" asp-items="Html.GetEnumSelectList<LicenseRequestType>()">
-                                                            <option readonly>--Select option--</option>
-                                                        </select>
-                                                    </td>
-                                                    <td width="6%">
-                                                        <input type="text" asp-for="@Model[j].LicenseNo" value="@Model[i].LicenseNo" class="form-control" />
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" asp-for="@Model[j].IssuingAuthority" value="@Model[i].IssuingAuthority" class="form-control" />
-                                                    </td>
-                                                    <td width="10%">
-                                                        <select class="form-control select2" asp-for="@Model[j].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[j].FormNoId))">
-                                                            <option readonly>--Select option--</option>
-                                                        </select>
-                                                    </td>
-                                                    <td width="10%">
-                                                        <div class="custom-file">
-                                                            <input type="file" asp-for="@Model[j].File" class="form-control custom-file-input" id="customFile" accept="application/pdf, image/*" />
-                                                            <label class="custom-file-label" for="customFile">Choose file</label>
-                                                        </div>
-                                                        <span class="caption">
-                                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(!string.IsNullOrEmpty(Model[i].Attachment) ? Model[i].Attachment : "")" target="_blank">@(Model[i].Attachment != null ? Model[i].Attachment.Split('_')[1] : "")</a>
-                                                        </span>
-                                                    </td>
-                                                    <td width="10%">
-                                                        <div class="input-group date" data-target-input="nearest">
-                                                            <input type="text" asp-for="@Model[j].IssueDate" readonly="readonly" value="@(Model[j].Id == 0 || Model[i].Expiry.Date <= DateTime.Now.Date ? null : Model[i].IssueDate.ToShortDateString())" id="IssueDate@(j)" class="form-control datepicker1" style="background-color:white;" />
-                                                            <div class="input-group-append" data-target="#IssueDate@(j)" data-toggle="datepicker">
-                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td width="10%">
-                                                        <div class="input-group date" data-target-input="nearest">
-                                                            <input type="text" asp-for="@Model[j].Expiry" readonly="readonly" value="@(Model[j].Id == 0 || Model[i].Expiry.Date <= DateTime.Now.Date ? null : Model[i].Expiry.ToShortDateString())" id="Expiry@(j)" class="form-control datepicker2" style="background-color:white;" />
-                                                            <div class="input-group-append" data-target="#Expiry@(j)" data-toggle="datepicker">
-                                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td width="4%">
-                                                        @Model[i].Status
-                                                    </td>
-                                                    <td width="10%">
-                                                        @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
-                                                    </td>
-                                                    <td width="5%">
-                                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert)))
-                                                        {
-                                                            <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
-                                                        }
-                                                    </td>
+                                                    @Model[i].Status
+                                                </td>
+                                                <td width="10%">
+                                                    @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
+                                                </td>
+                                                <td width="5%">
+                                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert)))
+                                                    {
+                                                        <button class="btn btn-info fa-pull-right btnSubmit" type="submit" name="btnSubmit" value="@Model[i].LicenseControl.LicenseName">Save</button>
+                                                    }
+                                                </td>
                                                 @*}
-                                                else
-                                                {
-                                                    <td width="5%">
-                                                        <input type="hidden" asp-for="@Model[j].DocumentType" value="@Model[j].DocumentType" />
-                                                        <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
-                                                        @Model[i].LicenseControl.LicenseName
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].LicenseType.LicenseTypeName
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].DocumentType
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Html.DisplayFor(x => Model[i].RequestType)
-                                                    </td>
-                                                    <td width="6%">
-                                                        @Model[i].LicenseNo
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].IssuingAuthority
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].LicenseForm.LicenseFormNo
-                                                    </td>
-                                                    <td width="10%">
-                                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].IssueDate.ToString("dd/MM/yyyy")
-                                                    </td>
-                                                    <td width="10%">
-                                                        @Model[i].Expiry.ToString("dd/MM/yyyy")
-                                                    </td>
-                                                    <td width="4%">
-                                                        @Model[i].Status
-                                                    </td>
-                                                    <td width="10%">
-                                                        @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
-                                                    </td>
-                                                    <td width="5%">
-                                                    </td>
-                                                    j++;
-                                                }*@
+                                                    else
+                                                    {
+                                                        <td width="5%">
+                                                            <input type="hidden" asp-for="@Model[j].DocumentType" value="@Model[j].DocumentType" />
+                                                            <input type="hidden" asp-for="@Model[j].Status" value="@Model[j].Status" />
+                                                            @Model[i].LicenseControl.LicenseName
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].LicenseType.LicenseTypeName
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].DocumentType
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Html.DisplayFor(x => Model[i].RequestType)
+                                                        </td>
+                                                        <td width="6%">
+                                                            @Model[i].LicenseNo
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].IssuingAuthority
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].LicenseForm.LicenseFormNo
+                                                        </td>
+                                                        <td width="10%">
+                                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(@Model[i].Attachment != null ? @Model[i].Attachment : "")" target="_blank">@(@Model[i].Attachment != null ? @Model[i].Attachment.Split('_')[1] : "")</a>
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].IssueDate.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td width="10%">
+                                                            @Model[i].Expiry.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td width="4%">
+                                                            @Model[i].Status
+                                                        </td>
+                                                        <td width="10%">
+                                                            @(Model[i].Status == LicenseStatus.Rejected ? Model[i].Remarks : null)
+                                                        </td>
+                                                        <td width="5%">
+                                                        </td>
+                                                        j++;
+                                                    }*@
                                             </tr>
                                         }
                                     </tbody>
@@ -302,7 +296,7 @@
 <script>
 
     $("#example2").on("click", ".btnSubmit", function () {
-        
+
         if ($(this).closest("tr").find("td:eq(1)").find(":input").val() == "--Select option--") {
             Toast.fire({ icon: 'error', title: 'Select License Type' });
             return false;

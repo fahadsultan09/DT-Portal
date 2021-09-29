@@ -23,5 +23,13 @@ namespace Models.Application
         public double Rate { get; set; }
         public double Discount { get; set; }
         public double ReturnMRPDicount { get; set; }
+        [NotMapped]
+        public int PendingQuantity { get; set; }
+        [NotMapped]
+        public double SalesTax { get; set; }
+        [NotMapped]
+        public double IncomeTax { get; set; }
+        [NotMapped]
+        public double AdditionalSalesTax { get; set; }
     }
 }

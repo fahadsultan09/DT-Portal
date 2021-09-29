@@ -259,21 +259,21 @@ namespace BusinessLogicLayer.Application
 
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails
                                                         join p in productDetails on od.ProductId equals p.ProductMasterId
-                                                        where od.ProductId == p.ProductMasterId && p.CompanyId == 1
+                                                        where od.ProductId == p.ProductMasterId && p.CompanyId == sami
                                                         group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                         let Amount = odp.Sum(m => m.od.Amount)
                                                         select Amount).Sum(x => x);
 
             viewModel.HealthTekTotalUnapprovedOrderValues = (from od in orderDetails
                                                              join p in productDetails on od.ProductId equals p.ProductMasterId
-                                                             where od.ProductId == p.ProductMasterId && p.CompanyId == 3
+                                                             where od.ProductId == p.ProductMasterId && p.CompanyId == HealthTek
                                                              group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                              let Amount = odp.Sum(m => m.od.Amount)
                                                              select Amount).Sum(x => x);
 
             viewModel.PhytekTotalUnapprovedOrderValues = (from od in orderDetails
                                                           join p in productDetails on od.ProductId equals p.ProductMasterId
-                                                          where od.ProductId == p.ProductMasterId && p.CompanyId == 2
+                                                          where od.ProductId == p.ProductMasterId && p.CompanyId == Phytek
                                                           group new { od, p } by new { od.OrderId, p.CompanyId } into odp
                                                           let Amount = odp.Sum(m => m.od.Amount)
                                                           select Amount).Sum(x => x);

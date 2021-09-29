@@ -138,6 +138,11 @@ namespace DistributorPortal
 
             });
             RotativaConfiguration.Setup(env2, "Rotativa");
+            app.UseCookiePolicy(
+            new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.Always
+            });
         }
     }
 }
