@@ -30,6 +30,8 @@ namespace Models.Application
         [NotMapped]
         public double IncomeTax { get; set; }
         [NotMapped]
+        public double ViewSalesTax { get; set; }
+        [NotMapped]
         public double AdditionalSalesTax { get; set; }
     }
 }

@@ -161,7 +161,7 @@
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductPrice, htmlAttributes: new { @class = "form-control TradePrice", @readonly = true })</td>
                                                         <td><span class="Discount">@Model.ProductDetails[i].Discount</span> %</td>
                                                         <td>@Model.ProductDetails[i].IncomeTax %</td>
-                                                        <td>@Model.ProductDetails[i].SalesTax %</td>
+                                                        <td>@Model.ProductDetails[i].ViewSalesTax %</td>
                                                         <td>@Model.ProductDetails[i].AdditionalSalesTax %</td>
                                                         <td>@Html.TextBoxFor(e => Model.ProductDetails[i].ProductDetail.TotalPrice, htmlAttributes: new { @class = "form-control TotalPrice", @readonly = true, type = "number" })</td>
                                                         <td><input type="text" asp-for="@Model.ProductDetails[i].ProductDetail.QuanityCarton" value="@Model.ProductDetails[i].ProductDetail.QuanityCarton" class="form-control CurtonQty" readonly="readonly"></td>
@@ -383,7 +383,14 @@
     function LoadOrderValue(data) {
         BlockUI();
         var intmaxvalue = @Int32.MaxValue;
-        var quantity = data.value == "" ? "0" : data.value;
+        var quantity;
+        if (data.value == "") {
+            quantity = 0;
+            data.value = 0;
+        }
+        else {
+            quantity = data.value;
+        }
         var product = data.getAttribute("ProductId");
 
         if (quantity > intmaxvalue) {

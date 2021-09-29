@@ -124,6 +124,7 @@ namespace DistributorPortal.Controllers
                     distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                     distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                     distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.ViewSalesTax = x.ProductDetail.SalesTax);
                     SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
@@ -147,6 +148,7 @@ namespace DistributorPortal.Controllers
                     distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                     distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                     distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+                    distributorProduct.ForEach(x => x.ViewSalesTax = x.ProductDetail.SalesTax);
                     SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                     return View("AddOrder", model);
                 }
@@ -162,6 +164,7 @@ namespace DistributorPortal.Controllers
                 distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                 distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                 distributorProduct.ForEach(x => x.AdditionalSalesTax =  x.ProductDetail.AdditionalSalesTax);
+                distributorProduct.ForEach(x => x.ViewSalesTax =  x.ProductDetail.SalesTax);
                 SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                 return View("AddOrder", model);
             }
