@@ -23,9 +23,9 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>https://dpsetup.samipharma.com.pk/dpsetup.samipharma.com.pk/</InstallUrl>
-    <SupportUrl>https://distributorportal.samipharma.com.pk/</SupportUrl>
-    <ErrorReportUrl>https://distributorportal.samipharma.com.pk/</ErrorReportUrl>
-    <ProductName>Login to Distributor Portal</ProductName>
+    <SupportUrl>http://www.samipharmapk.com/</SupportUrl>
+    <ErrorReportUrl>http://www.samipharmapk.com/</ErrorReportUrl>
+    <ProductName>Distributor Portal</ProductName>
     <PublisherName>Designed by SAMI Pharmaceuticals %28Pvt.%29 Ltd.®</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
