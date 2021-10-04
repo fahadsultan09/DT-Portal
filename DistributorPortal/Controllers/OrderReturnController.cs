@@ -372,14 +372,7 @@ namespace DistributorPortal.Controllers
                         {
                             distributorWiseProductDiscountAndPrices = SessionHelper.DistributorWiseProductOrderReturn;
                         }
-                        if (SessionHelper.LoginUser.IsStoreKeeper)
-                        {
-                            productDetails = productDetails.Where(e => e.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && model.OrderReturnDetail.Select(x => x.ProductId).Contains(e.ProductMasterId)).ToList();
-                        }
-                        else
-                        {
-                            productDetails = productDetails.Where(e => model.OrderReturnDetail.Select(x => x.ProductId).Contains(e.ProductMasterId)).ToList();
-                        }
+                        productDetails = productDetails.Where(e => model.OrderReturnDetail.Select(x => x.ProductId).Contains(e.ProductMasterId)).ToList();
                         ProductMaster productMaster = allproducts.FirstOrDefault(e => e.Id == item.ProductId);
                         ProductDetail productDetail = productDetails.FirstOrDefault(e => e.ProductMasterId == item.ProductId);
                         var detail = SessionHelper.AddReturnProduct.First(e => e.ProductId == item.ProductId && e.ReceivedBatchNo.Trim() == item.ReceivedBatchNo.Trim());
