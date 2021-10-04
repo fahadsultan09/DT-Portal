@@ -6,11 +6,15 @@ using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Models.Application;
 using Models.ViewModel;
 using System;
@@ -44,8 +48,11 @@ namespace DistributorPortal.Controllers
         private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
         private readonly PaymentBLL _PaymentBLL;
         private readonly ICompositeViewEngine _viewEngine;
-        public OrderFormController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration, IWebHostEnvironment env)
+        private readonly IHostEnvironment _hostEnvironment;
+
+        public OrderFormController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration, IWebHostEnvironment env, IHostEnvironment hostEnvironment)
         {
+            _hostEnvironment = hostEnvironment;
             _viewEngine = viewEngine;
             _unitOfWork = unitOfWork;
             _env = env;
@@ -163,8 +170,8 @@ namespace DistributorPortal.Controllers
                 }
                 distributorProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                 distributorProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
-                distributorProduct.ForEach(x => x.AdditionalSalesTax =  x.ProductDetail.AdditionalSalesTax);
-                distributorProduct.ForEach(x => x.ViewSalesTax =  x.ProductDetail.SalesTax);
+                distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+                distributorProduct.ForEach(x => x.ViewSalesTax = x.ProductDetail.SalesTax);
                 SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
                 return View("AddOrder", model);
             }
@@ -521,118 +528,6 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
-        //[HttpPost]
-        //public IActionResult SyncPartiallyApproved(string DPID)
-        //{
-        //    JsonResponse jsonResponse = new JsonResponse();
-        //    Notification notification = new Notification();
-        //    try
-        //    {
-        //        bool SAPOrderStatus = false;
-        //        bool POrderStatus = false;
-        //        int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
-        //        var order = _OrderBLL.GetOrderMasterById(id);
-        //        var OrderDetail = _orderDetailBll.Where(e => e.OrderId == id).ToList();
-        //        //var client = new RestClient(_Configuration.PostOrder);
-        //        //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderPartiallyApprovedToSAP(id), "json");
-        //        //IRestResponse response = client.Execute(request);
-        //        //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
-        //        var OrderDetails = _orderDetailBll.Where(e => e.OrderId == id && e.ProductDetail.IsPlaceOrderInSAP).ToList();
-        //        List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(OrderDetails, _Configuration);
-        //        var updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
-        //        if (sapProduct != null && sapProduct.Count() > 0)
-        //        {
-        //            foreach (var item in sapProduct)
-        //            {
-        //                var product = updatedOrderDetail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
-        //                if (product != null)
-        //                {
-        //                    if (!string.IsNullOrEmpty(item.SAPOrderNo))
-        //                    {
-        //                        product.SAPOrderNumber = item.SAPOrderNo;
-        //                        product.OrderProductStatus = OrderStatus.InProcess;
-        //                        _orderDetailBll.Update(product);
-        //                    }
-        //                }
-        //            }
-        //            updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
-        //            order.Status = updatedOrderDetail.Count > 0 ? OrderStatus.PartiallyApproved : OrderStatus.InProcess;
-        //            order.ApprovedBy = SessionHelper.LoginUser.Id;
-        //            order.ApprovedDate = DateTime.Now;
-        //            var result = _OrderBLL.Update(order);
-        //            jsonResponse.Status = result;
-        //            jsonResponse.Message = result ? "Order has been approved successfully" : NotificationMessage.ErrorOccurred;
-        //            TempData["DistributorId"] = EncryptDecrypt.Encrypt(order.DistributorId.ToString());
-        //            //Sending Email
-        //            //Sending Email
-        //            if (SAPOrderStatus || POrderStatus)
-        //            {
-        //                var OrderDetails = _orderDetailBll.Where(e => e.OrderId == id).ToList();
-        //                foreach (var item in OrderDetails.Select(x => x.ProductDetail.PlantLocationId).Distinct().ToArray())
-        //                {
-        //                    string SAPOrder = string.Join("</br>" + Environment.NewLine, OrderDetails.Where(x => x.ProductDetail.PlantLocationId == item && x.ProductDetail.IsPlaceOrderInSAP).Select(x => x.SAPOrderNumber).Distinct().ToArray());
-        //                    string DPOrder = string.Join("</br>" + Environment.NewLine, OrderDetails.Where(x => x.ProductDetail.PlantLocationId == item && !x.ProductDetail.IsPlaceOrderInSAP).Select(x => x.SAPOrderNumber).Distinct().ToArray());
-        //                    string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ApprovalOfSaleOrder.html";
-        //                    ApprovedOrderEmailUserModel EmailUserModel = new ApprovedOrderEmailUserModel()
-        //                    {
-        //                        ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
-        //                        Date = Convert.ToDateTime(order.ApprovedDate).ToString("dd/MMM/yyyy"),
-        //                        City = order.Distributor.City,
-        //                        ShipToPartyName = order.Distributor.DistributorName,
-        //                        SAPOrder = string.IsNullOrEmpty(SAPOrder) ? "" : "SAP Order Number",
-        //                        SAPOrderNumber = SAPOrder,
-        //                        DPOrder = string.IsNullOrEmpty(DPOrder) ? "" : "Distrbutor Portal Order Number",
-        //                        DPOrderNumber = OrderDetails.First().OrderMaster.SNo.ToString(),
-        //                        Subject = "Order Delivery",
-        //                        CreatedBy = SessionHelper.LoginUser.Id,
-        //                        CCEmail = OrderDetails.First(x => x.ProductDetail.PlantLocationId == item).ProductDetail.PlantLocation.CCEmail,
-        //                    };
-        //                    List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.IsStoreKeeper && x.PlantLocationId != null && x.PlantLocationId == item
-        //                    && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
-
-        //                    if (UserList != null && UserList.Count() > 0)
-        //                    {
-        //                        _EmailLogBLL.OrderEmail(UserList, EmailUserModel);
-        //                    }
-        //                }
-        //                jsonResponse.Status = true;
-        //                jsonResponse.Message = "Order has been approved successfully";
-        //                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
-        //                notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-        //                notification.DistributorId = order.DistributorId;
-        //                notification.RequestId = order.SNo;
-        //                notification.Status = order.Status.ToString();
-        //                notification.Message = jsonResponse.SignalRResponse.Message;
-        //                notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-        //                _NotificationBLL.Add(notification);
-        //                jsonResponse.RedirectURL = Url.Action("Index", "Order");
-        //                return Json(new { data = jsonResponse });
-        //            }
-        //            jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
-        //            notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-        //            notification.DistributorId = order.DistributorId;
-        //            notification.RequestId = order.SNo;
-        //            notification.Status = order.Status.ToString();
-        //            notification.Message = jsonResponse.SignalRResponse.Message;
-        //            notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-        //            _NotificationBLL.Add(notification);
-        //        }
-        //        else
-        //        {
-        //            jsonResponse.Status = false;
-        //            jsonResponse.Message = "Unable to approve order";
-        //        }
-        //        jsonResponse.RedirectURL = Url.Action("Index", "Order");
-        //        return Json(new { data = jsonResponse });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
-        //        jsonResponse.Status = false;
-        //        jsonResponse.Message = NotificationMessage.ErrorOccurred;
-        //        return Json(new { data = jsonResponse });
-        //    }
-        //}
         public IActionResult UpdatePQ(string DPID)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -730,6 +625,106 @@ namespace DistributorPortal.Controllers
             var viewContext = new ViewContext(ControllerContext, viewResult.View, ViewData, TempData, sw, new HtmlHelperOptions());
             await viewResult.View.RenderAsync(viewContext);
             return sw.GetStringBuilder().ToString();
+        }
+        public IActionResult DownloadOrderFormat()
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                string filepath = _hostEnvironment.ContentRootPath + "\\wwwroot\\OrderCreationFormat.xlsx";
+                string contenttype;
+                string filename = Path.GetFileName(filepath);
+                using (var provider = new PhysicalFileProvider(Path.GetDirectoryName(filepath)))
+                {
+                    var stream = provider.GetFileInfo(filename).CreateReadStream();
+                    new FileExtensionContentTypeProvider().TryGetContentType(filename, out contenttype);
+                    return File(stream, contenttype, filename);
+                }
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
+        }
+        [HttpPost]
+        public JsonResult UploadOrder(IFormFile customFile)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            OrderMaster master = new OrderMaster();
+            try
+            {
+                if (customFile == null || customFile.Length == 0)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Select a file.";
+                    return Json(new { data = jsonResponse });
+                }
+                string fileExtension = Path.GetExtension(customFile.FileName);
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "Only Excel file is allowed";
+                    return Json(new { data = jsonResponse });
+                }
+                var fileName = customFile.FileName;
+                var filePath = Path.Combine(_hostEnvironment.ContentRootPath, fileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    customFile.CopyTo(fileStream);
+                }
+
+                var tuple = ExtensionUtility.ImportExceltoDatatable(filePath, "Sheet1");
+                ExtensionUtility.RemoveEmptyRows(tuple.Item1);
+                if (tuple.Item1.Rows.Count == 0)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "No record exist in file for uploading";
+                    return Json(new { data = jsonResponse });
+                }
+                var DistributorWiseProductDiscountAndPrices = ExtensionUtility.ConvertDataTable<DistributorWiseProductDiscountAndPrices>(tuple.Item1);
+                if (DistributorWiseProductDiscountAndPrices.Where(x => Convert.ToInt32(x.Quantity) != 0).Count() == 0)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = "At least add one quantity in products.";
+                    return Json(new { data = jsonResponse });
+                }
+                List<int> distributorLicenses = new List<int>();
+                distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
+                if (distributorLicenses.Count() == 0)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
+                    return Json(new { data = jsonResponse });
+                }
+                List<DistributorWiseProductDiscountAndPrices> distributorWiseProduct = discountAndPricesBll.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.ProductDetailId != null
+               && (x.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || x.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)
+               && DistributorWiseProductDiscountAndPrices.Select(x => x.ProductCode).Contains(x.SAPProductCode)).ToList();
+                distributorWiseProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+                distributorWiseProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+                distributorWiseProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+                distributorWiseProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = Convert.ToInt32(DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductCode == x.SAPProductCode).Quantity));
+                master.DistributorWiseProduct = distributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).ToList();
+                master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId)) || x.ProductDetail.LicenseControlId == null).ToList();
+                SessionHelper.AddDistributorWiseProduct = master.DistributorWiseProduct;
+                master.Status = OrderStatus.Draft;
+                jsonResponse = _OrderBLL.Save(master, Url);
+
+                jsonResponse.Status = true;
+                jsonResponse.Message = "Order saved as draft successfully.";
+                jsonResponse.RedirectURL = Url.Action("Index", "Order");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = "File Contain invalid data";
+                return Json(new { data = jsonResponse });
+            }
         }
     }
 }
