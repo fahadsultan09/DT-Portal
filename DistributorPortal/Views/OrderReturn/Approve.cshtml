@@ -143,19 +143,19 @@
                                                 <span id="ErrorProductName" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Quantity:</h6>
+                                                <h6>Quantity:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="Quantity" id="Quantity" placeholder="Enter Quantity" min="0" max="9999999999" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
-                                                <span id="ErrorQuantity" class="text-danger"></span>
+                                                <span id="ErrorQuantity" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>MRP:</h6>
+                                                <h6>MRP:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="MRP" id="MRP" placeholder="Enter MRP" min="0" max="9999999999" maxlength="10" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" />
-                                                <span id="ErrorMRP" class="text-danger"></span>
+                                                <span id="ErrorMRP" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Batch No:</h6>
+                                                <h6>Batch No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="BatchNo" id="BatchNo" placeholder="Enter Batch No" min="0" max="9999999999" maxlength="10" oninput="validity.valid||(value='');" class="form-control" />
-                                                <span id="ErrorBatchNo" class="text-danger"></span>
+                                                <span id="ErrorBatchNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Intimation Date:</h6>
@@ -170,9 +170,9 @@
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Invoice No:</h6>
+                                                <h6>Invoice No:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
-                                                <span id="ErrorInvoiceNo" class="text-danger"></span>
+                                                <span id="ErrorInvoiceNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Invoice Date:</h6>
@@ -202,9 +202,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                                <h6>Remarks:</h6>
+                                                <h6>Remarks:<span class="text-danger"> *</span></h6>
                                                 <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
-                                                <span id="ErrorRemarks" class="text-danger"></span>
+                                                <span id="ErrorRemarks" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                                                 <h6></h6>
@@ -296,6 +296,8 @@
     }
 
     function AddToGrid() {
+
+        $(".error").empty();
 
         var ddlProduct = $("#ddlProduct option:selected").text();
         var productId = $('#ddlProduct').val();

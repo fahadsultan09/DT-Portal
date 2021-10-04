@@ -299,7 +299,7 @@ namespace BusinessLogicLayer.Application
                 throw ex;
             }
         }
-        public List<SAPOrderStatus> PostDistributorOrderReturn(int OrderId, Configuration configuration)
+        public List<SAPOrderStatus> PostDistributorOrderReturn(List<OrderReturnDetail> orderReturnDetails, Configuration configuration)
         {
             BasicHttpBinding binding = new BasicHttpBinding
             {
@@ -323,7 +323,7 @@ namespace BusinessLogicLayer.Application
                 client.OpenAsync();
             }
             Ord_return_Request_IN disPortalRequestIn = new Ord_return_Request_IN();
-            disPortalRequestIn.ORDERS = PlaceReturnOrderToSAP(OrderId).ToArray();
+            disPortalRequestIn.ORDERS = PlaceReturnOrderToSAP(orderReturnDetails).ToArray();
             ZWAS_ORDER_RETURN_UPLOADResponse zSD_CREATE_SALE_ORDERResponse = client.Ord_return_Request_OUT(disPortalRequestIn);
             client.CloseAsync();
             List<SAPOrderStatus> list = new List<SAPOrderStatus>();
@@ -340,10 +340,10 @@ namespace BusinessLogicLayer.Application
             }
             return list;
         }
-        public List<Ord_return_Request_main> PlaceReturnOrderToSAP(int OrderReturnId)
+        public List<Ord_return_Request_main> PlaceReturnOrderToSAP(List<OrderReturnDetail> orderReturnDetails)
         {
             List<Ord_return_Request_main> model = new List<Ord_return_Request_main>();
-            var orderproduct = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == OrderReturnId && SessionHelper.LoginUser.PlantLocationId == e.PlantLocationId && e.IsProductSelected == true && e.ReturnOrderNumber == null).ToList();
+            var orderproduct = orderReturnDetails.Where(e => e.ReturnOrderNumber == null).ToList();
             var ProductDetail = productDetailBLL.Where(e => orderproduct.Select(c => c.ProductId).Contains(e.ProductMasterId)).ToList();
             foreach (var item in orderproduct)
             {

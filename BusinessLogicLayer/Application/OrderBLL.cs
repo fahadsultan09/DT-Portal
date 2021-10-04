@@ -681,6 +681,7 @@ namespace BusinessLogicLayer.Application
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              RejectedDate = x.RejectedDate,
                              RejectedComment = x.RejectedComment,
+                             OnHoldDate = x.OnHoldDate,
                              OnHoldComment = x.OnHoldComment,
                          });
 

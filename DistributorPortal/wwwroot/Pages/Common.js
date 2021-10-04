@@ -93,7 +93,7 @@ function Begin() {
 }
 
 function OnSuccess(data) {
-    
+
     if (data.data != undefined) {
         if (data.data.Status && data.data != undefined) {
             Toast.fire({
@@ -334,29 +334,25 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
             $.post(window.location.origin + "/OrderReturn/GetTRNoById", { DPID: DPID }, function (data) {
 
                 if (data) {
+                    $('#SiteTRNo').addClass('d-none');
+                    $('#KorangiTRNo').addClass('d-none');
+                    $('#SITEPhytek').addClass('d-none');
+                    $('#KorangiPhytek').addClass('d-none');
                     if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 1) != undefined) {
                         $('#SiteTRNo').val(data.data.find(x => x.PlantLocationId == 1).TRNo);
-                    }
-                    else {
-                        $('#SiteTRNo').remove();
+                        $('#SiteTRNo').removeClass('d-none');
                     }
                     if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 2) != undefined) {
                         $('#KorangiTRNo').val(data.data.find(x => x.PlantLocationId == 2).TRNo);
-                    }
-                    else {
-                        $('#KorangiTRNo').remove();
+                        $('#KorangiTRNo').removeClass('d-none');
                     }
                     if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 3) != undefined) {
                         $('#SITEPhytek').val(data.data.find(x => x.PlantLocationId == 3).TRNo);
-                    }
-                    else {
-                        $('#SITEPhytek').remove();
+                        $('#SITEPhytek').removeClass('d-none');
                     }
                     if (data.data.length > 0 && data.data.find(x => x.PlantLocationId == 4) != undefined) {
                         $('#KorangiPhytek').val(data.data.find(x => x.PlantLocationId == 4).TRNo);
-                    }
-                    else {
-                        $('#KorangiPhytek').remove();
+                        $('#KorangiPhytek').removeClass('d-none');
                     }
                     $('#modalTR').modal('toggle');
                     $('#modalTR').modal('show');
@@ -373,19 +369,19 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
 function OrderReturnPrintForm() {
 
     $('.text-danger').empty();
-    if ($('#SiteTRNo').val() == "") {
+    if ($('#SiteTRNo').val() == "" && !$("#SiteTRNo").hasClass("d-none")) {
         $('#errorSiteTRNo').text('TR No is required.');
         return false;
     }
-    if ($('#KorangiTRNo').val() == "") {
+    if ($('#KorangiTRNo').val() == "" && !$("#KorangiTRNo").hasClass("d-none")) {
         $('#errorKorangiTRNo').text('TR No is required.');
         return false;
     }
-    if ($('#SITEPhytek').val() == "") {
+    if ($('#SITEPhytek').val() == "" && !$("#SITEPhytek").hasClass("d-none")) {
         $('#errorSITEPhytek').text('TR No is required.');
         return false;
     }
-    if ($('#KorangiPhytek').val() == "") {
+    if ($('#KorangiPhytek').val() == "" && !$("#KorangiPhytek").hasClass("d-none")) {
         $('#errorKorangiPhytek').text('TR No is required.');
         return false;
     }

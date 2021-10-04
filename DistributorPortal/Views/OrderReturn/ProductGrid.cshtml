@@ -1,159 +1,189 @@
 ﻿@model IEnumerable<OrderReturnDetail>
 
-<div class="scrollmenu">
-    <table id="example2" class="table table-bordered table-condensed table-hover table-striped">
-        <thead>
+<table id="example2" class="table table-bordered table-condensed table-hover table-striped" style=" width: 133%;">
+    <thead>
+        <tr>
+            <th class="d-none"></th>
+            <th class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
+            <th>Product Code</th>
+            <th>Product Name</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Batch No</th>
+            <th>MRP</th>
+            <th>Trade Price</th>
+            <th>Discount</th>
+            <th>Quantity</th>
+            <th>Net Amount</th>
+            <th>Mfg. Date</th>
+            <th>Expiry Date</th>
+            <th>Invoice No</th>
+            <th>Invoice Date</th>
+            <th>Intimation Date</th>
+            <th>Remarks</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)"></th>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Batch No</th>
-                <th>MRP</th>
-                <th>Trade Price</th>
-                <th>Discount</th>
-                <th>Quantity</th>
-                <th>Net Amount</th>
-                <th>Mfg. Date</th>
-                <th>Expiry Date</th>
-                <th>Invoice No</th>
-                <th>Invoice Date</th>
-                <th>Intimation Date</th>
-                <th>Remarks</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
-                        <div class="icheck-success d-inline">
-                            <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
-                            <label for="checkbox@(item.Id)">
-                            </label>
-                        </div>
-                    </td>
-                    <td>@item.ProductMaster.SAPProductCode</td>
-                    <td>@item.ProductMaster.ProductDescription</td>
-                    <td>@item.Company.CompanyName</td>
-                    <td>@item.PlantLocation.PlantLocationName</td>
-                    @if (item.IsFOCProduct)
-                    {
-                        <td>
-                            <input type="text" asp-for="@item.BatchNo" class="form-control" _ProductId="@item.ProductId" />
-                        </td>
-                    }
-                    else
-                    {
-                        <td>@item.BatchNo</td>
-                    }
-                    <td>@item.MRP</td>
-                    <td>@item.TradePrice</td>
-                    <td>@item.Discount %</td>
-                    <td>
-                        <input type="text" asp-for="@item.Quantity" value="@item.Quantity" class="form-control ReturnQuantity numeric" min="1" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" _ProductId="@item.ProductId" />
-                    </td>
-                    @if (item.IsFOCProduct)
-                    {
-                        <td>0 %</td>
-                        <td><span>0</span></td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    }
-                    else
-                    {
-                        <td class="NetAmount">
-                            <span>@item.NetAmount</span>
-                        </td>
-                        <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.InvoiceNo</td>
-                        <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.Remarks</td>
-                        <td>
-                            <a asp-action="Delete"
-                               asp-controller="OrderReturn"
-                               asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
-                               asp-route-BatchNo="@item.BatchNo"
-                               class="btn btn-danger"
-                               data-ajax="true"
-                               data-ajax-complete="UpdateOrderValue"
-                               data-ajax-update="#ProductGrid"
-                               data-ajax-method="POST">Delete</a>
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "9" : "11")"><span class="float-right">Total value of order</span></td>
-                @if (Model.Count() > 0 && Model != null)
+                <td class="d-none">
+                    <input type="text" asp-for="@item.ProductId" class="d-none" />
+                </td>
+                <td class="d-none">
+                    <input type="text" name="_BatchNo" value="@item.BatchNo" class="d-none" />
+                </td>
+                <td class="@(SessionHelper.LoginUser.IsDistributor ? "d-none" : null)">
+                    <div class="icheck-success d-inline">
+                        <input type="checkbox" id="checkbox@(item.Id)" asp-for="@item.IsProductSelected" value="@EncryptDecrypt.Encrypt(item.ProductId.ToString())" checked="@(item.IsProductSelected == true ? "checked" : null)" />
+                        <label for="checkbox@(item.Id)">
+                        </label>
+                    </div>
+                </td>
+                <td>@item.ProductMaster.SAPProductCode</td>
+                <td>@item.ProductMaster.ProductDescription</td>
+                <td>@item.Company.CompanyName</td>
+                <td>@item.PlantLocation.PlantLocationName</td>
+                @if (item.IsFOCProduct)
                 {
-                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "8")"><strong><span class="TotalNetValue">@(Model.Select(e => Convert.ToDouble(e.NetAmount)).Sum().ToString("#,##0.00"))</span></strong></td>
+                    <td>
+                        <input type="text" asp-for="@item.BatchNo" class="form-control ReturnBatchNo" autocomplete="off" />
+                    </td>
                 }
                 else
                 {
-                    <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "8")"><strong><span class="TotalNetValue"></span></strong></td>
+                    <td>@item.BatchNo</td>
+                }
+                <td>@item.MRP</td>
+                <td>@item.TradePrice</td>
+                <td>@item.Discount %</td>
+                <td>
+                    <input type="text" asp-for="@item.Quantity" value="@item.Quantity" autocomplete="off" class="form-control ReturnQuantity numeric" min="1" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" />
+                </td>
+                @if (item.IsFOCProduct)
+                {
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                }
+                else
+                {
+                    <td class="NetAmount">
+                        <span>@item.NetAmount</span>
+                    </td>
+                    <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.InvoiceNo</td>
+                    <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Remarks</td>
+                    <td>
+                        <a asp-action="Delete"
+                           asp-controller="OrderReturn"
+                           asp-route-DPID="@EncryptDecrypt.Encrypt(item.ProductMaster.Id.ToString())"
+                           asp-route-BatchNo="@item.BatchNo"
+                           class="btn btn-danger"
+                           data-ajax="true"
+                           data-ajax-complete="UpdateOrderValue"
+                           data-ajax-update="#ProductGrid"
+                           data-ajax-method="POST">Delete</a>
+                    </td>
                 }
             </tr>
-        </tfoot>
-    </table>
-</div>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "9" : "11")"><span class="float-right">Total value of order</span></td>
+            @if (Model.Count() > 0 && Model != null)
+            {
+                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "8")"><strong><span class="TotalNetValue">@(Model.Select(e => Convert.ToDouble(e.NetAmount)).Sum().ToString("#,##0.00"))</span></strong></td>
+            }
+            else
+            {
+                <td colspan="@(SessionHelper.LoginUser.IsDistributor ? "8" : "8")"><strong><span class="TotalNetValue"></span></strong></td>
+            }
+        </tr>
+    </tfoot>
+</table>
 <script type="text/javascript">
 
     $(document).ready(function () {
 
         CalculateTotal();
         $("#example2").dataTable().fnDestroy();
-
         $("#example2").DataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
             "autoWidth": false,
             "order": [],
         });
+    });
 
-        var obj = "";
-        $('body').on('change', '.ReturnQuantity', function (data) {
+    var obj = "";
+    var NewBatchNo = "";
+    $('body').on('change', '.ReturnBatchNo', function (data) {
+        
+        obj = $(this);
+        if (data.currentTarget.value == "0") {
+            $(this).val(1);
+            return false;
+        }
+        var intmaxvalue = @Int32.MaxValue;
+        var ProductId = $(obj).parent().parent().find('td:eq(0) input[type="text"]').val();
+        var BatchNo = $(obj).parent().parent().find('td:eq(1) input[type="text"]').val();
+        NewBatchNo = $(obj).parent().parent().find('td:eq(7) input[type="text"]').val();
+        if (Quantity > intmaxvalue) {
+            Toast.fire({
+                icon: 'error',
+                title: "Quantity cannot be greater than " + intmaxvalue
+            });
+        }
+        else
+        {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateQuantity", "OrderReturn")',
+                data: { 'ProductId': ProductId, 'Quantity': 0,'BatchNo': BatchNo, 'NewBatchNo': NewBatchNo },
+                async: false,
+                cache: false,
+                success: function (response) {
+                    $(obj).parent().parent().find('td:eq(12)').text(parseFloat(response.NetAmount).toFixed(2));
+                    $(obj).parent().parent().find('td:eq(1) input[type="text"]').val(NewBatchNo);
+                    CalculateTotal();
+                }
+            });
+        }
+        data.stopImmediatePropagation();
+        return false;
+    });
+    $('body').on('change', '.ReturnQuantity', function (data) {
+        
+        obj = $(this);
+        var intmaxvalue = @Int32.MaxValue;
+        var ProductId = $(obj).parent().parent().find('td:eq(0) input[type="text"]').val();
+        var BatchNo = $(obj).parent().parent().find('td:eq(1) input[type="text"]').val();
+        var Quantity = $(obj).parent().parent().find('td:eq(11) input[type="text"]').val();
 
-            if (data.currentTarget.value == "0") {
-                $(this).val(1);
-                return false;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("UpdateQuantity", "OrderReturn")',
+            data: { 'ProductId': ProductId, 'Quantity': Quantity,'BatchNo': BatchNo, 'NewBatchNo': '' },
+            async: false,
+            cache: false,
+            success: function (response) {
+                $(obj).parent().parent().find('td:eq(12)').text(parseFloat(response.NetAmount).toFixed(2));
+                CalculateTotal();
             }
-            var intmaxvalue = @Int32.MaxValue;
-            var Quantity = data.currentTarget.value;
-            var Product = data.currentTarget.getAttribute("_ProductId");
-            if (Quantity > intmaxvalue) {
-                Toast.fire({
-                    icon: 'error',
-                    title: "Quantity cannot be greater than " + intmaxvalue
-                });
-            }
-            else
-            {
-                obj = $(this);
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Action("UpdateQuantity", "OrderReturn")',
-                    data: { 'Quantity': Quantity, 'Product': Product },
-                    async:false,
-                    success: function (response) {
-                        $(obj).parent().parent().find('td:eq(10)').text(response.NetAmount);
-                        CalculateTotal();
-                    }
-                });
-            }
-            return true;
         });
-
+        data.stopImmediatePropagation();
+        return false;
     });
 
     function CalculateTotal() {
