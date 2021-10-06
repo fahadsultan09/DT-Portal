@@ -86,7 +86,7 @@ namespace DistributorPortal.Controllers
             {
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)).OrderBy(x => x.ProductDescription).ToList();
                 List<int> LicenseId = new List<int>();
-                List<DistributorLicense> distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                List<DistributorLicense> distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 foreach (var item in distributorLicenses.Select(x => x.LicenseId))
                 {
                     LicenseId.Add(item);
@@ -213,7 +213,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     List<int> distributorLicenses = new List<int>();
-                    distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
+                    distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                     if (distributorLicenses.Count() == 0)
                     {
                         jsonResponse.Status = false;
@@ -225,11 +225,11 @@ namespace DistributorPortal.Controllers
                         if (SessionHelper.AddDistributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).Count() == 0)
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "At least add one quantity in products.";
+                            jsonResponse.Message = "At least add one quantity in products";
                             return Json(new { data = jsonResponse });
                         }
                         master.DistributorWiseProduct = model.ProductDetails.Where(e => e.ProductDetail.ProductMaster.Quantity != 0).ToList();
-                        master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId)) || x.ProductDetail.LicenseControlId == null).ToList();
+                        master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId))).ToList();
                         master.ReferenceNo = model.ReferenceNo;
                         master.Remarks = model.Remarks;
                         master.AttachmentFormFile = model.AttachmentFormFile;
@@ -632,12 +632,11 @@ namespace DistributorPortal.Controllers
             try
             {
                 string filepath = _hostEnvironment.ContentRootPath + "\\wwwroot\\OrderCreationFormat.xlsx";
-                string contenttype;
                 string filename = Path.GetFileName(filepath);
                 using (var provider = new PhysicalFileProvider(Path.GetDirectoryName(filepath)))
                 {
                     var stream = provider.GetFileInfo(filename).CreateReadStream();
-                    new FileExtensionContentTypeProvider().TryGetContentType(filename, out contenttype);
+                    new FileExtensionContentTypeProvider().TryGetContentType(filename, out string contenttype);
                     return File(stream, contenttype, filename);
                 }
             }
@@ -653,13 +652,13 @@ namespace DistributorPortal.Controllers
         public JsonResult UploadOrder(IFormFile customFile)
         {
             JsonResponse jsonResponse = new JsonResponse();
-            OrderMaster master = new OrderMaster();
+            OrderMaster orderMaster = new OrderMaster();
             try
             {
                 if (customFile == null || customFile.Length == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Select a file.";
+                    jsonResponse.Message = "Select a file";
                     return Json(new { data = jsonResponse });
                 }
                 string fileExtension = Path.GetExtension(customFile.FileName);
@@ -689,11 +688,15 @@ namespace DistributorPortal.Controllers
                 if (DistributorWiseProductDiscountAndPrices.Where(x => Convert.ToInt32(x.Quantity) != 0).Count() == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "At least add one quantity in products.";
+                    jsonResponse.Message = "At least add one quantity in products";
                     return Json(new { data = jsonResponse });
                 }
+                if (SessionHelper.DistributorBalance == null)
+                {
+                    SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
+                }
                 List<int> distributorLicenses = new List<int>();
-                distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
+                distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                 if (distributorLicenses.Count() == 0)
                 {
                     jsonResponse.Status = false;
@@ -707,14 +710,17 @@ namespace DistributorPortal.Controllers
                 distributorWiseProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                 distributorWiseProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
                 distributorWiseProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = Convert.ToInt32(DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductCode == x.SAPProductCode).Quantity));
-                master.DistributorWiseProduct = distributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).ToList();
-                master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId)) || x.ProductDetail.LicenseControlId == null).ToList();
-                SessionHelper.AddDistributorWiseProduct = master.DistributorWiseProduct;
-                master.Status = OrderStatus.Draft;
-                jsonResponse = _OrderBLL.Save(master, Url);
+                distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityLoose = _OrderBLL.CalculateSFLooseQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));
+                distributorWiseProduct.ForEach(x => x.ProductDetail.QuanitySF = _OrderBLL.CalculateSFQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));
+                distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityCarton = _OrderBLL.CalculateCartonQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize));
+                orderMaster.DistributorWiseProduct = distributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).ToList();
+                orderMaster.DistributorWiseProduct = orderMaster.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId))).ToList();
+                SessionHelper.AddDistributorWiseProduct = orderMaster.DistributorWiseProduct;
+                orderMaster.Status = OrderStatus.Draft;
+                jsonResponse = _OrderBLL.Save(orderMaster, Url);
 
                 jsonResponse.Status = true;
-                jsonResponse.Message = "Order saved as draft successfully.";
+                jsonResponse.Message = "Order saved as draft successfully";
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 return Json(new { data = jsonResponse });
             }
