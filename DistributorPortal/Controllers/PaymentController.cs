@@ -214,7 +214,6 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             Notification notification = new Notification();
-            SAPPaymentStatus SAPPaymentStatus = new SAPPaymentStatus();
             try
             {
                 PaymentMaster model = _PaymentBLL.GetById(id);
@@ -228,56 +227,73 @@ namespace DistributorPortal.Controllers
                 }
                 if (Status == PaymentStatus.Verified)
                 {
-                    //var Client = new RestClient(_Configuration.PostPayment);
-                    //var request = new RestRequest(Method.POST).AddJsonBody(_PaymentBLL.AddPaymentToSAP(id), "json");
-                    //IRestResponse restResponse = Client.Execute(request);
-                    //var SAPPaymentStatus = JsonConvert.DeserializeObject<SAPPaymentStatus>(restResponse.Content);
                     SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(id);
-                    Root root = new Root();
-                    using (var client = new HttpClient())
+                    bool result;
+                    if (sAPPaymentViewModel.IsPaymentAllowedInSAP)
                     {
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                        var result = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
-                        if (result.IsSuccessStatusCode)
+                        Root root = new Root();
+                        using (var client = new HttpClient())
                         {
-                            var JsonContent = result.Content.ReadAsStringAsync().Result;
-                            root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                            client.DefaultRequestHeaders.Accept.Clear();
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                            var response = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var JsonContent = response.Content.ReadAsStringAsync().Result;
+                                root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                            }
                         }
-                    }
+                        if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
+                        {
+                            model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
+                            model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
+                            model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
+                            model.Status = PaymentStatus.Verified;
+                            result = _PaymentBLL.Update(model);
+                            _PaymentBLL.UpdateStatus(model, Status, Remarks);
 
-                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
-                    {
-                        model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
-                        model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
-                        model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
-                        model.Status = PaymentStatus.Verified;
-                        bool result = _PaymentBLL.Update(model);
-                        _PaymentBLL.UpdateStatus(model, Status, Remarks);
-
-                        jsonResponse.Status = result;
-                        jsonResponse.Message = result ? "Payment has been verified." : "Unable to verfied payment.";
-                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                        notification.ApplicationPageId = (int)ApplicationPages.Payment;
-                        notification.DistributorId = model.DistributorId;
-                        notification.RequestId = model.SNo;
-                        notification.Status = model.Status.ToString();
-                        notification.Message = jsonResponse.SignalRResponse.Message;
-                        notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-                        _NotificationBLL.Add(notification);
-                        return Json(new { data = jsonResponse });
+                            jsonResponse.Status = result;
+                            jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
+                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                            jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                            notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                            notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                            notification.DistributorId = model.DistributorId;
+                            notification.RequestId = model.SNo;
+                            notification.Status = model.Status.ToString();
+                            notification.Message = jsonResponse.SignalRResponse.Message;
+                            notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                            _NotificationBLL.Add(notification);
+                            return Json(new { data = jsonResponse });
+                        }
+                        else
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Unable to verified payment";
+                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                            return Json(new { data = jsonResponse });
+                        }
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Unable to verfied payment.";
-                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                        return Json(new { data = jsonResponse });
+                        result = _PaymentBLL.Update(model);
+                        _PaymentBLL.UpdateStatus(model, Status, Remarks);
                     }
+                    jsonResponse.Status = result;
+                    jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
+                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+                    notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                    notification.DistributorId = model.DistributorId;
+                    notification.RequestId = model.SNo;
+                    notification.Status = model.Status.ToString();
+                    notification.Message = jsonResponse.SignalRResponse.Message;
+                    notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+                    _NotificationBLL.Add(notification);
+                    return Json(new { data = jsonResponse });
                 }
                 if (model != null)
                 {

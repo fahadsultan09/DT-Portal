@@ -236,6 +236,7 @@ namespace BusinessLogicLayer.Application
 
             SAPPaymentViewModel model = new SAPPaymentViewModel()
             {
+                IsPaymentAllowedInSAP = payment.Company.IsPaymentAllowedInSAP,
                 PAY_ID = payment.Id.ToString(),
                 REF = payment.PaymentModeNo.ToString(),
                 COMPANY = _CompanyBLL.GetAllCompany().FirstOrDefault(x => x.Id == payment.CompanyId).SAPCompanyCode,

@@ -15,5 +15,6 @@ namespace Models.Application
         public string SAPCompanyCode { get; set; }
         public bool IsPaymentAllowed { get; set; }
         public bool IsReturnOrderAllowed { get; set; }
+        public bool IsPaymentAllowedInSAP { get; set; }
     }
 }

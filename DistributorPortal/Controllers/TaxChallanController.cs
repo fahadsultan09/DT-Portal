@@ -211,7 +211,7 @@ namespace DistributorPortal.Controllers
                     //    _TaxChallanBLL.UpdateStatus(model, Status, Remarks);
 
                     //    jsonResponse.Status = result;
-                    //    jsonResponse.Message = result ? "Tax Challan has been verified." : "Unable to verfied TaxChallan.";
+                    //    jsonResponse.Message = result ? "Tax Challan has been verified." : "Unable to verified TaxChallan.";
                     //    jsonResponse.RedirectURL = Url.Action("Index", "TaxChallan");
                     //    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(TaxChallanStatus), model.Status) };
                     //    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
@@ -227,7 +227,7 @@ namespace DistributorPortal.Controllers
                     //else
                     //{
                     //    jsonResponse.Status = false;
-                    //    jsonResponse.Message = "Unable to verfied TaxChallan.";
+                    //    jsonResponse.Message = "Unable to verified TaxChallan.";
                     //    jsonResponse.RedirectURL = Url.Action("Index", "TaxChallan");
                     //    return Json(new { data = jsonResponse });
                     //}
