@@ -1082,5 +1082,13 @@ namespace BusinessLogicLayer.Application
             distributorPendingValue.Add(Phytek);
             return distributorPendingValue;
         }
+        public double CalculatePendingValue(int pendingQuantity, double rate, double discount, double salesTax, double incomeTax)
+        {
+            double netValue = pendingQuantity * rate;
+            double discountValue = netValue / 100 * discount;
+            double salesTaxValue = (netValue - discountValue) / 100 * salesTax;
+            double incomeTaxValue = ((netValue - discountValue + salesTaxValue) / 100) * incomeTax;
+            return netValue - discountValue + salesTaxValue + incomeTaxValue;
+        }
     }
 }
