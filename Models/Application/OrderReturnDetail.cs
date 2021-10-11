@@ -50,5 +50,7 @@ namespace Models.Application
         [NotMapped]
         public Company Company { get; set; }
         public bool IsFOCProduct { get; set; }
+        [NotMapped]
+        public ProductDetail ProductDetail { get; set; }
     }
 }

@@ -361,6 +361,7 @@ namespace BusinessLogicLayer.Application
                              RejectedName = a2 == null ? string.Empty : (a2.FirstName + " " + a2.LastName + " (" + a2.UserName + ")"),
                              RejectedDate = x.RejectedDate,
                              RejectedComment = x.RejectedComment,
+                             OnHoldDate = x.OnHoldDate,
                              OnHoldComment = x.OnHoldComment,
                          });
 
@@ -1063,5 +1064,13 @@ namespace BusinessLogicLayer.Application
             }
         }
         #endregion
+        public double CalculatePendingValue(int pendingQuantity, double rate, double discount, double salesTax, double incomeTax)
+        {
+            double netValue = pendingQuantity * rate;
+            double discountValue = netValue / 100 * discount;
+            double salesTaxValue = (netValue - discountValue) / 100 * salesTax;
+            double incomeTaxValue = ((netValue - discountValue + salesTaxValue) / 100) * incomeTax;
+            return netValue - discountValue + salesTaxValue + incomeTaxValue;
+        }
     }
 }

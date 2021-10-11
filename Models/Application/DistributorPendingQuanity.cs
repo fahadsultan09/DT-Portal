@@ -23,5 +23,9 @@ namespace Models.Application
         public int CompanyId { get; set; }
         [NotMapped]
         public ProductDetail ProductDetail { get; set; }
+        [NotMapped]
+        public double SalesTax { get; set; }
+        [NotMapped]
+        public double IncomeTax { get; set; }
     }
 }

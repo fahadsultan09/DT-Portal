@@ -112,7 +112,10 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{SHIPTOPARTYNAME}}", EmailUserModel.ShipToPartyName);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{CITY}}", EmailUserModel.City);
-            ToAcceptTemplate = ToAcceptTemplate.Replace("{{ReturnOrderNo}}", EmailUserModel.RetrunOrderNumber);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{SAPOrder}}", EmailUserModel.SAPOrder);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{SAPOrderNumber}}", EmailUserModel.SAPOrderNumber);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrder}}", EmailUserModel.DPOrder);
+            ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrderNumber}}", EmailUserModel.DPOrderNumber);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
             EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }

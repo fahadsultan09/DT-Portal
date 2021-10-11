@@ -40,7 +40,7 @@ namespace Scheduler
             try
             {
                 List<DistributorPendingQuantity> DistributorPendingQuantitys = new List<DistributorPendingQuantity>();
-                var distributors = _distributorBll.Where(x => x.IsActive && !x.IsDeleted);
+                List<Distributor> distributors = _distributorBll.Where(x => x.IsActive && !x.IsDeleted);
                 List<ProductMaster> productMasters = _ProductMasterBLL.GetAllProductMaster();
                 List<ProductDetail> productDetails = _ProductDetailBLL.GetAllProductDetail();
                 productDetails.ForEach(x => x.ProductMaster = productMasters.First(y => y.Id == x.ProductMasterId));
@@ -50,17 +50,17 @@ namespace Scheduler
                 {
                     List<DistributorPendingQuantity> List = _OrderBLL.GetDistributorOrderPendingQuantitys(item.DistributorSAPCode, _Configuration);
                     ExtensionUtility.WriteToFile("DistributorSAPCode - " + item.DistributorSAPCode, FolderName.PendingQuantity, fileName);
-                    var distributorProduct = _DistributorWiseProductDiscountAndPricesBLL.Where(e => e.DistributorId == item.Id && e.ProductDetailId != null);
-                    distributorProduct = distributorProduct.Where(x => productDetails.Select(y => y.ProductMaster.SAPProductCode).Contains(x.SAPProductCode)).ToList();
-                    List.ForEach(x => x.ProductDetail = productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) != null ? productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) : null);
+                    var distributorWiseProduct = _DistributorWiseProductDiscountAndPricesBLL.Where(e => e.DistributorId == item.Id && e.ProductDetailId != null);
+                    distributorWiseProduct = distributorWiseProduct.Where(x => productDetails.Select(y => y.ProductMaster.SAPProductCode).Contains(x.SAPProductCode)).ToList();
+                    List.ForEach(x => x.Distributor = distributors.FirstOrDefault(y => y.Id == item.Id) != null ? distributors.First(y => y.Id == item.Id) : null);
+                    List.ForEach(x => x.ProductDetail = productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) != null ? productDetails.First(y => y.ProductMaster.SAPProductCode == x.ProductCode) : null);
                     List.ForEach(e => e.DistributorId = item.Id);
                     List.ForEach(e => e.CreatedDate = DateTime.Now);
-                    List.ForEach(x => x.Rate = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Rate : 0);
-                    List.ForEach(x => x.Discount = distributorProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorProduct.First(y => y.SAPProductCode == x.ProductCode).Discount : 0);
-                    List.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount))
-                    + (x.PendingQuantity * x.Rate / 100 * (x.ProductDetail == null ? 0 : x.ProductDetail.SalesTax))
-                    + (x.PendingQuantity * x.Rate / 100 * (x.ProductDetail == null ? 0 : x.ProductDetail.IncomeTax))
-                    + (x.PendingQuantity * x.Rate / 100 * (x.ProductDetail == null ? 0 : x.ProductDetail.AdditionalSalesTax)));
+                    List.ForEach(x => x.Rate = distributorWiseProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorWiseProduct.First(y => y.SAPProductCode == x.ProductCode).Rate : 0);
+                    List.ForEach(x => x.Discount = distributorWiseProduct.FirstOrDefault(y => y.SAPProductCode == x.ProductCode) != null ? distributorWiseProduct.First(y => y.SAPProductCode == x.ProductCode).Discount : 0);
+                    List.ForEach(x => x.SalesTax = x.Distributor.IsSalesTaxApplicable ? (x.ProductDetail != null ? x.ProductDetail.SalesTax : 0) : (x.ProductDetail != null ? x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax : 0));
+                    List.ForEach(x => x.IncomeTax = x.Distributor.IsIncomeTaxApplicable ? (x.ProductDetail != null ? x.ProductDetail.IncomeTax : 0) : (x.ProductDetail != null ? x.ProductDetail.IncomeTax * 2 : 0));
+                    List.ForEach(x => x.PendingValue = Math.Round(_OrderBLL.CalculatePendingValue(x.PendingQuantity, x.Rate, x.Discount, x.SalesTax, x.IncomeTax), 2));
                     ExtensionUtility.WriteToFile("List - " + List.Count(), FolderName.PendingQuantity, fileName);
                     DistributorPendingQuantitys.AddRange(List);
                 }
