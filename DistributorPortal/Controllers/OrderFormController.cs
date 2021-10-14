@@ -49,7 +49,6 @@ namespace DistributorPortal.Controllers
         private readonly PaymentBLL _PaymentBLL;
         private readonly ICompositeViewEngine _viewEngine;
         private readonly IHostEnvironment _hostEnvironment;
-
         public OrderFormController(IUnitOfWork unitOfWork, ICompositeViewEngine viewEngine, Configuration configuration, IConfiguration iConfiguration, IWebHostEnvironment env, IHostEnvironment hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
@@ -86,7 +85,7 @@ namespace DistributorPortal.Controllers
             {
                 var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == SessionHelper.LoginUser.DistributorId && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)).OrderBy(x => x.ProductDescription).ToList();
                 List<int> LicenseId = new List<int>();
-                List<DistributorLicense> distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                List<DistributorLicense> distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
                 foreach (var item in distributorLicenses.Select(x => x.LicenseId))
                 {
                     LicenseId.Add(item);
@@ -215,7 +214,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     List<int> distributorLicenses = new List<int>();
-                    distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
+                    distributorLicenses = _DistributorLicenseBLL.Where(e => e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                     if (distributorLicenses.Count() == 0)
                     {
                         jsonResponse.Status = false;
@@ -227,11 +226,11 @@ namespace DistributorPortal.Controllers
                         if (SessionHelper.AddDistributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).Count() == 0)
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "At least add one quantity in products";
+                            jsonResponse.Message = "At least add one quantity in products.";
                             return Json(new { data = jsonResponse });
                         }
                         master.DistributorWiseProduct = model.ProductDetails.Where(e => e.ProductDetail.ProductMaster.Quantity != 0).ToList();
-                        master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId))).ToList();
+                        master.DistributorWiseProduct = master.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId)) || x.ProductDetail.LicenseControlId == null).ToList();
                         master.ReferenceNo = model.ReferenceNo;
                         master.Remarks = model.Remarks;
                         master.AttachmentFormFile = model.AttachmentFormFile;
@@ -305,13 +304,50 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult ApproveOrder(string DPID)
         {
+            OrderViewModel model = new OrderViewModel();
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
-            var orderDetail = _orderDetailBll.Where(e => e.OrderId == id && !e.IsProductSelected).ToList();
+            var order = _OrderBLL.FirstOrDefault(e => e.Id == id);
+            var orderDetails = _orderDetailBll.Where(e => e.OrderId == id && !e.IsProductSelected).ToList();
             List<ProductDetail> productDetails = _productDetailBLL.GetAllProductDetail();
-            orderDetail.ForEach(x => x.ProductDetail = productDetails.First(y => y.ProductMasterId == x.ProductMaster.Id));
-            SessionHelper.OrderDetail = orderDetail;
-            ViewBag.OrderValue = _OrderBLL.GetOrderValueModel(_orderValueBll.GetOrderValueByOrderId(id));
-            return View("PartiallyApproveOrder", orderDetail);
+            orderDetails.ForEach(x => x.ProductDetail = productDetails.First(y => y.ProductMasterId == x.ProductMaster.Id));
+            SessionHelper.OrderDetail = orderDetails;
+            var distributorProduct = discountAndPricesBll.Where(e => e.DistributorId == order.DistributorId && e.ProductDetailId != null && (e.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || e.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)).OrderBy(x => x.ProductDescription).ToList();
+            if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
+            {
+                distributorProduct.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
+            }
+            else
+            {
+                SessionHelper.DistributorPendingQuantity = _OrderBLL.DistributorPendingQuantity(order.DistributorId);
+                if (SessionHelper.DistributorPendingQuantity != null && SessionHelper.DistributorPendingQuantity.Count() > 0)
+                {
+                    distributorProduct.ForEach(x => x.PendingQuantity = SessionHelper.DistributorPendingQuantity.FirstOrDefault(e => e.ProductCode == x.SAPProductCode) == null ? 0 : SessionHelper.DistributorPendingQuantity.First(y => y.ProductCode == x.SAPProductCode).PendingQuantity);
+                }
+            }
+            if (SessionHelper.DistributorBalance == null)
+            {
+                SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(order.Distributor.DistributorSAPCode, _Configuration);
+            }
+            distributorProduct.ForEach(x => x.ProductDetail.TotalPrice = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).Amount : 0);
+            distributorProduct.ForEach(x => x.ProductDetail.QuanityCarton = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).QuanityCarton : 0);
+            distributorProduct.ForEach(x => x.ProductDetail.QuanityLoose = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).QuanityLoose : 0);
+            distributorProduct.ForEach(x => x.ProductDetail.QuanitySF = orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id) != null ? orderDetails.FirstOrDefault(e => e.ProductId == x.ProductDetail.ProductMaster.Id).QuanitySF : 0);
+            foreach (var item in orderDetails)
+            {
+                distributorProduct.First(e => e.ProductDetail.ProductMasterId == item.ProductId).ProductDetail.ProductMaster.Quantity = item.Quantity;
+            }
+            model.ReferenceNo = order.ReferenceNo;
+            model.Attachment = order.Attachment;
+            model.Remarks = order.Remarks;
+            SessionHelper.TotalOrderValue = orderDetails.First().OrderMaster.TotalValue.ToString("#,##0.00");
+            model.Id = id;
+            distributorProduct.ForEach(x => x.SalesTax = order.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
+            distributorProduct.ForEach(x => x.IncomeTax = order.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
+            distributorProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+            distributorProduct.ForEach(x => x.ViewSalesTax = x.ProductDetail.SalesTax);
+            SessionHelper.AddDistributorWiseProduct = model.ProductDetails = distributorProduct.ToList();
+            ViewBag.OrderValue = model.OrderValues = _OrderBLL.GetApproveOrderValueModel(SessionHelper.AddDistributorWiseProduct, model.ProductDetails.First().DistributorId);
+            return View("PartiallyApproveOrder", orderDetails);
         }
         public IActionResult OnHold(string DPID, string Comments)
         {
@@ -530,6 +566,118 @@ namespace DistributorPortal.Controllers
                 return Json(new { data = jsonResponse });
             }
         }
+        //[HttpPost]
+        //public IActionResult SyncPartiallyApproved(string DPID)
+        //{
+        //    JsonResponse jsonResponse = new JsonResponse();
+        //    Notification notification = new Notification();
+        //    try
+        //    {
+        //        bool SAPOrderStatus = false;
+        //        bool POrderStatus = false;
+        //        int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
+        //        var order = _OrderBLL.GetOrderMasterById(id);
+        //        var OrderDetail = _orderDetailBll.Where(e => e.OrderId == id).ToList();
+        //        //var client = new RestClient(_Configuration.PostOrder);
+        //        //var request = new RestRequest(Method.POST).AddJsonBody(_OrderBLL.PlaceOrderPartiallyApprovedToSAP(id), "json");
+        //        //IRestResponse response = client.Execute(request);
+        //        //var sapProduct = JsonConvert.DeserializeObject<List<SAPOrderStatus>>(response.Content);
+        //        var OrderDetails = _orderDetailBll.Where(e => e.OrderId == id && e.ProductDetail.IsPlaceOrderInSAP).ToList();
+        //        List<SAPOrderStatus> sapProduct = _OrderBLL.PostDistributorOrder(OrderDetails, _Configuration);
+        //        var updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
+        //        if (sapProduct != null && sapProduct.Count() > 0)
+        //        {
+        //            foreach (var item in sapProduct)
+        //            {
+        //                var product = updatedOrderDetail.FirstOrDefault(e => e.ProductMaster.SAPProductCode == item.ProductCode);
+        //                if (product != null)
+        //                {
+        //                    if (!string.IsNullOrEmpty(item.SAPOrderNo))
+        //                    {
+        //                        product.SAPOrderNumber = item.SAPOrderNo;
+        //                        product.OrderProductStatus = OrderStatus.InProcess;
+        //                        _orderDetailBll.Update(product);
+        //                    }
+        //                }
+        //            }
+        //            updatedOrderDetail = _orderDetailBll.Where(e => e.OrderId == id && e.SAPOrderNumber == null).ToList();
+        //            order.Status = updatedOrderDetail.Count > 0 ? OrderStatus.PartiallyApproved : OrderStatus.InProcess;
+        //            order.ApprovedBy = SessionHelper.LoginUser.Id;
+        //            order.ApprovedDate = DateTime.Now;
+        //            var result = _OrderBLL.Update(order);
+        //            jsonResponse.Status = result;
+        //            jsonResponse.Message = result ? "Order has been approved successfully" : NotificationMessage.ErrorOccurred;
+        //            TempData["DistributorId"] = EncryptDecrypt.Encrypt(order.DistributorId.ToString());
+        //            //Sending Email
+        //            //Sending Email
+        //            if (SAPOrderStatus || POrderStatus)
+        //            {
+        //                var OrderDetails = _orderDetailBll.Where(e => e.OrderId == id).ToList();
+        //                foreach (var item in OrderDetails.Select(x => x.ProductDetail.PlantLocationId).Distinct().ToArray())
+        //                {
+        //                    string SAPOrder = string.Join("</br>" + Environment.NewLine, OrderDetails.Where(x => x.ProductDetail.PlantLocationId == item && x.ProductDetail.IsPlaceOrderInSAP).Select(x => x.SAPOrderNumber).Distinct().ToArray());
+        //                    string DPOrder = string.Join("</br>" + Environment.NewLine, OrderDetails.Where(x => x.ProductDetail.PlantLocationId == item && !x.ProductDetail.IsPlaceOrderInSAP).Select(x => x.SAPOrderNumber).Distinct().ToArray());
+        //                    string EmailTemplate = _env.WebRootPath + "\\Attachments\\EmailTemplates\\ApprovalOfSaleOrder.html";
+        //                    ApprovedOrderEmailUserModel EmailUserModel = new ApprovedOrderEmailUserModel()
+        //                    {
+        //                        ToAcceptTemplate = System.IO.File.ReadAllText(EmailTemplate),
+        //                        Date = Convert.ToDateTime(order.ApprovedDate).ToString("dd/MMM/yyyy"),
+        //                        City = order.Distributor.City,
+        //                        ShipToPartyName = order.Distributor.DistributorName,
+        //                        SAPOrder = string.IsNullOrEmpty(SAPOrder) ? "" : "SAP Order Number",
+        //                        SAPOrderNumber = SAPOrder,
+        //                        DPOrder = string.IsNullOrEmpty(DPOrder) ? "" : "Distrbutor Portal Order Number",
+        //                        DPOrderNumber = OrderDetails.First().OrderMaster.SNo.ToString(),
+        //                        Subject = "Order Delivery",
+        //                        CreatedBy = SessionHelper.LoginUser.Id,
+        //                        CCEmail = OrderDetails.First(x => x.ProductDetail.PlantLocationId == item).ProductDetail.PlantLocation.CCEmail,
+        //                    };
+        //                    List<User> UserList = _UserBLL.GetAllActiveUser().Where(x => x.IsStoreKeeper && x.PlantLocationId != null && x.PlantLocationId == item
+        //                    && Enum.GetValues(typeof(EmailIntimation)).Cast<int>().ToArray().Where(x => x.Equals(1) || x.Equals(3)).Contains(Convert.ToInt32(x.EmailIntimationId))).ToList();
+
+        //                    if (UserList != null && UserList.Count() > 0)
+        //                    {
+        //                        _EmailLogBLL.OrderEmail(UserList, EmailUserModel);
+        //                    }
+        //                }
+        //                jsonResponse.Status = true;
+        //                jsonResponse.Message = "Order has been approved successfully";
+        //                jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+        //                notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+        //                notification.DistributorId = order.DistributorId;
+        //                notification.RequestId = order.SNo;
+        //                notification.Status = order.Status.ToString();
+        //                notification.Message = jsonResponse.SignalRResponse.Message;
+        //                notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+        //                _NotificationBLL.Add(notification);
+        //                jsonResponse.RedirectURL = Url.Action("Index", "Order");
+        //                return Json(new { data = jsonResponse });
+        //            }
+        //            jsonResponse.SignalRResponse = new SignalRResponse() { UserId = order.CreatedBy.ToString(), Number = "Order #: " + order.SNo, Message = "Order has been approved", Status = Enum.GetName(typeof(OrderStatus), order.Status) };
+        //            notification.CompanyId = SessionHelper.LoginUser.CompanyId;
+        //            notification.DistributorId = order.DistributorId;
+        //            notification.RequestId = order.SNo;
+        //            notification.Status = order.Status.ToString();
+        //            notification.Message = jsonResponse.SignalRResponse.Message;
+        //            notification.URL = "/OrderForm/ViewOrder?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
+        //            _NotificationBLL.Add(notification);
+        //        }
+        //        else
+        //        {
+        //            jsonResponse.Status = false;
+        //            jsonResponse.Message = "Unable to approve order";
+        //        }
+        //        jsonResponse.RedirectURL = Url.Action("Index", "Order");
+        //        return Json(new { data = jsonResponse });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+        //        jsonResponse.Status = false;
+        //        jsonResponse.Message = NotificationMessage.ErrorOccurred;
+        //        return Json(new { data = jsonResponse });
+        //    }
+        //}
         public IActionResult UpdatePQ(string DPID)
         {
             JsonResponse jsonResponse = new JsonResponse();

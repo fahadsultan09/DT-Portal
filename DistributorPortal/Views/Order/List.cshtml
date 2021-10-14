@@ -5,7 +5,7 @@
     bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Order.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
     bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Order.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
 }
-<div class="row">
+<div class="row @(SessionHelper.LoginUser.IsDistributor ? "" : "d-none")">
     <div class="col-12">
         <div class="card card-primary">
             <div class="card-header">
@@ -54,7 +54,6 @@
                 <h2 class="card-title">Order List</h2>
                 @if (SessionHelper.LoginUser.IsDistributor == true)
                 {
-                    @*<a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</a>*@
                     <a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")">Add</a>
                 }
             </div>

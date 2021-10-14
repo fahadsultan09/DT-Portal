@@ -22,28 +22,28 @@ namespace DataAccessLayer.Repository
             DbSet.Attach(obj);
             _context.Entry(obj).State = EntityState.Modified;
         }
-
         public IEnumerable<T> GetAllList()
         {
             return DbSet.ToList();
         }
-
         public T GetById(int id)
         {
             return DbSet.Find(id);
         }
-
         public void Insert(T obj)
         {
             DbSet.Add(obj);
         }
-
         public void Update(T obj)
         {
             DbSet.Attach(obj);
             _context.Entry(obj).State = EntityState.Modified;
         }
-
+        public void HardDelete(T obj)
+        {
+            DbSet.Attach(obj);
+            _context.Entry(obj).State = EntityState.Deleted;
+        }
         protected virtual void Dispose(bool Disposing)
         {
             if (!this.Disposed)
@@ -60,7 +60,6 @@ namespace DataAccessLayer.Repository
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         public void AddRange(List<T> obj)
         {
             _context.Set<T>().AddRange(obj);
@@ -73,7 +72,6 @@ namespace DataAccessLayer.Repository
                 _context.Entry(e).State = EntityState.Modified;
             });
         }
-
         public List<T> Where(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
         {
             List<T> list;
@@ -83,12 +81,10 @@ namespace DataAccessLayer.Repository
             list = query.Where(predicate).ToList<T>();
             return list;
         }
-
         public void DeleteRange(IEnumerable<T> List)
         {
             _context.Set<T>().RemoveRange(List);
         }
-
         public T FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
             T item;
@@ -103,7 +99,6 @@ namespace DataAccessLayer.Repository
             item = query.First(predicate);
             return item;
         }
-
         public bool Any(Expression<Func<T, bool>> predicate)
         {
             var query = _context.Set<T>().AsQueryable();

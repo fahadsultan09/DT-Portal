@@ -8,6 +8,7 @@ namespace Models.Application
         [Required(ErrorMessage = "Enter To Email.")]
         [StringLength(100)]
         public string ToEmail { get; set; }
+        [StringLength(1000)]
         public string CCEmail { get; set; }
         [Required(ErrorMessage = "Enter Subject.")]
         [StringLength(255)]
