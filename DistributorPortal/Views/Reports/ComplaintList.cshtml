@@ -90,12 +90,13 @@
 
     $(document).ready(function () {
 
-        $('[Id$=example1]').DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-            "responsive": true,
-            "autoWidth": false,
-            "order": [[0, "desc"]]
-        });
+        //$('[Id$=example1]').DataTable({
+        //    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        //    "responsive": true,
+        //    "autoWidth": false,
+        //    "order": [[0, "desc"]]
+        //});
+        dataTableExportExcel("example1", "Export");
 
     });
 

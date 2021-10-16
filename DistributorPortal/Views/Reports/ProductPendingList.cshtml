@@ -1,0 +1,96 @@
+﻿@model IEnumerable<ProductPending>
+
+<style type="text/css">
+    td.details-control {
+        background: url('//datatables.net/examples/resources/details_open.png') no-repeat center center !important;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('//datatables.net/examples/resources/details_close.png') no-repeat center center !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Order List</h2>
+            </div>
+            <div class="card-body scrollmenu">
+                <table id="example1" class="table table-striped table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Product Code</th>
+                            <th>Product Name</th>
+                            <th>Pack Size</th>
+                            <th>Company</th>
+                            <th>Pending Quantity</th>
+                            <th>Rate</th>
+                            <th>Advance Tax</th>
+                            <th>Sales Tax</th>
+                            <th>Additional Sales Tax</th>
+                            <th>Pending Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.SAPProductCode</td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.PackSize</td>
+                                    <td>@item.Comapny</td>
+                                    <td>@item.PendingQuantity</td>
+                                    <td>@item.Rate</td>
+                                    <td>@item.AdvanceTax</td>
+                                    <td>@item.SalesTax</td>
+                                    <td>@item.AdSalesTax</td>
+                                    <td>@item.PendingValus</td>
+                                    <td>@item.Status</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var table = $('[Id$=example1]').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+            "order": [[1, "desc"]]
+        });
+
+        // Add event listener for opening and closing details
+        $('#example1 tbody').on('click', 'td.details-control', function () {
+            BlockUI();
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            var OrderId = $(row.data()[0]).val();
+            $.ajax({
+                type: 'GET',
+                url: '/Reports/GetOrderDetailList',
+                data: { DPID: OrderId },
+                success: function (response) {
+                    UnBlockUI();
+                    $('#modal-detail').html(response);
+                    $('#modal-default').modal('toggle');
+                    $('#modal-default').modal('show');
+                }
+            });
+        });
+    });
+
+</script>

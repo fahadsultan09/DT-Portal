@@ -15,6 +15,7 @@ using System.Net.Http.Headers;
 using System.ServiceModel;
 using System.Text;
 using System.Xml;
+using Utility;
 using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
@@ -23,10 +24,12 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<DistributorWiseProductDiscountAndPrices> _repository;
+        private readonly DistributorPendingQuanityBLL _DistributorPendingQuanityBLL;
         public DistributorWiseProductDiscountAndPricesBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GenericRepository<DistributorWiseProductDiscountAndPrices>();
+            _DistributorPendingQuanityBLL = new DistributorPendingQuanityBLL(_unitOfWork);
         }
         public bool AddRange(List<DistributorWiseProductViewModel> module, int DistributorId, string[] ProductIds)
         {
@@ -193,5 +196,47 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.FirstOrDefault(predicate);
         }
+        public List<ProductPending> Search(ProductPendingSearch model)
+        {
+            var LamdaId = (Expression<Func<DistributorWiseProductDiscountAndPrices, bool>>)(x => x.Id != 0);
+            if (model.DistributorId != null)
+            {
+                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
+            }
+            if (model.ProductId != 0)
+            {
+                LamdaId = LamdaId.And(e => e.ProductDetail.ProductMasterId == model.ProductId);
+            }
+            if (model.CompanyId != null)
+            {
+                LamdaId = LamdaId.And(e => e.ProductDetail.CompanyId == model.CompanyId);
+            }
+            var Filter = _repository.Where(LamdaId).ToList();
+            var query = (from x in Filter
+                         
+                         join dpq in _DistributorPendingQuanityBLL.GetAllList()
+                           on new { x.DistributorId, ProductCode = x.SAPProductCode }
+                           equals new { dpq.DistributorId, dpq.ProductCode }
+
+
+                         select new ProductPending
+                         {
+                             productId = x.ProductDetail.ProductMasterId,
+                             SAPProductCode = x.SAPProductCode,
+                             ProductName = x.ProductDetail.ProductMaster.ProductDescription,
+                             PackSize = x.PackSize,
+                             PendingQuantity = dpq.PendingQuantity,
+                             PendingValus = dpq.PendingValue,
+                             Rate = x.Rate,
+                             SalesTax = x.ProductDetail.SalesTax,
+                             AdSalesTax = x.ProductDetail.AdditionalSalesTax,
+                             AdvanceTax = x.ProductDetail.IncomeTax,
+                             CompanyId = x.ProductDetail.CompanyId,
+                             Comapny = x.ProductDetail.Company.CompanyName
+                         });
+
+            return query.ToList();
+        }
+
     }
 }

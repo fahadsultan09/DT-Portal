@@ -1,0 +1,34 @@
+﻿@model ProductPendingSearch
+@inject IUnitOfWork iUnitOfWork
+@{
+    ViewBag.Title = "Product Pending ";
+    var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
+    var products = new ProductMasterBLL(iUnitOfWork).DropDownProductList();
+    var companies = new CompanyBLL(iUnitOfWork).DropDownCompanyListlocal();
+    var search = new ProductPendingSearch() { DistributorList = distributor, ProductList = products, CompanyList = companies };
+
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Orders</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Pending Order</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <partial name="ProductPendingSearch" model="@search" />
+    <section class="content">
+        <div class="container-fluid scrollmenu" id="divform">
+            <partial name="ProductPendingList" model="Model" />
+        </div>
+    </section>
+</div>
