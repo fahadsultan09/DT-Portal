@@ -24,12 +24,12 @@ namespace DistributorPortal.Controllers
         }
         public IActionResult Index()
         {
-            List<SubDistributor> list = _SubDistributorBLL.GetAllSubDistributor().Where(x => !x.IsDeleted).ToList();
+            List<SubDistributor> list = _SubDistributorBLL.GetAllSubDistributor().Where(x => !x.IsDeleted && x.IsParent).ToList();
             return View(list);
         }
         public IActionResult List()
         {
-            List<SubDistributor> list = _SubDistributorBLL.GetAllSubDistributor().Where(x => !x.IsDeleted).ToList();
+            List<SubDistributor> list = _SubDistributorBLL.GetAllSubDistributor().Where(x => !x.IsDeleted && x.IsParent).ToList();
             return PartialView("List", list);
         }
         [HttpGet]
@@ -140,6 +140,17 @@ namespace DistributorPortal.Controllers
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
             model.SubDistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
             return model;
+        }
+        [HttpGet]
+        public IActionResult GetSubDistributorList(string DPID)
+        {
+            int id = 0;
+            if (!string.IsNullOrEmpty(DPID))
+            {
+                int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
+            }
+            var Detail = _SubDistributorBLL.Where(x => !x.IsDeleted && !x.IsParent && x.DistributorId == id);
+            return PartialView("SubDistributorList", Detail);
         }
     }
 }

@@ -11,30 +11,34 @@ namespace Models.Application
 {
     public class TaxChallan : UpdatedEntity
 	{
+		public int CompanyId { get; set; }
+		[ForeignKey("CompanyId")]
+		public virtual Company Company { get; set; }
 		public int DistributorId { get; set; }
 		[ForeignKey("DistributorId")]
 		public virtual Distributor Distributor { get; set; }
 		public TaxChallanStatus Status { get; set; }
 		public int SNo { get; set; }
-		[Required(ErrorMessage = "CPR No is required.")]
+		[StringLength(25)]
+		[Required(ErrorMessage = "CPR No is required")]
 		public string CPRNo { get; set; }
-		[Required(ErrorMessage = "CPR Date is required.")]
+		[Required(ErrorMessage = "CPR Date is required")]
 		public DateTime CPRDate { get; set; }
-		[Required(ErrorMessage = "Tax Period is required.")]
+		[Required(ErrorMessage = "Tax Period is required")]
 		public DateTime TaxPeriod { get; set; }
-		[Required(ErrorMessage = "Select Payment Section.")]
+		[Required(ErrorMessage = "Select Payment Section")]
 		[BindRequired] 
 		public int PaymentSection { get; set; }
 		[Range(1, 999999999)]
 		[Column(TypeName = "double")]
-		[Required(ErrorMessage = "Amount is required.")]
+		[Required(ErrorMessage = "Amount is required")]
 		public decimal AmountOnTaxWitheld { get; set; }
 		[Range(1, 999999999)]
 		[Column(TypeName = "double")]
-		[Required(ErrorMessage = "Tax Amount is required.")]
+		[Required(ErrorMessage = "Tax Amount is required")]
 		public decimal TaxAmount { get; set; }
-		[StringLength(255)]
-		[Required(ErrorMessage = "Remarks is required.")]
+		[StringLength(2550)]
+		[Required(ErrorMessage = "Remarks is required")]
 		public string Remarks { get; set; }
 		[StringLength(255)]
 		public string RejectedRemarks { get; set; }
@@ -55,5 +59,7 @@ namespace Models.Application
 		public string RejectedName { get; set; }
 		[NotMapped]
 		public SelectList PaymentSectionList { get; set; }
+		[NotMapped]
+		public SelectList CompanyList { get; set; }
 	}
 }

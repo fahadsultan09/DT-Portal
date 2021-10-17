@@ -1,7 +1,7 @@
 ﻿@model OrderSearch
 @inject IUnitOfWork iUnitOfWork
 @{
-    ViewBag.Title = "Order ";
+    ViewBag.Title = "Order Plant Wise ";
     var distributor = new DistributorBLL(iUnitOfWork).DropDownDistributorList(null);
     var search = new OrderSearch() { DistributorList = distributor };
 }

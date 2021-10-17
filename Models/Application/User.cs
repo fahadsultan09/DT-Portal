@@ -85,5 +85,7 @@ namespace Models.Application
         public SelectList PlantLocationList { get; set; }
         [NotMapped]
         public string MacAddresses { get; set; }
+        [NotMapped]
+        public bool IsParentDistributor { get; set; }
     }
 }

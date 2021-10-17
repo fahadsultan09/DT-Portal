@@ -32,6 +32,7 @@
                             <th>S.No</th>
                             <th>Name</th>
                             <th>Payment Allowed</th>
+                            <th>Payment Allowed In SAP</th>
                             <th>Active</th>
                             <th>Action</th>
                         </tr>
@@ -48,13 +49,13 @@
                                     else
                                     {<i class="fa fa-times text-danger"></i>}
                                 </td>
-                                @*  <td>
-                                            @if (item.IsReturnOrderAllowed)
-                                            {<i class="fa fa-check text-navy"></i> }
-                                            else
-                                            {<i class="fa fa-times text-danger"></i>}
-                                        </td>
-                                    <td>*@
+                                <td>
+                                    @if (item.IsPaymentAllowedInSAP)
+                                    {<i class="fa fa-check text-navy"></i> }
+                                    else
+                                    {<i class="fa fa-times text-danger"></i>}
+                                </td>
+                                <td>
                                 <td>
                                     @if (item.IsActive)
                                     {

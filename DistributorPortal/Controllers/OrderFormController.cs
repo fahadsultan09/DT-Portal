@@ -182,7 +182,7 @@ namespace DistributorPortal.Controllers
             var list = SessionHelper.AddDistributorWiseProduct;
             list.First(e => e.ProductDetail.ProductMasterId == Product).ProductDetail.ProductMaster.Quantity = Quantity;
             SessionHelper.AddDistributorWiseProduct = list;
-            var OrderVal = _OrderBLL.GetOrderValueModel(SessionHelper.AddDistributorWiseProduct);
+            var OrderVal = _OrderBLL.GetOnSaveOrderValueModel(SessionHelper.AddDistributorWiseProduct);
             return PartialView("OrderValue", OrderVal);
         }
         public JsonResult GetCurrentOrderValue()
@@ -226,7 +226,7 @@ namespace DistributorPortal.Controllers
                         if (SessionHelper.AddDistributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).Count() == 0)
                         {
                             jsonResponse.Status = false;
-                            jsonResponse.Message = "At least add one quantity in products.";
+                            jsonResponse.Message = NotificationMessage.AtLeastAddOneQuantity;
                             return Json(new { data = jsonResponse });
                         }
                         master.DistributorWiseProduct = model.ProductDetails.Where(e => e.ProductDetail.ProductMaster.Quantity != 0).ToList();
@@ -488,7 +488,7 @@ namespace DistributorPortal.Controllers
                     else
                     {
                         jsonResponse.Status = false;
-                        jsonResponse.Message = "Unable to approve order";
+                        jsonResponse.Message = NotificationMessage.UnableToApproveOrder;
                         return Json(new { data = jsonResponse });
                     }
                 }
@@ -554,7 +554,7 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Unable to approve order";
+                    jsonResponse.Message = NotificationMessage.UnableToApproveOrder;
                     return Json(new { data = jsonResponse });
                 }
             }
@@ -694,15 +694,16 @@ namespace DistributorPortal.Controllers
                     DistributorPendingQuantityList.ForEach(x => x.Rate = DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail == null ? true : y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode) != null
                     ? DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode).Rate : 0);
                     DistributorPendingQuantityList.ForEach(x => x.Discount = DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode) != null
-                    ? DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode).Discount : 0);
+                    ? Math.Abs(DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductDetail.ProductMaster.SAPProductCode == x.ProductCode).Discount) : 0);
+                    DistributorPendingQuantityList.ForEach(x => x.Distributor = distributor);
                     DistributorPendingQuantityList.ForEach(x => x.ProductDetail = productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) != null ? productDetails.FirstOrDefault(y => y.ProductMaster.SAPProductCode == x.ProductCode) : null);
-                    DistributorPendingQuantityList.ForEach(x => x.PendingValue = (x.PendingQuantity * x.Rate) - (x.PendingQuantity * x.Rate / 100 * (-1 * x.Discount))
-                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.SalesTax)
-                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.IncomeTax)
-                    + (x.PendingQuantity * x.Rate / 100 * x.ProductDetail.AdditionalSalesTax));
                     DistributorPendingQuantityList.ForEach(e => e.DistributorId = DistributorId);
                     DistributorPendingQuantityList.ForEach(e => e.CreatedBy = SessionHelper.LoginUser.Id);
                     DistributorPendingQuantityList.ForEach(e => e.CreatedDate = DateTime.Now);
+                    DistributorPendingQuantityList.ForEach(x => x.SalesTax = x.Distributor.IsSalesTaxApplicable ? (x.ProductDetail != null ? x.ProductDetail.SalesTax : 0) : (x.ProductDetail != null ? x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax : 0));
+                    DistributorPendingQuantityList.ForEach(x => x.IncomeTax = x.Distributor.IsIncomeTaxApplicable ? (x.ProductDetail != null ? x.ProductDetail.IncomeTax : 0) : (x.ProductDetail != null ? x.ProductDetail.IncomeTax * 2 : 0));
+                    DistributorPendingQuantityList.ForEach(x => x.PendingValue = Math.Round(_OrderBLL.CalculatePendingValue(x.PendingQuantity, x.Rate, x.Discount, x.SalesTax, x.IncomeTax), 2));
+                    DistributorPendingQuantityList.ForEach(x => x.Distributor = null);
                     _unitOfWork.Begin();
                     _DistributorPendingQuanityBLL.AddRange(DistributorPendingQuantityList.Where(x => !string.IsNullOrEmpty(x.ProductCode)).ToList(), DistributorId);
                     _unitOfWork.Commit();
@@ -808,14 +809,14 @@ namespace DistributorPortal.Controllers
                 if (customFile == null || customFile.Length == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Select a file";
+                    jsonResponse.Message = NotificationMessage.SelectFile;
                     return Json(new { data = jsonResponse });
                 }
                 string fileExtension = Path.GetExtension(customFile.FileName);
                 if (fileExtension != ".xls" && fileExtension != ".xlsx")
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "Only Excel file is allowed";
+                    jsonResponse.Message = NotificationMessage.OnlyExcelFileAllowed;
                     return Json(new { data = jsonResponse });
                 }
                 var fileName = customFile.FileName;
@@ -831,14 +832,14 @@ namespace DistributorPortal.Controllers
                 if (tuple.Item1.Rows.Count == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "No record exist in file for uploading";
+                    jsonResponse.Message = "Record not exist in file";
                     return Json(new { data = jsonResponse });
                 }
                 var DistributorWiseProductDiscountAndPrices = ExtensionUtility.ConvertDataTable<DistributorWiseProductDiscountAndPrices>(tuple.Item1);
                 if (DistributorWiseProductDiscountAndPrices.Where(x => Convert.ToInt32(x.Quantity) != 0).Count() == 0)
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = "At least add one quantity in products";
+                    jsonResponse.Message = NotificationMessage.AtLeastAddOneQuantity;
                     return Json(new { data = jsonResponse });
                 }
                 if (SessionHelper.DistributorBalance == null)
@@ -870,7 +871,7 @@ namespace DistributorPortal.Controllers
                 jsonResponse = _OrderBLL.Save(orderMaster, Url);
 
                 jsonResponse.Status = true;
-                jsonResponse.Message = "Order saved as draft successfully";
+                jsonResponse.Message = NotificationMessage.OrderSavedDraft;
                 jsonResponse.RedirectURL = Url.Action("Index", "Order");
                 return Json(new { data = jsonResponse });
             }

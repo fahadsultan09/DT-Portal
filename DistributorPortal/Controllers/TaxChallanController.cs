@@ -162,7 +162,8 @@ namespace DistributorPortal.Controllers
             {
                 model.Distributor = SessionHelper.LoginUser.Distributor;
             }
-            model.PaymentSectionList = new PaymentSectionBLL(_unitOfWork).DropDownPaymentSectionList();
+            model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(model.CompanyId);
+            model.PaymentSectionList = new PaymentSectionBLL(_unitOfWork).DropDownPaymentSectionTaxRateList(0);
             return model;
         }
         [HttpPost]
@@ -170,7 +171,6 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             Notification notification = new Notification();
-            //SAPTaxChallanStatus SAPTaxChallanStatus = new SAPTaxChallanStatus();
             try
             {
                 TaxChallan model = _TaxChallanBLL.GetById(id);
@@ -184,53 +184,6 @@ namespace DistributorPortal.Controllers
                 }
                 if (Status == TaxChallanStatus.Verified)
                 {
-                    //var Client = new RestClient(_Configuration.PostTaxChallan);
-                    //var request = new RestRequest(Method.POST).AddJsonBody(_TaxChallanBLL.AddTaxChallanToSAP(id), "json");
-                    //IRestResponse restResponse = Client.Execute(request);
-                    //var SAPTaxChallanStatus = JsonConvert.DeserializeObject<SAPTaxChallanStatus>(restResponse.Content);
-                    //SAPTaxChallanViewModel sAPTaxChallanViewModel = _TaxChallanBLL.AddTaxChallanToSAP(id);
-                    //Root root = new Root();
-                    //using (var client = new HttpClient())
-                    //{
-                    //    client.DefaultRequestHeaders.Accept.Clear();
-                    //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //    string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
-                    //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                    //    var result = client.GetAsync(new Uri(string.Format(_Configuration.PostTaxChallan, sAPTaxChallanViewModel.REF, sAPTaxChallanViewModel.COMPANY, sAPTaxChallanViewModel.AMOUNT, sAPTaxChallanViewModel.DISTRIBUTOR, sAPTaxChallanViewModel.B_CODE, sAPTaxChallanViewModel.PAY_ID))).Result;
-                    //    if (result.IsSuccessStatusCode)
-                    //    {
-                    //        var JsonContent = result.Content.ReadAsStringAsync().Result;
-                    //        root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
-                    //    }
-                    //}
-
-                    //if (root != null && root.ZWAS_TaxChallan_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_TaxChallan_BAPI_DP.COMPANYY))
-                    //{
-                    //    model.Status = TaxChallanStatus.Verified;
-                    //    bool result = _TaxChallanBLL.Update(model);
-                    //    _TaxChallanBLL.UpdateStatus(model, Status, Remarks);
-
-                    //    jsonResponse.Status = result;
-                    //    jsonResponse.Message = result ? "Tax Challan has been verified." : "Unable to verified TaxChallan.";
-                    //    jsonResponse.RedirectURL = Url.Action("Index", "TaxChallan");
-                    //    jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(TaxChallanStatus), model.Status) };
-                    //    notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                    //    notification.ApplicationPageId = (int)ApplicationPages.TaxChallan;
-                    //    notification.DistributorId = model.DistributorId;
-                    //    notification.RequestId = model.SNo;
-                    //    notification.Status = model.Status.ToString();
-                    //    notification.Message = jsonResponse.SignalRResponse.Message;
-                    //    notification.URL = "/TaxChallan/TaxChallanView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-                    //    _NotificationBLL.Add(notification);
-                    //    return Json(new { data = jsonResponse });
-                    //}
-                    //else
-                    //{
-                    //    jsonResponse.Status = false;
-                    //    jsonResponse.Message = "Unable to verified TaxChallan.";
-                    //    jsonResponse.RedirectURL = Url.Action("Index", "TaxChallan");
-                    //    return Json(new { data = jsonResponse });
-                    //}
                 }
                 if (model != null)
                 {

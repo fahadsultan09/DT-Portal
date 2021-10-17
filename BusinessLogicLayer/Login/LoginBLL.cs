@@ -15,11 +15,13 @@ namespace BusinessLogicLayer.Login
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserBLL _UserBLL;
         private readonly UserSystemInfoBLL _UserSystemInfoBLL;
+        private readonly SubDistributorBLL _SubDistributorBLL;
         public LoginBLL(IUnitOfWork Repository)
         {
             _unitOfWork = Repository;
             _UserBLL = new UserBLL(_unitOfWork);
             _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
+            _SubDistributorBLL = new SubDistributorBLL(_unitOfWork);
         }
         public LoginStatus CheckLogin(User user)
         {
@@ -60,6 +62,10 @@ namespace BusinessLogicLayer.Login
                 {
                     LoginUser = null;
                     return LoginStatus.NotRegistered;
+                }
+                if (_SubDistributorBLL.Where(x => x.DistributorId == LoginUser.DistributorId && x.IsParent).Count() == 0)
+                {
+                    LoginUser.IsParentDistributor = true;
                 }
             }
             if (LoginUser != null)

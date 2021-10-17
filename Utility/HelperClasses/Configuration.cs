@@ -8,6 +8,7 @@ namespace Utility.HelperClasses
         public string FileSize { get; set; }
         public string ResetPassword { get; set; }
         public string SAPConnection { get; set; }
+        public string PostTaxChallan { get; set; }
         public string SyncDistributorURL { get; set; }
         public string SyncProductURL { get; set; }
         public string SyncDistributorBalanceURL { get; set; }
@@ -42,6 +43,7 @@ namespace Utility.HelperClasses
                 URL = configuration["Settings:URL"];
                 FileSize = configuration["Settings:FileSize"];
                 ResetPassword = configuration["AppSettings:ResetPassword"];
+                PostTaxChallan = configuration["AppSettings:PostTaxChallan"];
                 SyncDistributorURL = configuration["AppSettings:SyncDistributorURL"];
                 SyncProductURL = configuration["AppSettings:SyncProductURL"];
                 SyncDistributorBalanceURL = configuration["AppSettings:SyncDistributorBalanceURL"];

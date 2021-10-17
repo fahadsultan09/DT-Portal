@@ -73,7 +73,7 @@ namespace DistributorPortal.Controllers
             {
                 List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
                 List<int> OrderReturnIds = _OrderReturnDetailBLL.Where(x => ProductMasterIds.Contains(x.ProductMaster.Id)).Select(x => x.OrderReturnId).ToList();
-                model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => x.IsDeleted == false && OrderReturnIds.Contains(x.Id) && x.Status != OrderReturnStatus.Draft).ToList();
+                model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => x.IsDeleted == false && OrderReturnIds.Contains(x.Id) && SessionHelper.LoginUser.IsDistributor ? true : x.Status != OrderReturnStatus.Draft).ToList();
             }
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
 
@@ -99,7 +99,7 @@ namespace DistributorPortal.Controllers
                 {
                     List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
                     List<int> OrderReturnIds = _OrderReturnDetailBLL.Where(x => ProductMasterIds.Contains(x.ProductMaster.Id)).Select(x => x.OrderReturnId).ToList();
-                    model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => OrderReturnIds.Contains(x.Id)).ToList();
+                    model.OrderReturnMaster = _OrderReturnBLL.Search(model).Where(x => OrderReturnIds.Contains(x.Id) && SessionHelper.LoginUser.IsDistributor ? true : x.Status != OrderReturnStatus.Draft).ToList();
                 }
             }
             return model;
@@ -542,7 +542,9 @@ namespace DistributorPortal.Controllers
             if (SessionHelper.LoginUser.IsStoreKeeper)
             {
                 List<int> ProductMasterIds = _ProductDetailBLL.GetAllProductDetail().Select(x => x.ProductMasterId).Distinct().ToList();
-                list = _OrderReturnDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e => e.OrderReturnId).Select(x => new OrderReturnMaster
+                list = _OrderReturnDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId 
+                && SessionHelper.LoginUser.IsDistributor ? true : x.OrderReturnMaster.Status != OrderReturnStatus.Draft
+                && ProductMasterIds.Contains(x.ProductId)).DistinctBy(e => e.OrderReturnId).Select(x => new OrderReturnMaster
                 {
                     TRNo = x.OrderReturnMaster.TRNo,
                     SNo = x.OrderReturnMaster.SNo,

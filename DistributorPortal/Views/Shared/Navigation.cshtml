@@ -1,4 +1,7 @@
-﻿
+﻿@inject IUnitOfWork iUnitOfWork
+@{
+    List<SubDistributor> subDistributors = new SubDistributorBLL(iUnitOfWork).GetAllSubDistributor();
+}
 <link href="~/lib/summernote/summernote-bs4.css" rel="stylesheet" />
 
 <!-- Navbar -->
@@ -61,7 +64,24 @@
         <div class="user-panel d-flex">
             <div class="info">
                 <h5>@SessionHelper.LoginUser.FirstName @SessionHelper.LoginUser.LastName</h5>
-                <a href="#" class="d-block"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></a>
+                @if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor != null)
+                {
+                    <select name="SubDistributorIds" id="SubDistributorIds"
+                            asp-items="@(new SelectList(SessionHelper.DropDownSubDistributor.Select(x => new SelectListItem
+                            {
+                                Value = x.SubDistributorId.ToString(),
+                                Text = x.SubDistributors.DistributorName
+                            }),"Value","Text", SessionHelper.LoginUser.DistributorId))" class="select2 form-control" onchange="SetDistributor();">
+                    </select>
+                }
+                else if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null)
+                {
+                    <a href="#" class="d-block"><strong>@SessionHelper.LoginUser.Distributor.DistributorName</strong></a>
+                }
+                else
+                {
+                    <a href="#" class="d-block"><strong>@SessionHelper.LoginUser.Role.RoleName</strong></a>
+                }
             </div>
         </div>
         <nav class="mt-2">
@@ -137,6 +157,10 @@
 
     $(document).ready(function () {
 
+        $('select2').select2({
+            width: "100%"
+        });
+
         var disclaimerModal = $("#hdnDistributorDisclaimer").val();
 
         if (disclaimerModal != "") {
@@ -156,7 +180,25 @@
         $.get(url, function (context) {
         }).done(function (context) {
         });
-        $('#NotificationCountValue').css('display','none');
+        $('#NotificationCountValue').css('display', 'none');
     });
+
+    function SetDistributor() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("SetLoginDistributor", "Home")',
+            data: { 'distributorId': $('#SubDistributorIds :selected').val() },
+            async: false,
+            success: function (data) {
+                if (data.data.Status) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.data.Message
+                    });
+                    window.location = data.data.RedirectURL;
+                }
+            }
+        });
+    }
 
 </script>

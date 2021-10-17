@@ -204,4 +204,19 @@
   <data name="TaxChallanSaved" xml:space="preserve">
     <value>Tax Challan saved successfully</value>
   </data>
+  <data name="AtLeastAddOneQuantity" xml:space="preserve">
+    <value>At least add one quantity in products</value>
+  </data>
+  <data name="OnlyExcelFileAllowed" xml:space="preserve">
+    <value>Only Excel file is allowed</value>
+  </data>
+  <data name="OrderSavedDraft" xml:space="preserve">
+    <value>Order saved as draft successfully</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
+  <data name="UnableToApproveOrder" xml:space="preserve">
+    <value>Unable to approve order</value>
+  </data>
 </root>

@@ -1,15 +1,15 @@
-﻿@model Company
+﻿@model PaymentSection
 
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Company</h3>
+        <h3 class="card-title">Payment Section</h3>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <form asp-controller="Company"
+                <form asp-controller="PaymentSection"
                       asp-action="SaveEdit"
-                      id="frmDosageForm"
+                      id="frmPaymentSection"
                       data-ajax-update="#divform"
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
@@ -25,33 +25,36 @@
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label">Company Name<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <input asp-for="CompanyName" type="text" placeholder="Company Name" class="form-control" />
-                                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                            @Html.DropDownListFor(e => e.CompanyId, Model.CompanyList, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+                                            <span asp-validation-for="CompanyId" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">SAP Company Code<span class="text-danger"> * </span></label>
+                                        <label class="col-lg-3 col-form-label">Form No<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <input asp-for="SAPCompanyCode" type="text" maxlength="4" placeholder="SAP Company Code" class="form-control" />
-                                            <span asp-validation-for="SAPCompanyCode" class="text-danger"></span>
+                                            <input asp-for="FormNo" type="text" placeholder="Enter Form No" class="form-control" />
+                                            <span asp-validation-for="FormNo" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Is Payment Allowed</label>
+                                        <label class="col-lg-3 col-form-label">GL Account<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsPaymentAllowed" type="checkbox"><i></i></div>
+                                            <input asp-for="GLAccount" type="text" placeholder="Enter GL Account" class="form-control" />
+                                            <span asp-validation-for="GLAccount" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Is Payment Allowed In SAP</label>
+                                        <label class="col-lg-3 col-form-label">Tax Rate<span class="text-danger"> * </span></label>
                                         <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsPaymentAllowedInSAP" type="checkbox"><i></i></div>
+                                            <input asp-for="TaxRate" type="text" placeholder="Enter Tax Rate" class="form-control" />
+                                            <span asp-validation-for="TaxRate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Is Active</label>
-                                        <div class="col-lg-9">
-                                            <div class="i-checks"><input asp-for="IsActive" type="checkbox"><i></i></div>
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <div class="i-checks">
+                                                <label>Is Active</label>&nbsp;&nbsp;<input asp-for="IsActive" type="checkbox"><i></i>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -62,7 +65,7 @@
                                             <a data-ajax-update="#divform"
                                                data-ajax="true"
                                                data-ajax-method="GET"
-                                               asp-controller="Company" asp-action="List"
+                                               asp-controller="PaymentSection" asp-action="List"
                                                class="btn btn-sm btn-default float-right mr-3">Back</a>
                                         </div>
                                     </div>

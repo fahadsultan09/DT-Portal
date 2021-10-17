@@ -97,7 +97,7 @@ namespace DistributorPortal.Controllers
             {
                 List<int> ProductMasterIds = _ProductDetailBLL.Where(x => x.PlantLocationId == SessionHelper.LoginUser.PlantLocationId).Select(x => x.ProductMasterId).Distinct().ToList();
                 List<int> OrderIds = _OrderDetailBLL.Where(x => ProductMasterIds.Contains(x.ProductMaster.Id)).Select(x => x.OrderId).ToList();
-                list = _OrderBLL.Search(model).Where(x => x.IsDeleted == false && OrderIds.Contains(x.Id)).ToList();
+                list = _OrderBLL.Search(model).Where(x => x.IsDeleted == false && OrderIds.Contains(x.Id) && x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
             }
             return list;
         }

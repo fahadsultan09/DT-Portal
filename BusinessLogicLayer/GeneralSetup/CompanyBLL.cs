@@ -6,7 +6,6 @@ using Models.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.GeneralSetup
 {
@@ -35,6 +34,7 @@ namespace BusinessLogicLayer.GeneralSetup
             item.SAPCompanyCode = module.SAPCompanyCode;
             item.IsPaymentAllowed = module.IsPaymentAllowed;
             item.IsReturnOrderAllowed = module.IsReturnOrderAllowed;
+            item.IsPaymentAllowedInSAP = module.IsPaymentAllowedInSAP;
             item.IsActive = module.IsActive;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;

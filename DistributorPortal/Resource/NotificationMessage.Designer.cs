@@ -79,6 +79,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least add one quantity in products.
+        /// </summary>
+        public static string AtLeastAddOneQuantity {
+            get {
+                return ResourceManager.GetString("AtLeastAddOneQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Complaint approved successfully.
         /// </summary>
         public static string ComplaintApproved {
@@ -196,11 +205,29 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only Excel file is allowed.
+        /// </summary>
+        public static string OnlyExcelFileAllowed {
+            get {
+                return ResourceManager.GetString("OnlyExcelFileAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order saved successfully.
         /// </summary>
         public static string OrderSaved {
             get {
                 return ResourceManager.GetString("OrderSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order saved as draft successfully.
+        /// </summary>
+        public static string OrderSavedDraft {
+            get {
+                return ResourceManager.GetString("OrderSavedDraft", resourceCulture);
             }
         }
         
@@ -277,6 +304,15 @@ namespace DistributorPortal.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a file.
+        /// </summary>
+        public static string SelectFile {
+            get {
+                return ResourceManager.GetString("SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to success.
         /// </summary>
         public static string Success {
@@ -300,6 +336,15 @@ namespace DistributorPortal.Resource {
         public static string TaxChallanSaved {
             get {
                 return ResourceManager.GetString("TaxChallanSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to approve order.
+        /// </summary>
+        public static string UnableToApproveOrder {
+            get {
+                return ResourceManager.GetString("UnableToApproveOrder", resourceCulture);
             }
         }
         

@@ -51,7 +51,7 @@
                             <div class="col-12">
                                 <div class="card card-primary">
                                     <div class="card-header">
-                                        <h3 class="card-title">TaxChallan Value</h3>
+                                        <h3 class="card-title">Tax Challan Value</h3>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
@@ -63,7 +63,7 @@
                                                 <span asp-validation-for="CPRNo" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
-                                                <h6>CPR Date</h6>
+                                                <h6>CPR Date<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
@@ -80,13 +80,13 @@
                                                 <h6>Payment Section<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <select asp-for="PaymentSection" asp-items="@(new SelectList(Model.PaymentSectionList, "Value", "Text"))" class="form-control select2">
+                                                <select asp-for="PaymentSection" asp-items="@(new SelectList(Model.PaymentSectionList, "Value", "Text"))" class="form-control select2" id="PaymentSection">
                                                     <option value="">--Select option--</option>
                                                 </select><br />
-                                                <span asp-validation-for="PaymentSection" class="text-danger"></span>
+                                                <span asp-validation-for="PaymentSection" class="text-danger errorPaymentSection"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
-                                                <h6>Tax Period</h6>
+                                                <h6>Tax Period<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
@@ -111,7 +111,7 @@
                                                 <h6>Tax Amount<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="TaxAmount" value="@(Model.Id == 0 ? "" : Model.TaxAmount.ToString())" min="0" maxlength="9" pattern="\d*" oninput="validity.valid||(value='');" class="form-control" id="TaxAmount" />
+                                                <input type="text" asp-for="TaxAmount" value="@(Model.Id == 0 ? "" : Model.TaxAmount.ToString())" class="form-control" id="TaxAmount" readonly="readonly" />
                                                 <span asp-validation-for="TaxAmount" class="text-danger"></span>
                                                 <span class="text-info" id="TaxAmountInWords"></span>
                                             </div>
@@ -134,13 +134,24 @@
                                                 </span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                                <h6>Company<span class="text-danger"> * </span></h6>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <select asp-for="CompanyId" asp-items="@(new SelectList(Model.CompanyList, "Value", "Text"))" class="form-control select2" id="ddlCompany">
+                                                    <option value="">--Select option--</option>
+                                                </select><br />
+                                                <span asp-validation-for="CompanyId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class=" row">
+                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                                 <h6>Remarks<span class="text-danger"> * </span></h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <input type="text" asp-for="Remarks" class="form-control" />
+                                                <textarea asp-for="Remarks" class="form-control"></textarea>
                                                 <span asp-validation-for="Remarks" class="text-danger"></span>
                                             </div>
-                                        </div>
+                                        </div><br />
                                         <br />
                                         <div class="row">
                                             <div class="col-6">
@@ -197,18 +208,46 @@
         });
 
         $('body').on('keyup change', '#Amount', function () {
+            $('.errorPaymentSection').empty();
             $('#AmountInWords').html(inWords($('#Amount').val()));
+
+            if ($('#PaymentSection :selected').val() == '') {
+                $('.errorPaymentSection').text('Select Payment Section');
+                return false;
+            }
+            else {
+                var taxRate = $('#PaymentSection :selected').val();
+                var result = parseFloat($('#Amount').val()) / 100 * taxRate;
+                $('#TaxAmount').val(result);
+            }
+            return true;
         });
 
         $('body').on('keyup change', '#TaxAmount', function () {
             $('#TaxAmountInWords').html(inWords($('#TaxAmount').val()));
         });
 
+        $('body').on('change', '#PaymentSection', function () {
+            $('.errorPaymentSection').empty();
+            if ($('#PaymentSection :selected').val() == '') {
+                $('.errorPaymentSection').text('Select Payment Section');
+                return false;
+            }
+            else {
+                var taxRate = $('#PaymentSection :selected').val();
+                if ($('#Amount').val() != '') {
+                    var result = parseFloat($('#Amount').val()) / 100 * taxRate;
+                    $('#TaxAmount').val(result);
+                }
+            }
+            return true;
+        });
+
     });
 
     function SaveTaxChallan() {
 
-        var form = event.target.form; // storing the form
+        var form = event.target.form;
         $(form).each(function () {
             $(this).children().find('textarea').each(function () {
                 $(this).val($(this).val().trim());

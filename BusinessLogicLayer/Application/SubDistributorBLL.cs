@@ -120,10 +120,6 @@ namespace BusinessLogicLayer.Application
             item.DeletedDate = DateTime.Now;
             _repository.HardDelete(item);
         }
-        public void DeleteRange(List<SubDistributor> list)
-        {
-            _repository.DeleteRange(list);
-        }
         public SubDistributor GetById(int id)
         {
             return _repository.GetById(id);
@@ -149,10 +145,6 @@ namespace BusinessLogicLayer.Application
             {
                 return true;
             }
-        }
-        public SubDistributor FirstOrDefault(Expression<Func<SubDistributor, bool>> predicate)
-        {
-            return _repository.FirstOrDefault(predicate);
         }
         public List<SubDistributor> Where(Expression<Func<SubDistributor, bool>> predicate)
         {

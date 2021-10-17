@@ -1,13 +1,17 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
+using DPTaxChallan;
 using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.ServiceModel;
+using System.Xml;
 using Utility;
+using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
 {
@@ -154,6 +158,30 @@ namespace BusinessLogicLayer.Application
                          });
 
             return query.ToList();
+        }
+        public void PostDistributorOrder(List<OrderDetail> orderDetails, Configuration configuration)
+        {
+            BasicHttpBinding binding = new BasicHttpBinding
+            {
+                SendTimeout = TimeSpan.FromSeconds(100000),
+                MaxBufferSize = int.MaxValue,
+                MaxReceivedMessageSize = int.MaxValue,
+                AllowCookies = true,
+                ReaderQuotas = XmlDictionaryReaderQuotas.Max,
+            };
+            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+            EndpointAddress address = new EndpointAddress(configuration.PostTaxChallan);
+            ServResp_OutClient client = new ServResp_OutClient(binding, address);
+            client.ClientCredentials.UserName.UserName = configuration.POUserName;
+            client.ClientCredentials.UserName.Password = configuration.POPassword;
+            if (client.InnerChannel.State == CommunicationState.Faulted)
+            {
+            }
+            else
+            {
+                client.OpenAsync();
+            }
         }
     }
 }
