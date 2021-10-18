@@ -3,6 +3,7 @@ using BusinessLogicLayer.ApplicationSetup;
 using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.GeneralSetup;
 using BusinessLogicLayer.HelperClasses;
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,10 @@ namespace DistributorPortal.Controllers
         private readonly ProductDetailBLL _ProductDetailBLL;
         private readonly ReportsBLL _ReportsBLL;
         private readonly Configuration _Configuration;
-        public ReportsController(IUnitOfWork unitOfWork, Configuration configuration)
+        private readonly IDapper _dapper;
+        public ReportsController(IUnitOfWork unitOfWork,IDapper dapper, Configuration configuration)
         {
+            _dapper = dapper; 
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
@@ -430,8 +433,35 @@ namespace DistributorPortal.Controllers
         }
         public List<ProductPending> GetProductList(ProductPendingSearch model)
         {
-            List<ProductPending> list = _DistributorWiseProductDiscountAndPricesBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
-            return list;
+            List<ProductPending> pendings = new List<ProductPending>();
+            double pendingValue = 0;
+            List<ProductPending> list = _DistributorWiseProductDiscountAndPricesBLL.GetProductPendings(model, _dapper);
+            
+            foreach(var item in list)
+            {
+                pendingValue = _OrderBLL.CalculatePendingValue(item.PendingQuantity, item.Rate, item.Discount, item.SalesTax + item.AdditionalSalesTax, item.IncomeTax);
+                pendings.Add(new ProductPending()
+                {
+                    SAPProductCode = item.SAPProductCode,
+                    ProductName = item.ProductName,
+                    PackSize = item.PackSize,
+                    Comapny = item.Comapny,
+                    PendingQuantity = item.PendingQuantity,
+                    Rate = item.Rate,
+                    IncomeTax = item.IncomeTax,
+                    SalesTax = item.SalesTax,
+                    AdditionalSalesTax = item.AdditionalSalesTax,
+                    PendingValue = pendingValue,
+                    Status = item.Status,
+                    CompanyId = item.CompanyId,
+                    productId = item.productId,
+                    DistributorId = item.DistributorId,
+                    Discount = item.Discount
+
+
+                });
+            }
+            return pendings;
         }
         [HttpPost]
         public IActionResult ProductPendingSearch(ProductPendingSearch model, string Search)

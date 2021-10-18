@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using BusinessLogicLayer.HelperClasses;
+using Dapper;
 using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using Models.Application;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 using ProductWisePriceDiscount;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
@@ -196,47 +198,15 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.FirstOrDefault(predicate);
         }
-        public List<ProductPending> Search(ProductPendingSearch model)
+        public List<ProductPending> GetProductPendings(ProductPendingSearch model,IDapper _dapper)
         {
-            var LamdaId = (Expression<Func<DistributorWiseProductDiscountAndPrices, bool>>)(x => x.Id != 0);
-            if (model.DistributorId != null)
-            {
-                LamdaId = LamdaId.And(e => e.DistributorId == model.DistributorId);
-            }
-            if (model.ProductId != 0)
-            {
-                LamdaId = LamdaId.And(e => e.ProductDetail.ProductMasterId == model.ProductId);
-            }
-            if (model.CompanyId != null)
-            {
-                LamdaId = LamdaId.And(e => e.ProductDetail.CompanyId == model.CompanyId);
-            }
-            var Filter = _repository.Where(LamdaId).ToList();
-            var query = (from x in Filter
-                         
-                         join dpq in _DistributorPendingQuanityBLL.GetAllList()
-                           on new { x.DistributorId, ProductCode = x.SAPProductCode }
-                           equals new { dpq.DistributorId, dpq.ProductCode }
-
-
-                         select new ProductPending
-                         {
-                             productId = x.ProductDetail.ProductMasterId,
-                             SAPProductCode = x.SAPProductCode,
-                             ProductName = x.ProductDetail.ProductMaster.ProductDescription,
-                             PackSize = x.PackSize,
-                             PendingQuantity = dpq.PendingQuantity,
-                             PendingValus = dpq.PendingValue,
-                             Rate = x.Rate,
-                             SalesTax = x.ProductDetail.SalesTax,
-                             AdSalesTax = x.ProductDetail.AdditionalSalesTax,
-                             AdvanceTax = x.ProductDetail.IncomeTax,
-                             CompanyId = x.ProductDetail.CompanyId,
-                             Comapny = x.ProductDetail.Company.CompanyName
-                         });
-
-            return query.ToList();
+            DynamicParameters parameter = new DynamicParameters();
+            parameter.Add("@pCompanyId", model.CompanyId, DbType.Int32, ParameterDirection.Input);
+            parameter.Add("@pProductId", model.ProductId, DbType.Int32, ParameterDirection.Input);
+            parameter.Add("@pDistributorId", model.DistributorId, DbType.Int32, ParameterDirection.Input);
+            parameter.Add("@pStatus", model.Status, DbType.Int32, ParameterDirection.Input);
+            List<ProductPending> _ProductPending = _dapper.GetAll<ProductPending>("sp_PendingProduct", parameter, commandType: CommandType.StoredProcedure);
+            return _ProductPending;
         }
-
     }
 }

@@ -1,3 +1,4 @@
+using DataAccessLayer.Repository;
 using DataAccessLayer.WorkProcess;
 using DistributorPortal.SignalRNotification;
 using Microsoft.AspNetCore.Builder;
@@ -61,8 +62,8 @@ namespace DistributorPortal
 
             services.AddDbContextPool<DistributorPortalDbContext>(option => option.UseLazyLoadingProxies().UseMySQL(Configuration.GetConnectionString("DistributorPortalDbContext")));
             services.AddMvc(option => option.EnableEndpointRouting = false).AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
-
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDapper, Daper>();
             services.AddSingleton<Configuration, Configuration>();
             services.AddControllersWithViews(options =>
             {
