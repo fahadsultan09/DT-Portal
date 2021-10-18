@@ -1,7 +1,7 @@
 ﻿<!-- Signal R Script -->
 <script src="~/microsoft-signalr/signalr.js"></script>
 <script type="text/javascript">
-    
+
     var UserId = @SessionHelper.LoginUser.Id;
     var RoleCompanyIds = @(SessionHelper.LoginUser.IsDistributor ? null : (SessionHelper.LoginUser.RoleId + (SessionHelper.LoginUser.CompanyId ?? 0)).ToString());
     $(function () {
@@ -84,6 +84,14 @@
 <!-- DataTables -->
 <script src="~/lib/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/lib/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/jszip/jszip.min.js"></script>
+<script src="~/lib/pdfmake/pdfmake.min.js"></script>
+<script src="~/lib/pdfmake/vfs_fonts.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatables-buttons/js/dataTables.buttons.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="~/lib/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 <!-- Ladda -->

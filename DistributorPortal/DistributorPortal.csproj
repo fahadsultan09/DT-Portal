@@ -66,6 +66,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.colVis.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.colVis.min.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.flash.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.flash.min.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.html5.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.html5.min.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.print.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\buttons.print.min.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\dataTables.buttons.js" />
+    <None Include="wwwroot\lib\datatables-buttons\js\dataTables.buttons.min.js" />
+    <None Include="wwwroot\lib\datatables-buttons\swf\flashExport.swf" />
+    <None Include="wwwroot\lib\jszip\jszip.js" />
+    <None Include="wwwroot\lib\jszip\jszip.min.js" />
     <None Include="wwwroot\webfonts\fa-brands-400.svg" />
     <None Include="wwwroot\webfonts\fa-brands-400.woff2" />
     <None Include="wwwroot\webfonts\fa-regular-400.svg" />

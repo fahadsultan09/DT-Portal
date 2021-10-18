@@ -1,0 +1,94 @@
+﻿.dataTables_wrapper .dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dt-buttons {
+    float: right;
+}
+
+.btn.btn-outline.dark {
+    border-color: #2f353b;
+    color: #2f353b;
+    background: 0 0;
+    font-size: 12px;
+}
+
+.btn.btn-outline.red {
+    border-color: #e7505a;
+    color: #e7505a;
+    background: 0 0;
+    font-size: 12px;
+}
+
+.btn.btn-outline.green {
+    border-color: #32c5d2;
+    color: #32c5d2;
+    background: 0 0;
+    font-size: 12px;
+}
+
+.btn.btn-outline.yellow {
+    border-color: #c49f47;
+    color: #c49f47;
+    background: 0 0;
+    font-size: 12px;
+}
+
+.btn.btn-outline.purple {
+    border-color: #8e44ad;
+    color: #8e44ad;
+    background: 0 0;
+    font-size: 12px;
+}
+
+.btn.btn-outline.dark {
+    border-color: #2f353b;
+    color: #2f353b;
+    background: 0 0;
+    font-size: 12px;
+}
+
+div.dt-button-collection {
+    position: absolute;
+    width: 13%;
+    margin-top: 3px;
+    padding: 8px 8px 4px 8px;
+    border: 1px solid rgba(0,0,0,.4);
+    background-color: #fff;
+    overflow: hidden;
+    box-shadow: 3px 3px 5px rgba(0,0,0,.3);
+    z-index: 2002;
+    column-gap: 8px;
+    overflow-x: auto;
+}
+
+
+    div.dt-button-collection button.dt-button.active {
+        background: #f6f6f6 !important;
+        box-shadow: none !important;
+        border: 0 !important;
+        font-weight: 300 !important;
+    }
+
+    div.dt-button-collection button.dt-button {
+        margin-bottom: 4px;
+        margin-right: 0;
+        border: none !important;
+        font-weight: 300 !important;
+        background: none !important;
+    }
+
+button.dt-button:hover:not(.disabled), div.dt-button:hover:not(.disabled), button.dt-button:hover:not(.disabled) {
+    background-color: #e0e0e0 !important;
+    border: none !important;
+}
+
+button.dt-button:active:not(.disabled), div.dt-button:active:not(.disabled), button.dt-button:active:not(.disabled) {
+    background-color: #e0e0e0 !important;
+    border: none !important;
+}
+
+button.dt-button:focus:not(.disabled), div.dt-button:focus:not(.disabled), button.dt-button:focus:not(.disabled) {
+    background-color: #e0e0e0 !important;
+    border: none !important;
+}

@@ -28,6 +28,7 @@ namespace DistributorPortal.Controllers
         private readonly ComplaintBLL _ComplaintBLL;
         private readonly OrderValueBLL _OrderValueBLL;
         private readonly DistributorWiseProductDiscountAndPricesBLL _DistributorWiseProductDiscountAndPricesBLL;
+        private readonly ProductMasterBLL _ProductMasterBLL;
         private readonly ProductDetailBLL _ProductDetailBLL;
         private readonly ReportsBLL _ReportsBLL;
         private readonly Configuration _Configuration;
@@ -45,6 +46,7 @@ namespace DistributorPortal.Controllers
             _ProductDetailBLL = new ProductDetailBLL(_unitOfWork);
             _ReportsBLL = new ReportsBLL();
             _Configuration = configuration;
+            _ProductMasterBLL = new ProductMasterBLL(_unitOfWork);
         }
 
         #region Order
@@ -417,6 +419,30 @@ namespace DistributorPortal.Controllers
                 jsonResponse.Message = NotificationMessage.ErrorOccurred;
                 new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
                 return Json(new { data = jsonResponse });
+            }
+        }
+        #endregion
+        #region ProductPending
+        public IActionResult ProductPending()
+        {
+
+            return View();
+        }
+        public List<ProductPending> GetProductList(ProductPendingSearch model)
+        {
+            List<ProductPending> list = _DistributorWiseProductDiscountAndPricesBLL.Search(model).Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : x.Status != OrderStatus.Canceled && x.Status != OrderStatus.Draft).ToList();
+            return list;
+        }
+        [HttpPost]
+        public IActionResult ProductPendingSearch(ProductPendingSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("ProductPendingList", GetProductList(model));
+            }
+            else
+            {
+                return PartialView("ProductPendingList", GetProductList(model));
             }
         }
         #endregion
