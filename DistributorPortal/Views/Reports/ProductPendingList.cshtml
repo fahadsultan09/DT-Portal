@@ -49,12 +49,20 @@
                                     <td>@item.IncomeTax</td>
                                     <td>@item.SalesTax</td>
                                     <td>@item.AdditionalSalesTax</td>
-                                    <td>@Math.Round(item.PendingValue,2)</td>
+                                    <td>@Math.Round(item.PendingValue, 2).ToString("#,##0.00")</td>
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                 </tr>
                             }
                         }
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="9">Total</th>
+                            <th colspan="2">
+                                @(Model != null ? Model.Sum(x => x.PendingValue).ToString("#,##0.00") : "0")
+                            </th>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </div>
