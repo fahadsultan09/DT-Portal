@@ -445,7 +445,7 @@ namespace DistributorPortal.Controllers
                     SAPProductCode = item.SAPProductCode,
                     ProductName = item.ProductName,
                     PackSize = item.PackSize,
-                    Comapny = item.Comapny,
+                    CompanyName = item.CompanyName,
                     PendingQuantity = item.PendingQuantity,
                     Rate = item.Rate,
                     IncomeTax = item.IncomeTax,

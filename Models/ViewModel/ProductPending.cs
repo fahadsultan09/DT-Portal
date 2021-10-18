@@ -12,7 +12,7 @@ namespace Models.ViewModel
         [IncludeInReport(Order = 3)]
         public string PackSize { get; set; }
         [IncludeInReport(Order = 4)]
-        public string Comapny { get; set; }
+        public string CompanyName { get; set; }
         [IncludeInReport(Order = 5)]
         public int PendingQuantity { get; set; }
         [IncludeInReport(Order = 6)]
