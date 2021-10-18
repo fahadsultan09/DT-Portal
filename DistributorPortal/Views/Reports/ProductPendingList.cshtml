@@ -27,7 +27,7 @@
                             <th>Company</th>
                             <th>Pending Quantity</th>
                             <th>Rate</th>
-                            <th>Advance Tax</th>
+                            <th>Advance Income Tax</th>
                             <th>Sales Tax</th>
                             <th>Additional Sales Tax</th>
                             <th>Pending Value</th>
@@ -46,15 +46,23 @@
                                     <td>@item.Comapny</td>
                                     <td>@item.PendingQuantity</td>
                                     <td>@item.Rate</td>
-                                    <td>@item.AdvanceTax</td>
+                                    <td>@item.IncomeTax</td>
                                     <td>@item.SalesTax</td>
-                                    <td>@item.AdSalesTax</td>
-                                    <td>@item.PendingValus</td>
-                                    <td>@item.Status</td>
+                                    <td>@item.AdditionalSalesTax</td>
+                                    <td>@Math.Round(item.PendingValue, 2).ToString("#,##0.00")</td>
+                                    <td>@Html.DisplayFor(x => item.Status)</td>
                                 </tr>
                             }
                         }
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="9">Total</th>
+                            <th colspan="2">
+                                @(Model != null ? Model.Sum(x => x.PendingValue).ToString("#,##0.00") : "0")
+                            </th>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </div>
@@ -66,13 +74,13 @@
 
     $(document).ready(function () {
 
-        var table = $('[Id$=example1]').DataTable({
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-            "responsive": true,
-            "autoWidth": false,
-            "order": [[1, "desc"]]
-        });
-
+        //var table = $('[Id$=example1]').DataTable({
+        //   "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        //    "responsive": true,
+        //    "autoWidth": false,
+        //    "order": [[1, "desc"]]
+        //});
+        dataTableExportExcel("example1", "Export");
         // Add event listener for opening and closing details
         $('#example1 tbody').on('click', 'td.details-control', function () {
             BlockUI();
