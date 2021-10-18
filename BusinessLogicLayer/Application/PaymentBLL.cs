@@ -38,18 +38,30 @@ namespace BusinessLogicLayer.Application
             module.IsDeleted = false;
             module.IsActive = true;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<PaymentMaster>().Insert(module);
+            _repository.Insert(module);
             return _unitOfWork.Save();
         }
         public bool Update(PaymentMaster module)
         {
-            var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
             item.SAPCompanyCode = module.SAPCompanyCode;
             item.SAPDocumentNumber = module.SAPDocumentNumber;
             item.SAPFiscalYear = module.SAPFiscalYear;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<PaymentMaster>().Update(item);
+            _repository.Update(item);
+            return _unitOfWork.Save() > 0;
+        }
+        public bool UpdateApproval(PaymentMaster module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.ValueClearingDate = module.ValueClearingDate;
+            item.PaymentModeId = module.PaymentModeId;
+            item.PaymentModeNo = module.PaymentModeNo;
+            item.CompanyBankName = module.CompanyBankName;
+            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedDate = DateTime.Now;
+            _repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
         public int UpdateSNo(PaymentMaster module)
@@ -68,25 +80,27 @@ namespace BusinessLogicLayer.Application
         }
         public int Delete(int id)
         {
-            var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
+            var item = _repository.GetById(id);
             item.IsDeleted = true;
             return _unitOfWork.Save();
         }
         public bool UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
             if (PaymentStatus.Verified == paymentStatus)
-
             {
                 model.ApprovedBy = SessionHelper.LoginUser.Id;
                 model.ApprovedDate = DateTime.Now;
             }
             else if (PaymentStatus.Rejected == paymentStatus)
-
             {
                 model.RejectedBy = SessionHelper.LoginUser.Id;
                 model.RejectedDate = DateTime.Now;
+                model.Remarks = Remarks;
             }
-            model.Remarks = Remarks;
+            else
+            {
+                //model.ResubmitRemarks = Remarks;
+            }
             model.Status = paymentStatus;
             model.UpdatedBy = SessionHelper.LoginUser.Id;
             model.UpdatedDate = DateTime.Now;
@@ -95,11 +109,11 @@ namespace BusinessLogicLayer.Application
         }
         public PaymentMaster GetById(int id)
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<PaymentMaster> GetAllPaymentMaster()
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<PaymentMaster> Where(Expression<Func<PaymentMaster, bool>> predicate)
         {

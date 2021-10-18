@@ -226,6 +226,12 @@
                                             Reject
                                         </button>
                                     }
+                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject)))
+                                    {
+                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Resubimt" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Resubimt) ? "d-none" : null)">
+                                            Re-Submit
+                                        </button>
+                                    }
                                     <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
                                         Back
                                     </a>

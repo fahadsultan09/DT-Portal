@@ -303,6 +303,10 @@ namespace DistributorPortal.Controllers
                     {
                         jsonResponse.Message = "Payment has been rejected";
                     }
+                    else if (model.Status == PaymentStatus.Resubimt)
+                    {
+                        jsonResponse.Message = "Payment has been resend to distributor";
+                    }
                     else
                     {
                         jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully";
