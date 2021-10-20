@@ -64,7 +64,7 @@ namespace DistributorPortal.Controllers
                             SAPDistributor.Add(new Distributor()
                             {
                                 DistributorSAPCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KUNNR,
-                                DistributorName = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME1,
+                                DistributorName = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME1 + " " + root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME2 + " " + root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME3,
                                 City = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].ORT01,
                                 RegionCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].REGIO,
                                 CustomerGroup = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KDGRPT,

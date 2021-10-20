@@ -39,6 +39,7 @@ namespace Models.Application
         [Required(ErrorMessage = "Mobile Number field is required.")]
         public string MobileNumber { get; set; }
         public bool IsDistributor { get; set; }
+        public bool IsParentDistributor { get; set; }
         public bool IsStoreKeeper { get; set; }
         public int? DistributorId { get; set; }
         [ForeignKey("DistributorId")]
@@ -85,7 +86,5 @@ namespace Models.Application
         public SelectList PlantLocationList { get; set; }
         [NotMapped]
         public string MacAddresses { get; set; }
-        [NotMapped]
-        public bool IsParentDistributor { get; set; }
     }
 }

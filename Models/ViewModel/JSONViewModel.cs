@@ -35,6 +35,8 @@ namespace Models.ViewModel
     {
         public string KUNNR { get; set; }
         public string NAME1 { get; set; }
+        public string NAME2 { get; set; }
+        public string NAME3 { get; set; }
         public string ORT01 { get; set; }
         public string REGIO { get; set; }
         //public string KDGRP { get; set; }

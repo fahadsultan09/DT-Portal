@@ -36,6 +36,7 @@ namespace BusinessLogicLayer.ApplicationSetup
         {
             var region = regionBLL.GetAllRegion();
             distributors.ForEach(e => e.RegionId = region.First(c => c.SAPId == e.RegionCode).Id);
+            distributors.ForEach(x => x.DistributorName = x.DistributorName.Trim());
             repository.AddRange(distributors);
             return _unitOfWork.Save() > 0;
         }
@@ -47,7 +48,7 @@ namespace BusinessLogicLayer.ApplicationSetup
             item.City = module.City;
             item.DistributorSAPCode = module.DistributorSAPCode;
             item.DistributorCode = module.DistributorCode;
-            item.DistributorName = module.DistributorName;
+            item.DistributorName = module.DistributorName.Trim();
             item.DistributorAddress = module.DistributorAddress;
             item.EmailAddress = module.EmailAddress;
             item.NTN = module.NTN;

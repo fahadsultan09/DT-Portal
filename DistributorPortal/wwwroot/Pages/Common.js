@@ -199,7 +199,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
     else {
         val = e.value;
     }
-    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected") {
+    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected" || val == "Resubmit") {
         Swal.fire({
             type: "warning",
             confirmButtonText: "Yes",

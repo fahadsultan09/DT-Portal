@@ -78,6 +78,82 @@ namespace DistributorPortal.Controllers
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);
             return View("PaymentApproval", BindPaymentMaster(id));
         }
+        [HttpPost]
+        public IActionResult PaymentApproval(PaymentMaster model)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            Notification notification = new Notification();
+            string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
+            try
+            {
+                ModelState.Remove("Id");
+                ModelState.Remove("File");
+                ModelState.Remove("Amount");
+                ModelState.Remove("CompanyBankCode");
+                ModelState.Remove("DepositorBankCode");
+                if (!ModelState.IsValid)
+                {
+                    jsonResponse.Status = false;
+                    jsonResponse.Message = NotificationMessage.RequiredFieldsValidation;
+                }
+                else
+                {
+                    SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(model.Id, model.ValueClearingDate);
+                    Root root = new Root();
+                    using (var client = new HttpClient())
+                    {
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                        var response = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID, sAPPaymentViewModel.P_DATE))).Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var JsonContent = response.Content.ReadAsStringAsync().Result;
+                            root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                        }
+                    }
+                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
+                    {
+                        model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
+                        model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
+                        model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
+                        model.Status = PaymentStatus.Verified;
+                        jsonResponse.Status = _PaymentBLL.UpdateApproval(model);
+                        jsonResponse.Message = jsonResponse.Status ? "Payment has been verified" : "Unable to verified payment";
+                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    }
+                    else
+                    {
+                        jsonResponse.Status = false;
+                        jsonResponse.Message = "Unable to verified payment";
+                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                    }
+                }
+                RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApprovePayment && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                if (rolePermission != null)
+                {
+                    jsonResponse.SignalRResponse = new SignalRResponse() { RoleCompanyIds = (rolePermission.RoleId + model.CompanyId).ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
+                    notification.CompanyId = model.CompanyId;
+                    notification.ApplicationPageId = (int)ApplicationPages.Payment;
+                    notification.DistributorId = model.DistributorId;
+                    notification.RequestId = model.SNo;
+                    notification.Status = model.Status.ToString();
+                    notification.Message = jsonResponse.SignalRResponse.Message;
+                    notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
+                    _NotificationBLL.Add(notification);
+                }
+                _unitOfWork.Save();
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
+        }
         [HttpGet]
         public IActionResult PaymentView(string DPID, string RedirectURL)
         {
@@ -124,17 +200,25 @@ namespace DistributorPortal.Controllers
                             model.File = tuple.Item2;
                         }
                     }
-                    model.Status = PaymentStatus.Unverified;
-                    model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                    _PaymentBLL.Add(model);
                     if (model.Id > 0)
                     {
-                        _PaymentBLL.UpdateSNo(model);
+                        model.Status = PaymentStatus.Unverified;
+                        model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        jsonResponse.Status = _PaymentBLL.Update(model);
                     }
-                    jsonResponse.Status = true;
+                    else
+                    {
+                        model.Status = PaymentStatus.Unverified;
+                        model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+                        jsonResponse.Status = _PaymentBLL.Add(model);
+                        if (model.Id > 0)
+                        {
+                            _PaymentBLL.UpdateSNo(model);
+                        }
+                    }
                     jsonResponse.Message = NotificationMessage.PaymentSaved;
+                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 }
-                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApprovePayment && e.ApplicationActionId == (int)ApplicationActions.Approve);
                 if (rolePermission != null)
                 {
@@ -148,6 +232,7 @@ namespace DistributorPortal.Controllers
                     notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
                     _NotificationBLL.Add(notification);
                 }
+                _unitOfWork.Save();
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)
@@ -225,65 +310,29 @@ namespace DistributorPortal.Controllers
                     jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     return Json(new { data = jsonResponse });
                 }
-                if (Status == PaymentStatus.Verified)
+                if (model != null)
                 {
-                    SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(id);
-                    bool result;
-                    if (sAPPaymentViewModel.IsPaymentAllowedInSAP)
+                    jsonResponse.Status = _PaymentBLL.UpdateStatus(model, Status, Remarks);
+                    if (model.Status == PaymentStatus.Rejected)
                     {
-                        Root root = new Root();
-                        using (var client = new HttpClient())
-                        {
-                            client.DefaultRequestHeaders.Accept.Clear();
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                            string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
-                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                            var response = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID))).Result;
-                            if (response.IsSuccessStatusCode)
-                            {
-                                var JsonContent = response.Content.ReadAsStringAsync().Result;
-                                root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
-                            }
-                        }
-                        if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
-                        {
-                            model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
-                            model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
-                            model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
-                            model.Status = PaymentStatus.Verified;
-                            result = _PaymentBLL.Update(model);
-                            _PaymentBLL.UpdateStatus(model, Status, Remarks);
-
-                            jsonResponse.Status = result;
-                            jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
-                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                            jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                            notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                            notification.ApplicationPageId = (int)ApplicationPages.Payment;
-                            notification.DistributorId = model.DistributorId;
-                            notification.RequestId = model.SNo;
-                            notification.Status = model.Status.ToString();
-                            notification.Message = jsonResponse.SignalRResponse.Message;
-                            notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-                            _NotificationBLL.Add(notification);
-                            return Json(new { data = jsonResponse });
-                        }
-                        else
-                        {
-                            jsonResponse.Status = false;
-                            jsonResponse.Message = "Unable to verified payment";
-                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                            return Json(new { data = jsonResponse });
-                        }
+                        jsonResponse.Message = "Payment has been rejected";
+                    }
+                    else if (model.Status == PaymentStatus.Resubmit)
+                    {
+                        jsonResponse.Message = "Payment has been send to distributor for re-submission";
                     }
                     else
                     {
-                        result = _PaymentBLL.Update(model);
-                        _PaymentBLL.UpdateStatus(model, Status, Remarks);
+                        jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully";
                     }
-                    jsonResponse.Status = result;
-                    jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
-                    jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                }
+
+                jsonResponse.Status = jsonResponse.Status;
+                //jsonResponse.Message = jsonResponse.Status ? "Payment has been verified" : "Unable to verified payment";
+                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApprovePayment && e.ApplicationActionId == (int)ApplicationActions.Approve);
+                if (rolePermission != null)
+                {
                     jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
                     notification.CompanyId = SessionHelper.LoginUser.CompanyId;
                     notification.ApplicationPageId = (int)ApplicationPages.Payment;
@@ -293,40 +342,8 @@ namespace DistributorPortal.Controllers
                     notification.Message = jsonResponse.SignalRResponse.Message;
                     notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
                     _NotificationBLL.Add(notification);
-                    return Json(new { data = jsonResponse });
-                }
-                if (model != null)
-                {
-                    _PaymentBLL.UpdateStatus(model, Status, Remarks);
-                    jsonResponse.Status = true;
-                    if (model.Status == PaymentStatus.Rejected)
-                    {
-                        jsonResponse.Message = "Payment has been rejected";
-                    }
-                    else if (model.Status == PaymentStatus.Resubimt)
-                    {
-                        jsonResponse.Message = "Payment has been resend to distributor";
-                    }
-                    else
-                    {
-                        jsonResponse.Message = "Payment " + Status.ToString().ToLower() + " successfully";
-                    }
-                    if (model.Status != PaymentStatus.Canceled)
-                    {
-                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
-                        jsonResponse.SignalRResponse = new SignalRResponse() { UserId = model.CreatedBy.ToString(), Number = "Request #: " + model.SNo, Message = jsonResponse.Message, Status = Enum.GetName(typeof(PaymentStatus), model.Status) };
-                        notification.CompanyId = SessionHelper.LoginUser.CompanyId;
-                        notification.ApplicationPageId = (int)ApplicationPages.Payment;
-                        notification.DistributorId = model.DistributorId;
-                        notification.RequestId = model.SNo;
-                        notification.Status = model.Status.ToString();
-                        notification.Message = jsonResponse.SignalRResponse.Message;
-                        notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(id.ToString());
-                        _NotificationBLL.Add(notification);
-                    }
                 }
                 _unitOfWork.Save();
-                jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

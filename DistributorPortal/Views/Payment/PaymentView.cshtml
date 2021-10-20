@@ -202,10 +202,21 @@
                                 @if (!string.IsNullOrEmpty(Model.Remarks))
                                 {
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
-                                        <h6>Remarks</h6>
+                                        <h6>Rejected Remarks</h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <textarea asp-for="Remarks" class="form-control"></textarea>
+                                    </div>
+                                }
+                            </div>
+                            <div class="row">
+                                @if (!string.IsNullOrEmpty(Model.ResubmitRemarks))
+                                {
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                        <h6>Re submission Remarks</h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <textarea asp-for="ResubmitRemarks" class="form-control"></textarea>
                                     </div>
                                 }
                             </div>

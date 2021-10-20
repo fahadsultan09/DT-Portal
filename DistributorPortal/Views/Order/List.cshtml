@@ -148,6 +148,13 @@
     </div>
 </div>
 <script>
+
+    //File upload
+    $('.custom-file-input').on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+
     $(document).ready(function () {
 
         var DistributorId = '@TempData["DistributorId"]';

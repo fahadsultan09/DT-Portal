@@ -22,7 +22,7 @@ namespace BusinessLogicLayer.Application
             _repository = _unitOfWork.GenericRepository<DistributorLicense>();
             _AuditTrailDistributorLicense = new AuditTrailBLL<DistributorLicense>(_unitOfWork);
         }
-        public int Add(DistributorLicense module)
+        public bool Add(DistributorLicense module)
         {
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.File = null;
@@ -35,22 +35,20 @@ namespace BusinessLogicLayer.Application
             module.UpdatedDate = DateTime.Now;
             _repository.Insert(module);
             _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Insert, module, "Save Distributor License", module.CreatedBy);
-            return _unitOfWork.Save();
+            return _unitOfWork.Save() > 0;
         }
-        public int Update(DistributorLicense module)
+        public bool Update(DistributorLicense module)
         {
             var item = _repository.GetById(module.Id);
-            module.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
+            item.Status = LicenseStatus.Submitted;
             item.LicenseTypeId = module.LicenseTypeId;
             item.LicenseId = module.LicenseId;
             item.Attachment = module.Attachment;
-            item.DistributorId = module.DistributorId;
             item.LicenseNo = module.LicenseNo;
             item.IssuingAuthority = module.IssuingAuthority;
             item.FormNoId = module.FormNoId;
             item.IssueDate = module.IssueDate;
             item.Expiry = module.Expiry;
-            item.Status = LicenseStatus.Submitted;
             item.DocumentType = module.DocumentType;
             item.RequestType = module.RequestType;
             item.IsActive = true;
@@ -59,7 +57,26 @@ namespace BusinessLogicLayer.Application
             _repository.Update(item);
             module.File = null;
             _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Update, module, "Update Distributor License", (int)item.UpdatedBy);
-            return _unitOfWork.Save();
+            return _unitOfWork.Save() > 0;
+        }
+        public bool UpdateApprove(DistributorLicense module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.Status = LicenseStatus.Verified;
+            item.DocumentType = module.DocumentType;
+            item.RequestType = module.RequestType;
+            item.LicenseNo = module.LicenseNo;
+            item.IssuingAuthority = module.IssuingAuthority;
+            item.FormNoId = module.FormNoId;
+            item.IssueDate = module.IssueDate;
+            item.Expiry = module.Expiry;
+            item.IsActive = true;
+            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedDate = DateTime.Now;
+            _repository.Update(item);
+            module.File = null;
+            _AuditTrailDistributorLicense.AddAuditTrail((int)ApplicationPages.DistributorLicense, (int)ApplicationActions.Update, module, "Update Distributor License", (int)item.UpdatedBy);
+            return _unitOfWork.Save() > 0;
         }
         public int UpdateActive(DistributorLicense module)
         {

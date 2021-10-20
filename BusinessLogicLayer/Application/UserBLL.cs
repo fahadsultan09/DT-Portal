@@ -43,6 +43,7 @@ namespace BusinessLogicLayer.Application
             item.Email = module.Email.Trim();
             item.DistributorId = module.IsDistributor ? module.DistributorId : null;
             item.IsDistributor = module.IsDistributor;
+            item.IsParentDistributor = module.IsParentDistributor;
             item.RoleId = module.RoleId;
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;

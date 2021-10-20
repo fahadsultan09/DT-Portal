@@ -428,7 +428,6 @@ namespace DistributorPortal.Controllers
         #region ProductPending
         public IActionResult ProductPending()
         {
-
             return View();
         }
         public List<ProductPending> GetProductList(ProductPendingSearch model)
@@ -445,7 +444,7 @@ namespace DistributorPortal.Controllers
                     SAPProductCode = item.SAPProductCode,
                     ProductName = item.ProductName,
                     PackSize = item.PackSize,
-                    Comapny = item.Comapny,
+                    CompanyName = item.CompanyName,
                     PendingQuantity = item.PendingQuantity,
                     Rate = item.Rate,
                     IncomeTax = item.IncomeTax,

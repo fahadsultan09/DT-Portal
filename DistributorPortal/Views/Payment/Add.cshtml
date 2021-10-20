@@ -104,7 +104,7 @@
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
-                                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate)" readonly="readonly" id="ValueClearingDate" class="form-control datepicker" style="background: white;" />
+                                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Convert.ToDateTime(Model.ValueClearingDate).ToString("MM/dd/yyyy"))" readonly="readonly" id="ValueClearingDate" class="form-control datepicker" style="background: white;" />
                                                     <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-ValueClearingDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -200,13 +200,24 @@
                                                     <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div><br />
+                                        @if (!string.IsNullOrEmpty(Model.ResubmitRemarks))
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                    <h6>Re submission Remarks</h6>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <textarea asp-for="ResubmitRemarks" class="form-control" disabled="disabled"></textarea>
+                                                </div>
+                                            </div>
+                                        }
                                         <br />
                                         <div class="row">
                                             <div class="col-6">
                                             </div>
                                             <div class="col-6 pull-right">
-                                                <button type="button" onclick="SavePayment();" class="btn btn-success mr-1 float-right @(Model.Id == 0 ? null : "d-none")">
+                                                <button type="button" onclick="SavePayment();" class="btn btn-success mr-1 float-right">
                                                     Submit
                                                 </button>
                                                 <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">

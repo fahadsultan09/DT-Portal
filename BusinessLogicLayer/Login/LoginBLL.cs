@@ -63,10 +63,10 @@ namespace BusinessLogicLayer.Login
                     LoginUser = null;
                     return LoginStatus.NotRegistered;
                 }
-                if (_SubDistributorBLL.Where(x => x.DistributorId == LoginUser.DistributorId && x.IsParent).Count() == 0)
-                {
+                if (_SubDistributorBLL.Where(x => x.DistributorId == LoginUser.DistributorId && x.IsParent).Count() > 0 && LoginUser.IsParentDistributor)
                     LoginUser.IsParentDistributor = true;
-                }
+                else
+                    LoginUser.IsParentDistributor = false;
             }
             if (LoginUser != null)
             {

@@ -57,6 +57,10 @@
                                     {
                                         <span class="badge badge-info">@item.Status</span>
                                     }
+                                    else if (item.Status == PaymentStatus.Resubmit)
+                                    {
+                                        <span class="badge badge-info">@item.Status</span>
+                                    }
                                     else
                                     {
                                         <span class="badge badge-danger">@item.Status</span>
@@ -67,10 +71,10 @@
                                     <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="View" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    @if (item.Status == PaymentStatus.Resubimt && !SessionHelper.LoginUser.IsDistributor && resubimt)
+                                    @if (item.Status == PaymentStatus.Resubmit && SessionHelper.LoginUser.IsDistributor && resubimt)
                                     {
-                                        <a asp-controller="Payment" asp-action="PaymentView" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="View" class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
+                                        <a asp-controller="Payment" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" title="Edit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-edit"></i>
                                         </a>
                                     }
                                     @if (item.Status == PaymentStatus.Unverified && !SessionHelper.LoginUser.IsDistributor && approve)

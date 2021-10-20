@@ -42,8 +42,8 @@ namespace Models.Application
         public int SNo { get; set; }
         [StringLength(255)]
         public string Remarks { get; set; }
-        //[StringLength(2550)]
-        //public string ResubmitRemarks { get; set; }
+        [StringLength(2550)]
+        public string ResubmitRemarks { get; set; }
         public PaymentStatus Status { get; set; }
         public string SAPCompanyCode { get; set; }
         public string SAPFiscalYear { get; set; }

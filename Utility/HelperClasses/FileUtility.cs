@@ -42,7 +42,7 @@ namespace Utility.HelperClasses
                 if (!Directory.Exists(UploadFolder))
                     Directory.CreateDirectory(UploadFolder);
 
-                string UniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName.Replace('_', '-'); ;
+                string UniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName.Replace('_', '-');
                 string FilePath = Path.Combine(UploadFolder, UniqueFileName);
                 using (var stream = new FileStream(FilePath, FileMode.Create))
                 {

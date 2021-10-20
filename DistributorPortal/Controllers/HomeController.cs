@@ -621,6 +621,13 @@ namespace DistributorPortal.Controllers
                 jsonResponse.RedirectURL = Url.Action("Index", "Home");
                 SessionHelper.LoginUser.Distributor = distributor;
                 SessionHelper.LoginUser.DistributorId = distributor.Id;
+                SessionHelper.AddDistributorWiseProduct =  new List<DistributorWiseProductDiscountAndPrices>();
+                SessionHelper.DistributorWiseProductOrderReturn = new List<DistributorWiseProductDiscountAndPrices>();
+                SessionHelper.OrderDetail = new List<OrderDetail>();
+                SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+                SessionHelper.DistributorBalance = new DistributorBalance();
+                SessionHelper.DistributorPendingQuantity = new List<DistributorPendingQuantity>();
+                SessionHelper.DistributorPendingValue = new List<DistributorPendingValue>();
             }
             catch (Exception ex)
             {

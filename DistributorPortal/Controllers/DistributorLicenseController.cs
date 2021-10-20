@@ -153,6 +153,30 @@ namespace DistributorPortal.Controllers
             }
         }
         [HttpPost]
+        public JsonResult Approve(DistributorLicense model)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            jsonResponse.Status = false;
+            try
+            {
+                if (model.Id > 0)
+                {
+                    _DistributorLicenseBLL.UpdateApprove(model);
+                }
+                jsonResponse.Status = true;
+                jsonResponse.Message = "Approved successfully";
+                jsonResponse.RedirectURL = Url.Action("Index", "DistributorLicense");
+                return Json(new { data = jsonResponse });
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Status = false;
+                jsonResponse.Message = NotificationMessage.ErrorOccurred;
+                return Json(new { data = jsonResponse });
+            }
+        }
+        [HttpPost]
         public JsonResult UpdateStatus(int Id, LicenseStatus Status, string Remarks)
         {
             JsonResponse jsonResponse = new JsonResponse();
@@ -167,12 +191,12 @@ namespace DistributorPortal.Controllers
                 if (Status == LicenseStatus.Verified)
                 {
                     jsonResponse.Status = true;
-                    jsonResponse.Message = model.LicenseControl.LicenseName + " License approved successfully.";
+                    jsonResponse.Message = model.LicenseControl.LicenseName + " License approved successfully";
                 }
                 else
                 {
                     jsonResponse.Status = false;
-                    jsonResponse.Message = model.LicenseControl.LicenseName + " License has been rejected.";
+                    jsonResponse.Message = model.LicenseControl.LicenseName + " License has been rejected";
                 }
                 _unitOfWork.Save();
 
@@ -218,7 +242,7 @@ namespace DistributorPortal.Controllers
             }
             return PartialView("List", model.DistributorLicenseList);
         }
-        public JsonResult ActiveInactiveLicense(string DPID) 
+        public JsonResult ActiveInactiveLicense(string DPID)
         {
             JsonResponse jsonResponse = new JsonResponse();
             int.TryParse(EncryptDecrypt.Decrypt(DPID), out int id);

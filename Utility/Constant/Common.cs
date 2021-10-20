@@ -12,6 +12,7 @@
         public class FolderName
         {
             public const string Order = "Order";
+            public const string OrderUpload = "OrderUpload";
             public const string OrderReturn = "OrderReturn";
             public const string Payment = "Payment";
             public const string Complaint = "Complaint";

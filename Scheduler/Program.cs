@@ -1,6 +1,5 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

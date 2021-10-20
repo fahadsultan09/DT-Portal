@@ -1,7 +1,9 @@
 ﻿@model List<DistributorLicense>
+@inject IUnitOfWork unitOfWork
 @{
     bool reject = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject));
     bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.DistributorLicense.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
+    List<LicenseForm> LicenseFormList = new LicenseFormBLL(unitOfWork).GetAllLicenseForm();
 }
 
 <div class="row">
@@ -11,7 +13,7 @@
                 <h2 class="card-title">License List</h2>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped" style="width:200%">
                     <thead>
                         <tr>
                             <th>Distributor Name</th>
@@ -21,6 +23,7 @@
                             <th>Request Type</th>
                             <th>License No</th>
                             <th>Issuing Authority</th>
+                            <th>Form No</th>
                             <th width="15%">Attachment</th>
                             <th>Issue Date</th>
                             <th>Expiry Date</th>
@@ -31,53 +34,83 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @for (int i = 0; i < Model.Count; i++)
                         {
                             <tr>
-                                <td>@item.Distributor.DistributorName</td>
-                                <td>@item.LicenseControl.LicenseName</td>
-                                <td>@item.LicenseType.LicenseTypeName</td>
-                                <td>@item.DocumentType</td>
-                                <td>@Html.DisplayFor(x => item.RequestType)</td>
-                                <td>@item.LicenseNo</td>
-                                <td>@item.IssuingAuthority</td>
                                 <td>
-                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(item.Attachment != null ? item.Attachment : "")" target="_blank">@(item.Attachment != null ? item.Attachment.Split('_')[1] : "")</a>
+                                    <input type="hidden" asp-for="@Model[i].Id" value="@Model[i].Id" class="hiddenId" />
+                                    @Model[i].Distributor.DistributorName
                                 </td>
-                                <td>@item.IssueDate.ToString("dd/MM/yyyy")</td>
-                                <td>@item.Expiry.ToString("dd/MM/yyyy")</td>
-                                <td>@(item.UpdatedDate != null ?  Convert.ToDateTime(item.UpdatedDate).ToString("dd/MM/yyyy") : item.CreatedDate.ToString("dd/MM/yyyy"))</td>
+                                <td>@Model[i].LicenseControl.LicenseName</td>
+                                <td>@Model[i].LicenseType.LicenseTypeName</td>
                                 <td>
-                                    @if (item.Status == LicenseStatus.Verified)
+                                    <select class="form-control select2" asp-for="@Model[i].DocumentType" asp-items="Html.GetEnumSelectList<DocumentType>()">
+                                        <option readonly>--Select option--</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control select2" asp-for="@Model[i].RequestType" asp-items="Html.GetEnumSelectList<LicenseRequestType>()">
+                                        <option readonly>--Select option--</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" asp-for="@Model[i].LicenseNo" value="@Model[i].LicenseNo" class="form-control" /></td>
+                                <td><input type="text" asp-for="@Model[i].IssuingAuthority" value="@Model[i].IssuingAuthority" class="form-control" /></td>
+                                <td>
+                                    <select class="form-control select2" asp-for="@Model[i].FormNoId" asp-items="@(new SelectList(LicenseFormList, "Id", "LicenseFormNo", Model[i].FormNoId))">
+                                        <option readonly>--Select option--</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model[i].Attachment != null ? Model[i].Attachment : "")" target="_blank">@(Model[i].Attachment != null ? Model[i].Attachment.Split('_')[1] : "")</a>
+                                </td>
+                                <td>
+                                    <div class="input-group date" data-target-input="nearest">
+                                        <input type="text" asp-for="@Model[i].IssueDate" readonly="readonly" value="@(Model[i].Id == 0 ? null : Model[i].IssueDate.ToShortDateString())" id="IssueDate@(i)" class="form-control datepicker1" style="background-color:white;" />
+                                        <div class="input-group-append" data-target="#IssueDate@(i)" data-toggle="datepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group date" data-target-input="nearest">
+                                        <input type="text" asp-for="@Model[i].Expiry" readonly="readonly" value="@(Model[i].Id == 0 ? null : Model[i].Expiry.ToShortDateString())" id="Expiry@(i)" class="form-control datepicker2" style="background-color:white;" />
+                                        <div class="input-group-append" data-target="#Expiry@(i)" data-toggle="datepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@(Model[i].UpdatedDate != null ?  Convert.ToDateTime(Model[i].UpdatedDate).ToString("dd/MM/yyyy") : Model[i].CreatedDate.ToString("dd/MM/yyyy"))</td>
+                                <td>
+                                    @if (Model[i].Status == LicenseStatus.Verified)
                                     {
-                                        <span class="badge badge-success">@item.Status</span>
+                                        <span class="badge badge-success">@Model[i].Status</span>
                                     }
-                                    else if (item.Status == LicenseStatus.Submitted)
+                                    else if (Model[i].Status == LicenseStatus.Submitted)
                                     {
-                                        <span class="badge badge-warning">@item.Status</span>
+                                        <span class="badge badge-warning">@Model[i].Status</span>
                                     }
                                     else
                                     {
-                                        <span class="badge badge-danger">@item.Status</span>
+                                        <span class="badge badge-danger">@Model[i].Status</span>
                                     }
                                 </td>
                                 <td>
                                     <div class="icheck-success d-inline">
-                                        <input type="checkbox" id="IsActive@(item.Id)" asp-for="@item.IsActive" value="@EncryptDecrypt.Encrypt(item.Id.ToString())" onchange="ActiveInactiveLicense(this);" checked="@(item.IsActive ? "checked" : null)" />
-                                        <label for="IsActive@(item.Id)">
+                                        <input type="checkbox" id="IsActive@(Model[i].Id)" asp-for="@Model[i].IsActive" value="@EncryptDecrypt.Encrypt(Model[i].Id.ToString())" onchange="ActiveInactiveLicense(this);" checked="@(Model[i].IsActive ? "checked" : null)" />
+                                        <label for="IsActive@(Model[i].Id)">
                                         </label>
                                     </div>
                                 </td>
                                 <td class="p-1">
                                     @if (approve)
                                     {
-                                        <a onclick="UpdateStatus('Verified', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Approve" class="btn btn-success btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                        <a title="Approve" class="btn btn-success btn-sm @(Model[i].Status != LicenseStatus.Submitted ? "d-none" : null) btnSubmit">
                                             <i class="fas fa-thumbs-up"></i>
                                         </a>
                                     }
                                     @if (reject)
                                     {
-                                        <a onclick="UpdateStatus('Rejected', 'DistributorLicense', 'UpdateStatus', @item.Id);" title="Reject" class="btn btn-danger btn-sm @(item.Status != LicenseStatus.Submitted ? "d-none" : null)">
+                                        <a onclick="UpdateStatus('Rejected', 'DistributorLicense', 'UpdateStatus', @Model[i].Id);" title="Reject" class="btn btn-danger btn-sm @(Model[i].Status != LicenseStatus.Submitted ? "d-none" : null)">
                                             <i class="fas fa-thumbs-down"></i>
                                         </a>
                                     }
@@ -91,6 +124,101 @@
     </div>
 </div>
 <script>
+
+
+    $("#example1").on("click", ".btnSubmit", function () {
+
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.value) {
+
+                if ($(this).closest("tr").find("td:eq(1)").find(":input").val() == "--Select option--") {
+                    Toast.fire({ icon: 'error', title: 'Select License Type' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(2)").find(":input").val() == "--Select option--") {
+                    Toast.fire({ icon: 'error', title: 'Select Document Type' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(3)").find(":input").val() == "--Select option--") {
+                    Toast.fire({ icon: 'error', title: 'Select Request Type' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(4)").find(":input").val() == "") {
+                    Toast.fire({ icon: 'error', title: 'Enter License No' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(5)").find(":input").val() == "") {
+                    Toast.fire({ icon: 'error', title: 'Enter Issuing Authority' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(6)").find(":input").val() == "--Select option--") {
+                    Toast.fire({ icon: 'error', title: 'Select Form No' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(8)").find(":input").val() == "") {
+                    Toast.fire({ icon: 'error', title: 'Select Issue Date' });
+                    return false;
+                }
+                if ($(this).closest("tr").find("td:eq(9)").find(":input").val() == "") {
+                    Toast.fire({ icon: 'error', title: 'Select Expiry Date' });
+                    return false;
+                }
+                debugger
+                var model = new FormData();
+                model.append('Id', $(this).closest("tr").find("td:eq(0)").find('input.hiddenId').val());
+                model.append('DocumentType', $(this).closest("tr").find("td:eq(3)").find(":input").val());
+                model.append('RequestType', $(this).closest("tr").find("td:eq(4)").find(":input").val());
+                model.append('LicenseNo', $(this).closest("tr").find("td:eq(5)").find(":input").val());
+                model.append('IssuingAuthority', $(this).closest("tr").find("td:eq(6)").find(":input").val());
+                model.append('FormNoId', $(this).closest("tr").find("td:eq(7)").find(":input").val());
+                model.append('IssueDate', $(this).closest("tr").find("td:eq(9)").find(":input").val());
+                model.append('Expiry', $(this).closest("tr").find("td:eq(10)").find(":input").val());
+                BlockUI();
+                $.post({
+                    url: '@Url.Action("Approve", "DistributorLicense")',
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    data: model,
+                    success: function (data) {
+                        if (data != null && data.data.Status) {
+                            Toast.fire({ icon: 'success', title: data.data.Message });
+                            window.location.reload();
+                        } else {
+                            UnBlockUI();
+                            Toast.fire({ icon: 'error', title: data.data.Message });
+                        }
+                    }
+                });
+            }
+            else {
+                window.location.reload();
+                UnBlockUI();
+            }
+        });
+    });
+
+    $(".datepicker1").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'bottom',
+        endDate: new Date()
+    });
+
+    $(".datepicker2").datepicker({
+        autoclose: true,
+        orientation: 'bottom',
+        startDate: '+1d'
+    });
 
     $(document).ready(function () {
 

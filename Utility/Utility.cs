@@ -93,7 +93,7 @@ namespace Utility
         Unverified = 2,
         Rejected = 3,
         Canceled = 4,
-        Resubimt = 5,
+        Resubmit = 5,
     }
     public enum TaxChallanStatus
     {

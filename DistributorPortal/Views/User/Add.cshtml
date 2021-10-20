@@ -152,10 +152,9 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
-                                                        <label class="col-lg-4 col-form-label">Registered Address</label>
-                                                        <div class="col-lg-8">
-                                                            <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
-                                                            <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                        <label class="col-lg-4 col-form-label">Is Parent Distributor</label>
+                                                        <div class="col-lg-6">
+                                                            <input style="margin-top: 13px" asp-for="IsParentDistributor" type="checkbox" id="IsParentDistributor"><i></i>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -206,6 +205,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Registered Address</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
+                                                            <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
@@ -252,6 +260,7 @@
         $('[data-mask]').inputmask();
 
         $('#DistributorId').attr("disabled", true);
+        $('#IsParentDistributor').attr("disabled", "disabled");
 
         if ($('#IsStoreKeeper').is(':checked')) {
             //$('#CompanyId').attr("disabled", false);
@@ -269,6 +278,7 @@
             if ($('#IsDistributor').is(':checked')) {
                 $('#IsDistributor').removeAttr("disabled");
                 $('#DistributorId').removeAttr("disabled");
+                $('#IsParentDistributor').removeAttr("disabled");
 
                 $('#IsStoreKeeper').prop('checked', false);
                 $('#IsStoreKeeper').attr("disabled", "disabled");
@@ -283,6 +293,8 @@
                 $('#EmailIntimationId').trigger('change');
             }
             else {
+                $('#IsParentDistributor').prop('checked', false);
+                $('#IsParentDistributor').attr("disabled", "disabled");
                 $('#DistributorId').attr("disabled", "disabled");
                 $('#DistributorId').val('');
                 $('#DistributorId').trigger('change');
@@ -302,6 +314,8 @@
                 $('#PlantLocationId').removeAttr("disabled");
                 $('#IsStoreKeeper').removeAttr("disabled");
 
+                $('#IsParentDistributor').prop('checked', false);
+                $('#IsParentDistributor').attr("disabled", "disabled");
                 $('#IsDistributor').prop('checked', false);
                 $('#IsDistributor').attr("disabled", "disabled")
                 $('#DistributorId').attr("disabled", "disabled");

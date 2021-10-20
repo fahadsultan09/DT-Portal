@@ -803,45 +803,32 @@ namespace DistributorPortal.Controllers
         public JsonResult UploadOrder(IFormFile customFile)
         {
             JsonResponse jsonResponse = new JsonResponse();
+            jsonResponse.Status = false;
             OrderMaster orderMaster = new OrderMaster();
+            string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
+            string UploadFolder = Path.Combine(FolderPath, FolderName.OrderUpload);
             try
             {
                 if (customFile == null || customFile.Length == 0)
                 {
-                    jsonResponse.Status = false;
                     jsonResponse.Message = NotificationMessage.SelectFile;
                     return Json(new { data = jsonResponse });
                 }
                 string fileExtension = Path.GetExtension(customFile.FileName);
                 if (fileExtension != ".xls" && fileExtension != ".xlsx")
                 {
-                    jsonResponse.Status = false;
                     jsonResponse.Message = NotificationMessage.OnlyExcelFileAllowed;
                     return Json(new { data = jsonResponse });
                 }
-                var fileName = customFile.FileName;
-                var filePath = Path.Combine(_hostEnvironment.ContentRootPath, fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    customFile.CopyTo(fileStream);
-                }
-
-                var tuple = ExtensionUtility.ImportExceltoDatatable(filePath, "Sheet1");
+                Tuple<bool,string> tuple1 = FileUtility.UploadFile(customFile, FolderName.OrderUpload, FolderPath);
+                var tuple = ExtensionUtility.ImportExceltoDatatable(tuple1.Item2, "Sheet1");
                 ExtensionUtility.RemoveEmptyRows(tuple.Item1);
                 if (tuple.Item1.Rows.Count == 0)
                 {
-                    jsonResponse.Status = false;
                     jsonResponse.Message = "Record not exist in file";
                     return Json(new { data = jsonResponse });
                 }
                 var DistributorWiseProductDiscountAndPrices = ExtensionUtility.ConvertDataTable<DistributorWiseProductDiscountAndPrices>(tuple.Item1);
-                if (DistributorWiseProductDiscountAndPrices.Where(x => Convert.ToInt32(x.Quantity) != 0).Count() == 0)
-                {
-                    jsonResponse.Status = false;
-                    jsonResponse.Message = NotificationMessage.AtLeastAddOneQuantity;
-                    return Json(new { data = jsonResponse });
-                }
                 if (SessionHelper.DistributorBalance == null)
                 {
                     SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
@@ -850,7 +837,6 @@ namespace DistributorPortal.Controllers
                 distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                 if (distributorLicenses.Count() == 0)
                 {
-                    jsonResponse.Status = false;
                     jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
                     return Json(new { data = jsonResponse });
                 }
@@ -866,6 +852,11 @@ namespace DistributorPortal.Controllers
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityCarton = _OrderBLL.CalculateCartonQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize));
                 orderMaster.DistributorWiseProduct = distributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).ToList();
                 orderMaster.DistributorWiseProduct = orderMaster.DistributorWiseProduct.Where(x => distributorLicenses.Contains(Convert.ToInt32(x.ProductDetail.LicenseControlId))).ToList();
+                if (orderMaster.DistributorWiseProduct.Where(x => x.ProductDetail.ProductMaster.Quantity != 0).Count() == 0)
+                {
+                    jsonResponse.Message = NotificationMessage.AtLeastAddOneQuantity;
+                    return Json(new { data = jsonResponse });
+                }
                 SessionHelper.AddDistributorWiseProduct = orderMaster.DistributorWiseProduct;
                 orderMaster.Status = OrderStatus.Draft;
                 jsonResponse = _OrderBLL.Save(orderMaster, Url);
