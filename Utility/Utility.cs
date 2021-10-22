@@ -300,4 +300,16 @@ namespace Utility
         Unverified = 10,
         Submitted = 11,
     }
+    public enum DebitCreditIndicator
+    {
+        [Display(Name = "Debit (Dr.)")]
+        Debit = 1,
+        [Display(Name = "Credit (Cr.)")]
+        Credit = 2,
+    }
+    public enum ReceivableAdvanceIndicator
+    {
+        Receivable = 1,
+        Advance = 2,
+    }
 }

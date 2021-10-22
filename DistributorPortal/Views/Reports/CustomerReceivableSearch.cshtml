@@ -1,0 +1,112 @@
+﻿@model CustomerReceivableSearch
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Search</h2>
+                    </div>
+                    <form asp-controller="Reports"
+                          asp-action="ProductPendingSearch"
+                          id="frmProductPendingSearch"
+                          data-ajax-begin="Begin"
+                          data-ajax-complete="Complete"
+                          data-ajax-update="#divform"
+                          data-ajax="true"
+                          data-ajax-method="POST">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Company</label>
+                                        <select asp-for="CompanyId" asp-items="@(new SelectList(Model.CompanyList, "Value", "Text"))" class="form-control select2">
+                                            <option value="">--Select option</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Debit / Credit</label>
+                                        <select asp-for="DebitCreditIndicator" asp-items='Html.GetEnumSelectList<DebitCreditIndicator>()' class="form-control select2">
+                                            <option value="">--Select option--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Receivable / Advance</label>
+                                        <select asp-for="ReceivableAdvanceIndicator" asp-items='Html.GetEnumSelectList<ReceivableAdvanceIndicator>()' class="form-control select2">
+                                            <option value="">--Select option--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                @if (!SessionHelper.LoginUser.IsDistributor)
+                                {
+                                    <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Distributor<span class="text-danger"> * </span></label>
+                                            <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2" required>
+                                                <option value="">--Select option</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
+                                    </div>
+                                }
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label font-weight-bold" for="Search"></label>
+                                        <button type="submit" name="Search" class="btn btn-block btn-info" value="Search">
+                                            Search
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 p-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label font-weight-bold" for="Clear"></label>
+                                        <button type="button" name="Clear" class="btn btn-block btn-secondary" value="Clear" id="btnClear">
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $(".datepicker").datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'bottom',
+    });
+
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            width: '100%',
+        });
+    });
+
+    $('#btnClear').on('click', function () {
+
+        $('.select2').val('');
+        $('.select2').trigger('change');
+        $('#OrderNo').val('');
+        $('.form-control, .datepicker').val('');
+        $('#frmOrderSearch').submit();
+    });
+
+</script>

@@ -476,5 +476,28 @@ namespace DistributorPortal.Controllers
             }
         }
         #endregion
+        #region 
+        public IActionResult CustomerReceivable()
+        {
+
+            return View();
+        }
+        public List<CustomerReceivable> GetCustomerReceivables(CustomerReceivableSearch model)
+        {
+            List<CustomerReceivable> lst = new List<CustomerReceivable>();
+            return lst;
+        }
+        public IActionResult CustomerReceivableSearch(CustomerReceivableSearch model, string Search)
+        {
+            if (Search == "Search")
+            {
+                return PartialView("CustomerReceivableList", GetCustomerReceivables(model));
+            }
+            else
+            {
+                return PartialView("CustomerReceivableList", GetCustomerReceivables(model));
+            }
+        }
+        #endregion
     }
 }
