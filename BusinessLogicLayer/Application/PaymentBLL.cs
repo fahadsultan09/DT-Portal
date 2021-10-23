@@ -98,7 +98,12 @@ namespace BusinessLogicLayer.Application
         }
         public bool UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
-            if (PaymentStatus.Rejected == paymentStatus)
+            if (PaymentStatus.Verified == paymentStatus)
+            {
+                model.ApprovedBy = SessionHelper.LoginUser.Id;
+                model.ApprovedDate = DateTime.Now;
+            }
+            else if (PaymentStatus.Rejected == paymentStatus)
             {
                 model.RejectedBy = SessionHelper.LoginUser.Id;
                 model.RejectedDate = DateTime.Now;
@@ -247,18 +252,16 @@ namespace BusinessLogicLayer.Application
 
             return query.ToList();
         }
-        public SAPPaymentViewModel AddPaymentToSAP(int PaymentId, DateTime? ValueClearingDate)
+        public SAPPaymentViewModel AddPaymentToSAP(PaymentMaster payment, DateTime? ValueClearingDate)
         {
-            var payment = GetAllPaymentMaster().Where(e => e.Id == PaymentId).FirstOrDefault();
             SAPPaymentViewModel model = new SAPPaymentViewModel()
             {
-                IsPaymentAllowedInSAP = payment.Company.IsPaymentAllowedInSAP,
-                PAY_ID = payment.PaymentModeId.ToString(),
+                PAY_ID = payment.SNo.ToString(),
                 REF = payment.PaymentModeNo.ToString(),
                 COMPANY = _CompanyBLL.GetAllCompany().FirstOrDefault(x => x.Id == payment.CompanyId).SAPCompanyCode,
                 AMOUNT = payment.Amount.ToString(),
                 DISTRIBUTOR = payment.Distributor.DistributorSAPCode,
-                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode && x.CompanyId == GetById(PaymentId).CompanyId).GLAccount,
+                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode && x.CompanyId == GetById(payment.Id).CompanyId).GLAccount,
                 P_DATE = payment.ValueClearingDate == null ? (Convert.ToDateTime(ValueClearingDate).Year.ToString() + string.Format("{0:00}", Convert.ToDateTime(ValueClearingDate).Month.ToString()) + string.Format("{0:00}", Convert.ToDateTime(ValueClearingDate).Day.ToString())).ToString()
                 : (Convert.ToDateTime(payment.ValueClearingDate).Year.ToString() + string.Format("{0:00}", Convert.ToDateTime(payment.ValueClearingDate).Month.ToString()) + string.Format("{0:00}", Convert.ToDateTime(payment.ValueClearingDate).Day.ToString())).ToString(),
             };

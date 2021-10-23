@@ -72,6 +72,14 @@ namespace DataAccessLayer.Repository
                 _context.Entry(e).State = EntityState.Modified;
             });
         }
+        public void HardDeleteRange(List<T> obj)
+        {
+            DbSet.AttachRange(obj);
+            obj.ToList().ForEach(e =>
+            {
+                _context.Entry(e).State = EntityState.Deleted;
+            });
+        }
         public List<T> Where(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
         {
             List<T> list;

@@ -21,6 +21,7 @@
                 <table id="example1" class="table table-striped table-hover" style="width:100%">
                     <thead>
                         <tr>
+                            <th>Distributor Name</th>
                             <th>Product Code</th>
                             <th>Product Name</th>
                             <th>Pack Size</th>
@@ -40,6 +41,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
+                                    <td>@item.DistributorName</td>
                                     <td>@item.SAPProductCode</td>
                                     <td>@item.ProductName</td>
                                     <td>@item.PackSize</td>

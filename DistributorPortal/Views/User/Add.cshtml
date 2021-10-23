@@ -152,9 +152,12 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
-                                                        <label class="col-lg-4 col-form-label">Is Parent Distributor</label>
-                                                        <div class="col-lg-6">
-                                                            <input style="margin-top: 13px" asp-for="IsParentDistributor" type="checkbox" id="IsParentDistributor"><i></i>
+                                                        <label class="col-lg-4 col-form-label">Sub Distributor Name<span class="text-danger"> * </span></label>
+                                                        <div class="col-lg-8">
+                                                            <select asp-for="SubDistributorIds" asp-items="@(new MultiSelectList(Model.SubDistributorList,"Value","Text"))" class="select2" multiple="multiple" data-placeholder="--Select Distributor--">
+                                                                <option readonly disabled>--Select Distributor--</option>
+                                                            </select>
+                                                            <span asp-validation-for="SubDistributorIds" class="text-danger"></span>
                                                         </div>
                                                     </div>
                                                 </div>

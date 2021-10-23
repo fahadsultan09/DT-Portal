@@ -2,7 +2,6 @@
 {
     public class SAPPaymentViewModel
     {
-        public bool IsPaymentAllowedInSAP { get; set; }
         public string PAY_ID { get; set; }
         public string REF { get; set; } //Payment No
         public string COMPANY { get; set; }

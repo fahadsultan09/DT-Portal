@@ -71,7 +71,7 @@
                             {
                                 Value = x.SubDistributorId.ToString(),
                                 Text = x.SubDistributors.DistributorName
-                            }),"Value","Text", SessionHelper.LoginUser.DistributorId))" class="select2 form-control" onchange="SetDistributor();">
+                            }),"Value", "Text", SessionHelper.LoginUser.DistributorId))" class="select2 form-control" onchange="SetDistributor();">
                     </select>
                 }
                 else if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null)

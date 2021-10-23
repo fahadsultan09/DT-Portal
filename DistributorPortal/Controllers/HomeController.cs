@@ -92,8 +92,9 @@ namespace DistributorPortal.Controllers
             {
                 SessionHelper.Notification = new List<Notification>();
             }
-            List<SubDistributor> subDistributors = _SubDistributorBLL.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
-            if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null && subDistributors.FirstOrDefault(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.IsParent) != null)
+            int userId = SessionHelper.LoginUser.Id;
+            List<SubDistributor> subDistributors = _SubDistributorBLL.Where(x => x.UserId == userId).ToList();
+            if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null && subDistributors.FirstOrDefault(x => x.UserId == SessionHelper.LoginUser.Id) != null)
             {
                 SessionHelper.DropDownSubDistributor = subDistributors;
             }

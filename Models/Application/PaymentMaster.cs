@@ -18,7 +18,9 @@ namespace Models.Application
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? DepositDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? ValueClearingDate { get; set; }
         [Required(ErrorMessage = "Depositor Bank Name is required.")]
         public int DepositorBankName { get; set; }

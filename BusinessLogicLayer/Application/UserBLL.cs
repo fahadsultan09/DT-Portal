@@ -14,13 +14,17 @@ namespace BusinessLogicLayer.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<User> repository;
+        private readonly SubDistributorBLL _SubDistributorBLL;
+
         public UserBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             repository = _unitOfWork.GenericRepository<User>();
+            _SubDistributorBLL = new SubDistributorBLL(_unitOfWork);
         }
         public bool AddUser(User module)
         {
+            List<SubDistributor> SubDistributorList = new List<SubDistributor>();
             module.MobileNumber = module.MobileNumber.Replace("-", "");
             module.UserName.Trim();
             module.FirstName.Trim();
@@ -31,10 +35,31 @@ namespace BusinessLogicLayer.Application
             module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
             repository.Insert(module);
+
+            if (_SubDistributorBLL.Where(x => x.UserId == module.Id).Count() > 0)
+            {
+                _SubDistributorBLL.HardDeleteRange(_SubDistributorBLL.Where(x => x.UserId == module.Id).ToList());
+            }
+            if (module.SubDistributorIds != null && module.SubDistributorIds.Count() > 0)
+            {
+                foreach (var item1 in module.SubDistributorIds.ToArray())
+                {
+                    SubDistributor subDistributor = new SubDistributor();
+                    subDistributor.UserId = module.Id;
+                    subDistributor.SubDistributorId = item1;
+                    subDistributor.IsActive = module.IsActive;
+                    subDistributor.IsDeleted = false;
+                    subDistributor.CreatedBy = SessionHelper.LoginUser.Id;
+                    subDistributor.CreatedDate = DateTime.Now;
+                    SubDistributorList.Add(subDistributor);
+                }
+                _SubDistributorBLL.AddRange(SubDistributorList);
+            }
             return _unitOfWork.Save() > 0;
         }
         public bool UpdateUser(User module)
         {
+            List<SubDistributor> SubDistributorList = new List<SubDistributor>();
             var item = repository.GetById(module.Id);
             item.AccessToken = module.AccessToken;
             item.UserName = module.UserName.Trim();
@@ -43,7 +68,6 @@ namespace BusinessLogicLayer.Application
             item.Email = module.Email.Trim();
             item.DistributorId = module.IsDistributor ? module.DistributorId : null;
             item.IsDistributor = module.IsDistributor;
-            item.IsParentDistributor = module.IsParentDistributor;
             item.RoleId = module.RoleId;
             item.PlantLocationId = module.PlantLocationId;
             item.CompanyId = module.CompanyId;
@@ -57,6 +81,32 @@ namespace BusinessLogicLayer.Application
             item.UpdatedBy = SessionHelper.LoginUser == null ? 1 : SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             repository.Update(item);
+
+            if (_SubDistributorBLL.Where(x => x.UserId == module.Id).Count() > 0)
+            {
+                _SubDistributorBLL.HardDeleteRange(_SubDistributorBLL.Where(x => x.UserId == module.Id).ToList());
+            }
+            if (module.SubDistributorIds != null && module.SubDistributorIds.Count() > 0)
+            {
+                foreach (var item1 in module.SubDistributorIds.ToArray())
+                {
+                    SubDistributor subDistributor = new SubDistributor();
+                    subDistributor.UserId = module.Id;
+                    subDistributor.SubDistributorId = item1;
+                    subDistributor.IsActive = module.IsActive;
+                    subDistributor.IsDeleted = false;
+                    subDistributor.CreatedBy = SessionHelper.LoginUser.Id;
+                    subDistributor.CreatedDate = DateTime.Now;
+                    SubDistributorList.Add(subDistributor);
+                }
+                _SubDistributorBLL.AddRange(SubDistributorList);
+            }
+            return _unitOfWork.Save() > 0;
+        }
+        public bool UpdateAccessToken(User module)
+        {
+            var item = repository.GetById(module.Id);
+            item.AccessToken = module.AccessToken;
             return _unitOfWork.Save() > 0;
         }
         public bool DeleteUser(int id)

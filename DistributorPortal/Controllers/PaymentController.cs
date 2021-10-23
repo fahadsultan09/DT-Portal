@@ -83,6 +83,8 @@ namespace DistributorPortal.Controllers
         {
             JsonResponse jsonResponse = new JsonResponse();
             Notification notification = new Notification();
+            bool result = false;
+            jsonResponse.Status = false;
             string FolderPath = _IConfiguration.GetSection("Settings").GetSection("FolderPath").Value;
             try
             {
@@ -98,35 +100,48 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(model.Id, model.ValueClearingDate);
-                    Root root = new Root();
-                    using (var client = new HttpClient())
+                    var payment = _PaymentBLL.Where(e => e.Id == model.Id).FirstOrDefault();
+                    model.SNo = payment.SNo;
+                    if (payment.Company.IsPaymentAllowedInSAP)
                     {
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
-                        var response = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID, sAPPaymentViewModel.P_DATE))).Result;
-                        if (response.IsSuccessStatusCode)
+                        result = _PaymentBLL.UpdateApproval(model);
+                        SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(payment, model.ValueClearingDate);
+                        Root root = new Root();
+                        using (var client = new HttpClient())
                         {
-                            var JsonContent = response.Content.ReadAsStringAsync().Result;
-                            root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                            client.DefaultRequestHeaders.Accept.Clear();
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            string authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(_Configuration.POUserName + ":" + _Configuration.POPassword));
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authInfo);
+                            var response = client.GetAsync(new Uri(string.Format(_Configuration.PostPayment, sAPPaymentViewModel.REF, sAPPaymentViewModel.COMPANY, sAPPaymentViewModel.AMOUNT, sAPPaymentViewModel.DISTRIBUTOR, sAPPaymentViewModel.B_CODE, sAPPaymentViewModel.PAY_ID, sAPPaymentViewModel.P_DATE))).Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var JsonContent = response.Content.ReadAsStringAsync().Result;
+                                root = JsonConvert.DeserializeObject<Root>(JsonContent.ToString());
+                            }
                         }
-                    }
-                    if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
-                    {
-                        model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
-                        model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
-                        model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
-                        model.Status = PaymentStatus.Verified;
-                        jsonResponse.Status = _PaymentBLL.UpdateApproval(model);
-                        jsonResponse.Message = jsonResponse.Status ? "Payment has been verified" : "Unable to verified payment";
-                        jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        if (root != null && root.ZWAS_PAYMENT_BAPI_DP != null && !string.IsNullOrEmpty(root.ZWAS_PAYMENT_BAPI_DP.COMPANYY))
+                        {
+                            model.SAPCompanyCode = root.ZWAS_PAYMENT_BAPI_DP.COMPANYY;
+                            model.SAPDocumentNumber = root.ZWAS_PAYMENT_BAPI_DP.DOCUMENT;
+                            model.SAPFiscalYear = root.ZWAS_PAYMENT_BAPI_DP.FISCAL;
+                            model.Status = PaymentStatus.Verified;
+                            jsonResponse.Status = _PaymentBLL.UpdateApproval(model);
+                            jsonResponse.Message = jsonResponse.Status ? "Payment has been verified" : "Unable to verified payment";
+                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        }
+                        else
+                        {
+                            jsonResponse.Status = false;
+                            jsonResponse.Message = "Unable to verified payment";
+                            jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                        }
                     }
                     else
                     {
-                        jsonResponse.Status = false;
-                        jsonResponse.Message = "Unable to verified payment";
+                        result = _PaymentBLL.UpdateApproval(model);
+                        jsonResponse.Status = result;
+                        jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
                         jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     }
                 }
@@ -204,13 +219,15 @@ namespace DistributorPortal.Controllers
                     {
                         model.Status = PaymentStatus.Unverified;
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                        jsonResponse.Status = _PaymentBLL.Update(model);
+                        _PaymentBLL.Update(model);
+                        jsonResponse.Status = true;
                     }
                     else
                     {
                         model.Status = PaymentStatus.Unverified;
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
-                        jsonResponse.Status = _PaymentBLL.Add(model);
+                        _PaymentBLL.Add(model);
+                        jsonResponse.Status = true;
                         if (model.Id > 0)
                         {
                             _PaymentBLL.UpdateSNo(model);

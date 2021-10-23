@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.Login
                 if (string.IsNullOrEmpty(LoginUser.AccessToken) && !string.IsNullOrEmpty(user.AccessToken))
                 {
                     LoginUser.AccessToken = user.AccessToken;
-                    _UserBLL.UpdateUser(LoginUser);
+                    _UserBLL.UpdateAccessToken(LoginUser);
                 }
                 else
                 {
@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Login
                         LoginUser.AccessToken = user.AccessToken;
                         if (!string.IsNullOrEmpty(LoginUser.AccessToken))
                         {
-                            _UserBLL.UpdateUser(LoginUser);
+                            _UserBLL.UpdateAccessToken(LoginUser);
                         }
                     }
                 }
@@ -63,10 +63,6 @@ namespace BusinessLogicLayer.Login
                     LoginUser = null;
                     return LoginStatus.NotRegistered;
                 }
-                if (_SubDistributorBLL.Where(x => x.DistributorId == LoginUser.DistributorId && x.IsParent).Count() > 0 && LoginUser.IsParentDistributor)
-                    LoginUser.IsParentDistributor = true;
-                else
-                    LoginUser.IsParentDistributor = false;
             }
             if (LoginUser != null)
             {

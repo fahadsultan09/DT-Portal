@@ -105,28 +105,27 @@
                                   enctype="multipart/form-data">
                                 <input asp-for="Id" type="hidden" />
                                 <div class="row">
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                         <h6>Deposit Date</h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                            <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate != null ? Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy") : null)" data-target="#DepositDate" class="form-control datepicker" style="background: #e9ecef !important;" disabled="disabled" />
-                                            <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
+                                        <div class="input-group date" data-target-input="nearest">
+                                            <input type="text" asp-for="DepositDate" readonly="readonly" id="DepositDate" asp-format="{0:dd/MMM/yyyy}" class="form-control datepicker" style="background: white;" />
+                                            <div class="input-group-append" data-target="#DepositDate" data-toggle="datepickerDeposite" id="input-group-append-DepositDate">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
                                         <h6>Value Clearing Date</h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                            <input type="text" asp-for="ValueClearingDate" value="@(Model.ValueClearingDate != null ? Convert.ToDateTime(Model.ValueClearingDate).ToString("MM/dd/yyyy") : null)" data-target="#ValueClearingDate" class="form-control datepicker" style="background: white;" />
-                                            <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
+                                            <input type="text" asp-for="ValueClearingDate" data-target="#ValueClearingDate" asp-format="{0:dd/MMM/yyyy}" class="form-control datepicker" style="background: white;" />
+                                            <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-DepositDate">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
                                         </div>
-                                        <span id="errorValueClearingDate" class="text-danger"></span>
                                     </div>
                                 </div><br />
                                 <div class=" row">
@@ -161,7 +160,7 @@
                                         <h6>Amount<span class="text-danger"> * </span></h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <input type="number" asp-for="Amount" class="form-control" id="Amount" disabled="disabled" />
+                                        <input type="text" name="Amount" value="@Model.Amount.ToString("#,##0.00")" class="form-control" id="Amount" disabled="disabled" />
                                         <span asp-validation-for="Amount" class="text-danger"></span>
                                         <span class="text-info" id="AmountInWords"></span>
                                     </div>
@@ -259,11 +258,17 @@
 
 <script>
 
-    $(".datepicker").datepicker({
-        format: 'mm/dd/yyyy',
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+
+    $('.datepicker').datepicker({
         autoclose: true,
+        clearBtn: true,
+        format: "dd/M/yyyy",
+        endDate: new Date(year, month, day),
         orientation: 'bottom',
-        endDate: new Date()
     });
 
     $('#input-group-append-DepositDate').click(function () {

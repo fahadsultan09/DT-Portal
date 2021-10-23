@@ -441,6 +441,7 @@ namespace DistributorPortal.Controllers
                 pendingValue = _OrderBLL.CalculatePendingValue(item.PendingQuantity, item.Rate, item.Discount, item.SalesTax + item.AdditionalSalesTax, item.IncomeTax);
                 pendings.Add(new ProductPending()
                 {
+                    DistributorName = item.DistributorName,
                     SAPProductCode = item.SAPProductCode,
                     ProductName = item.ProductName,
                     PackSize = item.PackSize,

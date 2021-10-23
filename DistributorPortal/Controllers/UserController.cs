@@ -38,7 +38,7 @@ namespace UserPortal.Controllers
         [HttpGet]
         public IActionResult Add(string DPID)
         {
-            int id=0;
+            int id = 0;
             if (!string.IsNullOrEmpty(DPID))
             {
                 int.TryParse(EncryptDecrypt.Decrypt(DPID), out id);
@@ -129,6 +129,8 @@ namespace UserPortal.Controllers
             model.CompanyList = new CompanyBLL(_unitOfWork).DropDownCompanyList(Convert.ToInt32(model.CompanyId), false);
             model.PlantLocationList = new PlantLocationBLL(_unitOfWork).DropDownPlantLocationList(Convert.ToInt32(model.PlantLocationId));
             model.CityList = new CityBLL(_unitOfWork).DropDownCityList(Convert.ToInt32(model.CityId));
+            model.SubDistributorIds = new SubDistributorBLL(_unitOfWork).Where(x => x.UserId == model.Id).Select(x => x.SubDistributorId).ToArray();
+            model.SubDistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(Convert.ToInt32(model.DistributorId));
             return model;
         }
         public JsonResult GetUserList()

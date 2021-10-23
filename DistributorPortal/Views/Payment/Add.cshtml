@@ -93,7 +93,7 @@
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                                 <div class="input-group date" data-target-input="nearest">
-                                                    <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate)" readonly="readonly" id="DepositDate" class="form-control datepickerDeposite" style="background: white;" />
+                                                    <input type="text" asp-for="DepositDate" readonly="readonly" id="DepositDate" class="form-control datepicker" style="background: white;" />
                                                     <div class="input-group-append" data-target="#DepositDate" data-toggle="datepickerDeposite" id="input-group-append-DepositDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
@@ -103,9 +103,9 @@
                                                 <h6>Value Clearing Date</h6>
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                <div class="input-group date" data-target-input="nearest">
-                                                    <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Convert.ToDateTime(Model.ValueClearingDate).ToString("MM/dd/yyyy"))" readonly="readonly" id="ValueClearingDate" class="form-control datepicker" style="background: white;" />
-                                                    <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-ValueClearingDate">
+                                                <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
+                                                    <input type="text" asp-for="ValueClearingDate" data-target="#ValueClearingDate" class="form-control datepicker" style="background: white;" />
+                                                    <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-DepositDate">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                     </div>
                                                 </div>
@@ -238,23 +238,25 @@
 
 <script>
 
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+
+    $('.datepicker').datepicker({
+        autoclose: true,
+        clearBtn: true,
+        format: "dd/M/yyyy",
+        endDate: new Date(year, month, day),
+        orientation: 'bottom',
+    });
+
     $('#customFile').on("change", function () {
         if (this.files[0].size > 5242880) {
         }
         else {
             $('#File').val($(this).val().split("\\").pop());
         }
-    });
-
-    $(".datepicker").datepicker({
-        autoclose: true,
-        orientation: 'bottom',
-        endDate: new Date()
-    });
-    $(".datepickerDeposite").datepicker({
-        autoclose: true,
-        orientation: 'bottom',
-        endDate: new Date()
     });
 
     $('#input-group-append-DepositDate').click(function () {

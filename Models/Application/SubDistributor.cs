@@ -9,14 +9,13 @@ namespace Models.Application
     public class SubDistributor : DeletedEntity
     {
         [BindRequired]
-        [Required(ErrorMessage = "Select Distributor.")]
-        public int DistributorId { get; set; }
-        [ForeignKey("DistributorId")]
-        public virtual Distributor Distributor { get; set; }
+        [Required(ErrorMessage = "Select User.")]
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
         public int SubDistributorId { get; set; }
         [ForeignKey("SubDistributorId")]
         public virtual Distributor SubDistributors { get; set; }
-        public bool IsParent { get; set; }
         [NotMapped]
         [BindRequired]
         [Required(ErrorMessage = "Select Sub Distributor.")]
