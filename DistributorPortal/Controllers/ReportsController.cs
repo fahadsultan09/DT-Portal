@@ -34,9 +34,9 @@ namespace DistributorPortal.Controllers
         private readonly ReportsBLL _ReportsBLL;
         private readonly Configuration _Configuration;
         private readonly IDapper _dapper;
-        public ReportsController(IUnitOfWork unitOfWork,IDapper dapper, Configuration configuration)
+        public ReportsController(IUnitOfWork unitOfWork, IDapper dapper, Configuration configuration)
         {
-            _dapper = dapper; 
+            _dapper = dapper;
             _unitOfWork = unitOfWork;
             _OrderBLL = new OrderBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
@@ -433,12 +433,10 @@ namespace DistributorPortal.Controllers
         public List<ProductPending> GetProductList(ProductPendingSearch model)
         {
             List<ProductPending> pendings = new List<ProductPending>();
-            double pendingValue = 0;
             List<ProductPending> list = _DistributorWiseProductDiscountAndPricesBLL.GetProductPendings(model, _dapper);
-            
-            foreach(var item in list)
+
+            foreach (var item in list)
             {
-                pendingValue = _OrderBLL.CalculatePendingValue(item.PendingQuantity, item.Rate, item.Discount, item.SalesTax + item.AdditionalSalesTax, item.IncomeTax);
                 pendings.Add(new ProductPending()
                 {
                     DistributorName = item.DistributorName,
@@ -451,7 +449,7 @@ namespace DistributorPortal.Controllers
                     IncomeTax = item.IncomeTax,
                     SalesTax = item.SalesTax,
                     AdditionalSalesTax = item.AdditionalSalesTax,
-                    PendingValue = pendingValue,
+                    PendingValue = item.PendingValue,
                     Status = item.Status,
                     CompanyId = item.CompanyId,
                     productId = item.productId,

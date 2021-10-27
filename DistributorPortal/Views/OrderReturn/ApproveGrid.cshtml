@@ -76,11 +76,11 @@
                             <input type="text" asp-for="@Model.OrderReturnDetail[i].ReceivedQty" value="@Model.OrderReturnDetail[i].ReceivedQty" _BatchNo="@Model.OrderReturnDetail[i].ReceivedBatchNo" autocomplete="off" min="0" max="999999" maxlength="6" pattern="\d*" oninput="validity.valid||(value='');" class="form-control BQMRP" />
                         </td>
                         <td><span class="Amount">@Model.OrderReturnDetail[i].NetAmount</span></td>
-                        <td>@Model.OrderReturnDetail[i].ManufactureDate.ToString("dd/MM/yyyy")</td>
-                        <td>@Model.OrderReturnDetail[i].ExpiryDate.ToString("dd/MM/yyyy")</td>
+                        <td>@(Convert.ToDateTime(Model.OrderReturnDetail[i].ManufactureDate).ToString("dd/MM/yyyy"))</td>
+                        <td>@Convert.ToDateTime(Model.OrderReturnDetail[i].ExpiryDate).ToString("dd/MM/yyyy"))</td>
                         <td>@Model.OrderReturnDetail[i].InvoiceNo</td>
                         <td>@Model.OrderReturnDetail[i].InvoiceDate.ToString("dd/MM/yyyy")</td>
-                        <td>@Model.OrderReturnDetail[i].IntimationDate.ToString("dd/MM/yyyy")</td>
+                        <td>@Convert.ToDateTime(Model.OrderReturnDetail[i].IntimationDate).ToString("dd/MM/yyyy"))</td>
                         <td>@Model.OrderReturnDetail[i].Remarks</td>
                     </tr>
                 }
@@ -115,7 +115,7 @@
         else
         {
             obj = $(this);
-            
+
             var BatchNo = data.currentTarget.getAttribute("_BatchNo");
             var Id = $(obj).parent().parent().find('td:eq(0) input[type="text"]').val();
             var ProductId = $(obj).parent().parent().find('td:eq(1) input[type="text"]').val();
@@ -128,7 +128,7 @@
                 data: { 'Id': Id, 'ProductId': ProductId, 'ReceivedQty': ReceivedQty, 'ReceivedMRP': ReceivedMRP, 'BatchNo': BatchNo, 'ReceivedBatchNo': ReceivedBatchNo },
                 async: false,
                 success: function (response) {
-                    
+
                     $(obj).parent().parent().find('td:eq(10)').text(response.NetAmount);
                     CalculateTotal();
                 }

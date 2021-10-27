@@ -53,17 +53,17 @@ namespace DistributorPortal.Controllers
 
             if (SessionHelper.LoginUser.IsDistributor)
             {
-                model.ComplaintList = GetComplaintList().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                model.ComplaintList = GetComplaintList().Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.Status != ComplaintStatus.Approved).ToList();
                 return View(model);
             }
             if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "ComplaintSubCategory").Select(x => x.ApplicationAction.Id).Contains((int)ApplicationActions.IsAdmin))
             {
-                model.ComplaintList = GetComplaintList();
+                model.ComplaintList = GetComplaintList().Where(x => x.Status != ComplaintStatus.Approved).ToList();
             }
             else
             {
                 int[] ComplaintSubCategoryIds = _ComplaintSubCategoryBLL.Where(x => x.UserEmailTo == SessionHelper.LoginUser.Id).Select(x => x.Id).ToArray();
-                model.ComplaintList = GetComplaintList().Where(x => ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
+                model.ComplaintList = GetComplaintList().Where(x => x.Status != ComplaintStatus.Approved && ComplaintSubCategoryIds.Contains(x.ComplaintSubCategoryId)).ToList();
             }
             return View(model);
         }
@@ -298,7 +298,7 @@ namespace DistributorPortal.Controllers
         }
         public List<Complaint> GetComplaintList()
         {
-            var list = _ComplaintBLL.Where(x => x.IsActive && !x.IsDeleted && SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
+            var list = _ComplaintBLL.Where(x => x.IsActive && !x.IsDeleted && (SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true)).ToList();
             return list;
         }
     }

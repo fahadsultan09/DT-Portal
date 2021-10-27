@@ -100,6 +100,15 @@ namespace DistributorPortal.Controllers
                         _DistributorBLL.UpdateDistributor(item);
                     }
                 }
+                var DeleteDistributor = alldist.Where(e => !SAPDistributor.Select(x => x.DistributorSAPCode).Contains(e.DistributorSAPCode)).ToList();
+                foreach (var item in DeleteDistributor)
+                {
+                    var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);
+                    if (distributor != null)
+                    {
+                        _DistributorBLL.DeleteDistributor(distributor.Id);
+                    }
+                }
 
                 jsonResponse.Message = "Distributor sync successfully";
                 jsonResponse.Status = true;

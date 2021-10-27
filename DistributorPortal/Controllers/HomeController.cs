@@ -87,16 +87,16 @@ namespace DistributorPortal.Controllers
                 {
                     SessionHelper.NotificationCount = list.Where(x => x.ApplicationPageId == (int)ApplicationPages.Order ? !x.IsOrderView : x.ApplicationPageId == (int)ApplicationPages.OrderReturn ? !x.IsOrderReturnView : x.ApplicationPageId == (int)ApplicationPages.Payment ? !x.IsPaymentView : true).Count();
                 }
+                int userId = SessionHelper.LoginUser.Id;
+                List<SubDistributor> subDistributors = _SubDistributorBLL.Where(x => x.UserId == userId).ToList();
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null && subDistributors.FirstOrDefault(x => x.UserId == SessionHelper.LoginUser.Id) != null)
+                {
+                    SessionHelper.DropDownSubDistributor = subDistributors;
+                }
             }
             else
             {
                 SessionHelper.Notification = new List<Notification>();
-            }
-            int userId = SessionHelper.LoginUser.Id;
-            List<SubDistributor> subDistributors = _SubDistributorBLL.Where(x => x.UserId == userId).ToList();
-            if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null && subDistributors.FirstOrDefault(x => x.UserId == SessionHelper.LoginUser.Id) != null)
-            {
-                SessionHelper.DropDownSubDistributor = subDistributors;
             }
         }
         public IActionResult Index()

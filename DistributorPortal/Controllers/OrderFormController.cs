@@ -820,7 +820,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = NotificationMessage.OnlyExcelFileAllowed;
                     return Json(new { data = jsonResponse });
                 }
-                Tuple<bool,string> tuple1 = FileUtility.UploadFile(customFile, FolderName.OrderUpload, FolderPath);
+                Tuple<bool, string> tuple1 = FileUtility.UploadFile(customFile, FolderName.OrderUpload, FolderPath);
                 var tuple = ExtensionUtility.ImportExceltoDatatable(tuple1.Item2, "Sheet1");
                 ExtensionUtility.RemoveEmptyRows(tuple.Item1);
                 if (tuple.Item1.Rows.Count == 0)
@@ -828,11 +828,7 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = "Record not exist in file";
                     return Json(new { data = jsonResponse });
                 }
-                var DistributorWiseProductDiscountAndPrices = ExtensionUtility.ConvertDataTable<DistributorWiseProductDiscountAndPrices>(tuple.Item1);
-                if (SessionHelper.DistributorBalance == null)
-                {
-                    SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
-                }
+                var DistributorWiseProductDiscountAndPricesImport = ExtensionUtility.ConvertDataTable<DistributorWiseProductDiscountAndPrices>(tuple.Item1);
                 List<int> distributorLicenses = new List<int>();
                 distributorLicenses = _DistributorLicenseBLL.Where(e => !e.IsDeleted && e.IsActive && e.Status == LicenseStatus.Verified && e.Expiry > DateTime.Now && e.DistributorId == SessionHelper.LoginUser.DistributorId).Select(x => x.LicenseId).ToList();
                 if (distributorLicenses.Count() == 0)
@@ -840,13 +836,26 @@ namespace DistributorPortal.Controllers
                     jsonResponse.Message = NotificationMessage.AddVerifiedLicense;
                     return Json(new { data = jsonResponse });
                 }
-                List<DistributorWiseProductDiscountAndPrices> distributorWiseProduct = discountAndPricesBll.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId && x.ProductDetailId != null
+                var DuplicateProductCode = DistributorWiseProductDiscountAndPricesImport.GroupBy(x => x.ProductCode).Where(g => g.Count() > 1).Select(y => y.Key).ToArray();
+                if (DuplicateProductCode != null && DuplicateProductCode.Count() > 0)
+                {
+                    jsonResponse.Message = "Duplicate Product Code found " + Environment.NewLine + string.Join(", ", DuplicateProductCode);
+                    return Json(new { data = jsonResponse });
+                }
+                List<DistributorWiseProductDiscountAndPrices> distributorWiseProductDiscountAndPrices = discountAndPricesBll.Where(x => x.DistributorId == SessionHelper.LoginUser.DistributorId).ToList();
+                var CheckProductCode = DistributorWiseProductDiscountAndPricesImport.Where(x => !distributorWiseProductDiscountAndPrices.Select(x => x.SAPProductCode).Contains(x.ProductCode)).Select(x => x.ProductCode).ToArray();
+                if (CheckProductCode != null && CheckProductCode.Count() > 0)
+                {
+                    jsonResponse.Message = "Product Code not found " + Environment.NewLine + string.Join(", ", CheckProductCode);
+                    return Json(new { data = jsonResponse });
+                }
+                List<DistributorWiseProductDiscountAndPrices> distributorWiseProduct = distributorWiseProductDiscountAndPrices.Where(x => x.ProductDetailId != null
                && (x.ProductDetail.ProductVisibilityId == ProductVisibility.Visible || x.ProductDetail.ProductVisibilityId == ProductVisibility.OrderDispatch)
-               && DistributorWiseProductDiscountAndPrices.Select(x => x.ProductCode).Contains(x.SAPProductCode)).ToList();
+               && DistributorWiseProductDiscountAndPricesImport.Select(x => x.ProductCode).Contains(x.SAPProductCode)).ToList();
                 distributorWiseProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                 distributorWiseProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                 distributorWiseProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
-                distributorWiseProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = Convert.ToInt32(DistributorWiseProductDiscountAndPrices.FirstOrDefault(y => y.ProductCode == x.SAPProductCode).Quantity));
+                distributorWiseProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = Convert.ToInt32(DistributorWiseProductDiscountAndPricesImport.FirstOrDefault(y => y.ProductCode == x.SAPProductCode).Quantity));
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityLoose = _OrderBLL.CalculateSFLooseQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanitySF = _OrderBLL.CalculateSFQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityCarton = _OrderBLL.CalculateCartonQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize));
@@ -856,6 +865,10 @@ namespace DistributorPortal.Controllers
                 {
                     jsonResponse.Message = NotificationMessage.AtLeastAddOneQuantity;
                     return Json(new { data = jsonResponse });
+                }
+                if (SessionHelper.DistributorBalance == null)
+                {
+                    SessionHelper.DistributorBalance = _PaymentBLL.GetDistributorBalance(SessionHelper.LoginUser.Distributor.DistributorSAPCode, _Configuration);
                 }
                 SessionHelper.AddDistributorWiseProduct = orderMaster.DistributorWiseProduct;
                 orderMaster.Status = OrderStatus.Draft;

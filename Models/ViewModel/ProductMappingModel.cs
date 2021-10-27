@@ -59,5 +59,7 @@ namespace Models.ViewModel
         public string AdditionalSalesTax { get; set; }
         [IncludeInReport(Order = 27)]
         public string LicenseType { get; set; }
+        [IncludeInReport(Order = 28)]
+        public string FOCQuantityRatio { get; set; }
     }
 }

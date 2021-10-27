@@ -126,6 +126,7 @@
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
                                         </div>
+                                        <span id="errorValueClearingDate" class="text-danger"></span>
                                     </div>
                                 </div><br />
                                 <div class=" row">
@@ -319,7 +320,7 @@
     });
 
     function SavePayment() {
-
+        
         $('#errorValueClearingDate').empty();
         if ($('input[name="ValueClearingDate"]').val() == '') {
             $('#errorValueClearingDate').text("Value clearing date is required");

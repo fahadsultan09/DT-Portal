@@ -56,6 +56,7 @@ namespace BusinessLogicLayer.Application
             item.AdditionalSalesTax = module.AdditionalSalesTax;
             item.LicenseControlId = module.LicenseControlId;
             item.IsPlaceOrderInSAP = module.IsPlaceOrderInSAP;
+            item.FOCQuantityRatio = module.FOCQuantityRatio;
             item.UpdatedBy = SessionHelper.LoginUser.Id;
             item.UpdatedDate = DateTime.Now;
             _repository.Update(item);
@@ -157,6 +158,7 @@ namespace BusinessLogicLayer.Application
                     SalesTax = item.ProductDetail.SalesTax.ToString(),
                     AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
                     LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
+                    FOCQuantityRatio = item.ProductDetail.FOCQuantityRatio.ToString(),
                 });
             }
             return ProductMappingModel;
@@ -195,6 +197,7 @@ namespace BusinessLogicLayer.Application
                     SalesTax = item.ProductDetail.SalesTax.ToString(),
                     AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
                     LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
+                    FOCQuantityRatio = item.ProductDetail.FOCQuantityRatio.ToString(),
                 });
             }
             return ProductMappingModel;
@@ -235,6 +238,7 @@ namespace BusinessLogicLayer.Application
                     SalesTax = item.ProductDetail.SalesTax.ToString(),
                     AdditionalSalesTax = item.ProductDetail.AdditionalSalesTax.ToString(),
                     LicenseType = item.ProductDetail.LicenseControl is null ? "" : item.ProductDetail.LicenseControl.LicenseName,
+                    FOCQuantityRatio = item.ProductDetail.FOCQuantityRatio.ToString(),
                 });
             }
             return ProductMappingModel;

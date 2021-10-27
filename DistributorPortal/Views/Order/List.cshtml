@@ -17,7 +17,7 @@
                       id="fmrUploadOrder"
                       data-ajax-begin="Begin"
                       data-ajax-success="OnSuccess"
-                      data-ajax-complete="Complete"
+                      data-ajax-complete="CompleteOrder"
                       data-ajax="true"
                       data-ajax-method="POST"
                       enctype="multipart/form-data">
@@ -148,6 +148,25 @@
     </div>
 </div>
 <script>
+
+    function CompleteOrder() {
+        UnBlockUI();
+        $('#Spinner').hide('slow');
+        $('#fmrUploadOrder')[0].reset(); // this will reset the form fields
+
+        $('button[type="submit"]').attr('disabled', false);
+        if ($("button[type=submit]", this)[0] != undefined) {
+            Ladda.create($("button[type=submit]", this)[0]).stop();
+        }
+        $('button[type="button]"]').attr('disabled', false);
+        if ($("button[type=button]", this)[0] != undefined) {
+            Ladda.create($("button[type=button]", this)[0]).stop();
+        }
+        $('.ladda-button').attr('disabled', false);
+        if ($(".ladda-button")[0] != undefined) {
+            Ladda.create($(".ladda-button")[0]).stop();
+        }
+    }
 
     //File upload
     $('.custom-file-input').on("change", function () {

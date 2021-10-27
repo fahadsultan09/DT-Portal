@@ -44,7 +44,7 @@
                                     <td>@item.Company.CompanyName</td>
                                     <td>@Html.DisplayFor(x => item.Status)</td>
                                     <td>@item.PaymentMode.PaymentName</td>
-                                    <td>@item.Amount</td>
+                                    <td>@item.Amount.ToString("#,##0.00")</td>
                                     <td>@item.SAPDocumentNumber</td>
                                     <td>@item.SAPFiscalYear</td>
                                     <td>@item.CreatedName</td>
@@ -77,10 +77,10 @@
         //$('[Id$=example1]').DataTable({
         //    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
         //    "responsive": true,
-       //    "autoWidth": false,
-       //     "order": [[0, "desc"]]
-       // });
-        dataTableExportExcel("example1", "Export");
+        //    "autoWidth": false,
+        //     "order": [[0, "desc"]]
+        // });
+        dataTableExportExcel("example1", "Payment");
 
     });
 

@@ -46,7 +46,7 @@ namespace DistributorPortal.Controllers
         public ActionResult Index()
         {
             PaymentViewModel model = new PaymentViewModel();
-            model.PaymentMaster = GetPaymentList();
+            model.PaymentMaster = GetPaymentList().Where(x => x.Status == PaymentStatus.Unverified).ToList();
             model.DistributorList = new DistributorBLL(_unitOfWork).DropDownDistributorList(null);
             return View(model);
         }
@@ -104,7 +104,6 @@ namespace DistributorPortal.Controllers
                     model.SNo = payment.SNo;
                     if (payment.Company.IsPaymentAllowedInSAP)
                     {
-                        result = _PaymentBLL.UpdateApproval(model);
                         SAPPaymentViewModel sAPPaymentViewModel = _PaymentBLL.AddPaymentToSAP(payment, model.ValueClearingDate);
                         Root root = new Root();
                         using (var client = new HttpClient())
@@ -135,6 +134,7 @@ namespace DistributorPortal.Controllers
                             jsonResponse.Status = false;
                             jsonResponse.Message = "Unable to verified payment";
                             jsonResponse.RedirectURL = Url.Action("Index", "Payment");
+                            return Json(new { data = jsonResponse });
                         }
                     }
                     else
@@ -144,6 +144,7 @@ namespace DistributorPortal.Controllers
                         jsonResponse.Message = result ? "Payment has been verified" : "Unable to verified payment";
                         jsonResponse.RedirectURL = Url.Action("Index", "Payment");
                     }
+                    _unitOfWork.Save();
                 }
                 RolePermission rolePermission = new RolePermissionBLL(_unitOfWork).FirstOrDefault(e => e.ApplicationPageId == (int)ApplicationPages.ApprovePayment && e.ApplicationActionId == (int)ApplicationActions.Approve);
                 if (rolePermission != null)
@@ -158,7 +159,6 @@ namespace DistributorPortal.Controllers
                     notification.URL = "/Payment/PaymentView?DPID=" + EncryptDecrypt.Encrypt(model.Id.ToString());
                     _NotificationBLL.Add(notification);
                 }
-                _unitOfWork.Save();
                 return Json(new { data = jsonResponse });
             }
             catch (Exception ex)

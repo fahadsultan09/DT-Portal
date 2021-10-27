@@ -28,6 +28,7 @@
                             <th>Company</th>
                             <th>Pending Quantity</th>
                             <th>Rate</th>
+                            <th>Discount</th>
                             <th>Advance Income Tax</th>
                             <th>Sales Tax</th>
                             <th>Additional Sales Tax</th>
@@ -48,6 +49,7 @@
                                     <td>@item.CompanyName</td>
                                     <td>@item.PendingQuantity</td>
                                     <td>@item.Rate</td>
+                                    <td>@item.Discount</td>
                                     <td>@item.IncomeTax</td>
                                     <td>@item.SalesTax</td>
                                     <td>@item.AdditionalSalesTax</td>
@@ -82,7 +84,7 @@
         //    "autoWidth": false,
         //    "order": [[1, "desc"]]
         //});
-        dataTableExportExcel("example1", "Export");
+        dataTableExportExcel("example1", "Product Pending");
         // Add event listener for opening and closing details
         $('#example1 tbody').on('click', 'td.details-control', function () {
             BlockUI();
