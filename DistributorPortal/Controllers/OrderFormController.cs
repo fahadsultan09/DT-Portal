@@ -855,6 +855,7 @@ namespace DistributorPortal.Controllers
                 distributorWiseProduct.ForEach(x => x.SalesTax = SessionHelper.LoginUser.Distributor.IsSalesTaxApplicable ? x.ProductDetail.SalesTax : x.ProductDetail.SalesTax + x.ProductDetail.AdditionalSalesTax);
                 distributorWiseProduct.ForEach(x => x.IncomeTax = SessionHelper.LoginUser.Distributor.IsIncomeTaxApplicable ? x.ProductDetail.IncomeTax : x.ProductDetail.IncomeTax * 2);
                 distributorWiseProduct.ForEach(x => x.AdditionalSalesTax = x.ProductDetail.AdditionalSalesTax);
+                distributorWiseProduct.ForEach(x => x.ViewSalesTax = x.ProductDetail.SalesTax);
                 distributorWiseProduct.ForEach(x => x.ProductDetail.ProductMaster.Quantity = Convert.ToInt32(DistributorWiseProductDiscountAndPricesImport.FirstOrDefault(y => y.ProductCode == x.SAPProductCode).Quantity));
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanityLoose = _OrderBLL.CalculateSFLooseQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));
                 distributorWiseProduct.ForEach(x => x.ProductDetail.QuanitySF = _OrderBLL.CalculateSFQuantity(Convert.ToInt32(x.ProductDetail.ProductMaster.Quantity), x.ProductDetail.ProductMaster.CartonSize, x.ProductDetail.ProductMaster.SFSize));

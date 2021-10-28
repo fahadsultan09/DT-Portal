@@ -62,7 +62,7 @@ namespace DistributorPortal.Controllers
         public IActionResult Index()
         {
             OrderReturnViewModel model = new OrderReturnViewModel();
-            model.OrderReturnMaster = GetOrderReturnList().Where(x => x.Status == OrderReturnStatus.Submitted || x.Status == OrderReturnStatus.PartiallyReceived).ToList();
+            model.OrderReturnMaster = GetOrderReturnList().Where(x => SessionHelper.LoginUser.IsDistributor ? x.Status == OrderReturnStatus.Draft || x.Status == OrderReturnStatus.Submitted || x.Status == OrderReturnStatus.PartiallyReceived : x.Status == OrderReturnStatus.Submitted || x.Status == OrderReturnStatus.PartiallyReceived).ToList();
             if (SessionHelper.LoginUser.IsDistributor)
             {
                 model.OrderReturnMaster = model.OrderReturnMaster.Where(x => SessionHelper.LoginUser.IsDistributor == true ? x.DistributorId == SessionHelper.LoginUser.DistributorId : true).ToList();
