@@ -35,11 +35,11 @@ namespace DistributorPortal.Controllers
         private readonly PolicyBLL _PolicyBLL;
         private readonly NotificationBLL _NotificationBLL;
         private readonly DisclaimerBLL _DisclaimerBLL;
+        private readonly SubDistributorBLL _SubDistributorBLL;
         private List<PaymentMaster> _PaymentMaster;
         private List<OrderMaster> _OrderMaster;
         private List<OrderDetail> _OrderDetail;
         private List<OrderReturnMaster> _OrderReturnMaster;
-        private List<Complaint> _Complaint;
         private List<ProductMaster> _ProductMaster;
         private List<Distributor> _Distributor;
         private readonly Configuration _configuration;
@@ -57,6 +57,7 @@ namespace DistributorPortal.Controllers
             _PolicyBLL = new PolicyBLL(_unitOfWork);
             _NotificationBLL = new NotificationBLL(_unitOfWork);
             _DisclaimerBLL = new DisclaimerBLL(_unitOfWork);
+            _SubDistributorBLL = new SubDistributorBLL(_unitOfWork);
 
             if (_DisclaimerBLL.GetAllDisclaimer().FirstOrDefault() != null)
             {
@@ -85,6 +86,12 @@ namespace DistributorPortal.Controllers
                 else
                 {
                     SessionHelper.NotificationCount = list.Where(x => x.ApplicationPageId == (int)ApplicationPages.Order ? !x.IsOrderView : x.ApplicationPageId == (int)ApplicationPages.OrderReturn ? !x.IsOrderReturnView : x.ApplicationPageId == (int)ApplicationPages.Payment ? !x.IsPaymentView : true).Count();
+                }
+                int userId = SessionHelper.LoginUser.Id;
+                List<SubDistributor> subDistributors = _SubDistributorBLL.Where(x => x.UserId == userId).ToList();
+                if (SessionHelper.LoginUser.IsDistributor && SessionHelper.DropDownSubDistributor == null && subDistributors.FirstOrDefault(x => x.UserId == SessionHelper.LoginUser.Id) != null)
+                {
+                    SessionHelper.DropDownSubDistributor = subDistributors;
                 }
             }
             else
@@ -599,6 +606,38 @@ namespace DistributorPortal.Controllers
                 return Json(false);
             }
 
+        }
+        public IActionResult SetLoginDistributor(int distributorId)
+        {
+            JsonResponse jsonResponse = new JsonResponse();
+            try
+            {
+                Distributor distributor = _DistributorBLL.FirstOrDefault(x => x.Id == distributorId);
+                var user = SessionHelper.LoginUser;
+                user.Distributor = distributor;
+                user.DistributorId = distributor.Id;
+                SessionHelper.LoginUser = user;
+                jsonResponse.Message = "Distributor set to " + distributor.DistributorName;
+                jsonResponse.Status = true;
+                jsonResponse.RedirectURL = Url.Action("Index", "Home");
+                SessionHelper.LoginUser.Distributor = distributor;
+                SessionHelper.LoginUser.DistributorId = distributor.Id;
+                SessionHelper.AddDistributorWiseProduct =  new List<DistributorWiseProductDiscountAndPrices>();
+                SessionHelper.DistributorWiseProductOrderReturn = new List<DistributorWiseProductDiscountAndPrices>();
+                SessionHelper.OrderDetail = new List<OrderDetail>();
+                SessionHelper.AddReturnProduct = new List<OrderReturnDetail>();
+                SessionHelper.DistributorBalance = new DistributorBalance();
+                SessionHelper.DistributorPendingQuantity = new List<DistributorPendingQuantity>();
+                SessionHelper.DistributorPendingValue = new List<DistributorPendingValue>();
+            }
+            catch (Exception ex)
+            {
+                new ErrorLogBLL(_unitOfWork).AddExceptionLog(ex);
+                jsonResponse.Message = "Unable to set Distributor";
+                jsonResponse.Status = false;
+                jsonResponse.RedirectURL = null;
+            }
+            return Json(new { data = jsonResponse });
         }
 
         #region Handle error

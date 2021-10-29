@@ -93,6 +93,7 @@ namespace Utility
         Unverified = 2,
         Rejected = 3,
         Canceled = 4,
+        Resubmit = 5,
     }
     public enum TaxChallanStatus
     {
@@ -227,6 +228,7 @@ namespace Utility
         IsAdmin = 9,
         Sync = 10,
         Export = 11,
+        Resubmit = 12,
     }
     public enum ApplicationPages
     {

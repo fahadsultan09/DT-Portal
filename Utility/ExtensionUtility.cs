@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,7 +29,6 @@ namespace Utility
             }
             return table;
         }
-
         public static DataTable ConvertToDataTable(string fullpath, string[] Columns, DataTable tbl)
         {
             var sr = new StreamReader(fullpath);
@@ -55,7 +55,6 @@ namespace Utility
             }
             return tbl;
         }
-
         public static List<T> ConvertDataTable<T>(DataTable dt)
         {
             List<T> data = new List<T>();
@@ -82,7 +81,6 @@ namespace Utility
             }
             return obj;
         }
-
         public static bool IsAjaxRequest(this HttpRequest request)
         {
             if (request == null)
@@ -257,6 +255,80 @@ namespace Utility
             {
                 using StreamWriter sw = File.AppendText(filepath);
                 sw.WriteLine(Message);
+            }
+        }
+        public static void RemoveEmptyRows(DataTable tmp)
+        {
+            var count = tmp.Columns.Count;
+            if (count == 3)
+            {
+                for (int i = tmp.Rows.Count - 1; i >= 0; i--)
+                {
+                    // whatever your criteria is
+                    if (tmp.Rows[i][0] == DBNull.Value || tmp.Rows[i][1] == DBNull.Value || tmp.Rows[i][2] == DBNull.Value)
+                    {
+                        tmp.Rows[i].Delete();
+                    }
+                }
+            }
+            else
+            {
+                tmp.Rows.Clear();
+            }
+            tmp.AcceptChanges();
+        }
+        public static Tuple<DataTable, string, int, string> ImportExceltoDatatable(string filePath, string sheetName)
+        {
+            string[] HeaderName = { "ProductCode", "ProductDescription", "Quantity" };
+            Tuple<DataTable, string, int, string> tuple;
+            // Open the Excel file using ClosedXML.
+            // Keep in mind the Excel file cannot be open when trying to read it
+            using (XLWorkbook workBook = new XLWorkbook(filePath))
+            {
+                //Read the first Sheet from Excel file.
+                IXLWorksheet workSheet = workBook.Worksheet(1);
+
+                //Create a new DataTable.
+                DataTable dt = new DataTable();
+
+                //Loop through the Worksheet rows.
+                bool firstRow = true;
+                foreach (IXLRow row in workSheet.Rows())
+                {
+                    //Use the first row to add columns to DataTable.
+                    if (firstRow)
+                    {
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            if (HeaderName.Contains(cell.Value.ToString()))
+                            {
+                                dt.Columns.Add(cell.Value.ToString());
+                            }
+                            else
+                            {
+                                tuple = new Tuple<DataTable, string, int, string>(null, cell.Value.ToString(), 0, "Invalid Column Name " + cell.Value.ToString());
+                                return tuple;
+                            }
+                        }
+                        firstRow = false;
+                    }
+                    else
+                    {
+                        //Add rows to DataTable.
+                        dt.Rows.Add();
+                        int i = 0;
+                        if (row.FirstCellUsed() != null && row.LastCellUsed() != null)
+                        {
+                            foreach (IXLCell cell in row.Cells(row.FirstCellUsed().Address.ColumnNumber, row.LastCellUsed().Address.ColumnNumber))
+                            {
+                                dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                                i++;
+                            }
+                        }
+                    }
+                }
+                tuple = new Tuple<DataTable, string, int, string>(dt, null, 0, null);
+                return tuple;
             }
         }
     }

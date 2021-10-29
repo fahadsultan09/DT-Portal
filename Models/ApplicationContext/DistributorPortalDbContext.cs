@@ -68,5 +68,6 @@ namespace Models.ApplicationContext
         public DbSet<LicenseType> LicenseType { get; set; }
         public DbSet<TaxChallan> TaxChallan { get; set; }
         public DbSet<PaymentSection> PaymentSection { get; set; }
+        public DbSet<SubDistributor> SubDistributor { get; set; }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Models.ViewModel
+﻿namespace Models.ViewModel
 {
     public class SAPPaymentViewModel
     {
@@ -12,5 +8,6 @@ namespace Models.ViewModel
         public string AMOUNT { get; set; } 
         public string DISTRIBUTOR { get; set; } //Distributor SAP Code
         public string B_CODE { get; set; } //Bank Code
+        public string P_DATE { get; set; } //Value Clearing Date
     }
 }

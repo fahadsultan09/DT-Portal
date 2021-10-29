@@ -90,7 +90,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <textarea asp-for="Description" class="form-control"></textarea>
+                                    <textarea asp-for="Description" class="form-control" rows="10"></textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
@@ -115,7 +115,7 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                         @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
                                         {
-                                            <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
+                                            <textarea asp-for="ResolvedRemarks" class="form-control" rows="10"></textarea>
                                         }
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -143,7 +143,7 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                         @if (!string.IsNullOrEmpty(Model.ResolvedRemarks))
                                         {
-                                            <textarea asp-for="ResolvedRemarks" class="form-control"></textarea>
+                                            <textarea asp-for="ResolvedRemarks" class="form-control" rows="10"></textarea>
                                         }
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -162,7 +162,7 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                         @if (!string.IsNullOrEmpty(Model.Remarks))
                                         {
-                                            <textarea asp-for="Remarks" class="form-control"></textarea>
+                                            <textarea asp-for="Remarks" class="form-control" rows="10"></textarea>
                                         }
                                     </div>
                                 </div>

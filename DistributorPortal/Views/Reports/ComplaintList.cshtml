@@ -60,9 +60,9 @@
                                             @item.Status
                                         }
                                     </td>
-                                    <td>@item.CreatedName</td>
                                     <td>@item.ComplaintCategory.ComplaintCategoryName</td>
                                     <td>@item.ComplaintSubCategory.ComplaintSubCategoryName</td>
+                                    <td>@item.CreatedName</td>
                                     <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
                                     <td>@item.RejectedName</td>
                                     <td>@item.ResolvedDate</td>
@@ -96,8 +96,7 @@
         //    "autoWidth": false,
         //    "order": [[0, "desc"]]
         //});
-        dataTableExportExcel("example1", "Export");
-
+        dataTableExportExcels("example1", "Complaint");
     });
 
 </script>

@@ -1,6 +1,5 @@
 ﻿using BusinessLogicLayer.ErrorLog;
 using DataAccessLayer.WorkProcess;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +21,7 @@ namespace Scheduler
             try
             {
                 var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                ExtensionUtility.WriteToFile(environmentName, FolderName.PendingQuantity, fileName);
+                ExtensionUtility.WriteToFile(environmentName, FolderName.Complaint, fileName);
                 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true).AddJsonFile($"appsettings.{environmentName}.json", true, true).Build();
                 var ConnectionString = configuration.GetSection("ConnectionStrings:DistributorPortalDbContext");
                 var FromEmail = configuration.GetSection("Settings:FromEmail");
@@ -53,7 +52,7 @@ namespace Scheduler
                 var serviceProvider = services.BuildServiceProvider();
                 _DistributorPortalDbContext = serviceProvider.GetService<DistributorPortalDbContext>();
                 _unitOfWork = new UnitOfWork(_DistributorPortalDbContext);
-                ExtensionUtility.WriteToFile("Console Start - " + DateTime.Now, FolderName.PendingQuantity, fileName);
+                ExtensionUtility.WriteToFile("Console Start - " + DateTime.Now, FolderName.Complaint, fileName);
 
                 ////GET ORDER AND ORDER RETURN STATUS
                 //DistributorOrderStatus distributorOrderStatus = new DistributorOrderStatus(_unitOfWork, config);
@@ -64,23 +63,23 @@ namespace Scheduler
                 //distributorOrderStatus.GetInProcessOrderReturnProductStatus(config.GetInProcessOrderStatus);
                 //ExtensionUtility.WriteToFile("GetInProcessOrderReturnProductStatus End - " + DateTime.Now, FolderName.OrderStatus, fileName);
 
-                ////GET COMPLAINT STATUS
-                //KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config, _env);
-                //KPIEmailScheduler.GetPendingComplaints();
+                //GET COMPLAINT STATUS
+                KPIEmailScheduler KPIEmailScheduler = new KPIEmailScheduler(_unitOfWork, config);
+                KPIEmailScheduler.GetPendingComplaints(fileName);
 
                 ////GET PENDING VALUE
                 //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
                 //distributorPendingQuanityValue.AddDistributorPendingValue();
 
-                //GET PENDING QUANTITY
-                DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
-                distributorPendingQuanityValue.AddDistributorPendingQuantity(fileName);
+                ////GET PENDING QUANTITY
+                //DistributorPendingQuanityValue distributorPendingQuanityValue = new DistributorPendingQuanityValue(_unitOfWork, config);
+                //distributorPendingQuanityValue.AddDistributorPendingQuantity(fileName);
 
-                ExtensionUtility.WriteToFile("Console End - " + DateTime.Now, FolderName.PendingQuantity, fileName);
+                ExtensionUtility.WriteToFile("Console End - " + DateTime.Now, FolderName.Complaint, fileName);
             }
             catch (Exception ex)
             {
-                ExtensionUtility.WriteToFile("Error occured - " + DateTime.Now, FolderName.PendingQuantity, fileName);
+                ExtensionUtility.WriteToFile("Error occured - " + DateTime.Now, FolderName.Complaint, fileName);
                 new ErrorLogBLL(_unitOfWork).AddSchedulerExceptionLog(ex);
             }
         }

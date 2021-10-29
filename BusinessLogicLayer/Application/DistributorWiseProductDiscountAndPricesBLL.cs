@@ -198,12 +198,12 @@ namespace BusinessLogicLayer.Application
         {
             return _repository.FirstOrDefault(predicate);
         }
-        public List<ProductPending> GetProductPendings(ProductPendingSearch model,IDapper _dapper)
+        public List<ProductPending> GetProductPendings(ProductPendingSearch model, IDapper _dapper)
         {
             DynamicParameters parameter = new DynamicParameters();
             parameter.Add("@pCompanyId", model.CompanyId, DbType.Int32, ParameterDirection.Input);
             parameter.Add("@pProductId", model.ProductId, DbType.Int32, ParameterDirection.Input);
-            parameter.Add("@pDistributorId", model.DistributorId, DbType.Int32, ParameterDirection.Input);
+            parameter.Add("@pDistributorId", SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.DistributorId : model.DistributorId, DbType.Int32, ParameterDirection.Input);
             parameter.Add("@pStatus", model.Status, DbType.Int32, ParameterDirection.Input);
             List<ProductPending> _ProductPending = _dapper.GetAll<ProductPending>("sp_PendingProduct", parameter, commandType: CommandType.StoredProcedure);
             return _ProductPending;

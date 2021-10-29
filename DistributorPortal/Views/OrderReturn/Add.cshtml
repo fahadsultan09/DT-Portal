@@ -86,9 +86,9 @@
                                                 <span asp-validation-for="TRDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Debit Note No:<span class="text-danger"> *</span></h6>
+                                                <h6>Debit Note No:</h6>
                                                 <input type="text" asp-for="DebitNoteNo" placeholder="Enter Debit Note No" id="DebitNoteNo" class="form-control" />
-                                                <span asp-validation-for="DebitNoteNo" class="text-danger error"></span>
+                                                @*<span asp-validation-for="DebitNoteNo" class="text-danger error"></span>*@
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                                 <h6>Debit Note Date:</h6>
@@ -180,7 +180,7 @@
                                                 <span id="ErrorBatchNo" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Intimation Date:<span class="text-danger"> *</span></h6>
+                                                <h6>Intimation Date:</h6>
                                                 <div class="input-group date" id="IntimationDate" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="IntimationDate" id="txtIntimationDate" data-target="#IntimationDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#IntimationDate" data-toggle="datepicker" id="input-group-append-IntimationDate">
@@ -193,7 +193,7 @@
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Invoice No:<span class="text-danger"> *</span></h6>
+                                                <h6>Invoice No:</h6>
                                                 <input type="text" name="InvoiceNo" placeholder="Enter Invoice No" id="InvoiceNo" class="form-control" />
                                                 <span id="ErrorInvoiceNo" class="text-danger error"></span>
                                             </div>
@@ -208,7 +208,7 @@
                                                 <span id="ErrorInvoiceDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Mfg. Date:<span class="text-danger"> *</span></h6>
+                                                <h6>Mfg. Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" readonly="readonly" name="ManufactureDate" id="ManufactureDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ManufactureDate" id="input-group-append-From" data-toggle="datepicker">
@@ -218,7 +218,7 @@
                                                 <span id="ErrorManufactureDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <h6>Expiry Date:<span class="text-danger"> *</span></h6>
+                                                <h6>Expiry Date:</h6>
                                                 <div class="input-group date" data-target-input="nearest">
                                                     <input type="text" name="ExpiryDate" readonly="readonly" id="ExpiryDate" class="form-control datepicker" />
                                                     <div class="input-group-append" data-target="#ExpiryDate" id="input-group-append-To" data-toggle="datepicker">
@@ -228,7 +228,7 @@
                                                 <span id="ErrorExpiryDate" class="text-danger error"></span>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                                <h6>Remarks:<span class="text-danger"> *</span></h6>
+                                                <h6>Remarks:</h6>
                                                 <input type="text" name="Remarks" placeholder="Enter Remarks" id="Remarks" class="form-control" />
                                                 <span id="ErrorRemarks" class="text-danger error"></span>
                                             </div>
@@ -357,30 +357,30 @@
             $("#ErrorBatchNo").text('Batch No is required');
             return false;
         }
-        if ($('#txtIntimationDate').val() === '') {
-            $("#ErrorIntimationDate").text('Intimation Date is required');
-            return false;
-        }
-        if (InvoiceNo === '') {
-            $("#ErrorInvoiceNo").text('Invoice No is required');
-            return false;
-        }
+        //if ($('#txtIntimationDate').val() === '') {
+        //    $("#ErrorIntimationDate").text('Intimation Date is required');
+        //    return false;
+        //}
+        //if (InvoiceNo === '') {
+        //    $("#ErrorInvoiceNo").text('Invoice No is required');
+        //    return false;
+        //}
         if ($('#txtInvoiceDate').val() === '') {
             $("#ErrorInvoiceDate").text('Invoice Date is required');
             return false;
         }
-        if ($('#txtExpiryDate').val() === '') {
-            $("#ErrorExpiryDate").text('Expiry Date is required');
-            return false;
-        }
-        if ($('#txtManufactureDate').val() === '') {
-            $("#ErrorManufactureDate").text('Mfg. Date is required');
-            return false;
-        }
-        if (Remarks === '') {
-            $("#ErrorRemarks").text('Remarks is required');
-            return false;
-        }
+        //if ($('#txtExpiryDate').val() === '') {
+        //    $("#ErrorExpiryDate").text('Expiry Date is required');
+        //    return false;
+        //}
+        //if ($('#txtManufactureDate').val() === '') {
+        //    $("#ErrorManufactureDate").text('Mfg. Date is required');
+        //    return false;
+        //}
+        //if (Remarks === '') {
+        //    $("#ErrorRemarks").text('Remarks is required');
+        //    return false;
+        //}
     }
 
     function SubmitForm() {

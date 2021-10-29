@@ -199,7 +199,7 @@ function UpdateStatus(e, controllerName, actionName, id) {
     else {
         val = e.value;
     }
-    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected") {
+    if (e.value == "Resolved" || e.value == "Reject" || val == "Rejected" || val == "Resubmit") {
         Swal.fire({
             type: "warning",
             confirmButtonText: "Yes",
@@ -366,6 +366,7 @@ function Print(RedirectToUrl, ApplicationPage, DPID, Reason) {
     }
 }
 
+
 function OrderReturnPrintForm() {
 
     $('.text-danger').empty();
@@ -388,6 +389,7 @@ function OrderReturnPrintForm() {
     var form = event.target.form;
     $(form).submit();
 }
+
 function dataTableExportExcel(classname, filename) {
 
     var e = $("#" + classname);
@@ -404,7 +406,28 @@ function dataTableExportExcel(classname, filename) {
             }
         }, {
             extend: "colvis", className: "btn dark btn-outline", text: "Columns"
-        }], responsive: !0, order: [[0, "asc"]], lengthMenu: [[5, 10, 15, 20, -1], [5, 10, 15, 20, "All"]], pageLength: 10, dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>"
+            }], responsive: !0, "order": [[1, "desc"]], lengthMenu: [[5, 10, 15, 20, -1], [5, 10, 15, 20, "All"]], pageLength: 10, dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>"
+    }
+    );
+    return e;
+}
+function dataTableExportExcels(classname, filename) {
+
+    var e = $("#" + classname);
+    e.dataTable({
+        language: {
+            aria: {
+                sortAscending: ": activate to sort column ascending", sortDescending: ": activate to sort column descending"
+            }
+            , emptyTable: "No data available in table", info: "Showing _START_ to _END_ of _TOTAL_ entries", infoEmpty: "No entries found", infoFiltered: "(filtered1 from _MAX_ total entries)", lengthMenu: "_MENU_ entries", search: "Search:", zeroRecords: "No matching records found"
+        }
+        , buttons: [{
+            extend: "excel", className: "btn yellow btn-outline ", title: filename, exportOptions: {
+                columns: ':visible'
+            }
+        }, {
+            extend: "colvis", className: "btn dark btn-outline", text: "Columns"
+        }], responsive: !0, "order": [[0, "desc"]], lengthMenu: [[5, 10, 15, 20, -1], [5, 10, 15, 20, "All"]], pageLength: 10, dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>"
     }
     );
     return e;

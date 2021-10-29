@@ -58,7 +58,7 @@ namespace DistributorPortal.Controllers
         // GET: Order
         public ActionResult Index(OrderStatus? orderStatus)
         {
-            List<OrderMaster> orderList = GetOrderList();
+            List<OrderMaster> orderList = GetOrderList().Where(x => SessionHelper.LoginUser.IsDistributor ? x.Status == OrderStatus.Draft || x.Status == OrderStatus.PendingApproval || x.Status == OrderStatus.Onhold || x.Status == OrderStatus.PartiallyApproved : x.Status == OrderStatus.PendingApproval || x.Status == OrderStatus.Onhold || x.Status == OrderStatus.PartiallyApproved).ToList();
             if (orderStatus != null)
             {
                 orderList = orderList.Where(x => x.Status == orderStatus).ToList();

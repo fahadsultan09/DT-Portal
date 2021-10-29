@@ -105,6 +105,10 @@ namespace DistributorPortal
             app.UseStatusCodePages();
             app.Use(async (context, next) =>
             {
+                //if (SessionHelper.LoginUser == null && context.Request.Path.Value != "/")
+                //{
+                //    context.Response.Redirect("/");
+                //}
                 await next();
                 if (context.Response.StatusCode == 404)
                 {
@@ -126,7 +130,7 @@ namespace DistributorPortal
                     context.Request.Path = "/Login/Index";
                     await next();
                 }
-            }); 
+            });
             app.UseStaticFiles();
             app.UseSession();
             app.UseSignalR(endpoints =>

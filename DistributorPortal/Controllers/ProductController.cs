@@ -266,6 +266,7 @@ namespace ProductPortal.Controllers
                         item.AdditionalSalesTax = x.AdditionalSalesTax;
                         item.LicenseControlId = x.LicenseControlId;
                         item.IsPlaceOrderInSAP = x.IsPlaceOrderInSAP;
+                        item.FOCQuantityRatio = x.FOCQuantityRatio;
                         item.UpdatedBy = SessionHelper.LoginUser.Id;
                         item.UpdatedDate = DateTime.Now;
                         ProductDetailList.Add(item);

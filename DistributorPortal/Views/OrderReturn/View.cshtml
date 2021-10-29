@@ -160,11 +160,11 @@
                                                         <td>@item.Quantity</td>
                                                         <td>@(item.ReceivedBy == null ? "-" : item.ReceivedQty.ToString())</td>
                                                         <td><span class="NetAmount">@(item.IsFOCProduct ? "0" : Math.Round(Convert.ToDouble(item.NetAmount), 2).ToString())</span></td>
-                                                        <td>@(item.IsFOCProduct ? "-" : item.ManufactureDate.ToString("dd/MM/yyyy"))</td>
-                                                        <td>@(item.IsFOCProduct ? "-" : item.ExpiryDate.ToString("dd/MM/yyyy"))</td>
+                                                        <td>@(item.IsFOCProduct ? "-" : item.ManufactureDate == null ? null : Convert.ToDateTime(item.ManufactureDate).ToString("dd/MM/yyyy"))</td>
+                                                        <td>@(item.IsFOCProduct ? "-" : item.ExpiryDate == null ? null : Convert.ToDateTime(item.ExpiryDate).ToString("dd/MM/yyyy"))</td>
                                                         <td>@(item.IsFOCProduct ? "-" : item.InvoiceNo)</td>
                                                         <td>@(item.IsFOCProduct ? "-" : item.InvoiceDate.ToString("dd/MM/yyyy"))</td>
-                                                        <td>@(item.IsFOCProduct ? "-" : item.IntimationDate.ToString("dd/MM/yyyy"))</td>
+                                                        <td>@(item.IsFOCProduct ? "-" : item.IntimationDate == null ? null : Convert.ToDateTime(item.IntimationDate).ToString("dd/MM/yyyy"))</td>
                                                         <td>@(item.IsFOCProduct ? "-" : item.Remarks)</td>
                                                         <td>@(item.IsFOCProduct ? "-" : item.ReturnOrderNumber)</td>
                                                         <td>

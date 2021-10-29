@@ -24,6 +24,7 @@ namespace BusinessLogicLayer.Application
         private readonly CompanyBLL _CompanyBLL;
         private readonly UserBLL _UserBLL;
         private readonly OrderDetailBLL _OrderDetailBLL;
+        private readonly AuditTrailBLL<PaymentMaster> _AuditTrailPaymentMaster;
         public PaymentBLL(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -31,25 +32,54 @@ namespace BusinessLogicLayer.Application
             _CompanyBLL = new CompanyBLL(_unitOfWork);
             _UserBLL = new UserBLL(_unitOfWork);
             _OrderDetailBLL = new OrderDetailBLL(_unitOfWork);
+            _AuditTrailPaymentMaster = new AuditTrailBLL<PaymentMaster>(_unitOfWork);
         }
-        public int Add(PaymentMaster module)
+        public bool Add(PaymentMaster module)
         {
-            module.CreatedBy = SessionHelper.LoginUser.Id;
             module.IsDeleted = false;
             module.IsActive = true;
+            module.CreatedBy = SessionHelper.LoginUser.Id;
             module.CreatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<PaymentMaster>().Insert(module);
-            return _unitOfWork.Save();
+            _repository.Insert(module);
+            _AuditTrailPaymentMaster.AddAuditTrail((int)ApplicationPages.AddPayment, (int)ApplicationActions.Insert, module, "Save Payment", module.CreatedBy);
+            return _unitOfWork.Save() > 0;
         }
         public bool Update(PaymentMaster module)
         {
-            var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(module.Id);
+            var item = _repository.GetById(module.Id);
+            item.Status = module.Status;
+            item.DepositDate = module.DepositDate;
+            item.ValueClearingDate = module.ValueClearingDate;
+            item.CompanyId = module.CompanyId;
+            item.PaymentModeId = module.PaymentModeId;
+            item.PaymentModeNo = module.PaymentModeNo;
+            item.Amount = module.Amount;
+            item.DepositorBankName = module.DepositorBankName;
+            item.DepositorBankCode = module.DepositorBankCode;
+            item.CompanyBankName = module.CompanyBankName;
+            item.CompanyBankCode = module.CompanyBankCode;
+            item.IsDeleted = false;
+            item.IsActive = true;
+            item.UpdatedBy = SessionHelper.LoginUser.Id;
+            item.UpdatedDate = DateTime.Now;
+            _repository.Update(item);
+            _AuditTrailPaymentMaster.AddAuditTrail((int)ApplicationPages.AddPayment, (int)ApplicationActions.Update, module, "Update Payment", (int)item.UpdatedBy);
+            return _unitOfWork.Save() > 0;
+        }
+        public bool UpdateApproval(PaymentMaster module)
+        {
+            var item = _repository.GetById(module.Id);
+            item.Status = PaymentStatus.Verified;
+            item.ValueClearingDate = module.ValueClearingDate;
+            item.PaymentModeId = module.PaymentModeId;
+            item.PaymentModeNo = module.PaymentModeNo;
+            item.CompanyBankName = module.CompanyBankName;
             item.SAPCompanyCode = module.SAPCompanyCode;
             item.SAPDocumentNumber = module.SAPDocumentNumber;
             item.SAPFiscalYear = module.SAPFiscalYear;
-            item.UpdatedBy = SessionHelper.LoginUser.Id;
-            item.UpdatedDate = DateTime.Now;
-            _unitOfWork.GenericRepository<PaymentMaster>().Update(item);
+            item.ApprovedBy = SessionHelper.LoginUser.Id;
+            item.ApprovedDate = DateTime.Now;
+            _repository.Update(item);
             return _unitOfWork.Save() > 0;
         }
         public int UpdateSNo(PaymentMaster module)
@@ -66,48 +96,40 @@ namespace BusinessLogicLayer.Application
             _repository.Update(item);
             return _unitOfWork.Save();
         }
-        public int Delete(int id)
-        {
-            var item = _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
-            item.IsDeleted = true;
-            return _unitOfWork.Save();
-        }
         public bool UpdateStatus(PaymentMaster model, PaymentStatus paymentStatus, string Remarks)
         {
             if (PaymentStatus.Verified == paymentStatus)
-
             {
                 model.ApprovedBy = SessionHelper.LoginUser.Id;
                 model.ApprovedDate = DateTime.Now;
             }
             else if (PaymentStatus.Rejected == paymentStatus)
-
             {
                 model.RejectedBy = SessionHelper.LoginUser.Id;
                 model.RejectedDate = DateTime.Now;
+                model.Remarks = Remarks;
             }
-            model.Remarks = Remarks;
+            else
+            {
+                model.ResubmitRemarks = Remarks;
+                model.UpdatedBy = SessionHelper.LoginUser.Id;
+                model.UpdatedDate = DateTime.Now;
+            }
             model.Status = paymentStatus;
-            model.UpdatedBy = SessionHelper.LoginUser.Id;
-            model.UpdatedDate = DateTime.Now;
             _repository.Update(model);
             return _unitOfWork.Save() > 0;
         }
         public PaymentMaster GetById(int id)
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetById(id);
+            return _repository.GetById(id);
         }
         public List<PaymentMaster> GetAllPaymentMaster()
         {
-            return _unitOfWork.GenericRepository<PaymentMaster>().GetAllList().Where(x => x.IsDeleted == false).ToList();
+            return _repository.GetAllList().Where(x => x.IsDeleted == false).ToList();
         }
         public List<PaymentMaster> Where(Expression<Func<PaymentMaster, bool>> predicate)
         {
             return _repository.Where(predicate);
-        }
-        public PaymentMaster FirstOrDefault(Expression<Func<PaymentMaster, bool>> predicate)
-        {
-            return _repository.FirstOrDefault(predicate);
         }
         public List<PaymentMaster> Search(PaymentViewModel model)
         {
@@ -230,19 +252,18 @@ namespace BusinessLogicLayer.Application
 
             return query.ToList();
         }
-        public SAPPaymentViewModel AddPaymentToSAP(int PaymentId)
+        public SAPPaymentViewModel AddPaymentToSAP(PaymentMaster payment, DateTime? ValueClearingDate)
         {
-            var payment = GetAllPaymentMaster().Where(e => e.Id == PaymentId).FirstOrDefault();
-
             SAPPaymentViewModel model = new SAPPaymentViewModel()
             {
-                PAY_ID = payment.Id.ToString(),
+                PAY_ID = payment.SNo.ToString(),
                 REF = payment.PaymentModeNo.ToString(),
                 COMPANY = _CompanyBLL.GetAllCompany().FirstOrDefault(x => x.Id == payment.CompanyId).SAPCompanyCode,
                 AMOUNT = payment.Amount.ToString(),
                 DISTRIBUTOR = payment.Distributor.DistributorSAPCode,
-                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode && x.CompanyId == GetById(PaymentId).CompanyId).GLAccount,
-
+                B_CODE = new BankBLL(_unitOfWork).GetAllBank().FirstOrDefault(x => x.BranchCode == payment.CompanyBankCode && x.CompanyId == GetById(payment.Id).CompanyId).GLAccount,
+                P_DATE = payment.ValueClearingDate == null ? (Convert.ToDateTime(ValueClearingDate).Year.ToString() + string.Format("{0:00}", Convert.ToDateTime(ValueClearingDate).Month.ToString()) + string.Format("{0:00}", Convert.ToDateTime(ValueClearingDate).Day.ToString())).ToString()
+                : (Convert.ToDateTime(payment.ValueClearingDate).Year.ToString() + string.Format("{0:00}", Convert.ToDateTime(payment.ValueClearingDate).Month.ToString()) + string.Format("{0:00}", Convert.ToDateTime(payment.ValueClearingDate).Day.ToString())).ToString(),
             };
             return model;
         }
@@ -252,9 +273,9 @@ namespace BusinessLogicLayer.Application
             var sami = Convert.ToInt32(CompanyEnum.SAMI);
             var HealthTek = Convert.ToInt32(CompanyEnum.Healthtek);
             var Phytek = Convert.ToInt32(CompanyEnum.Phytek);
-
             List<Company> companies = new CompanyBLL(_unitOfWork).GetAllCompany();
-            List<OrderDetail> orderDetails = _OrderDetailBLL.Where(x => x.OrderMaster.IsActive && !x.OrderMaster.IsDeleted && x.OrderMaster.Status == OrderStatus.PendingApproval && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
+            List<OrderDetail> orderDetails = _OrderDetailBLL.Where(x => x.OrderMaster.IsActive && !x.OrderMaster.IsDeleted && x.OrderMaster.Status == OrderStatus.PendingApproval
+            && (SessionHelper.LoginUser.IsDistributor == true ? x.OrderMaster.DistributorId == SessionHelper.LoginUser.DistributorId : x.OrderMaster.DistributorId == DistributorId)).ToList();
             List<ProductDetail> productDetails = new ProductDetailBLL(_unitOfWork).Where(x => orderDetails.Select(x => x.ProductId).Contains(x.ProductMaster.Id));
 
             viewModel.SAMITotalUnapprovedOrderValues = (from od in orderDetails

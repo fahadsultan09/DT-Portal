@@ -18,7 +18,9 @@ namespace Models.Application
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? DepositDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? ValueClearingDate { get; set; }
         [Required(ErrorMessage = "Depositor Bank Name is required.")]
         public int DepositorBankName { get; set; }
@@ -42,6 +44,8 @@ namespace Models.Application
         public int SNo { get; set; }
         [StringLength(255)]
         public string Remarks { get; set; }
+        [StringLength(2550)]
+        public string ResubmitRemarks { get; set; }
         public PaymentStatus Status { get; set; }
         public string SAPCompanyCode { get; set; }
         public string SAPFiscalYear { get; set; }

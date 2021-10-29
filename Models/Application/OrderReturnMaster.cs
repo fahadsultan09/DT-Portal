@@ -26,8 +26,8 @@ namespace Models.Application
         public string TRNo { get; set; }
         [Required(ErrorMessage = "TR Date is required.")]
         public DateTime TRDate { get; set; }
-        [Required(ErrorMessage = "Debit Note No is required.")]
-        [StringLength(255)]
+        //[Required(ErrorMessage = "Debit Note No is required.")]
+        //[StringLength(255)]
         public string DebitNoteNo { get; set; }
         [Required(ErrorMessage = "Debit Note Date is required.")]
         public DateTime DebitNoteDate { get; set; }

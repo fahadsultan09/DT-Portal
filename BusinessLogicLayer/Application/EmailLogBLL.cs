@@ -5,6 +5,7 @@ using Models.Application;
 using Models.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
@@ -80,14 +81,7 @@ namespace BusinessLogicLayer.Application
         }
         public void OrderEmail(List<User> UserList, ApprovedOrderEmailUserModel EmailUserModel)
         {
-
-            foreach (var user in UserList)
-            {
-                OrderSendEmail(user, EmailUserModel);
-            }
-        }
-        public void OrderSendEmail(User User, ApprovedOrderEmailUserModel EmailUserModel)
-        {
+            string emailList = string.Join(",", UserList.Select(x => x.Email));
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{SHIPTOPARTYNAME}}", EmailUserModel.ShipToPartyName);
@@ -96,18 +90,11 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{SAPOrderNumber}}", EmailUserModel.SAPOrderNumber);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrder}}", EmailUserModel.DPOrder);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrderNumber}}", EmailUserModel.DPOrderNumber);
-            EmailHelper.SendMail(_unitOfWork, User.Email, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
+            EmailHelper.SendMail(_unitOfWork, emailList, EmailUserModel.CCEmail, EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
         public void RetrunOrderEmail(List<User> UserList, ReturnOrderEmailUserModel EmailUserModel)
         {
-
-            foreach (var user in UserList)
-            {
-                RetrunOrderSendEmail(user, EmailUserModel);
-            }
-        }
-        public void RetrunOrderSendEmail(User User, ReturnOrderEmailUserModel EmailUserModel)
-        {
+            string emailList = string.Join(",", UserList.Select(x => x.Email));
             string ToAcceptTemplate = EmailUserModel.ToAcceptTemplate;
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{Date}}", EmailUserModel.Date);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{SHIPTOPARTYNAME}}", EmailUserModel.ShipToPartyName);
@@ -117,7 +104,7 @@ namespace BusinessLogicLayer.Application
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrder}}", EmailUserModel.DPOrder);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{DPOrderNumber}}", EmailUserModel.DPOrderNumber);
             ToAcceptTemplate = ToAcceptTemplate.Replace("{{URL}}", EmailUserModel.URL);
-            EmailHelper.SendMail(_unitOfWork, User.Email, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
+            EmailHelper.SendMail(_unitOfWork, emailList, "", EmailUserModel.Subject, ToAcceptTemplate, _Configuration, EmailUserModel.CreatedBy);
         }
     }
 }

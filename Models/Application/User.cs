@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Common;
 using Models.UserRights;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -85,5 +84,9 @@ namespace Models.Application
         public SelectList PlantLocationList { get; set; }
         [NotMapped]
         public string MacAddresses { get; set; }
+        [NotMapped]
+        public int[] SubDistributorIds { get; set; }
+        [NotMapped]
+        public SelectList SubDistributorList { get; set; }
     }
 }

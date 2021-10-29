@@ -1,0 +1,124 @@
+﻿@model IEnumerable<PaymentSection>
+@{
+    bool insert = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "PaymentSection").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Insert));
+    bool update = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "PaymentSection").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Update));
+    bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == "PaymentSection").Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
+    int Sno = 1;
+    var viewdata = (string)TempData["Message"];
+    if (!string.IsNullOrEmpty(viewdata))
+    {
+        <div class="alert alert-danger alert-dismissable" id="alertmessage">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            @viewdata <a class="alert-link" href="#"></a>
+        </div>
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Payment Section List</h2>
+                <form asp-controller="PaymentSection"
+                      asp-action="Add"
+                      id="frmAdd"
+                      data-ajax-update="#divform"
+                      data-ajax="true"
+                      data-ajax-method="GET"
+                      method="GET">
+                    @if (insert)
+                    {
+                        <button type="submit" class="btn btn-info float-right">Add</button>
+                    }
+                </form>
+            </div>
+            <div class="card-body scrollmenu">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="5%">S.No</th>
+                            <th width="12%">Company Name</th>
+                            <th width="15%">Form No</th>
+                            <th width="10%">GL Account</th>
+                            <th width="15%">Tax Rate</th>
+                            <th width="10%">Active</th>
+                            <th width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Sno</td>
+                                <td>@item.Company.CompanyName</td>
+                                <td>@item.FormNo</td>
+                                <td>@item.GLAccount</td>
+                                <td>@item.TaxRate</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {<i class="fa fa-check text-navy"></i> }
+                                    else
+                                    {<i class="fa fa-times text-danger"></i>}
+                                </td>
+                                <td class="p-1">
+                                    @if (update)
+                                    {
+                                        <a data-ajax-update="#divform"
+                                           data-ajax="true"
+                                           data-ajax-method="GET"
+                                           asp-controller="PaymentSection" asp-action="Add" asp-route-DPID="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-info btn-sm">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    @if (delete)
+                                    {
+                                        <a onclick="Delete(this);" id="@EncryptDecrypt.Encrypt(item.Id.ToString())" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                            Sno++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#example1").DataTable({
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+        });
+    });
+
+    function Delete(e) {
+        Swal.fire({
+            title: "Are you sure you want to continue?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.value) {
+                $.post('@Url.Action("Delete", "PaymentSection")?DPID=' + e.id, null, function (data) {
+                    if (data) {
+                        Toast.fire({ icon: 'success', title: '@NotificationMessage.DeletedSuccessfully' });
+                        window.location.reload();
+                    } else {
+                        Toast.fire({ icon: 'error', title: '@NotificationMessage.ErrorOccurred' });
+                    }
+                });
+            }
+        });
+    }
+
+</script>

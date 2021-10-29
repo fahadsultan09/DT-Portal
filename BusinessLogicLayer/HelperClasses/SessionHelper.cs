@@ -89,5 +89,10 @@ namespace BusinessLogicLayer.HelperClasses
             get => _httpContextAccessor.HttpContext.Session.Get<string>("TotalOrderValue");
             set => _httpContextAccessor.HttpContext.Session.Set("TotalOrderValue", value);
         }
+        public static List<SubDistributor> DropDownSubDistributor
+        {
+            get => _httpContextAccessor.HttpContext.Session.Get<List<SubDistributor>>("SubDistributorList");
+            set => _httpContextAccessor.HttpContext.Session.Set("SubDistributorList", value);
+        }
     }
 }

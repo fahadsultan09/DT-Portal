@@ -15,11 +15,13 @@ namespace BusinessLogicLayer.Login
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserBLL _UserBLL;
         private readonly UserSystemInfoBLL _UserSystemInfoBLL;
+        private readonly SubDistributorBLL _SubDistributorBLL;
         public LoginBLL(IUnitOfWork Repository)
         {
             _unitOfWork = Repository;
             _UserBLL = new UserBLL(_unitOfWork);
             _UserSystemInfoBLL = new UserSystemInfoBLL(_unitOfWork);
+            _SubDistributorBLL = new SubDistributorBLL(_unitOfWork);
         }
         public LoginStatus CheckLogin(User user)
         {
@@ -36,7 +38,7 @@ namespace BusinessLogicLayer.Login
                 if (string.IsNullOrEmpty(LoginUser.AccessToken) && !string.IsNullOrEmpty(user.AccessToken))
                 {
                     LoginUser.AccessToken = user.AccessToken;
-                    _UserBLL.UpdateUser(LoginUser);
+                    _UserBLL.UpdateAccessToken(LoginUser);
                 }
                 else
                 {
@@ -50,7 +52,7 @@ namespace BusinessLogicLayer.Login
                         LoginUser.AccessToken = user.AccessToken;
                         if (!string.IsNullOrEmpty(LoginUser.AccessToken))
                         {
-                            _UserBLL.UpdateUser(LoginUser);
+                            _UserBLL.UpdateAccessToken(LoginUser);
                         }
                     }
                 }

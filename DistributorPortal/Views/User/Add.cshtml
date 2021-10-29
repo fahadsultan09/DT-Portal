@@ -152,10 +152,12 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
-                                                        <label class="col-lg-4 col-form-label">Registered Address</label>
+                                                        <label class="col-lg-4 col-form-label">Sub Distributor Name<span class="text-danger"> * </span></label>
                                                         <div class="col-lg-8">
-                                                            <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
-                                                            <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                            <select asp-for="SubDistributorIds" asp-items="@(new MultiSelectList(Model.SubDistributorList,"Value","Text"))" class="select2" multiple="multiple" data-placeholder="--Select Distributor--">
+                                                                <option readonly disabled>--Select Distributor--</option>
+                                                            </select>
+                                                            <span asp-validation-for="SubDistributorIds" class="text-danger"></span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -206,6 +208,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-4 col-form-label">Registered Address</label>
+                                                        <div class="col-lg-8">
+                                                            <input asp-for="RegisteredAddress" type="text" placeholder="Registered Address" class="form-control" />
+                                                            <span asp-validation-for="RegisteredAddress" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
@@ -252,6 +263,7 @@
         $('[data-mask]').inputmask();
 
         $('#DistributorId').attr("disabled", true);
+        $('#IsParentDistributor').attr("disabled", "disabled");
 
         if ($('#IsStoreKeeper').is(':checked')) {
             //$('#CompanyId').attr("disabled", false);
@@ -269,6 +281,7 @@
             if ($('#IsDistributor').is(':checked')) {
                 $('#IsDistributor').removeAttr("disabled");
                 $('#DistributorId').removeAttr("disabled");
+                $('#IsParentDistributor').removeAttr("disabled");
 
                 $('#IsStoreKeeper').prop('checked', false);
                 $('#IsStoreKeeper').attr("disabled", "disabled");
@@ -283,6 +296,8 @@
                 $('#EmailIntimationId').trigger('change');
             }
             else {
+                $('#IsParentDistributor').prop('checked', false);
+                $('#IsParentDistributor').attr("disabled", "disabled");
                 $('#DistributorId').attr("disabled", "disabled");
                 $('#DistributorId').val('');
                 $('#DistributorId').trigger('change');
@@ -302,6 +317,8 @@
                 $('#PlantLocationId').removeAttr("disabled");
                 $('#IsStoreKeeper').removeAttr("disabled");
 
+                $('#IsParentDistributor').prop('checked', false);
+                $('#IsParentDistributor').attr("disabled", "disabled");
                 $('#IsDistributor').prop('checked', false);
                 $('#IsDistributor').attr("disabled", "disabled")
                 $('#DistributorId').attr("disabled", "disabled");

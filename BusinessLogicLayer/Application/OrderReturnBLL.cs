@@ -224,7 +224,7 @@ namespace BusinessLogicLayer.Application
                     {
                         model.DistributorId = (int)SessionHelper.LoginUser.DistributorId;
                         var detail = SessionHelper.AddReturnProduct;
-                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum();
+                        model.TotalValue = Math.Round(SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum(), 2);
                         Add(model);
 
                         if (model.Id > 0)
@@ -244,7 +244,7 @@ namespace BusinessLogicLayer.Application
                         model.SNo = item.SNo;
                         model.Status = btnSubmit;
                         var detail = SessionHelper.AddReturnProduct;
-                        model.TotalValue = SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum();
+                        model.TotalValue = Math.Round(SessionHelper.AddReturnProduct.Select(e => Convert.ToDouble(e.NetAmount)).Sum(), 2);
                         Update(model);
                         var list = _OrderReturnDetailBLL.Where(e => e.OrderReturnId == model.Id).ToList();
                         _OrderReturnDetailBLL.DeleteRange(list);
@@ -351,19 +351,19 @@ namespace BusinessLogicLayer.Application
                 {
                     SNO = item.OrderReturnMaster.SNo.ToString(),
                     ITEMNO = item.ProductId.ToString(),
-                    PARTN_NUMB = !string.IsNullOrEmpty(ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor) ? ProductDetail.First(e => e.ProductMasterId == item.ProductId).ParentDistributor : item.OrderReturnMaster.Distributor.DistributorSAPCode,
-                    DOC_TYPE = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_OrderType,
-                    SALES_ORG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).SaleOrganization,
-                    DISTR_CHAN = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DistributionChannel,
-                    DIVISION = ProductDetail.First(e => e.ProductMasterId == item.ProductId).Division,
+                    PARTN_NUMB = item.ParentDistributor,
+                    DOC_TYPE = item.R_OrderType,
+                    SALES_ORG = item.SaleOrganization,
+                    DISTR_CHAN = item.DistributionChannel,
+                    DIVISION = item.Division,
                     PURCH_NO = item.OrderReturnMaster.TRNo,
                     PURCH_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
                     PRICE_DATE = (DateTime.Now.Year.ToString() + string.Format("{0:00}", DateTime.Now.Month) + string.Format("{0:00}", DateTime.Now.Day)).ToString(),
                     ST_PARTN = item.OrderReturnMaster.Distributor.DistributorSAPCode,
-                    MATERIAL = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ProductMaster.SAPProductCode,
-                    PLANT = ProductDetail.First(e => e.ProductMasterId == item.ProductId).DispatchPlant,
-                    STORE_LOC = ProductDetail.First(e => e.ProductMasterId == item.ProductId).R_StorageLocation,
-                    ITEM_CATEG = ProductDetail.First(e => e.ProductMasterId == item.ProductId).ReturnItemCategory,
+                    MATERIAL = item.ProductMaster.SAPProductCode,
+                    PLANT = item.DispatchPlant,
+                    STORE_LOC = item.R_StorageLocation,
+                    ITEM_CATEG = item.ReturnItemCategory,
                     BATCH = item.ReceivedBatchNo,
                     REQ_QTY = item.ReceivedQty.ToString()
                 });

@@ -18,7 +18,7 @@
                 <h2 class="card-title">Order List</h2>
             </div>
             <div class="card-body scrollmenu">
-                <table id="example1" class="table table-striped table-hover" style="width:100%">
+                <table id="example1" class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th></th>
@@ -99,13 +99,13 @@
 
     $(document).ready(function () {
 
-        //var table = $('[Id$=example1]').DataTable({
-        //    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-        //    "responsive": true,
-        //    "autoWidth": false,
-        //    "order": [[1, "desc"]]
-        //});
-        dataTableExportExcel("example1", "Export");
+        var table = $('[Id$=example1]').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "responsive": true,
+            "autoWidth": false,
+        });
+        $("#example1").dataTable().fnDestroy();
+        dataTableExportExcel("example1", "Order");
         // Add event listener for opening and closing details
         $('#example1 tbody').on('click', 'td.details-control', function () {
             BlockUI();

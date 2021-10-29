@@ -93,144 +93,162 @@
                             <span class="float-right"><strong>Payment No: @Model.SNo</strong></span>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Deposit Date</h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="input-group date" id="DepositDate" data-target-input="nearest">
-                                        <input type="text" asp-for="DepositDate" value="@(Model.Id == 0 ? null : Model.DepositDate != null ? Convert.ToDateTime(Model.DepositDate).ToString("dd/MM/yyyy") : null)" data-target="#DepositDate" class="form-control datepicker" style="background: #e9ecef !important;" />
-                                        <div class="input-group-append" data-target="#DepositDate" data-toggle="datepicker">
-                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Value Clearing Date</h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
-                                        <input type="text" asp-for="ValueClearingDate" value="@(Model.Id == 0 ? null : Model.ValueClearingDate != null ? Convert.ToDateTime(Model.ValueClearingDate).ToString("dd/MM/yyyy") : null)" data-target="#ValueClearingDate" class="form-control datepicker" style="background: #e9ecef !important;" />
-                                        <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker">
-                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><br />
-                            <div class=" row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Mode of Payment<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <select asp-for="PaymentModeId" asp-items="@(new SelectList(Model.PaymentModeList, "Value", "Text"))" class="form-control select2">
-                                        <option value="">--Select option--</option>
-                                    </select><br />
-                                    <span asp-validation-for="PaymentModeId" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Company<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <select asp-for="CompanyId" asp-items="@(new SelectList(Model.CompanyList, "Value", "Text"))" class="form-control select2">
-                                        <option value="">--Select option--</option>
-                                    </select><br />
-                                    <span asp-validation-for="CompanyId" class="text-danger"></span>
-                                </div>
-                            </div><br />
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6 id="PaymentModeIdTitle"><span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="text" asp-for="PaymentModeNo" class="form-control" />
-                                    <span asp-validation-for="PaymentModeNo" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Amount<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="number" asp-for="Amount" class="form-control" id="Amount" />
-                                    <span asp-validation-for="Amount" class="text-danger"></span>
-                                    <span class="text-info" id="AmountInWords"></span>
-                                </div>
-                            </div><br />
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Depositor Bank Name<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <select asp-for="DepositorBankName" asp-items="@(new SelectList(Model.DepostitorBankList, "Value", "Text"))" class="form-control select2">
-                                        <option value="">--Select option--</option>
-                                    </select><br />
-                                    <span asp-validation-for="DepositorBankName" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="text" asp-for="DepositorBankCode" class="form-control" />
-                                    <span asp-validation-for="DepositorBankCode" class="text-danger"></span>
-                                </div>
-                            </div><br />
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Company Bank Name<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyBankList, "Value", "Text"))" class="form-control select2">
-                                        <option value="">--Select option--</option>
-                                    </select><br />
-                                    <span asp-validation-for="CompanyBankName" class="text-danger"></span>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Company's Bank Code<span class="text-danger"> * </span></h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="text" asp-for="CompanyBankCode" class="form-control" />
-                                    <span asp-validation-for="CompanyBankCode" class="text-danger"></span>
-                                </div>
-                            </div><br />
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <h6>Attachment</h6>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <span class="caption">
-                                        <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
-                                    </span>
-                                </div>
-                                @if (!string.IsNullOrEmpty(Model.Remarks))
-                                {
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <h6>Remarks</h6>
+                            <form asp-controller="Payment"
+                                  asp-action="PaymentApproval"
+                                  id="frmPaymentMaster"
+                                  data-ajax-begin="Begin"
+                                  data-ajax-success="OnSuccess"
+                                  data-ajax-complete="Complete"
+                                  data-ajax="true"
+                                  data-ajax-method="POST"
+                                  autocomplete="off"
+                                  enctype="multipart/form-data">
+                                <input asp-for="Id" type="hidden" />
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                        <h6>Deposit Date</h6>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <textarea asp-for="Remarks" class="form-control"></textarea>
+                                        <div class="input-group date" data-target-input="nearest">
+                                            <input type="text" asp-for="DepositDate" readonly="readonly" id="DepositDate" asp-format="{0:dd/MMM/yyyy}" class="form-control datepicker" style="background: white;" />
+                                            <div class="input-group-append" data-target="#DepositDate" data-toggle="datepickerDeposite" id="input-group-append-DepositDate">
+                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                }
-                            </div>
-                            <br />
-                            <div class="row">
-                                <div class="col-6">
-                                </div>
-                                <div class="col-6 pull-right">
-                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve)))
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 p-0">
+                                        <h6>Value Clearing Date</h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <div class="input-group date" id="ValueClearingDate" data-target-input="nearest">
+                                            <input type="text" asp-for="ValueClearingDate" data-target="#ValueClearingDate" asp-format="{0:dd/MMM/yyyy}" class="form-control datepicker" style="background: white;" />
+                                            <div class="input-group-append" data-target="#ValueClearingDate" data-toggle="datepicker" id="input-group-append-DepositDate">
+                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                        <span id="errorValueClearingDate" class="text-danger"></span>
+                                    </div>
+                                </div><br />
+                                <div class=" row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Mode of Payment<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <select asp-for="PaymentModeId" asp-items="@(new SelectList(Model.PaymentModeList, "Value", "Text"))" class="form-control select2">
+                                            <option value="">--Select option--</option>
+                                        </select><br />
+                                        <span asp-validation-for="PaymentModeId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Company<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <select asp-for="CompanyId" asp-items="@(new SelectList(Model.CompanyList, "Value", "Text"))" class="form-control select2" disabled="disabled">
+                                            <option value="">--Select option--</option>
+                                        </select><br />
+                                        <span asp-validation-for="CompanyId" class="text-danger"></span>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6 id="PaymentModeIdTitle"><span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <input type="text" asp-for="PaymentModeNo" class="form-control" />
+                                        <span asp-validation-for="PaymentModeNo" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Amount<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <input type="text" name="Amount" value="@Model.Amount.ToString("#,##0.00")" class="form-control" id="Amount" disabled="disabled" />
+                                        <span asp-validation-for="Amount" class="text-danger"></span>
+                                        <span class="text-info" id="AmountInWords"></span>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Depositor Bank Name<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <select asp-for="DepositorBankName" asp-items="@(new SelectList(Model.DepostitorBankList, "Value", "Text"))" class="form-control select2" disabled="disabled">
+                                            <option value="">--Select option--</option>
+                                        </select><br />
+                                        <span asp-validation-for="DepositorBankName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Depositor Bank Code<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <input type="text" asp-for="DepositorBankCode" class="form-control" disabled="disabled" />
+                                        <span asp-validation-for="DepositorBankCode" class="text-danger"></span>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Company Bank Name<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <select asp-for="CompanyBankName" asp-items="@(new SelectList(Model.CompanyBankList, "Value", "Text"))" class="form-control select2 ddlCompanyBank">
+                                            <option value="">--Select option--</option>
+                                        </select><br />
+                                        <span asp-validation-for="CompanyBankName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Company's Bank Code<span class="text-danger"> * </span></h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <input type="text" asp-for="CompanyBankCode" class="form-control" disabled="disabled" />
+                                        <span asp-validation-for="CompanyBankCode" class="text-danger"></span>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <h6>Attachment</h6>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <span class="caption">
+                                            <a asp-action="GetFile" asp-controller="Home" asp-route-filepath="@(Model.File != null ? Model.File : "")" target="_blank">@(Model.File != null ? Model.File.Split('_')[1] : "")</a>
+                                        </span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.Remarks))
                                     {
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Verified" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
-                                            Verify
-                                        </button>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <h6>Remarks</h6>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <textarea asp-for="Remarks" class="form-control"></textarea>
+                                        </div>
                                     }
-                                    @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject)))
-                                    {
-                                        <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
-                                            Reject
-                                        </button>
-                                    }
-                                    <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
-                                        Back
-                                    </a>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-6">
+                                    </div>
+                                    <div class="col-6 pull-right">
+                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve)))
+                                        {
+                                            <button type="button" onclick="SavePayment();" name="btnSubmit" class="btn btn-success float-right @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
+                                                Verify
+                                            </button>
+                                        }
+                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Reject)))
+                                        {
+                                            <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Rejected" class="btn btn-danger float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Rejected) ? "d-none" : null)">
+                                                Reject
+                                            </button>
+                                        }
+                                        @if (SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Payment.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Resubmit)))
+                                        {
+                                            <button type="button" name="btnSubmit" onclick="UpdateStatus(this, 'Payment', 'UpdateStatus', @Model.Id);" value="@PaymentStatus.Resubmit" class="btn btn-info float-right mr-3 @(SessionHelper.LoginUser.IsDistributor || (Model.Status == PaymentStatus.Verified || Model.Status == PaymentStatus.Resubmit) ? "d-none" : null)">
+                                                Re-Submit
+                                            </button>
+                                        }
+                                        <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary float-right mr-3">
+                                            Back
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -240,6 +258,40 @@
 </div>
 
 <script>
+
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+
+    $('.datepicker').datepicker({
+        autoclose: true,
+        clearBtn: true,
+        format: "dd/M/yyyy",
+        endDate: new Date(year, month, day),
+        orientation: 'bottom',
+    });
+
+    $('#input-group-append-DepositDate').click(function () {
+        $("#DepositDate").focus();
+    });
+
+    $('#input-group-append-ValueClearingDate').click(function () {
+        $("#ValueClearingDate").focus();
+    });
+
+    $('body').on('change', '.ddlCompanyBank', function () {
+        $.ajax({
+            type: "GET",
+            url: "/Bank/GetBranchCode",
+            contentType: "application/json",
+            dataType: "json",
+            data: { id: $(".ddlCompanyBank").val() },
+            success: function (response) {
+                $('#CompanyBankCode').val(response[0]);
+            },
+        });
+    });
 
     $(document).ready(function () {
 
@@ -263,8 +315,47 @@
             $("#PaymentModeIdTitle").text('Cheque No. *');
         }
 
-        $(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
+        //$(".container-fluid :input, input-group-append").not("[name=btnSubmit]").attr("disabled", true);
         $('#AmountInWords').html(inWords(@Model.Amount));
     });
+
+    function SavePayment() {
+        
+        $('#errorValueClearingDate').empty();
+        if ($('input[name="ValueClearingDate"]').val() == '') {
+            $('#errorValueClearingDate').text("Value clearing date is required");
+            return false;
+        }
+        var form = event.target.form; // storing the form
+        $(form).each(function () {
+            $(this).children().find('textarea').each(function () {
+                $(this).val($(this).val().trim());
+            });
+            $(this).children().find('input[type="text"]').each(function () {
+                $(this).val($(this).val().trim());
+            });
+        });
+
+        $.validator.unobtrusive.parse(form);
+
+        if ($(form).valid()) {
+
+            Swal.fire({
+                title: "Are you sure you want to continue?",
+                type: "warning",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                closeOnConfirm: true,
+                showLoaderOnConfirm: true
+            }).then(function (result) {
+                if (result.value) {
+                    $('#Spinner').show();
+                    $(form).submit();
+                }
+            });
+        }
+    }
 
 </script>

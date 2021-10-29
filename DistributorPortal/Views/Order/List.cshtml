@@ -5,7 +5,48 @@
     bool delete = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Order.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Delete));
     bool approve = SessionHelper.NavigationMenu.Where(x => x.ApplicationPage.ControllerName == ApplicationPages.Order.ToString()).Select(e => e.ApplicationActionId).Contains(Convert.ToInt32(ApplicationActions.Approve));
 }
-
+<div class="row @(SessionHelper.LoginUser.IsDistributor ? "" : "d-none")">
+    <div class="col-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Upload Order</h3>
+            </div>
+            <div class="card-body">
+                <form asp-controller="OrderForm"
+                      asp-action="UploadOrder"
+                      id="fmrUploadOrder"
+                      data-ajax-begin="Begin"
+                      data-ajax-success="OnSuccess"
+                      data-ajax-complete="CompleteOrder"
+                      data-ajax="true"
+                      data-ajax-method="POST"
+                      enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                            <h6>Upload File<span class="text-danger"> * </span></h6>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <div class="custom-file">
+                                    <input type="file" class="form-control custom-file-input" name="customFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                                    <label class="custom-file-label">Choose file</label>
+                                </div>
+                                <small>Only excel format file is allowed.</small>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <button type="submit" name="btnsubmit" class="btn btn-success"><i class="fa fa-upload"></i>&nbsp;Upload</button>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <a asp-action="DownloadOrderFormat" asp-controller="OrderForm" class="btn btn-default"><i class="fa fa-download"></i>&nbsp;Format</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -13,7 +54,6 @@
                 <h2 class="card-title">Order List</h2>
                 @if (SessionHelper.LoginUser.IsDistributor == true)
                 {
-                    @*<a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")" disabled="@(ViewBag.Expired == true ? "disabled" : null)">Add</a>*@
                     <a asp-controller="OrderForm" asp-action="Create" type="submit" class="btn btn-info float-right @(add ? null : "d-none")">Add</a>
                 }
             </div>
@@ -68,11 +108,11 @@
                                         </a>
                                     }
                                     @*@if (item.Status == OrderStatus.PartiallyApproved && !SessionHelper.LoginUser.IsDistributor && approve)
-                                    {
-                                        <a onclick="Sync('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Sync Partially Approved Order" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-sync"></i>
-                                        </a>
-                                    }*@
+                                        {
+                                            <a onclick="Sync('@EncryptDecrypt.Encrypt(item.Id.ToString())');" title="Sync Partially Approved Order" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-sync"></i>
+                                            </a>
+                                        }*@
                                     @if (item.Status != OrderStatus.Draft)
                                     {
                                         <a onclick="Print('/Reports/Print?', '@ApplicationPages.Order', '@EncryptDecrypt.Encrypt(item.Id.ToString())');" class="btn btn-success btn-sm">
@@ -108,6 +148,32 @@
     </div>
 </div>
 <script>
+
+    function CompleteOrder() {
+        UnBlockUI();
+        $('#Spinner').hide('slow');
+        $('#fmrUploadOrder')[0].reset(); // this will reset the form fields
+
+        $('button[type="submit"]').attr('disabled', false);
+        if ($("button[type=submit]", this)[0] != undefined) {
+            Ladda.create($("button[type=submit]", this)[0]).stop();
+        }
+        $('button[type="button]"]').attr('disabled', false);
+        if ($("button[type=button]", this)[0] != undefined) {
+            Ladda.create($("button[type=button]", this)[0]).stop();
+        }
+        $('.ladda-button').attr('disabled', false);
+        if ($(".ladda-button")[0] != undefined) {
+            Ladda.create($(".ladda-button")[0]).stop();
+        }
+    }
+
+    //File upload
+    $('.custom-file-input').on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+
     $(document).ready(function () {
 
         var DistributorId = '@TempData["DistributorId"]';

@@ -77,11 +77,11 @@
                     <td class="NetAmount">
                         <span>@item.NetAmount</span>
                     </td>
-                    <td>@item.ManufactureDate.ToString("dd/MM/yyyy")</td>
-                    <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.ManufactureDate == null ? null : Convert.ToDateTime(item.ManufactureDate).ToString("dd/MM/yyyy"))</td>
+                    <td>@(item.ManufactureDate == null ? null : Convert.ToDateTime(item.ExpiryDate).ToString("dd/MM/yyyy"))</td>
                     <td>@item.InvoiceNo</td>
                     <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
-                    <td>@item.IntimationDate.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.ManufactureDate == null ? null : Convert.ToDateTime(item.IntimationDate).ToString("dd/MM/yyyy"))</td>
                     <td>@item.Remarks</td>
                     <td>
                         <a asp-action="Delete"
@@ -139,18 +139,11 @@
         var ProductId = $(obj).parent().parent().find('td:eq(0) input[type="text"]').val();
         var BatchNo = $(obj).parent().parent().find('td:eq(1) input[type="text"]').val();
         NewBatchNo = $(obj).parent().parent().find('td:eq(7) input[type="text"]').val();
-        if (Quantity > intmaxvalue) {
-            Toast.fire({
-                icon: 'error',
-                title: "Quantity cannot be greater than " + intmaxvalue
-            });
-        }
-        else
-        {
+
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("UpdateQuantity", "OrderReturn")',
-                data: { 'ProductId': ProductId, 'Quantity': 0,'BatchNo': BatchNo, 'NewBatchNo': NewBatchNo },
+                url: '@Url.Action("UpdateBatch", "OrderReturn")',
+                data: { 'ProductId': ProductId,'BatchNo': BatchNo, 'NewBatchNo': NewBatchNo },
                 async: false,
                 cache: false,
                 success: function (response) {
@@ -159,22 +152,35 @@
                     CalculateTotal();
                 }
             });
-        }
         data.stopImmediatePropagation();
         return false;
     });
     $('body').on('change', '.ReturnQuantity', function (data) {
         
-        obj = $(this);
+         obj = $(this);
         var intmaxvalue = @Int32.MaxValue;
         var ProductId = $(obj).parent().parent().find('td:eq(0) input[type="text"]').val();
         var BatchNo = $(obj).parent().parent().find('td:eq(1) input[type="text"]').val();
         var Quantity = $(obj).parent().parent().find('td:eq(11) input[type="text"]').val();
 
+        if (BatchNo == '') {
+            Toast.fire({
+                icon: 'error',
+                title: "Batch No cannot be empty"
+            });
+            return false;
+        }
+        if (Quantity == '') {
+            Toast.fire({
+                icon: 'error',
+                title: "Quantity cannot be empty"
+            });
+            return false;
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("UpdateQuantity", "OrderReturn")',
-            data: { 'ProductId': ProductId, 'Quantity': Quantity,'BatchNo': BatchNo, 'NewBatchNo': '' },
+            data: { 'ProductId': ProductId, 'Quantity': Quantity,'BatchNo': BatchNo },
             async: false,
             cache: false,
             success: function (response) {

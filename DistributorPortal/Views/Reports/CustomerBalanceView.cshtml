@@ -25,7 +25,7 @@
                                     <td>@item.DistributorCode</td>
                                     <td>@item.DistributorName</td>
                                     <td>@item.City</td>
-                                    <td>@item.Balance</td>
+                                    <td>@item.Balance.ToString("#,##0.00")</td>
                                     <td>@item.DebitCredit</td>
                                 </tr>
                             }
@@ -36,3 +36,17 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#example1').dataTable().fnDestroy();
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "paging": false,
+            "order": [[1, "asc"]]
+        });
+    });
+
+</script>

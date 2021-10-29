@@ -64,7 +64,7 @@ namespace DistributorPortal.Controllers
                             SAPDistributor.Add(new Distributor()
                             {
                                 DistributorSAPCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KUNNR,
-                                DistributorName = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME1,
+                                DistributorName = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME1 + " " + root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME2 + " " + root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].NAME3,
                                 City = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].ORT01,
                                 RegionCode = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].REGIO,
                                 CustomerGroup = root.ZWASITHRMSBAPIResponse.DISTRIBUTOR.item[i].KDGRPT,
@@ -98,6 +98,15 @@ namespace DistributorPortal.Controllers
                         var region = regionBLL.GetAllRegion();
                         item.Region = region.First(c => c.SAPId == distributor.Region.SAPId);
                         _DistributorBLL.UpdateDistributor(item);
+                    }
+                }
+                var DeleteDistributor = alldist.Where(e => !SAPDistributor.Select(x => x.DistributorSAPCode).Contains(e.DistributorSAPCode)).ToList();
+                foreach (var item in DeleteDistributor)
+                {
+                    var distributor = _DistributorBLL.GetDistributorBySAPId(item.DistributorSAPCode);
+                    if (distributor != null)
+                    {
+                        _DistributorBLL.DeleteDistributor(distributor.Id);
                     }
                 }
 

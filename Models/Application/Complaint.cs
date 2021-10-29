@@ -29,11 +29,11 @@ namespace Models.Application
         [ForeignKey("ComplaintSubCategoryId")]
         public virtual ComplaintSubCategory ComplaintSubCategory { get; set; }
         [Required(ErrorMessage = "Enter Description.")]
-        [StringLength(255)]
+        [StringLength(2550)]
         public string Description { get; set; }
-        [StringLength(255)]
+        [StringLength(2550)]
         public string ResolvedRemarks { get; set; }
-        [StringLength(255)]
+        [StringLength(2550)]
         public string Remarks { get; set; }
         public ComplaintStatus Status { get; set; }
         [StringLength(255)]

@@ -33,5 +33,9 @@ namespace Models.Application
         public double ViewSalesTax { get; set; }
         [NotMapped]
         public double AdditionalSalesTax { get; set; }
+        [NotMapped]
+        public string ProductCode { get; set; }
+        [NotMapped]
+        public string Quantity { get; set; }
     }
 }

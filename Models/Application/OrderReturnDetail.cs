@@ -30,9 +30,9 @@ namespace Models.Application
         public string BatchNo { get; set; }
         public string InvoiceNo { get; set; }
         public DateTime InvoiceDate { get; set; }
-        public DateTime ExpiryDate { get; set; }
-        public DateTime ManufactureDate { get; set; }
-        public DateTime IntimationDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+        public DateTime? IntimationDate { get; set; }
         public string Remarks { get; set; }
         public string ReturnOrderNumber { get; set; }
         public OrderStatus? ReturnOrderStatus { get; set; }
@@ -43,6 +43,14 @@ namespace Models.Application
         public double? NetAmount { get; set; }
         [StringLength(10)]
         public string ReceivedBatchNo { get; set; }
+        public string ParentDistributor { get; set; }
+        public string R_OrderType { get; set; }
+        public string SaleOrganization { get; set; }
+        public string DistributionChannel { get; set; }
+        public string Division { get; set; }
+        public string DispatchPlant { get; set; }
+        public string R_StorageLocation { get; set; }
+        public string ReturnItemCategory { get; set; }
         [NotMapped]
         public double TotalPrice { get; set; }
         [NotMapped]

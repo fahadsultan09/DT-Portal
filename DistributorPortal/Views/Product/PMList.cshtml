@@ -104,6 +104,7 @@
                                 <th>Additional Sales Tax</th>
                                 <th>License Name</th>
                                 <th>Place Order In SAP</th>
+                                <th>FOC Quantity Ratio</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -166,6 +167,7 @@
                                                 </label>
                                             </div>
                                         </td>
+                                        <td><input type="number" asp-for="@List[i].ProductDetail.FOCQuantityRatio" class="form-control" min="0" maxlength="9" pattern="\d*" step="any" oninput="validity.valid||(value='');" /></td>
                                         <td><button type="button" id="btnSubmit@(i)" name="btnSubmit@(i)" class="btn btn-success">Save</button></td>
                                     </tr>
                                 }
@@ -331,6 +333,7 @@
             AdditionalSalesTax: $(this).closest("tr").find("td:eq(27)").find(":input").val(),
             LicenseControlId: $(this).closest("tr").find("td:eq(28)").find(":input").val(),
             IsPlaceOrderInSAP: $(this).closest("tr").find("td:eq(29)").find(":checked").val(),
+            FOCQuantityRatio: $(this).closest("tr").find("td:eq(30)").find(":input").val(),
         };
 
         $.post(window.location.origin + "/Product/UpdateProductDetail", { model: obj },
