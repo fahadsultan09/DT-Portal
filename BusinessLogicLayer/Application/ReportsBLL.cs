@@ -1,13 +1,17 @@
 ﻿using BusinessLogicLayer.HelperClasses;
 using CustomerBalance;
 using CustomerLedger;
+using Dapper;
+using DataAccessLayer.Repository;
 using Invoice;
 using Models.ViewModel;
 using SaleReturnCreditNote;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.ServiceModel;
 using System.Xml;
+using Utility;
 using Utility.HelperClasses;
 
 namespace BusinessLogicLayer.Application
@@ -140,6 +144,35 @@ namespace BusinessLogicLayer.Application
             string base64 = client.CN_SerRespOut(SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.Distributor.DistributorSAPCode : string.Empty, saleReturnCreditNoteSearch.SaleReturnNo.ToString());
             client.CloseAsync();
             return base64;
+        }
+        public List<CustomerReceivable> CustomerReceivable(CustomerReceivableSearch model, IDapper _dapper, Configuration configuration)
+        {
+            DynamicParameters parameter = new DynamicParameters();
+            parameter.Add("@pCompanyId", model.CompanyId, DbType.Int32, ParameterDirection.Input);
+            parameter.Add("@pDistributorId", SessionHelper.LoginUser.IsDistributor ? SessionHelper.LoginUser.DistributorId : model.DistributorId, DbType.Int32, ParameterDirection.Input);
+            List<CustomerReceivable> _CustomerReceivable = _dapper.GetAll<CustomerReceivable>("sp_CustomerReceivable", parameter, commandType: CommandType.StoredProcedure);
+            CustomerBalanceSearch customerBalanceSearch;
+            foreach(var i in _CustomerReceivable)
+            {
+                customerBalanceSearch = new CustomerBalanceSearch();
+                customerBalanceSearch.SAPCompanyCode = i.SAPCompanyCode;
+                customerBalanceSearch.DistributorSAPCode = i.DistributorSAPCode;
+                i.CustomerBalance = CustomerBalance(customerBalanceSearch, configuration);
+                if(i.CustomerBalance.Count>0)
+                {
+                    i.CurrentBalance = i.CustomerBalance[0].Balance;
+                    i.DebitCreditIndicator = i.CustomerBalance[0].DebitCredit == "Credit" ? DebitCreditIndicator.Credit : DebitCreditIndicator.Debit;
+                }
+                else
+                {
+                    i.CurrentBalance = 0;
+                    i.DebitCreditIndicator =  DebitCreditIndicator.Debit;
+                }
+
+                i.NetValue = i.ApprovedOrders + i.UnapprovedOrders + i.CurrentBalance - i.UnapprovedPayments;
+                i.ReceivableAdvanceIndicator = i.NetValue >= 0 ? ReceivableAdvanceIndicator.Receivable : ReceivableAdvanceIndicator.Advance;
+            }
+            return _CustomerReceivable;
         }
     }
 }

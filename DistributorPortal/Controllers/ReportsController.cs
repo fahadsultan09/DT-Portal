@@ -474,17 +474,55 @@ namespace DistributorPortal.Controllers
             }
         }
         #endregion
-        #region 
+        #region Customer Receivable
         public IActionResult CustomerReceivable()
         {
 
             return View();
         }
-        public List<CustomerReceivable> GetCustomerReceivables(CustomerReceivableSearch model)
+        public CustomerReceivableTotal GetCustomerReceivables(CustomerReceivableSearch model)
         {
-            List<CustomerReceivable> lst = new List<CustomerReceivable>();
-            return lst;
+            List<CustomerReceivable> List = _ReportsBLL.CustomerReceivable(model, _dapper, _Configuration);
+            if(model.DebitCreditIndicator != null)
+            {
+                List = List.Where(x =>  x.DebitCreditIndicator == model.DebitCreditIndicator).ToList();
+            }
+            if (model.ReceivableAdvanceIndicator != null)
+            {
+                List = List.Where(x => x.ReceivableAdvanceIndicator == model.ReceivableAdvanceIndicator).ToList();
+            }
+            List<CustomerReceivable> customerTotal = new List<CustomerReceivable>();
+            customerTotal = List.GroupBy(x =>  x.DistributorSAPCode)
+                .Select(
+                x => new CustomerReceivable
+                {
+                    DistributorSAPCode = x.Key,
+                    DistributorName = x.First().DistributorName,
+                    City = x.First().City,
+                    ApprovedOrders = x.Sum(s=> s.ApprovedOrders),
+                    UnapprovedOrders = x.Sum(s => s.UnapprovedOrders),
+                    UnapprovedPayments = x.Sum(s => s.UnapprovedPayments),
+                    NetValue = x.Sum(s => s.NetValue),
+                    CurrentBalance = x.Sum(s => s.CurrentBalance)
+                }).ToList();
+            List<CustomerReceivable> companyTotal = new List<CustomerReceivable>();
+            companyTotal = List.GroupBy(x => x.SAPCompanyCode)
+                .Select(
+                x => new CustomerReceivable
+                {
+                    SAPCompanyCode = x.Key,
+                    CompanyName = x.First().CompanyName,
+                    ApprovedOrders = x.Sum(s => s.ApprovedOrders),
+                    UnapprovedOrders = x.Sum(s => s.UnapprovedOrders),
+                    UnapprovedPayments = x.Sum(s => s.UnapprovedPayments),
+                    NetValue = x.Sum(s => s.NetValue),
+                    CurrentBalance = x.Sum(s => s.CurrentBalance)
+                }).ToList();
+            List = List.Where(x=>x.NetValue !=0).ToList();
+            var viewModel = new CustomerReceivableTotal{ CustomerReceivable = List,CustomersTotal = customerTotal,CompanyTotal = companyTotal };
+            return viewModel;
         }
+        [HttpPost]
         public IActionResult CustomerReceivableSearch(CustomerReceivableSearch model, string Search)
         {
             if (Search == "Search")

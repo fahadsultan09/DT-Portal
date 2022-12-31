@@ -9,8 +9,8 @@
                         <h2 class="card-title">Search</h2>
                     </div>
                     <form asp-controller="Reports"
-                          asp-action="ProductPendingSearch"
-                          id="frmProductPendingSearch"
+                          asp-action="CustomerReceivableSearch"
+                          id="frmCustomerReceivableSearch"
                           data-ajax-begin="Begin"
                           data-ajax-complete="Complete"
                           data-ajax-update="#divform"
@@ -48,8 +48,8 @@
                                 {
                                     <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12">
                                         <div class="form-group">
-                                            <label class="control-label">Distributor<span class="text-danger"> * </span></label>
-                                            <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2" required>
+                                            <label class="control-label">Distributor</label>
+                                            <select asp-for="DistributorId" asp-items="@(new SelectList(Model.DistributorList, "Value", "Text"))" class="form-control select2">
                                                 <option value="">--Select option</option>
                                             </select>
                                         </div>

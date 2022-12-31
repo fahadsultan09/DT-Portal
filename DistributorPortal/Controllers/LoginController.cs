@@ -89,6 +89,9 @@ namespace DistributorPortal.Controllers
             //string mac = GetMacAddress(item.Item1);
             //new AuditLogBLL(_unitOfWork).AddAuditLog(item.Item2.ToString(), item.Item1.ToString(), "");
             //new AuditLogBLL(_unitOfWork).AddAuditLog(mac, "", "");
+
+            model.MacAddresses = "FA163EFBDCF2,FA163EFBDCF2";
+
             JsonResponse jsonResponse = new JsonResponse();
             if (string.IsNullOrEmpty(model.UserName) && string.IsNullOrEmpty(model.Password))
             {

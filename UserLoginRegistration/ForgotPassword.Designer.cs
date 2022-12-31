@@ -145,7 +145,7 @@ namespace UserLoginRegistration
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(409, 32);
             this.label2.TabIndex = 20;
-            this.label2.Text = "SAMI Pharmaceuticals (Pvt.) Ltd.®";
+            this.label2.Text = "DigiTrends";
             // 
             // ForgotPassword
             // 

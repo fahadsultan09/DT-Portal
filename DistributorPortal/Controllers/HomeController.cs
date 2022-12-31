@@ -513,10 +513,13 @@ namespace DistributorPortal.Controllers
                 }
                 else
                 {
-                    list.Add(new KeyValuePair<string, double>("SAMI", SessionHelper.DistributorBalance.SAMI));
-                    list.Add(new KeyValuePair<string, double>("HealthTek", SessionHelper.DistributorBalance.HealthTek));
-                    list.Add(new KeyValuePair<string, double>("Min", SessionHelper.DistributorBalance.SAMI < SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
-                    list.Add(new KeyValuePair<string, double>("Max", SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                    if (SessionHelper.DistributorBalance != null)
+                    {
+                        list.Add(new KeyValuePair<string, double>("SAMI", SessionHelper.DistributorBalance.SAMI));
+                        list.Add(new KeyValuePair<string, double>("HealthTek", SessionHelper.DistributorBalance.HealthTek));
+                        list.Add(new KeyValuePair<string, double>("Min", SessionHelper.DistributorBalance.SAMI < SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                        list.Add(new KeyValuePair<string, double>("Max", SessionHelper.DistributorBalance.SAMI > SessionHelper.DistributorBalance.HealthTek ? Math.Abs(SessionHelper.DistributorBalance.SAMI) : Math.Abs(SessionHelper.DistributorBalance.HealthTek)));
+                    }
                 }
             }
             catch (Exception ex)

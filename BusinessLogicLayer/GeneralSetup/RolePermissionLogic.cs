@@ -51,11 +51,20 @@ namespace BusinessLogicLayer.FormLogic
                         ActionViewModel = actionViewModel
                     });
                 }
-                moduleViewModels.IsModuleAllow = rolepermission.Any(e => e.ApplicationPage.ApplicationModuleId == mod.Id);
-                moduleViewModels.ModuleId = mod.Id;
-                moduleViewModels.ModuleName = mod.ModuleName;
-                moduleViewModels.PageViewModel = pageViewModel;
-                list.Add(moduleViewModels);
+                try
+                {
+                    moduleViewModels.IsModuleAllow = rolepermission.Any(e => e.ApplicationPage.ApplicationModuleId == mod.Id);
+                    moduleViewModels.ModuleId = mod.Id;
+                    moduleViewModels.ModuleName = mod.ModuleName;
+                    moduleViewModels.PageViewModel = pageViewModel;
+                    list.Add(moduleViewModels);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                
+                
             }
             permission.ModuleViewModels = list;
             permission.RoleId = RoleId;

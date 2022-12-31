@@ -304,9 +304,9 @@ namespace Utility
     }
     public enum DebitCreditIndicator
     {
-        [Display(Name = "Debit (Dr.)")]
+        [Display(Name = "Dr.")]
         Debit = 1,
-        [Display(Name = "Credit (Cr.)")]
+        [Display(Name = "Cr.")]
         Credit = 2,
     }
     public enum ReceivableAdvanceIndicator

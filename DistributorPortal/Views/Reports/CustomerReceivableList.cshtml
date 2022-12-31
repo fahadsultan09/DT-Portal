@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CustomerReceivable>
+﻿@model CustomerReceivableTotal
 
 <style type="text/css">
     td.details-control {
@@ -37,21 +37,74 @@
                     <tbody>
                         @if (Model != null)
                         {
-                            @foreach (var item in Model)
+                            foreach(var ct in Model.CustomersTotal)
                             {
+                            <tr>
+                                <td>@ct.DistributorSAPCode</td>
+                                <td>@ct.DistributorName</td>
+                                <td>@ct.City</td>
+                                <td colspan="8"></td>
+                            </tr>
+                            @foreach (var item in Model.CustomerReceivable.Where(e=>e.DistributorSAPCode == ct.DistributorSAPCode)) {
                                 <tr>
-                                    <td></td>
+                                    <td colspan="3"></td>
+                                    <td>@item.CompanyName</td>
+                                    <td>@item.ApprovedOrders</td>
+                                    <td>@item.UnapprovedOrders</td>
+                                    <td>@item.CurrentBalance</td>
+                                    <td>@Html.DisplayFor(x=>item.DebitCreditIndicator)</td>
+                                    <td>@item.UnapprovedPayments</td>
+                                    <td>@item.NetValue</td>
+                                    <td>@Html.DisplayFor(x=>item.ReceivableAdvanceIndicator)</td>
                                 </tr>
+                            }
+                            <tr>
+                                <td colspan="3"></td>
+                                <td>Total</td>
+                                <td>@ct.ApprovedOrders</td>
+                                <td>@ct.UnapprovedOrders</td>
+                                <td>@ct.CurrentBalance</td>
+                                <td>@(ct.CurrentBalance > 0 ? DebitCreditIndicator.Debit.ToString() : DebitCreditIndicator.Credit.ToString())</td>
+                                <td>@ct.UnapprovedPayments</td>
+                                <td>@ct.NetValue</td>
+                                <td>@(ct.NetValue > 0 ? ReceivableAdvanceIndicator.Receivable.ToString() : ReceivableAdvanceIndicator.Advance.ToString())</td>
+                            </tr>
                             }
                         }
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <th colspan="9">Total</th>
-                            <th colspan="2">
-                               
-                            </th>
-                        </tr>
+                        @if (Model != null)
+                        {
+                            <tr>
+                                <th colspan="11">Grand Total</th>
+                            </tr>
+                            @foreach (var gt in Model.CompanyTotal)
+                            {
+                                <tr>
+                                    <th colspan="3"></th>
+                                    <th>@gt.CompanyName</th>
+                                    <th>@gt.ApprovedOrders</th>
+                                    <th>@gt.UnapprovedOrders</th>
+                                    <th>@gt.CurrentBalance</th>
+                                    <td>@(gt.CurrentBalance > 0 ? DebitCreditIndicator.Debit.ToString() : DebitCreditIndicator.Credit.ToString())</td>
+                                    <th>@gt.UnapprovedPayments</th>
+                                    <th>@gt.NetValue</th>
+                                    <td>@(gt.NetValue > 0 ? ReceivableAdvanceIndicator.Receivable.ToString() : ReceivableAdvanceIndicator.Advance.ToString())</td>
+                                </tr>
+                            }
+                            <tr>
+                                <th colspan="3"></th>
+                                <th>Total</th>
+                                <th>@Model.CompanyTotal.Sum(s => s.ApprovedOrders)</th>
+                                <th>@Model.CompanyTotal.Sum(s => s.UnapprovedOrders)</th>
+                                <th>@Model.CompanyTotal.Sum(s => s.CurrentBalance)</th>
+                                <th>@(Model.CompanyTotal.Sum(s => s.CurrentBalance) > 0 ? DebitCreditIndicator.Debit.ToString() : DebitCreditIndicator.Credit.ToString())</th>
+                                <th>@Model.CompanyTotal.Sum(s => s.UnapprovedPayments)</th>
+                                <th>@Model.CompanyTotal.Sum(s => s.NetValue)</th>
+                                <th>@(Model.CompanyTotal.Sum(s => s.NetValue) > 0 ? ReceivableAdvanceIndicator.Receivable.ToString() : ReceivableAdvanceIndicator.Advance.ToString())</th>
+                            </tr>
+                        }
+
                     </tfoot>
                 </table>
 
@@ -71,7 +124,7 @@
         //    "order": [[1, "desc"]]
         //});
         dataTableExportExcel("example1", "Export");
-        
+
     });
 
 </script>
